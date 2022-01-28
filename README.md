@@ -5,5 +5,8 @@ BioImage
 Example usage.
 
 ImageView imageview = new ImageView("16bitTestStack.tif");
+
 imageview.Dock = DockStyle.Fill;
+
 mainTabControl.TabPages[3].Controls.Add(imageview);
+
