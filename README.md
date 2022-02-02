@@ -1,6 +1,6 @@
 BioImage
 
-.NET Library for opening various microscopy imaging formats. Supports all bioformats supported images. Like .CZI, .TIF. Includes tools for changing channel minimum & maximum values. Tool for changing range of Z-Slices & Timeline, as well as changing timer speed for playback of slices & timeframes.
+.NET Library for opening various microscopy imaging formats. Supports all bioformats supported images like .TIF, .CZI etc. Includes tools for changing channel minimum & maximum values, for changing range of Z-Slices & timeline. Also allows setting timer speed for playback of slices, channels, & timeframes. Uses AForge library for image processing.
 
 Example usage.
 
