@@ -10,3 +10,5 @@ imageview.Dock = DockStyle.Fill;
 
 mainTabControl.TabPages[3].Controls.Add(imageview);
 
+To do: Add a scripting language with C# similar to ImageJ macros but with more functionality.
+
