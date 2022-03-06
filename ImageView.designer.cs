@@ -48,6 +48,7 @@ namespace BioImage
             this.showTimeTrackbarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openChannelsToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoContrastChannelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.planeModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zBar = new System.Windows.Forms.TrackBar();
             this.zPlayMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.playZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,19 +57,28 @@ namespace BioImage
             this.setValueRangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.channelBoxB = new System.Windows.Forms.ComboBox();
             this.channelBoxG = new System.Windows.Forms.ComboBox();
-            this.labelR = new System.Windows.Forms.Label();
+            this.labelRGB = new System.Windows.Forms.Label();
             this.channelBoxR = new System.Windows.Forms.ComboBox();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.rgbPictureBox = new AForge.Controls.PictureBox();
             this.statusLabel = new System.Windows.Forms.Label();
+            this.rgbBoxsPanel = new System.Windows.Forms.Panel();
+            this.cPanel = new System.Windows.Forms.Panel();
+            this.cLabel = new System.Windows.Forms.Label();
+            this.cBar = new System.Windows.Forms.TrackBar();
+            this.cPlayMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.playCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stopCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.CPlaySpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setCValueRangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.rgbBoxsPanel = new System.Windows.Forms.Panel();
             this.timelineTimer = new System.Windows.Forms.Timer(this.components);
             this.zTimer = new System.Windows.Forms.Timer(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openImagesDialog = new System.Windows.Forms.OpenFileDialog();
+            this.cTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.timeBar)).BeginInit();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
@@ -80,6 +90,9 @@ namespace BioImage
             this.splitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rgbPictureBox)).BeginInit();
             this.rgbBoxsPanel.SuspendLayout();
+            this.cPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cBar)).BeginInit();
+            this.cPlayMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // timeBar
@@ -90,10 +103,10 @@ namespace BioImage
             this.timeBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(77)))), ((int)(((byte)(98)))));
             this.timeBar.ContextMenuStrip = this.timePlayMenuStrip;
             this.timeBar.LargeChange = 1;
-            this.timeBar.Location = new System.Drawing.Point(9, 36);
+            this.timeBar.Location = new System.Drawing.Point(9, 28);
             this.timeBar.Margin = new System.Windows.Forms.Padding(0);
             this.timeBar.Name = "timeBar";
-            this.timeBar.Size = new System.Drawing.Size(422, 34);
+            this.timeBar.Size = new System.Drawing.Size(422, 26);
             this.timeBar.TabIndex = 0;
             this.timeBar.Visible = false;
             this.timeBar.ValueChanged += new System.EventHandler(this.timeBar_ValueChanged);
@@ -146,9 +159,10 @@ namespace BioImage
             this.showControlsToolStripMenuItem,
             this.showTimeTrackbarToolStripMenuItem,
             this.openChannelsToolToolStripMenuItem,
-            this.autoContrastChannelsToolStripMenuItem});
+            this.autoContrastChannelsToolStripMenuItem,
+            this.planeModeToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(208, 136);
+            this.contextMenuStrip.Size = new System.Drawing.Size(208, 158);
             // 
             // copyImageToolStripMenuItem
             // 
@@ -235,6 +249,14 @@ namespace BioImage
             this.autoContrastChannelsToolStripMenuItem.Text = "Auto Threshold Channels";
             this.autoContrastChannelsToolStripMenuItem.Click += new System.EventHandler(this.autoContrastChannelsToolStripMenuItem_Click);
             // 
+            // planeModeToolStripMenuItem
+            // 
+            this.planeModeToolStripMenuItem.CheckOnClick = true;
+            this.planeModeToolStripMenuItem.Name = "planeModeToolStripMenuItem";
+            this.planeModeToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.planeModeToolStripMenuItem.Text = "Plane Mode";
+            this.planeModeToolStripMenuItem.Click += new System.EventHandler(this.planeModeToolStripMenuItem_Click);
+            // 
             // zBar
             // 
             this.zBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -243,10 +265,10 @@ namespace BioImage
             this.zBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(77)))), ((int)(((byte)(98)))));
             this.zBar.ContextMenuStrip = this.zPlayMenuStrip;
             this.zBar.LargeChange = 1;
-            this.zBar.Location = new System.Drawing.Point(9, 3);
+            this.zBar.Location = new System.Drawing.Point(9, 2);
             this.zBar.Margin = new System.Windows.Forms.Padding(0);
             this.zBar.Name = "zBar";
-            this.zBar.Size = new System.Drawing.Size(422, 33);
+            this.zBar.Size = new System.Drawing.Size(422, 26);
             this.zBar.TabIndex = 12;
             this.zBar.ValueChanged += new System.EventHandler(this.zBar_ValueChanged);
             // 
@@ -259,7 +281,6 @@ namespace BioImage
             this.setValueRangeToolStripMenuItem});
             this.zPlayMenuStrip.Name = "zPlayMenuStrip";
             this.zPlayMenuStrip.Size = new System.Drawing.Size(158, 92);
-            this.zPlayMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.zPlayMenuStrip_Opening);
             // 
             // playZToolStripMenuItem
             // 
@@ -298,7 +319,7 @@ namespace BioImage
             this.channelBoxB.DropDownWidth = 150;
             this.channelBoxB.ForeColor = System.Drawing.Color.White;
             this.channelBoxB.FormattingEnabled = true;
-            this.channelBoxB.Location = new System.Drawing.Point(297, 1);
+            this.channelBoxB.Location = new System.Drawing.Point(297, 4);
             this.channelBoxB.Name = "channelBoxB";
             this.channelBoxB.Size = new System.Drawing.Size(125, 21);
             this.channelBoxB.TabIndex = 8;
@@ -311,22 +332,22 @@ namespace BioImage
             this.channelBoxG.DropDownWidth = 150;
             this.channelBoxG.ForeColor = System.Drawing.Color.White;
             this.channelBoxG.FormattingEnabled = true;
-            this.channelBoxG.Location = new System.Drawing.Point(171, 1);
+            this.channelBoxG.Location = new System.Drawing.Point(171, 4);
             this.channelBoxG.Name = "channelBoxG";
             this.channelBoxG.Size = new System.Drawing.Size(120, 21);
             this.channelBoxG.TabIndex = 6;
             this.channelBoxG.SelectedIndexChanged += new System.EventHandler(this.channelBoxG_SelectedIndexChanged);
             // 
-            // labelR
+            // labelRGB
             // 
-            this.labelR.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelR.AutoSize = true;
-            this.labelR.ForeColor = System.Drawing.Color.White;
-            this.labelR.Location = new System.Drawing.Point(6, 4);
-            this.labelR.Name = "labelR";
-            this.labelR.Size = new System.Drawing.Size(33, 13);
-            this.labelR.TabIndex = 5;
-            this.labelR.Text = "RGB:";
+            this.labelRGB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelRGB.AutoSize = true;
+            this.labelRGB.ForeColor = System.Drawing.Color.White;
+            this.labelRGB.Location = new System.Drawing.Point(6, 7);
+            this.labelRGB.Name = "labelRGB";
+            this.labelRGB.Size = new System.Drawing.Size(33, 13);
+            this.labelRGB.TabIndex = 5;
+            this.labelRGB.Text = "RGB:";
             // 
             // channelBoxR
             // 
@@ -335,7 +356,7 @@ namespace BioImage
             this.channelBoxR.DropDownWidth = 150;
             this.channelBoxR.ForeColor = System.Drawing.Color.White;
             this.channelBoxR.FormattingEnabled = true;
-            this.channelBoxR.Location = new System.Drawing.Point(45, 1);
+            this.channelBoxR.Location = new System.Drawing.Point(45, 4);
             this.channelBoxR.Name = "channelBoxR";
             this.channelBoxR.Size = new System.Drawing.Size(120, 21);
             this.channelBoxR.TabIndex = 4;
@@ -355,18 +376,20 @@ namespace BioImage
             // 
             this.splitContainer.Panel1.Controls.Add(this.rgbPictureBox);
             this.splitContainer.Panel1.Controls.Add(this.statusLabel);
+            this.splitContainer.Panel1MinSize = 0;
             // 
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.ContextMenuStrip = this.contextMenuStrip;
+            this.splitContainer.Panel2.Controls.Add(this.rgbBoxsPanel);
+            this.splitContainer.Panel2.Controls.Add(this.cPanel);
             this.splitContainer.Panel2.Controls.Add(this.timeLabel);
             this.splitContainer.Panel2.Controls.Add(this.label1);
-            this.splitContainer.Panel2.Controls.Add(this.rgbBoxsPanel);
             this.splitContainer.Panel2.Controls.Add(this.zBar);
             this.splitContainer.Panel2.Controls.Add(this.timeBar);
             this.splitContainer.Panel2MinSize = 0;
             this.splitContainer.Size = new System.Drawing.Size(432, 368);
-            this.splitContainer.SplitterDistance = 269;
+            this.splitContainer.SplitterDistance = 280;
             this.splitContainer.SplitterWidth = 3;
             this.splitContainer.TabIndex = 3;
             // 
@@ -375,30 +398,118 @@ namespace BioImage
             this.rgbPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.rgbPictureBox.ContextMenuStrip = this.contextMenuStrip;
             this.rgbPictureBox.Image = null;
-            this.rgbPictureBox.Location = new System.Drawing.Point(0, 21);
+            this.rgbPictureBox.Location = new System.Drawing.Point(-1, 21);
             this.rgbPictureBox.Name = "rgbPictureBox";
-            this.rgbPictureBox.Size = new System.Drawing.Size(432, 251);
+            this.rgbPictureBox.Size = new System.Drawing.Size(432, 261);
             this.rgbPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.rgbPictureBox.TabIndex = 4;
             this.rgbPictureBox.TabStop = false;
-            this.rgbPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rgbPictureBox_MouseDown);
             this.rgbPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.rgbPictureBox_MouseMove);
             // 
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
             this.statusLabel.ForeColor = System.Drawing.Color.White;
-            this.statusLabel.Location = new System.Drawing.Point(6, 5);
+            this.statusLabel.Location = new System.Drawing.Point(9, 6);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(0, 13);
             this.statusLabel.TabIndex = 3;
+            // 
+            // rgbBoxsPanel
+            // 
+            this.rgbBoxsPanel.Controls.Add(this.channelBoxR);
+            this.rgbBoxsPanel.Controls.Add(this.channelBoxB);
+            this.rgbBoxsPanel.Controls.Add(this.labelRGB);
+            this.rgbBoxsPanel.Controls.Add(this.channelBoxG);
+            this.rgbBoxsPanel.ForeColor = System.Drawing.Color.White;
+            this.rgbBoxsPanel.Location = new System.Drawing.Point(0, 57);
+            this.rgbBoxsPanel.Name = "rgbBoxsPanel";
+            this.rgbBoxsPanel.Size = new System.Drawing.Size(432, 27);
+            this.rgbBoxsPanel.TabIndex = 13;
+            // 
+            // cPanel
+            // 
+            this.cPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cPanel.Controls.Add(this.cLabel);
+            this.cPanel.Controls.Add(this.cBar);
+            this.cPanel.Location = new System.Drawing.Point(0, 61);
+            this.cPanel.Name = "cPanel";
+            this.cPanel.Size = new System.Drawing.Size(432, 26);
+            this.cPanel.TabIndex = 16;
+            // 
+            // cLabel
+            // 
+            this.cLabel.AutoSize = true;
+            this.cLabel.ForeColor = System.Drawing.Color.White;
+            this.cLabel.Location = new System.Drawing.Point(2, 5);
+            this.cLabel.Name = "cLabel";
+            this.cLabel.Size = new System.Drawing.Size(14, 13);
+            this.cLabel.TabIndex = 15;
+            this.cLabel.Text = "C";
+            // 
+            // cBar
+            // 
+            this.cBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cBar.AutoSize = false;
+            this.cBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(77)))), ((int)(((byte)(98)))));
+            this.cBar.ContextMenuStrip = this.cPlayMenuStrip;
+            this.cBar.LargeChange = 1;
+            this.cBar.Location = new System.Drawing.Point(9, -2);
+            this.cBar.Margin = new System.Windows.Forms.Padding(0);
+            this.cBar.Name = "cBar";
+            this.cBar.Size = new System.Drawing.Size(422, 26);
+            this.cBar.TabIndex = 15;
+            this.cBar.ValueChanged += new System.EventHandler(this.cBar_ValueChanged);
+            // 
+            // cPlayMenuStrip
+            // 
+            this.cPlayMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.playCToolStripMenuItem,
+            this.stopCToolStripMenuItem,
+            this.CPlaySpeedToolStripMenuItem,
+            this.setCValueRangeToolStripMenuItem});
+            this.cPlayMenuStrip.Name = "zPlayMenuStrip";
+            this.cPlayMenuStrip.Size = new System.Drawing.Size(158, 92);
+            // 
+            // playCToolStripMenuItem
+            // 
+            this.playCToolStripMenuItem.Name = "playCToolStripMenuItem";
+            this.playCToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.playCToolStripMenuItem.Text = "Play";
+            this.playCToolStripMenuItem.Click += new System.EventHandler(this.playCToolStripMenuItem_Click);
+            // 
+            // stopCToolStripMenuItem
+            // 
+            this.stopCToolStripMenuItem.Checked = true;
+            this.stopCToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.stopCToolStripMenuItem.Name = "stopCToolStripMenuItem";
+            this.stopCToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.stopCToolStripMenuItem.Text = "Stop";
+            this.stopCToolStripMenuItem.Click += new System.EventHandler(this.stopCToolStripMenuItem_Click);
+            // 
+            // CPlaySpeedToolStripMenuItem
+            // 
+            this.CPlaySpeedToolStripMenuItem.Name = "CPlaySpeedToolStripMenuItem";
+            this.CPlaySpeedToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.CPlaySpeedToolStripMenuItem.Text = "Play Speed";
+            this.CPlaySpeedToolStripMenuItem.Click += new System.EventHandler(this.CPlaySpeedToolStripMenuItem_Click);
+            // 
+            // setCValueRangeToolStripMenuItem
+            // 
+            this.setCValueRangeToolStripMenuItem.Name = "setCValueRangeToolStripMenuItem";
+            this.setCValueRangeToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.setCValueRangeToolStripMenuItem.Text = "Set Value Range";
+            this.setCValueRangeToolStripMenuItem.Click += new System.EventHandler(this.setCValueRangeToolStripMenuItem_Click);
             // 
             // timeLabel
             // 
             this.timeLabel.AutoSize = true;
             this.timeLabel.ForeColor = System.Drawing.Color.White;
-            this.timeLabel.Location = new System.Drawing.Point(0, 44);
+            this.timeLabel.Location = new System.Drawing.Point(0, 33);
             this.timeLabel.Name = "timeLabel";
             this.timeLabel.Size = new System.Drawing.Size(14, 13);
             this.timeLabel.TabIndex = 14;
@@ -408,40 +519,31 @@ namespace BioImage
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(0, 12);
+            this.label1.Location = new System.Drawing.Point(1, 6);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(14, 13);
             this.label1.TabIndex = 9;
             this.label1.Text = "Z";
             // 
-            // rgbBoxsPanel
-            // 
-            this.rgbBoxsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.rgbBoxsPanel.Controls.Add(this.channelBoxR);
-            this.rgbBoxsPanel.Controls.Add(this.channelBoxB);
-            this.rgbBoxsPanel.Controls.Add(this.labelR);
-            this.rgbBoxsPanel.Controls.Add(this.channelBoxG);
-            this.rgbBoxsPanel.ForeColor = System.Drawing.Color.White;
-            this.rgbBoxsPanel.Location = new System.Drawing.Point(0, 73);
-            this.rgbBoxsPanel.Name = "rgbBoxsPanel";
-            this.rgbBoxsPanel.Size = new System.Drawing.Size(432, 28);
-            this.rgbBoxsPanel.TabIndex = 13;
-            // 
             // timelineTimer
             // 
-            this.timelineTimer.Interval = 35;
+            this.timelineTimer.Interval = 32;
             this.timelineTimer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // zTimer
             // 
-            this.zTimer.Interval = 35;
+            this.zTimer.Interval = 32;
             this.zTimer.Tick += new System.EventHandler(this.zTimer_Tick);
             // 
             // openImagesDialog
             // 
             this.openImagesDialog.SupportMultiDottedExtensions = true;
             this.openImagesDialog.Title = "Open Image File";
+            // 
+            // cTimer
+            // 
+            this.cTimer.Interval = 1000;
+            this.cTimer.Tick += new System.EventHandler(this.cTimer_Tick);
             // 
             // ImageView
             // 
@@ -468,6 +570,10 @@ namespace BioImage
             ((System.ComponentModel.ISupportInitialize)(this.rgbPictureBox)).EndInit();
             this.rgbBoxsPanel.ResumeLayout(false);
             this.rgbBoxsPanel.PerformLayout();
+            this.cPanel.ResumeLayout(false);
+            this.cPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.cBar)).EndInit();
+            this.cPlayMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -478,7 +584,7 @@ namespace BioImage
         private System.Windows.Forms.ComboBox channelBoxR;
         private System.Windows.Forms.ComboBox channelBoxB;
         private System.Windows.Forms.ComboBox channelBoxG;
-        private System.Windows.Forms.Label labelR;
+        private System.Windows.Forms.Label labelRGB;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem imageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem strechToolStripMenuItem;
@@ -513,5 +619,15 @@ namespace BioImage
         private System.Windows.Forms.Label timeLabel;
         private System.Windows.Forms.Label label1;
         private AForge.Controls.PictureBox rgbPictureBox;
+        private System.Windows.Forms.ToolStripMenuItem planeModeToolStripMenuItem;
+        private System.Windows.Forms.Panel cPanel;
+        private System.Windows.Forms.TrackBar cBar;
+        private System.Windows.Forms.Label cLabel;
+        private System.Windows.Forms.Timer cTimer;
+        private System.Windows.Forms.ContextMenuStrip cPlayMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem playCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem stopCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem CPlaySpeedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setCValueRangeToolStripMenuItem;
     }
 }

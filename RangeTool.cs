@@ -12,7 +12,7 @@ namespace BioImage
 {
     public partial class RangeTool : Form
     {
-        public RangeTool(bool timeEnabled,int zmin,int zmax,int timeMin, int timeMax)
+        public RangeTool(bool timeEnabled,bool cEnabled,int zmin,int zmax,int timeMin, int timeMax,int cmin,int cmax)
         {
             InitializeComponent();
             zMinBox.Value = zmin;
@@ -23,8 +23,16 @@ namespace BioImage
                 timeMaxBox.Enabled = false;
                 return;
             }
+            if(!cEnabled)
+            {
+                cMinBox.Enabled = false;
+                cMaxBox.Enabled = false;
+            }
             timeMinBox.Value = timeMin;
             timeMaxBox.Value = timeMax;
+
+            cMinBox.Value = cmin;
+            cMaxBox.Value = cmax;
         }
 
         public int ZMin
@@ -59,14 +67,26 @@ namespace BioImage
             }
         }
 
+        public int CMin
+        {
+            get
+            {
+                return (int)cMinBox.Value;
+            }
+        }
+
+        public int CMax
+        {
+            get
+            {
+                return (int)cMaxBox.Value;
+            }
+        }
+
         private void RangeTool_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.DialogResult = DialogResult.OK;
         }
 
-        private void timeMinBox_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

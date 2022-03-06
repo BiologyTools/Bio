@@ -38,10 +38,15 @@ namespace BioImage
             this.timeMaxBox = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.cMaxBox = new System.Windows.Forms.NumericUpDown();
+            this.cMinBox = new System.Windows.Forms.NumericUpDown();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.timeMinBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zMinBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.zMaxBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.timeMaxBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cMaxBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cMinBox)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -77,7 +82,6 @@ namespace BioImage
             this.timeMinBox.Name = "timeMinBox";
             this.timeMinBox.Size = new System.Drawing.Size(86, 20);
             this.timeMinBox.TabIndex = 2;
-            this.timeMinBox.ValueChanged += new System.EventHandler(this.timeMinBox_ValueChanged);
             // 
             // zMinBox
             // 
@@ -141,12 +145,53 @@ namespace BioImage
             this.label4.TabIndex = 7;
             this.label4.Text = "max";
             // 
+            // cMaxBox
+            // 
+            this.cMaxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(56)))), ((int)(((byte)(76)))));
+            this.cMaxBox.ForeColor = System.Drawing.Color.White;
+            this.cMaxBox.Location = new System.Drawing.Point(204, 80);
+            this.cMaxBox.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.cMaxBox.Name = "cMaxBox";
+            this.cMaxBox.Size = new System.Drawing.Size(86, 20);
+            this.cMaxBox.TabIndex = 10;
+            // 
+            // cMinBox
+            // 
+            this.cMinBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(56)))), ((int)(((byte)(76)))));
+            this.cMinBox.ForeColor = System.Drawing.Color.White;
+            this.cMinBox.Location = new System.Drawing.Point(99, 80);
+            this.cMinBox.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.cMinBox.Name = "cMinBox";
+            this.cMinBox.Size = new System.Drawing.Size(86, 20);
+            this.cMinBox.TabIndex = 9;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.Color.White;
+            this.label5.Location = new System.Drawing.Point(12, 82);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(81, 13);
+            this.label5.TabIndex = 8;
+            this.label5.Text = "Channel Range";
+            // 
             // RangeTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(77)))), ((int)(((byte)(98)))));
-            this.ClientSize = new System.Drawing.Size(306, 87);
+            this.ClientSize = new System.Drawing.Size(306, 113);
+            this.Controls.Add(this.cMaxBox);
+            this.Controls.Add(this.cMinBox);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.zMaxBox);
@@ -168,6 +213,8 @@ namespace BioImage
             ((System.ComponentModel.ISupportInitialize)(this.zMinBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.zMaxBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.timeMaxBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cMaxBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cMinBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -183,5 +230,8 @@ namespace BioImage
         private System.Windows.Forms.NumericUpDown timeMaxBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.NumericUpDown cMaxBox;
+        private System.Windows.Forms.NumericUpDown cMinBox;
+        private System.Windows.Forms.Label label5;
     }
 }

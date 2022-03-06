@@ -9,127 +9,123 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
+using System.Threading;
+using System.Management;
+using System.Runtime.InteropServices;
+using AForge;
 using AForge.Imaging;
+using AForge.Imaging.Filters;
 using loci.formats;
 using loci.formats.meta;
 using loci.common.services;
 using loci.formats.services;
-using System.Management;
-using System.Runtime.InteropServices;
+using loci.formats.tiff;
+using loci.formats.@out;
+using System.IO.MemoryMappedFiles;
 
 namespace BioImage
 {
     public class BioImage
     {
-        public VolumeD volume;
+        public VolumeD Volume;
         public IFormatReader reader;
         public IFormatWriter writer;
-        public Bitmap bitmap;
-        public BitmapData data;
         public IMetadata meta;
+        public Bitmap rgbBitmap, planeBitmap;
+        public BitmapData rgbBitmapData, planeBitmapData;
         public Plane[] Planes;
         public Plane plane;
-        public string FileOrig;
-        public string file;
-        public string NameOrig;
-        public string Name;
-        public string SliceOrder;
-        public bool copied, littleEndian;
-        public bool loadedAlltoMemory = false;
-        public int imageCount, series, seriesCount;
-        public int RGBChannelsCount, bitsPerPixel, pixelType;
-        public int SizeX, SizeY, SizeZ, SizeC, SizeT;
+        public byte[][] Bytes;
+        public string FileOrig, file, NameOrig, Name, SliceOrder;
+        public bool copied, littleEndian, convertedToLittleEndian, convertedBGRtoRGB, isRGB;
+        public int SizeX, SizeY, SizeZ, SizeC, SizeT, imageCount, series, seriesCount, RGBChannelsCount, bitsPerPixel, pixelType;
         public double Exposure;
         public List<Channel> Channels = new List<Channel>();
-        private int[] rgbChannels = new int[3];
-        private Stopwatch watch = new Stopwatch();
-        public TimeSpan frameTime;
+        public Channel RChannel, GChannel, BChannel;
+        public Plane RPlane, GPlane, BPlane;
+        public int[] rgbChannels = new int[3];
+        public long frameTicks;
+        public int Rz = 0;
+        public int Gz = 0;
+        public int Bz = 0;
+        public int Time = 0;
+        public int Progress;
+        
+        public static LevelsLinear filter8 = new LevelsLinear();
+        public static LevelsLinear16bpp filter16 = new LevelsLinear16bpp();
+        private ReplaceChannel replaceRFilter;
+        private ReplaceChannel replaceGFilter;
+        private ReplaceChannel replaceBFilter;
+        private static ExtractChannel extractR = new ExtractChannel(AForge.Imaging.RGB.R);
+        private static ExtractChannel extractG = new ExtractChannel(AForge.Imaging.RGB.G);
+        private static ExtractChannel extractB = new ExtractChannel(AForge.Imaging.RGB.B);
 
-        public Channel RChannel;
-        public Channel GChannel;
-        public Channel BChannel;
-        public Plane RPlane;
-        public Plane GPlane;
-        public Plane BPlane;
-        public int Rz, Gz, Bz;
+        private static Stopwatch watch = new Stopwatch();
+        private Stopwatch imageWatch = new Stopwatch();
+        public void UpdateBitmap(int z, int channel, int time)
+        {
+            imageWatch.Restart();
+            Rz = reader.getIndex(z, RChannel.Index, time);
+            Gz = reader.getIndex(z, GChannel.Index, time);
+            Bz = reader.getIndex(z, BChannel.Index, time);
+            UpdateRGBChannels();
+            Time = time;
+            if (RGBChannelsCount == 1)
+            {
+                replaceRFilter.ChannelImage = RPlane.GetFiltered(RChannel.range);
+                replaceGFilter.ChannelImage = GPlane.GetFiltered(GChannel.range);
+                replaceBFilter.ChannelImage = BPlane.GetFiltered(BChannel.range);
+                replaceRFilter.ApplyInPlace(rgbBitmap);
+                replaceGFilter.ApplyInPlace(rgbBitmap);
+                replaceBFilter.ApplyInPlace(rgbBitmap);
+                //We dispose the image channels now that we have the combined image. Otherwise they cause high memory usage.
+                replaceRFilter.ChannelImage.Dispose();
+                replaceGFilter.ChannelImage.Dispose();
+                replaceBFilter.ChannelImage.Dispose();
+            }
+            else
+            {
+                rgbBitmap = Planes[Rz].GetFiltered(RChannel.range, GChannel.range, BChannel.range);
+            }
+            frameTicks = imageWatch.ElapsedTicks;
+            imageWatch.Stop();
+        }
+        public bool UpdatePlane(int z, int channel, int time)
+        {
+            imageWatch.Restart();
+            Rz = z;
+            Time = time;
+            int i = 0;
+            if (RGBChannelsCount == 1)
+            {
+                i = reader.getIndex(z, channel, time);
+                plane = Planes[i];
+                planeBitmap = plane.GetFiltered(RChannel.range);
+            }
+            else
+            {
+                plane = Planes[i];
+                if (channel == 0)
+                    planeBitmap = plane.GetRGBChannel(RGB.Red, RChannel.range);
+                else
+                if (channel == 1)
+                    planeBitmap = plane.GetRGBChannel(RGB.Green, GChannel.range);
+                else
+                if (channel == 2)
+                    planeBitmap = plane.GetRGBChannel(RGB.Blue, BChannel.range);
+            }
+            frameTicks = imageWatch.ElapsedTicks;
+            imageWatch.Stop();
+            return true;
+        }
         public void UpdateRGBChannels()
         {
             RChannel = Channels[rgbChannels[0]];
             GChannel = Channels[rgbChannels[1]];
             BChannel = Channels[rgbChannels[2]];
-        }
-        public unsafe void UpdateImage(int z, int time)
-        {
-            Rz = reader.getIndex(z, RChannel.Index, time);
-            Gz = reader.getIndex(z, GChannel.Index, time);
-            Bz = reader.getIndex(z, BChannel.Index, time);
             RPlane = Planes[Rz];
             GPlane = Planes[Gz];
             BPlane = Planes[Bz];
-            //byte[] openBytes(int no, int x, int y, int w, int h)
-            int index, index2, x, y;
-            if (!littleEndian)
-            {
-                //stride 1 is for the destination image and stride2 for source image.
-                //destination image will always be 3channels(RGB) with 24bits
-                int stride1 = SizeX * 3;
-                int stride2 = SizeX * 1;
-                byte* pix = (byte*)data.Scan0;
-                float p16z1, p16z2, p16z3, p8z1, p8z2, p8z3;
-                if (bitsPerPixel > 8)
-                {
-                    for (y = SizeY - 1; y > -1; y--)
-                    {
-                        for (x = SizeX - 1; x > -1; x--)
-                        {
-                            //index is for destination image and index2 for source image
-                            index = ((SizeY - (y + 1)) * stride1) + ((SizeX - (x + 1)) * 3);
-                            //For 16bit (2*8bit) images we multiply buffer index by 2
-                            index2 = (y * stride2 + (x * 1)) * 2;
-                            p16z1 = BitConverter.ToUInt16(RPlane.bytes, index2);
-                            p8z1 = ((p16z1 - RChannel.min) / (RChannel.max)) * 255;
-                            p16z2 = BitConverter.ToUInt16(GPlane.bytes, index2);
-                            p8z2 = ((p16z2 - GChannel.min) / (GChannel.max)) * 255;
-                            p16z3 = BitConverter.ToUInt16(BPlane.bytes, index2);
-                            p8z3 = ((p16z3 - BChannel.min) / (BChannel.max)) * 255;
-                            pix[index] = (byte)p8z1;
-                            pix[index + 1] = (byte)p8z2;
-                            pix[index + 2] = (byte)p8z3;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                //stride 1 is for the destination image and stride2 for source image.
-                //destination image will always be 3channels(RGB) with 24bits
-                int stride1 = SizeX * 3;
-                int stride2 = SizeX * 1;
-                byte* pix = (byte*)data.Scan0;
-                float p16z1, p16z2, p16z3, p8z1, p8z2, p8z3;
-                if (bitsPerPixel > 8)
-                {
-                    for (y = 0; y < SizeY; y++)
-                    {
-                        for (x = 0; x < SizeX; x++)
-                        {
-                            //index is for destination image and index2 for source image
-                            index = (y * stride1) + (x * 3);
-                            //For 16bit (2*8bit) images we multiply buffer index by 2
-                            index2 = (y * stride2 + (x * 1)) * 2;
-                            p16z1 = BitConverter.ToUInt16(RPlane.bytes, index2);
-                            p8z1 = ((p16z1 - RChannel.min) / (RChannel.max)) * 255;
-                            p16z2 = BitConverter.ToUInt16(GPlane.bytes, index2);
-                            p8z2 = ((p16z2 - GChannel.min) / (GChannel.max)) * 255;
-                            p16z3 = BitConverter.ToUInt16(BPlane.bytes, index2);
-                            p8z3 = ((p16z3 - BChannel.min) / (BChannel.max)) * 255;
-                            pix[index] = (byte)p8z1;
-                            pix[index + 1] = (byte)p8z2;
-                            pix[index + 2] = (byte)p8z3;
-                        }
-                    }
-                }
-            }
         }
         public int Width
         {
@@ -145,68 +141,123 @@ namespace BioImage
                 return SizeY;
             }
         }
-        public class Plane
+        public bool TimeEnabled
         {
-            public IFormatReader reader;
-            public IFormatWriter writer;
-            public byte[] bytes;
-            public unsafe Bitmap GetBitmap()
+            get
             {
-                int stride = w * 2;
-                if (!littleEndian)
+                if (SizeT > 0)
+                    return true;
+                else
+                    return false;
+            }
+        }
+        public struct Plane
+        {
+            public PixelFormat pixelFormat; 
+            public byte[] bytes;
+            public bool convertedToLittleEndian, convertedToRGB, isRGB;
+            public int index, z, channel, time, w, h, bitsPerPixel, RGBChannelsCount, stride;
+            public bool update;
+            private bool bigEndian, littleEndian;
+            public bool BigEndian
+            {
+                get
                 {
-                    //Array.Reverse(bt);
-                    fixed (byte* ptr = bytes)
+                    return bigEndian;
+                }
+                set
+                {
+                    bigEndian = value;
+                    if (bigEndian)
+                        littleEndian = false;
+                    else
+                        littleEndian = true;
+                }
+            }
+            public bool LittleEndian
+            {
+                get
+                {
+                    return littleEndian;
+                }
+                set
+                {
+                    littleEndian = value;
+                    if (littleEndian)
+                        bigEndian = false;
+                    else
+                        bigEndian = true;
+                }
+            }
+            public unsafe Plane(IFormatReader reader, int index, PixelFormat pixelFormat, bool convertToLittleEndian)
+            {
+                z = 0;
+                channel = 0;
+                time = 0;
+                update = true;
+                bitsPerPixel = reader.getBitsPerPixel();
+                isRGB = reader.isRGB();
+                littleEndian = reader.isLittleEndian();
+
+                if (littleEndian)
+                    bigEndian = false;
+                else
+                    bigEndian = true;
+
+                convertedToRGB = false;
+                RGBChannelsCount = reader.getRGBChannelCount();
+                this.pixelFormat = pixelFormat;
+                this.index = index;
+                w = reader.getSizeX();
+                h = reader.getSizeY();
+                if(bitsPerPixel > 8)
+                    stride = w * 2 * RGBChannelsCount;
+                else
+                    stride = w * RGBChannelsCount;
+                int[] ints = reader.getZCTCoords(index);
+                this.z = ints[0];
+                this.channel = ints[1];
+                this.time = ints[2];
+                Bitmap bitmap = null;
+                bytes = reader.openBytes(index);
+                if (RGBChannelsCount == 1)
+                {
+                    if (convertToLittleEndian && !littleEndian)
                     {
-                        Bitmap bitmap = new Bitmap(w, h, stride, pixelFormat, new IntPtr(ptr));
-                        bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                        return bitmap;
+                        Array.Reverse(bytes);
+                        fixed (byte* ptr = bytes)
+                        {
+                            bitmap = new Bitmap(w, h, stride, pixelFormat, new IntPtr(ptr));
+                            bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                        }
+                        //we set bytes to be bigEndian
+                        littleEndian = true;
+                        bigEndian = false;
+                        convertedToLittleEndian = true;
+                        SetRawBytes(bitmap);
+                        return;
+                    }
+                    else
+                    {
+                        convertedToLittleEndian = false;
+                        return;
                     }
                 }
                 else
                 {
                     fixed (byte* ptr = bytes)
                     {
-                        Bitmap bitmap = new Bitmap(w, h, stride, pixelFormat, new IntPtr(ptr));
-                        return bitmap;
+                        bitmap = new Bitmap(w, h, stride, pixelFormat, new IntPtr(ptr));
                     }
+                    convertedToLittleEndian = false;
+                    //Bioformats stores color planes in BGR order so we need to conver it to RGB.
+                    bitmap = switchRedBlue(bitmap);
+                    SetRawBytes(bitmap);
+                    convertedToRGB = true;
                 }
+
             }
-            public PixelFormat pixelFormat; 
-            public bool littleEndian;
-            public int bitsPerPixel;
-            public int index = 0;
-            public int z = 0;
-            public int channel = 0;
-            public int time = 0;
-            public int w, h;
-            public bool update = true;
-            public Plane(IFormatReader reader, IFormatWriter writer, int index, int bitsPerPixel, bool littleEndian, PixelFormat pixelFormat)
-            {
-                this.bitsPerPixel = bitsPerPixel;
-                this.littleEndian = littleEndian;
-                this.pixelFormat = pixelFormat;
-                int[] ints = reader.getZCTCoords(index);
-                this.index = index;
-                this.z = ints[0];
-                this.channel = ints[1];
-                this.time = ints[2];
-                this.reader = reader;
-                this.writer = writer;
-                w = reader.getSizeX();
-                h = reader.getSizeY();
-                Init();
-            }
-            public void Init()
-            {
-                byte[] bt = reader.openBytes(index);
-                int stride = w * 2;
-                if (!littleEndian)
-                {
-                    Array.Reverse(bt);
-                }
-                bytes = bt;
-            }
+            
             public int SizeX
             {
                 get
@@ -221,31 +272,252 @@ namespace BioImage
                     return h;
                 }
             }
+            public static byte[] BitmapToBytes(Bitmap bitmap)
+            {
+                BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                IntPtr ptr = data.Scan0;
+                int length = data.Stride * bitmap.Height;
+                byte[] bytes = new byte[length];
+                Marshal.Copy(ptr, bytes, 0, length);
+                bitmap.UnlockBits(data);
+                return bytes;
+            }
+            public void Dispose()
+            {
+                if(bitmap!=null)
+                    bitmap.Dispose();
+                if (b != null)
+                    b.Dispose();
+                if (bi != null)
+                    bi.Dispose();
+                bytes = null;
+            }
+            private void SetRawBytes(Bitmap bitmap)
+            {
+                BitmapData data = bitmap.LockBits(new Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, pixelFormat);
+                IntPtr ptr = data.Scan0;
+                int length = data.Stride * bitmap.Height;
+                bytes = new byte[length];
+                Marshal.Copy(ptr, bytes, 0, length);
+                bitmap.UnlockBits(data);
+            }
+
+            private static Bitmap bitmap;
+            private static BitmapData data;
+            public byte[] GetEndianBytes()
+            {
+                //Here we get the bytes correcting for Endiannness.
+                bitmap = GetBitmap();
+                data = bitmap.LockBits(new Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, pixelFormat);
+                IntPtr ptr = data.Scan0;
+                int length = this.bytes.Length;
+                byte[] bytes = new byte[length];
+                Marshal.Copy(ptr, bytes, 0, length);
+                bitmap.UnlockBits(data);
+                return bytes;
+            }
+            public unsafe Bitmap GetBitmap()
+            {
+                Bitmap bitmap;
+                if (!littleEndian)
+                {
+                    fixed (byte* ptr = bytes)
+                    {
+                        bitmap = new Bitmap(w, h, stride, pixelFormat, new IntPtr(ptr));
+                        bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    }
+                }
+                else
+                {
+                    fixed (byte* ptr = bytes)
+                    {
+                        bitmap = new Bitmap(w, h, stride, pixelFormat, new IntPtr(ptr));
+                    }
+                }
+                return bitmap;
+            }
+            public unsafe Bitmap GetFiltered(IntRange range)
+            {
+                Bitmap bitmap = GetBitmap();
+                if (bitsPerPixel > 8)
+                {
+                    // set ranges
+                    filter16.InRed = range;
+                    filter16.InGreen = range;
+                    filter16.InBlue = range;
+                    return filter16.Apply(bitmap);
+                }
+                else
+                {
+                    // set ranges
+                    filter8.InRed = range;
+                    filter8.InGreen = range;
+                    filter8.InBlue = range;
+                    return filter8.Apply(bitmap);
+                }
+            }
+            public unsafe Bitmap GetFiltered(IntRange r, IntRange g, IntRange b)
+            {
+                Bitmap bitmap = GetBitmap();
+                if (bitsPerPixel > 8)
+                {
+                    // set ranges
+                    filter16.InRed = r;
+                    filter16.InGreen = g;
+                    filter16.InBlue = b;
+                    return filter16.Apply(bitmap);
+                }
+                else
+                {
+                    // set ranges
+                    filter8.InRed = r;
+                    filter8.InGreen = g;
+                    filter8.InBlue = b;
+                    return filter8.Apply(bitmap);
+                }
+            }
+            
+            private static Bitmap b;
+            private static Bitmap bi;
+            public unsafe Bitmap GetRGBChannel(RGB rgb, IntRange range)
+            {
+                if (RGBChannelsCount == 1)
+                {
+                    throw new ArgumentException("Plane is not a RGB plane.");
+                }
+                
+                //We dispose the previous images for the filters so there's no memory leak.
+                if (b != null)
+                    b.Dispose();
+                if (bi != null)
+                    bi.Dispose();
+                
+                Bitmap bitmap = GetBitmap();
+                if (bitsPerPixel > 8)
+                {
+                    // set ranges
+                    filter16.InRed = range;
+                    filter16.InGreen = range;
+                    filter16.InBlue = range;
+                    
+                    if (rgb == RGB.Red)
+                    {
+                        b = extractR.Apply(bitmap);
+                        bi = filter16.Apply(b);
+                        b.Dispose();
+                        bitmap.Dispose();
+                        return bi;
+                    }
+                    if (rgb == RGB.Green)
+                    {
+                        b = extractG.Apply(bitmap);
+                        bi = filter16.Apply(b);
+                        b.Dispose();
+                        bitmap.Dispose();
+                        return bi;
+                    }
+                    if (rgb == RGB.Blue)
+                    {
+                        b = extractB.Apply(bitmap);
+                        bi = filter16.Apply(b);
+                        b.Dispose();
+                        bitmap.Dispose();
+                        return bi;
+                    }
+                }
+                else
+                {
+                    // set ranges
+                    filter8.InRed = range;
+                    filter8.InGreen = range;
+                    filter8.InBlue = range;
+                    if (rgb == RGB.Red)
+                    {
+                        b = extractR.Apply(bitmap);
+                        bi = filter8.Apply(b);
+                        b.Dispose();
+                        bitmap.Dispose();
+                        return bi;
+                    }
+                    if (rgb == RGB.Green)
+                    {
+                        b = extractG.Apply(bitmap);
+                        bi = filter8.Apply(b);
+                        b.Dispose();
+                        bitmap.Dispose();
+                        return bi;
+                    }
+                    if (rgb == RGB.Blue)
+                    {
+                        b = extractB.Apply(bitmap);
+                        bi = filter8.Apply(b);
+                        b.Dispose();
+                        bitmap.Dispose();
+                        return bi;
+                    }
+                }
+                return null;
+            }
+            public unsafe Bitmap GetRGBChannelRaw(RGB rgb)
+            {
+                Bitmap bitmap = GetBitmap();
+                if (RGBChannelsCount == 1)
+                    return null;
+                if(rgb == RGB.Red)
+                    return extractR.Apply(bitmap);
+                if (rgb == RGB.Green)
+                    return extractG.Apply(bitmap);
+                if (rgb == RGB.Blue)
+                    return extractB.Apply(bitmap);
+                return null;
+            }
+            public Bitmap switchRedBlue(Bitmap image)
+            {
+                ExtractChannel cr = new ExtractChannel(AForge.Imaging.RGB.R);
+                ExtractChannel cb = new ExtractChannel(AForge.Imaging.RGB.B);
+                // apply the filter
+                Bitmap rImage = cr.Apply(image);
+                Bitmap bImage = cb.Apply(image);
+
+                ReplaceChannel replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, bImage);
+                replaceRFilter.ApplyInPlace(image);
+
+                ReplaceChannel replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, rImage);
+                replaceBFilter.ApplyInPlace(image);
+                rImage.Dispose();
+                bImage.Dispose();
+                return image;
+            }
             public int GetValue(int ix,int iy)
             {
-                int stride2 = SizeX;
+                int i = -1;
+                int stridex = SizeX;
                 //For 16bit (2*8bit) images we multiply buffer index by 2
                 int x = ix;  
                 int y = iy;
                 if (ix < 0)
                     x = 0;
                 if (iy < 0)
-                    y = 0;  
+                    y = 0;
+                if (ix >= SizeX)
+                    x = SizeX-1;
+                if (iy >= SizeY)
+                    y = SizeY-1;
                 if (!littleEndian)
                 {
                     x = (w-1) - x;
                     y = (h-1) - y;
                     if (bitsPerPixel > 8)
                     {
-                        int index2 = (y * stride2 + x) * 2;
-                        int i = BitConverter.ToUInt16(bytes, index2);
+                        int index2 = (y * stridex + x) * 2 * RGBChannelsCount;
+                        i = BitConverter.ToUInt16(bytes, index2);
                         return i;
                     }
                     else
                     {
                         int stride = w;
-                        int index = (y * stride + x);
-                        int i = bytes[index];
+                        int index = (y * stridex + x) * RGBChannelsCount;
+                        i = bytes[index];
                         return i;
                     }
                 }
@@ -253,27 +525,235 @@ namespace BioImage
                 {
                     if (bitsPerPixel > 8)
                     {
-                        int index2 = (y * stride2 + x) * 2; 
-                        int i = BitConverter.ToUInt16(bytes, index2);
+                        int index2 = (y * stridex + x) * 2 * RGBChannelsCount;
+                        i = BitConverter.ToUInt16(bytes, index2);
                         return i;
                     }
                     else
                     {
                         int stride = w;
-                        int index = (y * stride + x);
-                        int i = bytes[index];
+                        int index = (y * stridex + x) * RGBChannelsCount;
+                        i = bytes[index];
                         return i;
                     }
                 }
             }
+            public int GetValue(int ix, int iy, int RGBChannel)
+            {
+                int i = -1;
+                int stridex = SizeX;
+                //For 16bit (2*8bit) images we multiply buffer index by 2
+                int x = ix;
+                int y = iy;
+                if (ix < 0)
+                    x = 0;
+                if (iy < 0)
+                    y = 0;
+                if (ix >= w)
+                    x = w-1;
+                if (iy >= h)
+                    y = h-1;
+                if (!littleEndian)
+                {
+                    x = (w - 1) - x;
+                    y = (h - 1) - y;
+                    if (bitsPerPixel > 8)
+                    {
+                        int index2 = (y * stridex + x) * 2 * RGBChannelsCount;
+                        i = BitConverter.ToUInt16(bytes, index2 + (2 * RGBChannel));
+                        return i;
+                    }
+                    else
+                    {
+                        int index = (y * stridex + x) * RGBChannelsCount;
+                        i = bytes[index + (2 * RGBChannel)];
+                        return i;
+                    }
+                }
+                else
+                {
+                    if (bitsPerPixel > 8)
+                    {
+                        int index2 = (y * stridex + x) * 2 * RGBChannelsCount;
+                        i = BitConverter.ToUInt16(bytes, index2 + (2 * RGBChannel));
+                        return i;
+                    }
+                    else
+                    {
+                        int index = (y * stridex + x) * RGBChannelsCount;
+                        i = bytes[index + (2 * RGBChannel)];
+                        return i;
+                    }
+                }
+            }
+            public void SetValue(int ix, int iy, ushort value)
+            {
+                int stridex = SizeX;
+                //For 16bit (2*8bit) images we multiply buffer index by 2
+                int x = ix;
+                int y = iy;
+                if (ix < 0)
+                    x = 0;
+                if (iy < 0)
+                    y = 0;
+                if (ix >= w)
+                    x = w-1;
+                if (iy >= h)
+                    y = h-1;
+                if (!littleEndian)
+                {
+                    x = (w - 1) - x;
+                    y = (h - 1) - y;
+                    if (bitsPerPixel > 8)
+                    {
+                        int index2 = (y * stridex + x) * 2 * RGBChannelsCount;
+                        byte upper = (byte)(value >> 8);
+                        byte lower = (byte)(value & 0xff);
+                        bytes[index2] = upper;
+                        bytes[index2+1] = lower;
+                    }
+                    else
+                    {
+                        int index = (y * stridex + x) * RGBChannelsCount;
+                        bytes[index] = (byte)value;
+                    }
+                }
+                else
+                {
+                    if (bitsPerPixel > 8)
+                    {
+                        int index2 = ((y * stridex + x) * 2 * RGBChannelsCount);
+                        byte upper = (byte)(value >> 8);
+                        byte lower = (byte)(value & 0xff);
+                        bytes[index2] = lower;
+                        bytes[index2+1] = upper;
+                    }
+                    else
+                    {
+                        int index = (y * stridex + x) * RGBChannelsCount;
+                        bytes[index] = (byte)value;
+                    }
+                }
+            }
+            public void SetValue(int ix, int iy, int RGBChannel, ushort value)
+            {
+                //Planes are in BGR order so we invert the RGBChannel parameter.
+                if (RGBChannel == 0)
+                    RGBChannel = 2;
+                else
+                if (RGBChannel == 2)
+                    RGBChannel = 0;
 
+                int stride = SizeX;
+                //For 16bit (2*8bit) images we multiply buffer index by 2
+                int x = ix;
+                int y = iy;
+                if (ix < 0)
+                    x = 0;
+                if (iy < 0)
+                    y = 0;
+                if (ix >= w)
+                    x = w - 1;
+                if (iy >= h)
+                    y = h - 1;
+                if (!littleEndian)
+                {
+                    x = (w - 1) - x;
+                    y = (h - 1) - y;
+                    if (bitsPerPixel > 8)
+                    {
+                        int index2 = ((y * stride + x) * 2 * RGBChannelsCount) + (2 * RGBChannel);
+                        byte upper = (byte)(value >> 8);
+                        byte lower = (byte)(value & 0xff);
+                        bytes[index2] = upper;
+                        bytes[index2+1] = lower;
+                    }
+                    else
+                    {
+                        int index = ((y * stride + x) * RGBChannelsCount) + (RGBChannel);
+                        bytes[index] = (byte)value;
+                    }
+                }
+                else
+                {
+                    if (bitsPerPixel > 8)
+                    {
+                        int index2 = ((y * stride + x) * 2 * RGBChannelsCount) + (2 * RGBChannel);
+                        byte upper = (byte)(value >> 8);
+                        byte lower = (byte)(value & 0xff);
+                        bytes[index2] = lower;
+                        bytes[index2+1] = upper;
+                    }
+                    else
+                    {
+                        int index2 = ((y * stride + x) * RGBChannelsCount) + (RGBChannel);
+                        bytes[index] = (byte)value;
+                    }
+                }
+            }
+            public ColorS GetRGBValue(int ix, int iy)
+            {
+                ColorS color = new ColorS();
+                int stridex = SizeX;
+                int x = ix;
+                int y = iy;
+                if (ix < 0)
+                    x = 0;
+                if (iy < 0)
+                    y = 0;
+                if (!littleEndian)
+                {
+                    x = (w - 1) - x;
+                    y = (h - 1) - y;
+                    if (bitsPerPixel > 8)
+                    {
+                        int index2 = (y * stridex + x) * 2 * RGBChannelsCount;
+                        color.R = (ushort)GetValue(x, y, 1);
+                        color.G = (ushort)GetValue(index2 + 2,2);
+                        color.B = (ushort)GetValue(index2 + 4,3);
+                        return color;
+                    }
+                    else
+                    {
+                        int index = (y * stridex + x) * RGBChannelsCount;
+                        color.R = (ushort)GetValue(x, y, 1);
+                        color.G = (ushort)GetValue(index + 1, 2);
+                        color.B = (ushort)GetValue(index + 2, 3);
+                        return color;
+                    }
+                }
+                else
+                {
+                    if (bitsPerPixel > 8)
+                    {
+                        int index2 = (y * stridex + x) * 2 * RGBChannelsCount;
+                        color.R = (ushort)GetValue(x, y, 1);
+                        color.G = (ushort)GetValue(index2 + 2, 2);
+                        color.B = (ushort)GetValue(index2 + 4, 3);
+                        return color;
+                    }
+                    else
+                    {
+                        int index = (y * stridex + x) * RGBChannelsCount;
+                        color.R = (ushort)GetValue(x, y, 1);
+                        color.G = (ushort)GetValue(index + 1, 2);
+                        color.B = (ushort)GetValue(index + 2, 3);
+                        return color;
+                    }
+                }
+            }
         }
-        public int GetPlanePixel(int x,int y)
+        public int GetPlanePixel(RGB rgb,int x,int y)
         {
-            int i = Planes[zcur].GetValue(x, y);
-            return i;
+            if(rgb == RGB.Red)
+                return Planes[Rz].GetValue(x, y);
+            if (rgb == RGB.Green)
+                return Planes[Gz].GetValue(x, y);
+            if (rgb == RGB.Blue)
+                return Planes[Bz].GetValue(x, y);
+            return -1;
         }
-        public int GetPlanePixel(int x, int y,int index)
+        public int GetPlanePixel(int index, int x, int y)
         {
             int i = Planes[index].GetValue(x, y);
             return i;
@@ -293,6 +773,12 @@ namespace BioImage
             s.B = (ushort)b;
             return s;
         }
+
+        public void SetPlanePixel(int index, int x, int y, ushort value)
+        {
+            Planes[index].SetValue(x, y, value);
+        }
+        
         public void SetRGBChannelIndex(RGB rgb,int index)
         {
             if(rgb == RGB.Red)
@@ -353,31 +839,105 @@ namespace BioImage
             return true;
         }
         */
-        public bool Save(string path)
-        {
-            writer.setId(path);
-            for (int series = 0; series < reader.getSeriesCount(); series++)
-            {
-                //reader.setSeries(series);
-                writer.setSeries(series);
-                for (int i = 0; i < imageCount; i++)
-                {
-                    writer.saveBytes(i, reader.openBytes(i));
-                    Application.DoEvents();
-                }
-            }
-            return true;
-        }
-
         public BioImage(string path)
         {
-            FromFile(path);
-            UpdateRGBChannels();
-            bitmap = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
-            data = bitmap.LockBits(new Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
-            bitmap.UnlockBits(data);
-            UpdateImage(0, 0);
-            //rgbimage = new RGBImage(reader, writer, bitsPerPixel, SizeX, SizeY, RChannel, GChannel, BChannel);
+            Open(path);
+        }
+
+        public unsafe void Save(string savefile, int start, int count)
+        {
+            //Method used to save a range of an image stack defined by start & count.
+            writer = new ImageWriter();
+            writer.setMetadataRetrieve(meta);
+            writer.setId(savefile);
+            Bitmap bit = null;
+            byte[] bytes = new byte[Bytes[0].Length];
+            watch.Restart();
+            int index = 0;
+            if (littleEndian)
+            {
+                for (int i = start; i < (start + count); i++)
+                {
+                    bytes = Planes[i].GetEndianBytes();
+                    //Planes[i].
+                    Console.WriteLine("Saving" + " Plane=" + i);
+                    if (convertedToLittleEndian)
+                    {
+                        Console.WriteLine("Converting to Big Endian for saving.");
+                        Array.Reverse(bytes);
+                        fixed (byte* ptr = bytes)
+                        {
+                            bit = new Bitmap(SizeX, SizeY, Planes[0].stride, Planes[0].pixelFormat, new IntPtr(ptr));
+                        }
+                        bit.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                        bytes = BioImage.Plane.BitmapToBytes(bit);
+                        writer.saveBytes(index, bytes);
+                    }
+                    else
+                    {
+                        writer.saveBytes(index, bytes);
+                    }
+                    Console.WriteLine("Saved plane " + i);
+                    float f = (float)(i - start) / (float)(count - 1);
+                    Progress = (int)(f * 100);
+                    TimeSpan t = watch.Elapsed;
+                    Console.WriteLine("Progress=" + Progress + "%" + " Elapsed=" + t.ToString());
+                    index++;
+                }
+            }
+            else
+            {
+                for (int i = start; i < (start + count); i++)
+                {
+                    bytes = Planes[i].GetEndianBytes();
+                    //Planes[i].
+                    Console.WriteLine("Saving" + " Plane=" + i);
+                    if (convertedToLittleEndian)
+                    {
+                        Console.WriteLine("Converting to Big Endian for saving.");
+                        Array.Reverse(bytes);
+                        fixed (byte* ptr = bytes)
+                        {
+                            bit = new Bitmap(SizeX, SizeY, Planes[0].stride, Planes[0].pixelFormat, new IntPtr(ptr));
+                            bit = Planes[i].switchRedBlue(bit);
+                            bit.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                            bytes = BioImage.Plane.BitmapToBytes(bit);
+                            writer.saveBytes(index, bytes);
+                        }
+                    }
+                    else
+                    {
+                        writer.saveBytes(index, bytes);
+                    }
+                    Console.WriteLine("Saved plane " + i);
+                    float f = (float)(i - start) / (float)(count - 1);
+                    Progress = (int)(f * 100);
+                    TimeSpan t = watch.Elapsed;
+                    Console.WriteLine("Progress=" + Progress + "%" + " Elapsed=" + t.ToString());
+                    index++;
+                }
+            }
+
+            Console.WriteLine("All planes saved.");
+        }
+
+        public void Dispose()
+        {
+            for (int i = 0; i < Planes.Length; i++)
+            {
+                Planes[i].Dispose();
+            }
+            Planes = null;
+            Channels.Clear();
+            Channels = null;
+            Rz = 0;
+            Gz = 0;
+            Bz = 0;
+        }
+
+        ~BioImage()
+        {
+            Dispose();
         }
 
         public enum RGB
@@ -398,14 +958,12 @@ namespace BioImage
             public int Emission;
             public int Excitation;
             public int Exposure;
-            public int max = 65535;
-            public int min = 0;
             public string LightSource;
             public double LightSourceIntensity;
             public int LightSourceWavelength;
             public string ContrastMethod;
             public string IlluminationType;
-
+            public IntRange range;
             public int Index
             {
                 get
@@ -413,13 +971,56 @@ namespace BioImage
                     return index;
                 }
             }
-            
-            public RGB rgb = RGB.Red;
+            public int Max
+            {
+                get
+                {
+                    return range.Max;
+                }
+                set
+                {
+                    range.Max = value;
+                }
+            }
+            public int Min
+            {
+                get
+                {
+                    return range.Min;
+                }
+                set
+                {
+                    range.Min = value;
+                }
+            }
 
+            public RGB rgb = RGB.Red;
             public Channel(int index)
             {
+                range = new IntRange(0, ushort.MaxValue);
                 this.index = index;
             }
+
+            public Channel Copy()
+            {
+                Channel c = new Channel(index);
+                c.Name = Name;
+                c.ID = ID;
+                c.Fluor = Fluor;
+                c.SamplesPerPixel = SamplesPerPixel;
+                c.color = color;
+                c.Emission = Emission;
+                c.Excitation = Excitation;
+                c.Exposure = Exposure;
+                c.LightSource = LightSource;
+                c.LightSourceIntensity = LightSourceIntensity;
+                c.LightSourceWavelength = LightSourceWavelength;
+                c.ContrastMethod = ContrastMethod;
+                c.IlluminationType = IlluminationType;
+                c.range = range;
+                return c;
+            }
+
             public override string ToString()
             {
                 if(Name == "")
@@ -438,196 +1039,146 @@ namespace BioImage
                 return R + "," + G + "," + B;
             }
         }
-
-        public void RefreshPlane()
-        {
-            UpdatePlane(plane);
-        }
-        public bool UpdatePlane(Plane plane)
-        {
-            this.plane = plane;
-            zcur = plane.index;
-            tcur = plane.time;
-            int i = reader.getIndex(plane.z, plane.channel, plane.time);
-            plane = Planes[i];
-            return true;
-        }
-        public bool UpdatePlane(int z, int channel, int time)
-        {
-            zcur = z;
-            tcur = time;
-            int i = reader.getIndex(z,channel, time);
-            plane = Planes[i];
-            return true;
-        }
-
-        private int zcur = 0;
-        private int tcur = 0;
-        private byte[] bytes;
+        
         public unsafe bool AutoThresholdChannel(Channel c1)
         {
+            c1.Max = c1.Min;
+            int index, x, y;
+            int stride = SizeX;
+            byte* pix = (byte*)rgbBitmapData.Scan0;
+            byte[] bytes;
+
             for (int time = 0; time < SizeT; time++)
             {
                 for (int z = 0; z < SizeZ; z++)
                 {
                     int i = reader.getIndex(z, c1.Index, time);
                     bytes = Planes[i].bytes;
-                    int index, index2, x, y;
                     if (!littleEndian)
                     {
-                        //stride 1 is for the destination image and stride2 for source image.
-                        //destination image will always be 3channels(RGB) with 24bits
-                        int stride1 = SizeX * 3;
-                        int stride2 = SizeX * RGBChannelsCount;
                         if (bitsPerPixel > 8)
                         {
                             for (y = SizeY - 1; y > -1; y--)
                             {
                                 for (x = SizeX - 1; x > -1; x--)
                                 {
-                                    //index is for destination image and index2 for source image
-                                    index = ((SizeY - y) * stride1) + ((SizeX - x) * 3);
                                     //For 16bit (2*8bit) images we multiply buffer index by 2
-                                    index2 = (y * stride2 + (x * RGBChannelsCount)) * 2;
-                                    int px = BitConverter.ToUInt16(bytes, index2);
-                                    if (px > c1.max)
-                                        c1.max = px;
+                                    index = (y * stride + x) * 2;
+                                    int px = BitConverter.ToUInt16(bytes, index);
+                                    if (px > c1.Max)
+                                        c1.Max = px;
                                 }
                             }
                         }
+                        else
+                            throw new NotImplementedException("Auto Threshold does not support 8bit images.");
                     }
                     else
                     {
-                        //stride 1 is for the destination image and stride2 for source image.
-                        //destination image will always be 3channels(RGB) with 24bits
-                        int stride1 = SizeX * 3;
-                        int stride2 = SizeX * RGBChannelsCount;
                         if (bitsPerPixel > 8)
                         {
                             for (y = 0; y < SizeY; y++)
                             {
                                 for (x = 0; x < SizeX; x++)
                                 {
-                                    //index is for destination image and index2 for source image
-                                    index = ((SizeY - y) * stride1) + ((SizeX - x) * 3);
                                     //For 16bit (2*8bit) images we multiply buffer index by 2
-                                    index2 = (y * stride2 + (x * RGBChannelsCount)) * 2;
-                                    int px = BitConverter.ToUInt16(bytes, index2);
-                                    if (px > c1.max)
-                                        c1.max = px;
+                                    index = (y * stride + x) * 2;
+                                    int px = BitConverter.ToUInt16(bytes, index);
+                                    if (px > c1.Max)
+                                        c1.Max = px;
                                 }
                             }
                         }
+                        else
+                            throw new NotImplementedException("Auto Threshold does not support 8bit images.");
                     }
                 }
             }
             return true;
         }
-        public void AutoThreshold()
+        public void AutoThresholdImage()
         {
             foreach (Channel c in Channels)
             {
-                c.max = 0;
                 AutoThresholdChannel(c);
             }
-            RefreshPlane();
         }
         /*
-        public ColorS GetPixel(int x,int y)
+        public void Save(string path)
         {
-            if (x < 0)
-                x = 0;
-            if (y < 0)
-                y = 0;
-            if (x >= SizeX)
-            {
-                x = SizeX-1;
-            }
-            if (y >= SizeY)
-            {
-                y = SizeY-1;
-            }
-            int h = SizeX;
-            int w = SizeY;
-            int ix = x;
-            int iy = y;
-
-            CurrentPlane.GetValue(x, y);
-            reader.getIndex(z, c1.Index, t);
-            CurrentPlane.GetValue(x, y);
-
-            ColorS color = new ColorS();
-            int z1 = reader.getIndex(zcur, ChannelR.Index, tcur);
-            //byte[] openBytes(int no, int x, int y, int w, int h)
-            byte[] pixelsz1 = reader.openBytes(z1);
-            byte[] pixelsz2 = reader.openBytes(z2);
-            byte[] pixelsz3 = reader.openBytes(z3);
-            
-            int index2;
-            if (!littleEndian)
-            {
-                ix = (w - 1) - x;
-                iy = (h - 1) - y;
-                Array.Reverse(pixelsz1);
-                Array.Reverse(pixelsz2);
-                Array.Reverse(pixelsz3);
-                unsafe
-                {
-                    int stride2 = w * RGBChannelsCount;
-                    byte* pix = (byte*)data.Scan0;
-                    if (bitsPerPixel > 8)
-                    {
-                        //For 16bit (2*8bit) images we multiply buffer index by 2
-                        index2 = (iy * stride2 + (ix * RGBChannelsCount)) * 2;
-                        float p16z1 = BitConverter.ToUInt16(pixelsz1, index2);
-                        float p16z2 = BitConverter.ToUInt16(pixelsz2, index2);
-                        float p16z3 = BitConverter.ToUInt16(pixelsz3, index2);
-                        color.R = (ushort)p16z1;
-                        color.G = (ushort)p16z2;
-                        color.B = (ushort)p16z3;
-                    }
-                }//unsafe
-            }
-            else
-            {
-                unsafe
-                {
-                    //destination image will always be 3channels(RGB) with 24bits
-                    int stride2 = w * RGBChannelsCount;
-                    byte* pix = (byte*)data.Scan0;
-                    if (bitsPerPixel > 8)
-                    {
-                        //For 16bit (2*8bit) images we multiply buffer index by 2
-                        index2 = (y * stride2 + (x * RGBChannelsCount)) * 2;
-                        float p16z1 = BitConverter.ToUInt16(pixelsz1, index2);
-                        float p16z2 = BitConverter.ToUInt16(pixelsz2, index2);
-                        float p16z3 = BitConverter.ToUInt16(pixelsz3, index2);
-                        color.R = (ushort)p16z1;
-                        color.G = (ushort)p16z2;
-                        color.B = (ushort)p16z3;
-                    }
-                }//unsafe
-            }
-            return color;
-        }
-        */
-        public bool FromFile(string file)
-        {
-            this.file = file;
             // create OME-XML metadata store
             ServiceFactory factory = new ServiceFactory();
             OMEXMLService service = (OMEXMLService)factory.getInstance(typeof(OMEXMLService));
-            IMetadata meta = service.createOMEXMLMetadata();
+            //meta = service.createOMEXMLMetadata();
+
+            // create a writer that will automatically handle any supported output format
+            IFormatWriter writer = new ImageWriter();
+            // give the writer a MetadataRetrieve object, which encapsulates all of the
+            // dimension information for the dataset (among many other things)
+            //writer.setMetadataRetrieve(meta);
+            //Console.WriteLine("Save-Index=" + index);
+            writer.setMetadataRetrieve(meta);
+            writer.setId(path);
+            Console.WriteLine("Path=" + path);
+            for (int series = 0; series < seriesCount; series++)
+            {
+                writer.setSeries(series);
+                for (int i = 0; i < imageCount; i++)
+                {
+                    //long ptr = long.Parse(fs[i]);
+                    //Console.WriteLine("ptr=" + ptr);
+                    //IntPtr iptr = (IntPtr)ptr;
+                    //Object obj = GCHandle.FromIntPtr(iptr).Target;
+                    byte[] bts = Planes[i].GetBytes();
+                    if (convertedToLittleEndian)
+                    {
+                        Array.Reverse(bts);
+                        Bitmap b = Planes[i].GetRawBuffer();
+                        b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                        byte[] bytes = BioImage.Plane.BitmapToBytes(b);
+                        bool done = false;
+                        do
+                        {
+                            try
+                            {
+                                writer.saveBytes(i, bytes);
+                                done = true;
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.ToString());
+                            }
+                        } while (!done);
+                        //writer.saveBytes(i, plane.bytes);
+                        Array.Reverse(bts);
+                    }
+                    else
+                        writer.saveBytes(i, bts);
+                    Application.DoEvents();
+                    //float prog = i / count;
+                    //Writers.progresses[index] = (int)prog;
+                }
+            }
+        }
+        */
+        public bool Open(string file)
+        {
+            this.file = file;
+            FileOrig = file;
+            // create OME-XML metadata store
+            ServiceFactory factory = new ServiceFactory();
+            OMEXMLService service = (OMEXMLService)factory.getInstance(typeof(OMEXMLService));
+            meta = service.createOMEXMLMetadata();
             // create format reader
             reader = new ImageReader();
             reader.setMetadataStore(meta);
-            
+
             // initialize file
             reader.setId(file);
             series = reader.getSeries();
             seriesCount = reader.getSeriesCount();
             bitsPerPixel = reader.getBitsPerPixel();
-            
+
             pixelType = reader.getPixelType();
             RGBChannelsCount = reader.getRGBChannelCount();
             SizeX = reader.getSizeX();
@@ -635,39 +1186,19 @@ namespace BioImage
             SizeZ = reader.getSizeZ();
             SizeC = reader.getSizeC();
             SizeT = reader.getSizeT();
+            isRGB = reader.isRGB();
             imageCount = reader.getImageCount();
             bool orderCertain = reader.isOrderCertain();
             SliceOrder = reader.getDimensionOrder();
             littleEndian = reader.isLittleEndian();
-            
-            string str = reader.getFormat();
-            string[] st = reader.getDomains();
-            bool complete = reader.isMetadataComplete();
-            bool populated = reader.isOriginalMetadataPopulated();
 
-            // create OME-XML metadata store
-            ServiceFactory factory2 = new ServiceFactory();
-            OMEXMLService service2 = (OMEXMLService)factory.getInstance(typeof(OMEXMLService));
-            IMetadata meta2 = service2.createOMEXMLMetadata();
-
-            if (!file.EndsWith(".czi"))
-            {
-                // create a writer that will automatically handle any supported output format
-                writer = new ImageWriter();
-                // give the writer a MetadataRetrieve object, which encapsulates all of the
-                // dimension information for the dataset (among many other things)
-                writer.setMetadataRetrieve(service2.asRetrieve(reader.getMetadataStore()));
-                //string s = Path.GetFileNameWithoutExtension(file);
-                //string f = s + "-temp" + Path.GetExtension(file);
-                writer.setId(file);
-            }
-            bool isRGB = reader.isRGB();
             double stx = 0;
             double sty = 0; 
             double stz = 0;
             double six = 0;
             double siy = 0;
             double siz = 0;
+
             try
             {
                 if (meta.getPixelsPhysicalSizeZ(series) != null)
@@ -683,23 +1214,25 @@ namespace BioImage
                 if (meta.getStageLabelZ(series) != null)
                     stz = meta.getStageLabelZ(series).value().doubleValue();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                
+                Console.WriteLine(e.Message);
             }
-            
+
+            Volume = new VolumeD(new Point3D(stx, sty, stz), new Point3D(six, siy, siz));
             int count = SizeC / RGBChannelsCount;
+            //Lets get the channels amd initialize them.
             for (int i = 0; i < count; i++)
             {
                 Channel ch = new Channel(i);
                 if (bitsPerPixel == 16)
-                    ch.max = 65535;
+                    ch.Max = 65535;
                 if (bitsPerPixel == 14)
-                    ch.max = 16383;
+                    ch.Max = 16383;
                 if (bitsPerPixel == 12)
-                    ch.max = 4096;
+                    ch.Max = 4096;
                 if (bitsPerPixel == 10)
-                    ch.max = 1024;
+                    ch.Max = 1024;
                 try
                 {
                     if (meta.getChannelName(0, i) != null)
@@ -739,30 +1272,95 @@ namespace BioImage
                 }
                 catch (Exception e)
                 {
-
-                }  
+                    Console.WriteLine(e.Message);
+                }
                 if (i == 0)
+                {
+                    rgbChannels[0] = 0;
                     ch.rgb = RGB.Red;
+                }
                 else
                 if (i == 1)
+                {
+                    rgbChannels[1] = 1;
                     ch.rgb = RGB.Green;
+                }
                 else
                 if (i == 2)
+                {
+                    rgbChannels[2] = 2;
                     ch.rgb = RGB.Blue;
+                }
                 Channels.Add(ch);
             }
-            volume = new VolumeD(new Point3D(stx, sty, stz), new Point3D(six, siy, siz));
 
+            if(RGBChannelsCount == 3)
+            {
+                //We copy the first channel so that each RGB channel has a Channel attribute,
+                //despite the file not specifying them.
+                Channels.Add(Channels[0].Copy());
+                Channels.Add(Channels[0].Copy());
+            }
+            
             Planes = new Plane[imageCount];
+            bool convertEndian = true;
+            Bytes = new byte[imageCount][];
             for (int i = 0; i < imageCount; i++)
             {
-                if(bitsPerPixel > 8)
-                    Planes[i] = new Plane(reader, writer, i, bitsPerPixel, littleEndian, PixelFormat.Format16bppGrayScale);
+                if (RGBChannelsCount == 1)
+                {
+                    if (bitsPerPixel > 8)
+                        Planes[i] = new Plane(reader, i, PixelFormat.Format16bppGrayScale, convertEndian);
+                    else
+                        Planes[i] = new Plane(reader, i, PixelFormat.Format8bppIndexed, convertEndian);
+                }
                 else
-                    Planes[i] = new Plane(reader, writer, i, bitsPerPixel, littleEndian, PixelFormat.Format8bppIndexed);
+                {
+                    if (bitsPerPixel > 8)
+                        Planes[i] = new Plane(reader, i, PixelFormat.Format48bppRgb, convertEndian);
+                    else
+                        Planes[i] = new Plane(reader, i, PixelFormat.Format24bppRgb, convertEndian);
+                }
+                Bytes[i] = Planes[i].bytes;
             }
+
+            if (Planes[0].convertedToLittleEndian)
+            {
+                littleEndian = true;
+                convertedToLittleEndian = true;
+            }
+            else
+                convertedToLittleEndian = false;
+
+            if (Planes[0].convertedToRGB)
+            {
+                convertedBGRtoRGB = true;
+            }
+            else
+                convertedBGRtoRGB = false;
+            //Now that we have loaded the channels we can update the RGB channels.
+            UpdateRGBChannels();
+            Bitmap planeBitmap;
+            if (bitsPerPixel > 8)
+            {
+                rgbBitmap = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
+                rgbBitmapData = rgbBitmap.LockBits(new Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, rgbBitmap.PixelFormat);
+                rgbBitmap.UnlockBits(rgbBitmapData);
+                planeBitmap = new Bitmap(SizeX, SizeY, PixelFormat.Format16bppGrayScale);
+            }
+            else
+            {
+                rgbBitmap = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
+                rgbBitmapData = rgbBitmap.LockBits(new Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, rgbBitmap.PixelFormat);
+                rgbBitmap.UnlockBits(rgbBitmapData);
+                planeBitmap = new Bitmap(SizeX, SizeY, PixelFormat.Format8bppIndexed);
+            }
+            replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, planeBitmap);
+            replaceGFilter = new ReplaceChannel(AForge.Imaging.RGB.G, planeBitmap);
+            replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, planeBitmap);
+            planeBitmap.Dispose();
             plane = Planes[0];
-            UpdatePlane(plane);
+            UpdatePlane(0,0,0);
             return true;
         }
         public static Point3D GetStagePosition(string file)
@@ -800,10 +1398,30 @@ namespace BioImage
         public override string ToString()
         {
             if (Name == "")
-                return NameOrig + " " + volume.Location.ToString();
+                return NameOrig + " " + Volume.Location.ToString();
             else
-                return Name + " " + volume.Location.ToString();
+                return Name + " " + Volume.Location.ToString();
         }
 
     }
+
+    public class Functions
+    {
+        public List<string> functions = new List<string>();
+        public int progress;
+        public void Internal(object image, string func)
+        {
+            BioImage im = (BioImage)image;
+
+        }
+
+        public void External(object image, string filefunc)
+        {
+            BioImage im = (BioImage)image;
+            ProcessStartInfo ps = new ProcessStartInfo(filefunc);
+            Process.Start(ps);
+        }
+
+    }
+
 }

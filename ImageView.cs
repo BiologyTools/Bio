@@ -18,30 +18,87 @@ namespace BioImage
         public ImageView(string path)
         {
             InitializeComponent();
+            if (path == "" || path == null)
+                return;
             LoadImage(path);
-            //if (path.EndsWith(".tif") || path.EndsWith(".tiff"))
-            image.AutoThreshold();
-            this.MouseWheel += new System.Windows.Forms.MouseEventHandler(ImageView_MouseWheel);
+            image.AutoThresholdImage();
+            MouseWheel += new System.Windows.Forms.MouseEventHandler(ImageView_MouseWheel);
             zBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(ZTrackBar_MouseWheel);
-            //We set the trackbar event to handled so that it only scrolls one tick not the default multiple.
-            zBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
+            cBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(CTrackBar_MouseWheel);
             timeBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(TimeTrackBar_MouseWheel);
             //We set the trackbar event to handled so that it only scrolls one tick not the default multiple.
+            zBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
             timeBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
+            cBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
+            TimeFps = 60;
+            ZFps = 60;
+            CFps = 1;
+            if (image.SizeC == 1 && !image.isRGB)
+            {
+                Mode = ViewMode.Plane;
+            }
+            else
+                Mode = ViewMode.RGBImage;
             UpdateView();
+        }
+        ~ImageView()
+        {
+            image.Dispose();
+        }
+
+        public int minSizeX = 60;
+        public int minSizeY = 20;
+        public enum ViewMode
+        {
+            Plane,
+            RGBImage
+        }
+        private ViewMode viewMode = ViewMode.RGBImage;
+        public ViewMode Mode
+        {
+            get
+            {
+                return viewMode;
+            }
+            set
+            {
+                if(value == ViewMode.Plane)
+                {
+                    rgbBoxsPanel.SendToBack();
+                    cPanel.BringToFront();
+                    cPanel.Show();
+                    cPanel.Visible = true;
+                    cBar.Visible = true;
+                    rgbBoxsPanel.Hide();
+                    if(!timeEnabled)
+                    {
+                        cPanel.Location = new Point(0, timeBar.Location.Y);
+                    }
+                }
+                if (value == ViewMode.RGBImage)
+                {
+                    cPanel.Hide();
+                    cPanel.Visible = false;
+                    cBar.Enabled = true;
+                    cBar.Visible = false;
+                    cPanel.SendToBack();
+                    rgbBoxsPanel.BringToFront();
+                    rgbBoxsPanel.Show();
+                    rgbBoxsPanel.Visible = true;
+                    labelRGB.Visible = true;
+                    if (!timeEnabled)
+                    {
+                        rgbBoxsPanel.Location = new Point(0, timeBar.Location.Y);
+                    }
+                }
+                viewMode = value;
+            }
         }
         public string Path
         {
             get
             {
                 return filePath;
-            }
-            set
-            {
-                filePath = value;
-                image.FromFile(filePath);
-                rgbPictureBox.Image = image.plane.GetBitmap();
-                timeBar.Maximum = image.SizeZ - 1;
             }
         }
 
@@ -74,13 +131,69 @@ namespace BioImage
             }
         }
 
+        private int zfps;
+        public int ZFps
+        {
+            get
+            {
+                return zfps;
+            }
+            set
+            {
+                zfps = value;
+                float f = value;
+                zTimer.Interval = (int)Math.Floor(1000 / f);
+            }
+        }
+
+        private int timefps;
+        public int TimeFps
+        {
+            get
+            {
+                return timefps;
+            }
+            set
+            {
+                timefps = value;
+                float f = value;
+                timelineTimer.Interval = (int)Math.Floor(1000 / f);
+            }
+        }
+
+        private int cfps;
+        public int CFps
+        {
+            get
+            {
+                return cfps;
+            }
+            set
+            {
+                cfps = value;
+                float f = value;
+                cTimer.Interval = (int)Math.Floor(1000 / f);
+            }
+        }
+
+        public int SplitterDistance
+        {
+            get
+            {
+                return splitContainer.SplitterDistance;
+            }
+            set
+            {
+                splitContainer.SplitterDistance = value;
+            }
+        }
+
         public bool LoadImage(string path)
         {
             filePath = path;
-            statusLabel.Text = timeBar.Value.ToString();
             image = new BioImage(filePath);
             zBar.Maximum = image.SizeZ-1;
-            zBar.Value = 0;
+            cBar.Maximum = image.SizeC-1;
             if (image.SizeT > 1)
             {
                 timeBar.Maximum = image.SizeT - 1;
@@ -90,7 +203,7 @@ namespace BioImage
             {
                 TimeEnabled = false;
             }
-            rgbPictureBox.Image = image.plane.GetBitmap();
+            //rgbPictureBox.Image = image.plane.GetBitmap();
             //we clear the channel comboboxes incase we have channels from previous loaded image.
             channelBoxR.Items.Clear();
             channelBoxG.Items.Clear();
@@ -121,6 +234,24 @@ namespace BioImage
 
         public void UpdateView()
         {
+            if (Mode == ViewMode.RGBImage)
+            {
+                image.UpdateBitmap(zBar.Value, cBar.Value, timeBar.Value);
+                rgbPictureBox.Image = image.rgbBitmap;
+            }
+            else
+            if (Mode == ViewMode.Plane)
+            {
+
+                image.UpdatePlane(zBar.Value, cBar.Value, timeBar.Value);
+                rgbPictureBox.Image = image.planeBitmap;
+
+            }
+            UpdateStatus();
+        }
+
+        public void UpdateStatus()
+        {
             if (timeEnabled)
             {
                 statusLabel.Text = zBar.Value + "/" + zBar.Maximum + ", " + timeBar.Value + "/" + timeBar.Maximum + ", " + mouseColor ;
@@ -129,10 +260,10 @@ namespace BioImage
             {
                 statusLabel.Text = zBar.Value + "/" + zBar.Maximum + ", " + mouseColor;
             }
-            //image.UpdatePlane(zBar.Value,0,timeBar.Value);
-            //rgbPictureBox.Image = image.plane.GetBitmap();
-            image.UpdateImage(zBar.Value, timeBar.Value);
-            rgbPictureBox.Image = image.bitmap;
+
+            float ms = image.frameTicks / 1000;
+            statusLabel.Text += " FrameTime:" + ms + " ms";
+
         }
 
         private void channelBoxR_SelectedIndexChanged(object sender, EventArgs e)
@@ -215,11 +346,6 @@ namespace BioImage
             rgbPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
         }
 
-        private void channelTrackBar_Scroll(object sender, EventArgs e)
-        {
-
-        }
-
         private void showControlsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(splitContainer.Panel2Collapsed)
@@ -237,6 +363,8 @@ namespace BioImage
 
         private void ImageView_SizeChanged(object sender, EventArgs e)
         {
+            if (splitContainer.Height <= minSizeY)
+                return;
             if (splitContainer.Height <= 0)
                 return;
             if (timeEnabled)
@@ -247,9 +375,12 @@ namespace BioImage
         
         private void ImageView_Resize(object sender, EventArgs e)
         {
+            if (splitContainer.Height <= minSizeY)
+                return;
             if (splitContainer.Height <= 0)
                 return;
-            if(timeEnabled)
+
+            if (timeEnabled)
                 splitContainer.SplitterDistance = splitContainer.Height - 90;
             else
                 splitContainer.SplitterDistance = splitContainer.Height - 70;
@@ -341,41 +472,19 @@ namespace BioImage
             timelineTimer.Stop();
         }
 
-        private void zTimer_Tick(object sender, EventArgs e)
+        private void playCToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(playZToolStripMenuItem.Checked)
-            {
-                if (zBar.Maximum >= zBar.Value + 1)
-                    zBar.Value++;
-                else
-                    zBar.Value = zBar.Minimum;
-            }
+            stopCToolStripMenuItem.Checked = true;
+            playCToolStripMenuItem.Checked = false;
+            cTimer.Stop();
         }
 
-        private void timer_Tick(object sender, EventArgs e)
-        {           
-            if (playTimeToolStripMenu.Checked)
-            {
-                if (timeBar.Maximum >= timeBar.Value + 1)
-                    timeBar.Value++;
-                else
-                    timeBar.Value = timeBar.Minimum;
-            }
-        }
-        Stopwatch st = new Stopwatch();
-        private void zBar_ValueChanged(object sender, EventArgs e)
+        private void stopCToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            st.Restart();
-            UpdateView();
-            st.Stop();
+            stopCToolStripMenuItem.Checked = false;
+            playCToolStripMenuItem.Checked = true;
+            cTimer.Stop();
         }
-
-        private void timeBar_ValueChanged(object sender, EventArgs e)
-        {
-            UpdateView();
-        }
-
-        public string mouseColor = "";
 
         private Point toImagePoint(int px,int py)
         {
@@ -389,14 +498,22 @@ namespace BioImage
             }
             if (rgbPictureBox.SizeMode == PictureBoxSizeMode.Zoom)
             {
-                //Drawn picture width will be the same as height in Zoom mode.
-                int w = rgbPictureBox.Height;
-                int x0 = (rgbPictureBox.Width - rgbPictureBox.Height) / 2;
-                int xp = p.X - x0;
-                int yp = p.Y;
-                x = (int)((((float)xp) / (float)w) * (float)image.SizeX);
-                y = (int)((((float)yp) / (float)rgbPictureBox.Height) * (float)image.SizeY);
-                return new Point(x, y);
+                //First we calculate the scaling factor for image width based on picturebox width
+                float fw = (float)rgbPictureBox.Width / (float)image.SizeX;
+                //Next we calculate the scaling factor for image height based on picturebox height
+                float fh = (float)rgbPictureBox.Height / (float)image.SizeY;
+                //Next we calculate the (0,0) origin point of the image in the picturebox.
+                float x0 = (rgbPictureBox.Width - (fh * image.SizeX)) / 2;
+                if (x0 < 0)
+                    x0 = 0;
+                float y0 = (rgbPictureBox.Height - (fw * image.SizeY)) / 2;
+                if (y0 < 0)
+                    y0 = 0;
+                float sw = (float)image.SizeX / (float)(rgbPictureBox.Width - (x0*2));
+                float sh = (float)image.SizeY / (float)(rgbPictureBox.Height - (y0*2));
+                float xp = (px - x0) * sw;
+                float yp = (py - y0) * sh;
+                return new Point((int)xp,(int)yp);
             }
             if (rgbPictureBox.SizeMode == PictureBoxSizeMode.Normal || rgbPictureBox.SizeMode == PictureBoxSizeMode.AutoSize)
             {
@@ -435,40 +552,157 @@ namespace BioImage
             return new Point(-1,-1);
         }
 
+        public string mouseColor = "";
         private void rgbPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             Point p = toImagePoint(e.Location.X, e.Location.Y);
-            int r = image.RPlane.GetValue(p.X, p.Y);
-            int g = image.GPlane.GetValue(p.X, p.Y);
-            int b = image.BPlane.GetValue(p.X, p.Y);
-            mouseColor = "(" + p.X + "," + p.Y + "), " + r + "," + g + "," + b;
-            //this.color = pxcolor;
-            UpdateView();
+            if (Mode == ViewMode.RGBImage)
+            {
+                if (image.RGBChannelsCount == 1)
+                {
+                    int r = image.RPlane.GetValue(p.X, p.Y);
+                    int g = image.GPlane.GetValue(p.X, p.Y);
+                    int b = image.BPlane.GetValue(p.X, p.Y);
+                    mouseColor = "(" + p.X + "," + p.Y + "), " + r + "," + g + "," + b;
+                }
+                else
+                {
+                    int r = image.plane.GetValue(p.X, p.Y, 0);
+                    int g = image.plane.GetValue(p.X, p.Y, 1);
+                    int b = image.plane.GetValue(p.X, p.Y, 2);
+                    mouseColor = "(" + p.X + "," + p.Y + "), " + r + "," + g + "," + b;
+                }
+                UpdateStatus();
+            }
+            else
+            if(Mode == ViewMode.Plane)
+            {
+                int r = image.plane.GetValue(p.X, p.Y);
+                mouseColor = "(" + p.X + "," + p.Y + "), " + r;
+                if (e.Button == MouseButtons.Left)
+                {
+                    if (image.plane.RGBChannelsCount > 0)
+                    {
+                        image.plane.SetValue(p.X, p.Y, cBar.Value,ushort.MaxValue); 
+                    }
+                    else
+                    {
+                        image.plane.SetValue(p.X, p.Y, ushort.MaxValue);
+                    }
+                    UpdateView();
+                }  
+            }
+   
         }
 
         private void autoContrastChannelsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            image.AutoThreshold();
+            image.AutoThresholdImage();
             UpdateView();
         }
 
         private void playSpeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PlaySpeed sp = new PlaySpeed(timeEnabled,zTimer.Interval, timelineTimer.Interval);
+            PlaySpeed sp = null;
+            if(Mode == ViewMode.RGBImage)
+             sp = new PlaySpeed(timeEnabled, false, ZFps, TimeFps, CFps);
+            if (Mode == ViewMode.Plane)
+                sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (sp.ShowDialog() != DialogResult.OK)
                 return;
-            zTimer.Interval = sp.ZPlayspeed;
-            timelineTimer.Interval = sp.TimePlayspeed;
+            ZFps = sp.ZFps;
+            TimeFps = sp.TimeFps;
+            CFps = sp.CFps;
         }
         private void playSpeedToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            PlaySpeed sp = new PlaySpeed(timeEnabled,zTimer.Interval, timelineTimer.Interval);
+            PlaySpeed sp = null;
+            if (Mode == ViewMode.RGBImage)
+                sp = new PlaySpeed(timeEnabled, false, ZFps, TimeFps, CFps);
+            if (Mode == ViewMode.Plane)
+                sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (sp.ShowDialog() != DialogResult.OK)
                 return;
-            zTimer.Interval = sp.ZPlayspeed;
-            timelineTimer.Interval = sp.TimePlayspeed;
+            ZFps = sp.ZFps;
+            TimeFps = sp.TimeFps;
+            CFps = sp.CFps;
+        }
+        private void CPlaySpeedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PlaySpeed sp = null;
+            if (Mode == ViewMode.RGBImage)
+                sp = new PlaySpeed(timeEnabled, false, ZFps, TimeFps, CFps);
+            if (Mode == ViewMode.Plane)
+                sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
+            if (sp.ShowDialog() != DialogResult.OK)
+                return;
+            ZFps = sp.ZFps;
+            TimeFps = sp.TimeFps;
+            CFps = sp.CFps;
+        }
+        private void copyImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Mode == ViewMode.RGBImage)
+                Clipboard.SetImage(image.rgbBitmap);
+            if (Mode != ViewMode.Plane)
+                Clipboard.SetImage(image.planeBitmap);
         }
 
+        private void ImageView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.C && e.Control)
+            {
+                if(Mode == ViewMode.RGBImage)   
+                    Clipboard.SetImage(image.rgbBitmap);
+                if(Mode != ViewMode.Plane)
+                    Clipboard.SetImage(image.planeBitmap);
+            }
+        }
+
+        public void GetRange()
+        {
+            RangeTool t;
+            if (Mode == ViewMode.Plane)
+                t = new RangeTool(timeEnabled, true, zBar.Minimum, zBar.Maximum, timeBar.Minimum, timeBar.Maximum, cBar.Minimum, cBar.Maximum);
+            else
+                t = new RangeTool(timeEnabled, false, zBar.Minimum, zBar.Maximum, timeBar.Minimum, timeBar.Maximum, cBar.Minimum, cBar.Maximum);
+            if (t.ShowDialog() != DialogResult.OK)
+                return;
+            zBar.Minimum = t.ZMin;
+            zBar.Maximum = t.ZMax;
+            timeBar.Minimum = t.TimeMin;
+            timeBar.Maximum = t.TimeMax;
+            cBar.Minimum = t.CMin;
+            cBar.Maximum = t.CMax;
+        }
+
+        private void setValueRangeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GetRange();
+        }
+
+        private void setValueRangeToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            GetRange();
+        }
+
+        private void setCValueRangeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GetRange();
+        }
+
+        private void planeModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(planeModeToolStripMenuItem.Checked)
+            {
+                Mode = ViewMode.Plane;
+            }
+            else
+            {
+                Mode = ViewMode.RGBImage;
+            }
+            UpdateView();
+        }
         private void ImageView_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Delta > 0)
@@ -483,7 +717,6 @@ namespace BioImage
             }
 
         }
-
         private void ZTrackBar_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Delta > 0)
@@ -513,69 +746,66 @@ namespace BioImage
                     timeBar.Value -= 1;
             }
         }
-
-        private void copyImageToolStripMenuItem_Click(object sender, EventArgs e)
+        private void CTrackBar_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            Clipboard.SetImage(image.plane.GetBitmap());
-        }
-
-        private void ImageView_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode == Keys.C && e.Control)
-                Clipboard.SetImage(image.plane.GetBitmap());
-        }
-
-        private void setValueRangeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RangeTool t = new RangeTool(timeEnabled,zBar.Minimum, zBar.Maximum, timeBar.Minimum, timeBar.Maximum);
-            if (t.ShowDialog() != DialogResult.OK)
+            if (Mode != ViewMode.Plane)
                 return;
-            zBar.Minimum = t.ZMin;
-            zBar.Maximum = t.ZMax;
-            timeBar.Minimum = t.TimeMin;
-            timeBar.Maximum = t.TimeMax;
-        }
-
-        private void setValueRangeToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            RangeTool t = new RangeTool(timeEnabled,zBar.Minimum, zBar.Maximum, timeBar.Minimum, timeBar.Maximum);
-            if (t.ShowDialog() != DialogResult.OK)
-                return;
-            zBar.Minimum = t.ZMin;
-            zBar.Maximum = t.ZMax;
-            timeBar.Minimum = t.TimeMin;
-            timeBar.Maximum = t.TimeMax;
-        }
-
-        private void zPlayMenuStrip_Opening(object sender, CancelEventArgs e)
-        {
-
-        }
-
-        private void rgbPictureBox_MouseDown(object sender, MouseEventArgs e)
-        {
-            /*
-            Graphics gr = image.CreateGraphics();
-            Point p = toImagePoint(e.X, e.Y);
-            gr.FillEllipse(Brushes.Orange, new Rectangle(p.X, p.Y,20, 20));
-            gr.Save();
-            image.FinalizeGraphics();
-            */
-        }
-
-        private void rgbPictureBox_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-        {
-            if (e.KeyCode == Keys.S && e.Control)
+            if (e.Delta > 0)
             {
-                if (saveFileDialog.ShowDialog() != DialogResult.OK)
-                    return;
-                image.Save(saveFileDialog.FileName);
+                if (cBar.Value + 1 <= cBar.Maximum)
+                    cBar.Value += 1;
+            }
+            else
+            {
+                if (cBar.Value - 1 >= cBar.Minimum)
+                    cBar.Value -= 1;
             }
         }
 
-        private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void cTimer_Tick(object sender, EventArgs e)
         {
-
+            if (playZToolStripMenuItem.Checked)
+            {
+                if (zBar.Maximum >= zBar.Value + 1)
+                    zBar.Value++;
+                else
+                    zBar.Value = zBar.Minimum;
+            }
         }
+        private void zTimer_Tick(object sender, EventArgs e)
+        {
+            if(playZToolStripMenuItem.Checked)
+            {
+                if (zBar.Maximum >= zBar.Value + 1)
+                    zBar.Value++;
+                else
+                    zBar.Value = zBar.Minimum;
+            }
+        }
+        private void timer_Tick(object sender, EventArgs e)
+        {           
+            if (playTimeToolStripMenu.Checked)
+            {
+                if (timeBar.Maximum >= timeBar.Value + 1)
+                    timeBar.Value++;
+                else
+                    timeBar.Value = timeBar.Minimum;
+            }
+        }
+
+        private void zBar_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateView();
+        }
+        private void timeBar_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateView();
+        }
+        private void cBar_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateView();
+        }
+
+        
     }
 }

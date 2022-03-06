@@ -36,8 +36,21 @@ namespace BioImage
             this.timePlayspeed = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.timeFpsBox = new System.Windows.Forms.NumericUpDown();
+            this.zFpsBox = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.cFpsBox = new System.Windows.Forms.NumericUpDown();
+            this.label8 = new System.Windows.Forms.Label();
+            this.cPlayspeed = new System.Windows.Forms.NumericUpDown();
+            this.label9 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.zPlayspeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.timePlayspeed)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.timeFpsBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zFpsBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cFpsBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cPlayspeed)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -64,7 +77,7 @@ namespace BioImage
             // 
             this.zPlayspeed.Location = new System.Drawing.Point(131, 11);
             this.zPlayspeed.Maximum = new decimal(new int[] {
-            1000,
+            10000,
             0,
             0,
             0});
@@ -77,7 +90,7 @@ namespace BioImage
             this.zPlayspeed.Size = new System.Drawing.Size(58, 20);
             this.zPlayspeed.TabIndex = 2;
             this.zPlayspeed.Value = new decimal(new int[] {
-            35,
+            16,
             0,
             0,
             0});
@@ -86,7 +99,7 @@ namespace BioImage
             // 
             this.timePlayspeed.Location = new System.Drawing.Point(131, 37);
             this.timePlayspeed.Maximum = new decimal(new int[] {
-            1000,
+            10000,
             0,
             0,
             0});
@@ -99,11 +112,10 @@ namespace BioImage
             this.timePlayspeed.Size = new System.Drawing.Size(58, 20);
             this.timePlayspeed.TabIndex = 3;
             this.timePlayspeed.Value = new decimal(new int[] {
-            35,
+            16,
             0,
             0,
             0});
-            this.timePlayspeed.ValueChanged += new System.EventHandler(this.timePlayspeed_ValueChanged);
             // 
             // label3
             // 
@@ -125,12 +137,162 @@ namespace BioImage
             this.label4.TabIndex = 5;
             this.label4.Text = "ms";
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.Color.White;
+            this.label5.Location = new System.Drawing.Point(285, 42);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(21, 13);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "fps";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.ForeColor = System.Drawing.Color.White;
+            this.label6.Location = new System.Drawing.Point(285, 13);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(21, 13);
+            this.label6.TabIndex = 8;
+            this.label6.Text = "fps";
+            // 
+            // timeFpsBox
+            // 
+            this.timeFpsBox.Location = new System.Drawing.Point(221, 37);
+            this.timeFpsBox.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.timeFpsBox.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.timeFpsBox.Name = "timeFpsBox";
+            this.timeFpsBox.Size = new System.Drawing.Size(58, 20);
+            this.timeFpsBox.TabIndex = 7;
+            this.timeFpsBox.Value = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.timeFpsBox.ValueChanged += new System.EventHandler(this.timeFpsBox_ValueChanged);
+            // 
+            // zFpsBox
+            // 
+            this.zFpsBox.Location = new System.Drawing.Point(221, 11);
+            this.zFpsBox.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.zFpsBox.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.zFpsBox.Name = "zFpsBox";
+            this.zFpsBox.Size = new System.Drawing.Size(58, 20);
+            this.zFpsBox.TabIndex = 6;
+            this.zFpsBox.Value = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.zFpsBox.ValueChanged += new System.EventHandler(this.zFpsBox_ValueChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.ForeColor = System.Drawing.Color.White;
+            this.label7.Location = new System.Drawing.Point(285, 70);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(21, 13);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "fps";
+            // 
+            // cFpsBox
+            // 
+            this.cFpsBox.Location = new System.Drawing.Point(221, 65);
+            this.cFpsBox.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.cFpsBox.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.cFpsBox.Name = "cFpsBox";
+            this.cFpsBox.Size = new System.Drawing.Size(58, 20);
+            this.cFpsBox.TabIndex = 13;
+            this.cFpsBox.Value = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            this.cFpsBox.ValueChanged += new System.EventHandler(this.cFpsBox_ValueChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.ForeColor = System.Drawing.Color.White;
+            this.label8.Location = new System.Drawing.Point(195, 70);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(20, 13);
+            this.label8.TabIndex = 12;
+            this.label8.Text = "ms";
+            // 
+            // cPlayspeed
+            // 
+            this.cPlayspeed.Location = new System.Drawing.Point(131, 65);
+            this.cPlayspeed.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.cPlayspeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.cPlayspeed.Name = "cPlayspeed";
+            this.cPlayspeed.Size = new System.Drawing.Size(58, 20);
+            this.cPlayspeed.TabIndex = 11;
+            this.cPlayspeed.Value = new decimal(new int[] {
+            16,
+            0,
+            0,
+            0});
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.ForeColor = System.Drawing.Color.White;
+            this.label9.Location = new System.Drawing.Point(14, 70);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(66, 13);
+            this.label9.TabIndex = 10;
+            this.label9.Text = "C Playspeed";
+            // 
             // PlaySpeed
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(77)))), ((int)(((byte)(98)))));
-            this.ClientSize = new System.Drawing.Size(231, 76);
+            this.ClientSize = new System.Drawing.Size(313, 97);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.cFpsBox);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.cPlayspeed);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.timeFpsBox);
+            this.Controls.Add(this.zFpsBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.timePlayspeed);
@@ -148,6 +310,10 @@ namespace BioImage
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PlaySpeed_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.zPlayspeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.timePlayspeed)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.timeFpsBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zFpsBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cFpsBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cPlayspeed)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -161,5 +327,14 @@ namespace BioImage
         private System.Windows.Forms.NumericUpDown timePlayspeed;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.NumericUpDown timeFpsBox;
+        private System.Windows.Forms.NumericUpDown zFpsBox;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.NumericUpDown cFpsBox;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.NumericUpDown cPlayspeed;
+        private System.Windows.Forms.Label label9;
     }
 }

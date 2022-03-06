@@ -16,6 +16,8 @@ namespace BioImage
                 channelsBox.Items.Add(item);
             }
             channelsBox.SelectedIndex = 0;
+            minBox.Value = Channels[0].Min;
+            maxBox.Value = Channels[0].Max;
         }
 
         private void minBox_ValueChanged(object sender, EventArgs e)
@@ -23,7 +25,7 @@ namespace BioImage
             if (channelsBox.SelectedIndex == -1)
                 return;
             BioImage.Channel c = (BioImage.Channel)channelsBox.SelectedItem;
-            Channels[channelsBox.SelectedIndex].min = (int)minBox.Value;
+            Channels[channelsBox.SelectedIndex].Min = (int)minBox.Value;
         }
 
         private void maxBox_ValueChanged(object sender, EventArgs e)
@@ -31,7 +33,7 @@ namespace BioImage
             if (channelsBox.SelectedIndex == -1)
                 return;
             BioImage.Channel c = (BioImage.Channel)channelsBox.SelectedItem;
-            Channels[channelsBox.SelectedIndex].max = (int)maxBox.Value;
+            Channels[channelsBox.SelectedIndex].Max = (int)maxBox.Value;
 
         }
 
@@ -44,8 +46,8 @@ namespace BioImage
         {
             if (channelsBox.SelectedIndex == -1)
                 return;
-            minBox.Value = Channels[channelsBox.SelectedIndex].min;
-            maxBox.Value = Channels[channelsBox.SelectedIndex].max;
+            minBox.Value = Channels[channelsBox.SelectedIndex].Min;
+            maxBox.Value = Channels[channelsBox.SelectedIndex].Max;
         }
 
         private void maxUintBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -64,7 +66,7 @@ namespace BioImage
         {
             foreach (BioImage.Channel c in Channels)
             {
-                c.max = (int)maxBox.Value;
+                c.Max = (int)maxBox.Value;
             }
         }
 
@@ -72,7 +74,7 @@ namespace BioImage
         {
             foreach (BioImage.Channel c in Channels)
             {
-                c.min = (int)minBox.Value;
+                c.Min = (int)minBox.Value;
             }
         }
     }
