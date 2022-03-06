@@ -11,6 +11,7 @@ imageview.Dock = DockStyle.Fill;
 mainTabControl.TabPages[3].Controls.Add(imageview);
 
 //Another way of opening just image.
+
 BioImage image = new BioImage("16bitTestStack.tif");
 image.Save("16bitTestSaveStack.tif");
 
