@@ -108,7 +108,7 @@ namespace BioImage
             this.MainMenuStrip = this.menuStrip;
             this.MinimumSize = new System.Drawing.Size(400, 90);
             this.Name = "ImageViewer";
-            this.Text = "Image Viewer";
+            this.Text = "BioImage";
             this.SizeChanged += new System.EventHandler(this.ImageViewer_SizeChanged);
             this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.ImageViewer_PreviewKeyDown);
             this.Resize += new System.EventHandler(this.ImageViewer_Resize);

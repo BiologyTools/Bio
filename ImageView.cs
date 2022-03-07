@@ -53,7 +53,7 @@ namespace BioImage
             Plane,
             RGBImage
         }
-        private ViewMode viewMode = ViewMode.RGBImage;
+        private ViewMode viewMode = ViewMode.Plane;
         public ViewMode Mode
         {
             get
@@ -571,6 +571,21 @@ namespace BioImage
                     int g = image.plane.GetValue(p.X, p.Y, 1);
                     int b = image.plane.GetValue(p.X, p.Y, 2);
                     mouseColor = "(" + p.X + "," + p.Y + "), " + r + "," + g + "," + b;
+                }
+                if (e.Button == MouseButtons.Left)
+                {
+                    AForge.Imaging.Drawing.FillRectangle(image.planeBitmapData, new Rectangle(e.X, e.Y, 10, 10), Color.White);
+                    /*
+                    if (image.plane.RGBChannelsCount > 0)
+                    {
+                        image.plane.SetValue(p.X, p.Y, cBar.Value, ushort.MaxValue);
+                    }
+                    else
+                    {
+                        image.plane.SetValue(p.X, p.Y, ushort.MaxValue);
+                    }
+                    */
+                    UpdateView();
                 }
                 UpdateStatus();
             }

@@ -21,7 +21,6 @@ using loci.common.services;
 using loci.formats.services;
 using loci.formats.tiff;
 using loci.formats.@out;
-using System.IO.MemoryMappedFiles;
 
 namespace BioImage
 {
@@ -257,7 +256,6 @@ namespace BioImage
                 }
 
             }
-            
             public int SizeX
             {
                 get
@@ -292,7 +290,7 @@ namespace BioImage
                     bi.Dispose();
                 bytes = null;
             }
-            private void SetRawBytes(Bitmap bitmap)
+            public void SetRawBytes(Bitmap bitmap)
             {
                 BitmapData data = bitmap.LockBits(new Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, pixelFormat);
                 IntPtr ptr = data.Scan0;
@@ -691,57 +689,6 @@ namespace BioImage
                     }
                 }
             }
-            public ColorS GetRGBValue(int ix, int iy)
-            {
-                ColorS color = new ColorS();
-                int stridex = SizeX;
-                int x = ix;
-                int y = iy;
-                if (ix < 0)
-                    x = 0;
-                if (iy < 0)
-                    y = 0;
-                if (!littleEndian)
-                {
-                    x = (w - 1) - x;
-                    y = (h - 1) - y;
-                    if (bitsPerPixel > 8)
-                    {
-                        int index2 = (y * stridex + x) * 2 * RGBChannelsCount;
-                        color.R = (ushort)GetValue(x, y, 1);
-                        color.G = (ushort)GetValue(index2 + 2,2);
-                        color.B = (ushort)GetValue(index2 + 4,3);
-                        return color;
-                    }
-                    else
-                    {
-                        int index = (y * stridex + x) * RGBChannelsCount;
-                        color.R = (ushort)GetValue(x, y, 1);
-                        color.G = (ushort)GetValue(index + 1, 2);
-                        color.B = (ushort)GetValue(index + 2, 3);
-                        return color;
-                    }
-                }
-                else
-                {
-                    if (bitsPerPixel > 8)
-                    {
-                        int index2 = (y * stridex + x) * 2 * RGBChannelsCount;
-                        color.R = (ushort)GetValue(x, y, 1);
-                        color.G = (ushort)GetValue(index2 + 2, 2);
-                        color.B = (ushort)GetValue(index2 + 4, 3);
-                        return color;
-                    }
-                    else
-                    {
-                        int index = (y * stridex + x) * RGBChannelsCount;
-                        color.R = (ushort)GetValue(x, y, 1);
-                        color.G = (ushort)GetValue(index + 1, 2);
-                        color.B = (ushort)GetValue(index + 2, 3);
-                        return color;
-                    }
-                }
-            }
         }
         public int GetPlanePixel(RGB rgb,int x,int y)
         {
@@ -882,6 +829,7 @@ namespace BioImage
                     Progress = (int)(f * 100);
                     TimeSpan t = watch.Elapsed;
                     Console.WriteLine("Progress=" + Progress + "%" + " Elapsed=" + t.ToString());
+                    Application.DoEvents();
                     index++;
                 }
             }
@@ -914,6 +862,7 @@ namespace BioImage
                     Progress = (int)(f * 100);
                     TimeSpan t = watch.Elapsed;
                     Console.WriteLine("Progress=" + Progress + "%" + " Elapsed=" + t.ToString());
+                    Application.DoEvents();
                     index++;
                 }
             }
@@ -998,6 +947,22 @@ namespace BioImage
             public Channel(int index)
             {
                 range = new IntRange(0, ushort.MaxValue);
+                Max = 65535;
+                Min = 0;
+                this.index = index;
+            }
+            public Channel(int index, int bitsPerPixel)
+            {
+                if (bitsPerPixel == 16)
+                    Max = 65535;
+                if (bitsPerPixel == 14)
+                    Max = 16383;
+                if (bitsPerPixel == 12)
+                    Max = 4096;
+                if (bitsPerPixel == 10)
+                    Max = 1024;
+                range = new IntRange(0, Max);
+                Min = 0;
                 this.index = index;
             }
 
@@ -1034,10 +999,58 @@ namespace BioImage
             public ushort R;
             public ushort G;
             public ushort B;
+
+            public ColorS()
+            {
+
+            }
+
+            public ColorS(ushort s)
+            {
+                R = s;
+                G = s;
+                B = s;
+            }
+
+            public ColorS(ushort r, ushort g, ushort b)
+            {
+                R = r;
+                G = g;
+                B = b;
+            }
+
+            public static ColorS FromColor(Color col)
+            {
+                float r = (((float)col.R) / 255) * ushort.MaxValue;
+                float g = (((float)col.G) / 255) * ushort.MaxValue;
+                float b = (((float)col.B) / 255) * ushort.MaxValue;
+                ColorS color = new ColorS();
+                color.R = (ushort)r;
+                color.G = (ushort)g;
+                color.B = (ushort)b;
+                return color;
+            }
+
+            public static Color ToColor(ColorS col)
+            {
+                float r = (((float)col.R) / ushort.MaxValue) * 255;
+                float g = (((float)col.G) / ushort.MaxValue) * 255;
+                float b = (((float)col.B) / ushort.MaxValue) * 255;
+                Color c = Color.FromArgb((byte)r, (byte)g, (byte)b);
+                return c;
+            }
             public override string ToString()
             {
                 return R + "," + G + "," + B;
             }
+        }
+
+        public class ROI
+        {
+            public Rectangle rectangle;
+            public ColorS color;
+            public List<System.Drawing.Point> points;
+
         }
         
         public unsafe bool AutoThresholdChannel(Channel c1)
@@ -1045,7 +1058,6 @@ namespace BioImage
             c1.Max = c1.Min;
             int index, x, y;
             int stride = SizeX;
-            byte* pix = (byte*)rgbBitmapData.Scan0;
             byte[] bytes;
 
             for (int time = 0; time < SizeT; time++)
@@ -1070,8 +1082,6 @@ namespace BioImage
                                 }
                             }
                         }
-                        else
-                            throw new NotImplementedException("Auto Threshold does not support 8bit images.");
                     }
                     else
                     {
@@ -1089,8 +1099,6 @@ namespace BioImage
                                 }
                             }
                         }
-                        else
-                            throw new NotImplementedException("Auto Threshold does not support 8bit images.");
                     }
                 }
             }
@@ -1224,15 +1232,7 @@ namespace BioImage
             //Lets get the channels amd initialize them.
             for (int i = 0; i < count; i++)
             {
-                Channel ch = new Channel(i);
-                if (bitsPerPixel == 16)
-                    ch.Max = 65535;
-                if (bitsPerPixel == 14)
-                    ch.Max = 16383;
-                if (bitsPerPixel == 12)
-                    ch.Max = 4096;
-                if (bitsPerPixel == 10)
-                    ch.Max = 1024;
+                Channel ch = new Channel(i,bitsPerPixel);
                 try
                 {
                     if (meta.getChannelName(0, i) != null)
@@ -1363,6 +1363,7 @@ namespace BioImage
             UpdatePlane(0,0,0);
             return true;
         }
+
         public static Point3D GetStagePosition(string file)
         {
             // create OME-XML metadata store
@@ -1412,7 +1413,7 @@ namespace BioImage
         public void Internal(object image, string func)
         {
             BioImage im = (BioImage)image;
-
+            throw new NotImplementedException();
         }
 
         public void External(object image, string filefunc)
