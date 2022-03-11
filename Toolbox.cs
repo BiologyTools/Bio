@@ -13,8 +13,8 @@ namespace BioImage
 {
     public partial class Toolbox : Form
     {
-        public bool applyToStack = false;
-        public Pencil pencil;
+        public static bool applyToStack = false;
+        public static Pencil pencil;
         private BioImage image;
 
         public BioImage Image
@@ -39,8 +39,6 @@ namespace BioImage
         {
             public int Width;
         }
-
-
         public static Tool currentTool;
         public BioImage.ColorS color;
         public BioImage.ColorS colorg;
@@ -82,9 +80,9 @@ namespace BioImage
             {
                 for (int i = 0; i < Image.imageCount; i++)
                 {
-                    b = Image.Planes[i].GetBitmap();
+                    b = Image.Buffers[i].GetBuffer();
                     b.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                    Image.Planes[i].SetRawBytes(b);
+                    Image.Buffers[i].SetBuffer(b);
                 }
             }
             else
@@ -100,9 +98,9 @@ namespace BioImage
             {
                 for (int i = 0; i < Image.imageCount; i++)
                 {
-                    b = Image.Planes[i].GetBitmap();
+                    b = Image.Buffers[i].GetBuffer();
                     b.RotateFlip(RotateFlipType.RotateNoneFlipY);
-                    Image.Planes[i].SetRawBytes(b);
+                    Image.Buffers[i].SetBuffer(b);
                 }
             }
             else

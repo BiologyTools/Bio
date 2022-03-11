@@ -36,6 +36,7 @@ namespace BioImage
             this.stopTimeToolStripMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.playSpeedToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.setValueRangeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.loopTimeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,6 +56,7 @@ namespace BioImage
             this.stopZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.playSpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setValueRangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loopZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.channelBoxB = new System.Windows.Forms.ComboBox();
             this.channelBoxG = new System.Windows.Forms.ComboBox();
             this.labelRGB = new System.Windows.Forms.Label();
@@ -71,6 +73,7 @@ namespace BioImage
             this.stopCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CPlaySpeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setCValueRangeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loopCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timeLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.timelineTimer = new System.Windows.Forms.Timer(this.components);
@@ -79,6 +82,8 @@ namespace BioImage
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openImagesDialog = new System.Windows.Forms.OpenFileDialog();
             this.cTimer = new System.Windows.Forms.Timer(this.components);
+            this.rawModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rGBImageModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.timeBar)).BeginInit();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
@@ -117,9 +122,10 @@ namespace BioImage
             this.playTimeToolStripMenu,
             this.stopTimeToolStripMenu,
             this.playSpeedToolStripMenuItem1,
-            this.setValueRangeToolStripMenuItem1});
+            this.setValueRangeToolStripMenuItem1,
+            this.loopTimeToolStripMenuItem});
             this.timePlayMenuStrip.Name = "zPlayMenuStrip";
-            this.timePlayMenuStrip.Size = new System.Drawing.Size(158, 92);
+            this.timePlayMenuStrip.Size = new System.Drawing.Size(158, 114);
             // 
             // playTimeToolStripMenu
             // 
@@ -151,6 +157,17 @@ namespace BioImage
             this.setValueRangeToolStripMenuItem1.Text = "Set Value Range";
             this.setValueRangeToolStripMenuItem1.Click += new System.EventHandler(this.setValueRangeToolStripMenuItem1_Click);
             // 
+            // loopTimeToolStripMenuItem
+            // 
+            this.loopTimeToolStripMenuItem.Checked = true;
+            this.loopTimeToolStripMenuItem.CheckOnClick = true;
+            this.loopTimeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.loopTimeToolStripMenuItem.Name = "loopTimeToolStripMenuItem";
+            this.loopTimeToolStripMenuItem.ShowShortcutKeys = false;
+            this.loopTimeToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.loopTimeToolStripMenuItem.Text = "Loop";
+            this.loopTimeToolStripMenuItem.Click += new System.EventHandler(this.loopTimeToolStripMenuItem_Click);
+            // 
             // contextMenuStrip
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -160,9 +177,11 @@ namespace BioImage
             this.showTimeTrackbarToolStripMenuItem,
             this.openChannelsToolToolStripMenuItem,
             this.autoContrastChannelsToolStripMenuItem,
-            this.planeModeToolStripMenuItem});
+            this.rawModeToolStripMenuItem,
+            this.planeModeToolStripMenuItem,
+            this.rGBImageModeToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(208, 158);
+            this.contextMenuStrip.Size = new System.Drawing.Size(208, 224);
             // 
             // copyImageToolStripMenuItem
             // 
@@ -254,7 +273,7 @@ namespace BioImage
             this.planeModeToolStripMenuItem.CheckOnClick = true;
             this.planeModeToolStripMenuItem.Name = "planeModeToolStripMenuItem";
             this.planeModeToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.planeModeToolStripMenuItem.Text = "Plane Mode";
+            this.planeModeToolStripMenuItem.Text = "Filtered Mode";
             this.planeModeToolStripMenuItem.Click += new System.EventHandler(this.planeModeToolStripMenuItem_Click);
             // 
             // zBar
@@ -278,9 +297,10 @@ namespace BioImage
             this.playZToolStripMenuItem,
             this.stopZToolStripMenuItem,
             this.playSpeedToolStripMenuItem,
-            this.setValueRangeToolStripMenuItem});
+            this.setValueRangeToolStripMenuItem,
+            this.loopZToolStripMenuItem});
             this.zPlayMenuStrip.Name = "zPlayMenuStrip";
-            this.zPlayMenuStrip.Size = new System.Drawing.Size(158, 92);
+            this.zPlayMenuStrip.Size = new System.Drawing.Size(158, 114);
             // 
             // playZToolStripMenuItem
             // 
@@ -311,6 +331,17 @@ namespace BioImage
             this.setValueRangeToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.setValueRangeToolStripMenuItem.Text = "Set Value Range";
             this.setValueRangeToolStripMenuItem.Click += new System.EventHandler(this.setValueRangeToolStripMenuItem_Click);
+            // 
+            // loopZToolStripMenuItem
+            // 
+            this.loopZToolStripMenuItem.Checked = true;
+            this.loopZToolStripMenuItem.CheckOnClick = true;
+            this.loopZToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.loopZToolStripMenuItem.Name = "loopZToolStripMenuItem";
+            this.loopZToolStripMenuItem.ShowShortcutKeys = false;
+            this.loopZToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.loopZToolStripMenuItem.Text = "Loop";
+            this.loopZToolStripMenuItem.Click += new System.EventHandler(this.loopZToolStripMenuItem_Click);
             // 
             // channelBoxB
             // 
@@ -471,14 +502,15 @@ namespace BioImage
             this.playCToolStripMenuItem,
             this.stopCToolStripMenuItem,
             this.CPlaySpeedToolStripMenuItem,
-            this.setCValueRangeToolStripMenuItem});
+            this.setCValueRangeToolStripMenuItem,
+            this.loopCToolStripMenuItem});
             this.cPlayMenuStrip.Name = "zPlayMenuStrip";
-            this.cPlayMenuStrip.Size = new System.Drawing.Size(158, 92);
+            this.cPlayMenuStrip.Size = new System.Drawing.Size(158, 114);
             // 
             // playCToolStripMenuItem
             // 
             this.playCToolStripMenuItem.Name = "playCToolStripMenuItem";
-            this.playCToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.playCToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.playCToolStripMenuItem.Text = "Play";
             this.playCToolStripMenuItem.Click += new System.EventHandler(this.playCToolStripMenuItem_Click);
             // 
@@ -487,23 +519,34 @@ namespace BioImage
             this.stopCToolStripMenuItem.Checked = true;
             this.stopCToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.stopCToolStripMenuItem.Name = "stopCToolStripMenuItem";
-            this.stopCToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.stopCToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.stopCToolStripMenuItem.Text = "Stop";
             this.stopCToolStripMenuItem.Click += new System.EventHandler(this.stopCToolStripMenuItem_Click);
             // 
             // CPlaySpeedToolStripMenuItem
             // 
             this.CPlaySpeedToolStripMenuItem.Name = "CPlaySpeedToolStripMenuItem";
-            this.CPlaySpeedToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.CPlaySpeedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.CPlaySpeedToolStripMenuItem.Text = "Play Speed";
             this.CPlaySpeedToolStripMenuItem.Click += new System.EventHandler(this.CPlaySpeedToolStripMenuItem_Click);
             // 
             // setCValueRangeToolStripMenuItem
             // 
             this.setCValueRangeToolStripMenuItem.Name = "setCValueRangeToolStripMenuItem";
-            this.setCValueRangeToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.setCValueRangeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.setCValueRangeToolStripMenuItem.Text = "Set Value Range";
             this.setCValueRangeToolStripMenuItem.Click += new System.EventHandler(this.setCValueRangeToolStripMenuItem_Click);
+            // 
+            // loopCToolStripMenuItem
+            // 
+            this.loopCToolStripMenuItem.Checked = true;
+            this.loopCToolStripMenuItem.CheckOnClick = true;
+            this.loopCToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.loopCToolStripMenuItem.Name = "loopCToolStripMenuItem";
+            this.loopCToolStripMenuItem.ShowShortcutKeys = false;
+            this.loopCToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loopCToolStripMenuItem.Text = "Loop";
+            this.loopCToolStripMenuItem.Click += new System.EventHandler(this.loopCToolStripMenuItem_Click);
             // 
             // timeLabel
             // 
@@ -544,6 +587,22 @@ namespace BioImage
             // 
             this.cTimer.Interval = 1000;
             this.cTimer.Tick += new System.EventHandler(this.cTimer_Tick);
+            // 
+            // rawModeToolStripMenuItem
+            // 
+            this.rawModeToolStripMenuItem.CheckOnClick = true;
+            this.rawModeToolStripMenuItem.Name = "rawModeToolStripMenuItem";
+            this.rawModeToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.rawModeToolStripMenuItem.Text = "Raw Mode";
+            this.rawModeToolStripMenuItem.Click += new System.EventHandler(this.rawModeToolStripMenuItem_Click);
+            // 
+            // rGBImageModeToolStripMenuItem
+            // 
+            this.rGBImageModeToolStripMenuItem.CheckOnClick = true;
+            this.rGBImageModeToolStripMenuItem.Name = "rGBImageModeToolStripMenuItem";
+            this.rGBImageModeToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.rGBImageModeToolStripMenuItem.Text = "RGB Image Mode";
+            this.rGBImageModeToolStripMenuItem.Click += new System.EventHandler(this.rGBImageModeToolStripMenuItem_Click);
             // 
             // ImageView
             // 
@@ -629,5 +688,10 @@ namespace BioImage
         private System.Windows.Forms.ToolStripMenuItem stopCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem CPlaySpeedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setCValueRangeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loopZToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loopTimeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loopCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rawModeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rGBImageModeToolStripMenuItem;
     }
 }

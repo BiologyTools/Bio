@@ -5,39 +5,53 @@ VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioImage", "BioImage.csproj", "{7A6E5506-2296-4820-AA2A-967D4E80D5B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioImageViewer", "..\BioImageViewer\BioImageViewer\BioImageViewer.csproj", "{C2911884-1C0C-4363-8332-AE7F75BF7641}"
-EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "BioImageViewerSetup", "..\BioImageViewerSetup\BioImageViewerSetup\BioImageViewerSetup.vdproj", "{E3C5F044-1199-4BB9-8584-943EE7AF1223}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioImageViewer", "..\BioImageViewer\BioImageViewer.csproj", "{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Debug|x64.Build.0 = Debug|Any CPU
 		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Debug|x86.ActiveCfg = Debug|x86
 		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Debug|x86.Build.0 = Debug|x86
+		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Release|x64.ActiveCfg = Release|Any CPU
 		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Release|x64.Build.0 = Release|Any CPU
 		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Release|x86.ActiveCfg = Release|x86
 		{7A6E5506-2296-4820-AA2A-967D4E80D5B2}.Release|x86.Build.0 = Release|x86
-		{C2911884-1C0C-4363-8332-AE7F75BF7641}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{C2911884-1C0C-4363-8332-AE7F75BF7641}.Debug|x64.Build.0 = Debug|Any CPU
-		{C2911884-1C0C-4363-8332-AE7F75BF7641}.Debug|x86.ActiveCfg = Debug|x86
-		{C2911884-1C0C-4363-8332-AE7F75BF7641}.Debug|x86.Build.0 = Debug|x86
-		{C2911884-1C0C-4363-8332-AE7F75BF7641}.Release|x64.ActiveCfg = Release|Any CPU
-		{C2911884-1C0C-4363-8332-AE7F75BF7641}.Release|x64.Build.0 = Release|Any CPU
-		{C2911884-1C0C-4363-8332-AE7F75BF7641}.Release|x86.ActiveCfg = Release|x86
-		{C2911884-1C0C-4363-8332-AE7F75BF7641}.Release|x86.Build.0 = Release|x86
+		{E3C5F044-1199-4BB9-8584-943EE7AF1223}.Debug|Any CPU.ActiveCfg = Debug
+		{E3C5F044-1199-4BB9-8584-943EE7AF1223}.Debug|Any CPU.Build.0 = Debug
 		{E3C5F044-1199-4BB9-8584-943EE7AF1223}.Debug|x64.ActiveCfg = Debug
 		{E3C5F044-1199-4BB9-8584-943EE7AF1223}.Debug|x86.ActiveCfg = Debug
+		{E3C5F044-1199-4BB9-8584-943EE7AF1223}.Release|Any CPU.ActiveCfg = Release
+		{E3C5F044-1199-4BB9-8584-943EE7AF1223}.Release|Any CPU.Build.0 = Release
 		{E3C5F044-1199-4BB9-8584-943EE7AF1223}.Release|x64.ActiveCfg = Release
 		{E3C5F044-1199-4BB9-8584-943EE7AF1223}.Release|x86.ActiveCfg = Release
 		{E3C5F044-1199-4BB9-8584-943EE7AF1223}.Release|x86.Build.0 = Release
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Debug|x64.ActiveCfg = Debug|x64
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Debug|x64.Build.0 = Debug|x64
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Debug|x86.ActiveCfg = Debug|x86
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Debug|x86.Build.0 = Debug|x86
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|x64.ActiveCfg = Release|x64
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|x64.Build.0 = Release|x64
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|x86.ActiveCfg = Release|x86
+		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

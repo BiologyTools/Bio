@@ -13,15 +13,52 @@ namespace BioImage
 {
     public partial class ImageView : UserControl
     {
-        public BioImage image;
-        private string filePath = "";
         public ImageView(string path)
         {
             InitializeComponent();
+            tools = new Toolbox();
+
             if (path == "" || path == null)
                 return;
+            image = new BioImage(true);
+            Coordinate = new BioImage.ZCT(0, 0, 0);
+            image.Open(path);
+            rgbPictureBox.Image = image.GetBitmap(Coordinate);
+            bool isRGB;
+            if (image.RGBCount > 1)
+                isRGB = true;
+            else
+                isRGB = false;
+            if (image.SizeC == 1 && !isRGB)
+            {
+                Mode = ViewMode.Filtered;
+            }
+            else
+                Mode = ViewMode.RGBImage;
+            
+            Plane = image.GetPlane(RCoordinate);
+
+            if (image.SizeC == 0)
+            {   
+                RCoordinate = new BioImage.ZCT(0, 0, 0);
+                RBuf = image.GetPlane(RCoordinate);
+            }
+            else
+            if (image.SizeC >= 1)
+            {   
+                GCoordinate = new BioImage.ZCT(0, 1, 0);
+                GBuf = image.GetPlane(GCoordinate);
+            }
+            else
+            if (image.SizeC > 2)
+            {
+                BCoordinate = new BioImage.ZCT(0, 2, 0);
+                BBuf = image.GetPlane(BCoordinate);
+            }
+
+
             LoadImage(path);
-            image.AutoThresholdImage();
+            //image.AutoThresholdImage();
             MouseWheel += new System.Windows.Forms.MouseEventHandler(ImageView_MouseWheel);
             zBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(ZTrackBar_MouseWheel);
             cBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(CTrackBar_MouseWheel);
@@ -33,27 +70,32 @@ namespace BioImage
             TimeFps = 60;
             ZFps = 60;
             CFps = 1;
-            if (image.SizeC == 1 && !image.isRGB)
-            {
-                Mode = ViewMode.Plane;
-            }
-            else
-                Mode = ViewMode.RGBImage;
             UpdateView();
+            
         }
         ~ImageView()
         {
-            image.Dispose();
+            
         }
 
+        public BioImage image;
+        private string filePath = "";
+        public BioImage.ZCT Coordinate;
+        public BioImage.ZCT RCoordinate;
+        public BioImage.ZCT GCoordinate;
+        public BioImage.ZCT BCoordinate;
         public int minSizeX = 60;
         public int minSizeY = 20;
+        public bool loopZ = true;
+        public bool loopT = true;
+        public bool loopC = true;
         public enum ViewMode
         {
-            Plane,
+            Raw,
+            Filtered,
             RGBImage
         }
-        private ViewMode viewMode = ViewMode.Plane;
+        private ViewMode viewMode = ViewMode.Filtered;
         public ViewMode Mode
         {
             get
@@ -62,36 +104,8 @@ namespace BioImage
             }
             set
             {
-                if(value == ViewMode.Plane)
-                {
-                    rgbBoxsPanel.SendToBack();
-                    cPanel.BringToFront();
-                    cPanel.Show();
-                    cPanel.Visible = true;
-                    cBar.Visible = true;
-                    rgbBoxsPanel.Hide();
-                    if(!timeEnabled)
-                    {
-                        cPanel.Location = new Point(0, timeBar.Location.Y);
-                    }
-                }
-                if (value == ViewMode.RGBImage)
-                {
-                    cPanel.Hide();
-                    cPanel.Visible = false;
-                    cBar.Enabled = true;
-                    cBar.Visible = false;
-                    cPanel.SendToBack();
-                    rgbBoxsPanel.BringToFront();
-                    rgbBoxsPanel.Show();
-                    rgbBoxsPanel.Visible = true;
-                    labelRGB.Visible = true;
-                    if (!timeEnabled)
-                    {
-                        rgbBoxsPanel.Location = new Point(0, timeBar.Location.Y);
-                    }
-                }
                 viewMode = value;
+                ViewModeChanged();
             }
         }
         public string Path
@@ -99,6 +113,76 @@ namespace BioImage
             get
             {
                 return filePath;
+            }
+        }
+        public BioImage.Buf Plane;
+        public BioImage.Buf RBuf;
+        public BioImage.Buf GBuf;
+        public BioImage.Buf BBuf;
+        public BioImage.Channel RChannel = null;
+        public BioImage.Channel GChannel = null;
+        public BioImage.Channel BChannel = null;
+
+        public Toolbox tools;
+
+        public void UpdateRGBChannels()
+        {
+            RChannel = image.Channels[image.rgbChannels[0]];
+            GChannel = image.Channels[image.rgbChannels[1]];
+            BChannel = image.Channels[image.rgbChannels[2]];
+            RBuf = image.GetPlane(RCoordinate);
+            GBuf = image.GetPlane(GCoordinate);
+            BBuf = image.GetPlane(BCoordinate);
+        }
+
+        public void ViewModeChanged()
+        {
+            if (Mode == ViewMode.Raw)
+            {
+                rgbBoxsPanel.SendToBack();
+                cPanel.BringToFront();
+                cPanel.Show();
+                cPanel.Visible = true;
+                cBar.Visible = true;
+                rgbBoxsPanel.Hide();
+                if (!timeEnabled)
+                {
+                    cPanel.Location = new Point(0, timeBar.Location.Y);
+                }
+                foreach (BioImage.Channel c in image.Channels)
+                {
+                    c.Min = 0;
+                    c.Max = ushort.MaxValue;
+                }
+            }
+            if (Mode == ViewMode.Filtered)
+            {
+                rgbBoxsPanel.SendToBack();
+                cPanel.BringToFront();
+                cPanel.Show();
+                cPanel.Visible = true;
+                cBar.Visible = true;
+                rgbBoxsPanel.Hide();
+                if (!timeEnabled)
+                {
+                    cPanel.Location = new Point(0, timeBar.Location.Y);
+                }
+            }
+            if (Mode == ViewMode.RGBImage)
+            {
+                cPanel.Hide();
+                cBar.Enabled = true;
+                cBar.Visible = false;
+                cPanel.SendToBack();
+                cPanel.Visible = false;
+                rgbBoxsPanel.BringToFront();
+                rgbBoxsPanel.Show();
+                rgbBoxsPanel.Visible = true;
+                labelRGB.Visible = true;
+                if (image.SizeT == 0)
+                {
+                    rgbBoxsPanel.Location = new Point(0, timeBar.Location.Y);
+                }
             }
         }
 
@@ -191,12 +275,12 @@ namespace BioImage
         public bool LoadImage(string path)
         {
             filePath = path;
-            image = new BioImage(filePath);
+            //image = new BioImage(filePath);
             zBar.Maximum = image.SizeZ-1;
             cBar.Maximum = image.SizeC-1;
             if (image.SizeT > 1)
             {
-                timeBar.Maximum = image.SizeT - 1;
+                timeBar.Maximum = image.imageReader.getSizeT()-1;
                 TimeEnabled = true;
             }
             else
@@ -229,23 +313,39 @@ namespace BioImage
             {
                 channelBoxR.SelectedIndex = 0;
             }
+            //We threshold the image so that the max threshold value is the max pixel value in image. 
+            image.AutoThreshold();
+
             return true;
         }
 
         public void UpdateView()
         {
-            if (Mode == ViewMode.RGBImage)
+            if (Mode == ViewMode.Raw)
             {
-                image.UpdateBitmap(zBar.Value, cBar.Value, timeBar.Value);
-                rgbPictureBox.Image = image.rgbBitmap;
+                Coordinate = new BioImage.ZCT(zBar.Value, cBar.Value, timeBar.Value);
+                rgbPictureBox.Image = image.GetBitmap(Coordinate); 
             }
             else
-            if (Mode == ViewMode.Plane)
+            if (Mode == ViewMode.Filtered)
             {
-
-                image.UpdatePlane(zBar.Value, cBar.Value, timeBar.Value);
-                rgbPictureBox.Image = image.planeBitmap;
-
+                Coordinate = new BioImage.ZCT(zBar.Value, cBar.Value, timeBar.Value);
+                rgbPictureBox.Image = image.GetFiltered(Coordinate, image.Channels[0].range);
+            }
+            else
+            if (Mode == ViewMode.RGBImage)
+            {
+                Coordinate = new BioImage.ZCT(zBar.Value, cBar.Value, timeBar.Value);
+                RCoordinate = new BioImage.ZCT(zBar.Value, 0, timeBar.Value);
+                GCoordinate = new BioImage.ZCT(zBar.Value, 1, timeBar.Value);
+                BCoordinate = new BioImage.ZCT(zBar.Value, 2, timeBar.Value);
+                RBuf = image.GetBuffer(RCoordinate);
+                GBuf = image.GetBuffer(GCoordinate);
+                BBuf = image.GetBuffer(BCoordinate);
+                AForge.IntRange rr = image.Channels[image.rgbChannels[0]].range;
+                AForge.IntRange gr = image.Channels[image.rgbChannels[1]].range;
+                AForge.IntRange br = image.Channels[image.rgbChannels[2]].range;
+                rgbPictureBox.Image = image.GetRGBBitmap(Coordinate, rr, gr, br);
             }
             UpdateStatus();
         }
@@ -261,8 +361,8 @@ namespace BioImage
                 statusLabel.Text = zBar.Value + "/" + zBar.Maximum + ", " + mouseColor;
             }
 
-            float ms = image.frameTicks / 1000;
-            statusLabel.Text += " FrameTime:" + ms + " ms";
+            float ms = image.loadTimeMS;
+            statusLabel.Text += " FrameTime:" + ms + " ms" + " Ticks:" + image.loadTimeTicks;
 
         }
 
@@ -271,8 +371,12 @@ namespace BioImage
             if (channelBoxR.SelectedIndex == -1)
                 return;
             BioImage.Channel ch = (BioImage.Channel)channelBoxR.SelectedItem;
-            image.SetRGBChannelIndex(BioImage.RGB.Red, ch.Index);
+            RCoordinate.C = ch.Index;
+            image.Channels[image.rgbChannels[0]] = ch;
+            image.rgbChannels[0] = ch.Index;
+            //image.SetRGBChannelIndex(BioImage.RGB.Red, ch.Index);
             //image.rgbimage.RChannel = ch;
+            UpdateRGBChannels();
             UpdateView();
         }
 
@@ -281,8 +385,12 @@ namespace BioImage
             if (channelBoxG.SelectedIndex == -1)
                 return;
             BioImage.Channel ch = (BioImage.Channel)channelBoxG.SelectedItem;
-            image.SetRGBChannelIndex(BioImage.RGB.Green, ch.Index);
+            GCoordinate.C = ch.Index;
+            image.Channels[image.rgbChannels[1]] = ch;
+            image.rgbChannels[0] = ch.Index;
+            //image.SetRGBChannelIndex(BioImage.RGB.Green, ch.Index);
             //image.rgbimage.GChannel = ch;
+            UpdateRGBChannels();
             UpdateView();
         }
 
@@ -291,8 +399,12 @@ namespace BioImage
             if (channelBoxB.SelectedIndex == -1)
                 return;
             BioImage.Channel ch = (BioImage.Channel)channelBoxB.SelectedItem;
-            image.SetRGBChannelIndex(BioImage.RGB.Blue, ch.Index);
+            BCoordinate.C = ch.Index;
+            image.Channels[image.rgbChannels[2]] = ch;
+            image.rgbChannels[0] = ch.Index;
+            //image.SetRGBChannelIndex(BioImage.RGB.Blue, ch.Index);
             //image.rgbimage.BChannel = ch;
+            UpdateRGBChannels();
             UpdateView();
         }
 
@@ -558,61 +670,75 @@ namespace BioImage
             Point p = toImagePoint(e.Location.X, e.Location.Y);
             if (Mode == ViewMode.RGBImage)
             {
-                if (image.RGBChannelsCount == 1)
+                if (image.RGBCount == 1)
                 {
-                    int r = image.RPlane.GetValue(p.X, p.Y);
-                    int g = image.GPlane.GetValue(p.X, p.Y);
-                    int b = image.BPlane.GetValue(p.X, p.Y);
+                    int r = RBuf.GetValue(p.X, p.Y);
+                    int g = GBuf.GetValue(p.X, p.Y);
+                    int b = BBuf.GetValue(p.X, p.Y);
                     mouseColor = "(" + p.X + "," + p.Y + "), " + r + "," + g + "," + b;
                 }
                 else
                 {
-                    int r = image.plane.GetValue(p.X, p.Y, 0);
-                    int g = image.plane.GetValue(p.X, p.Y, 1);
-                    int b = image.plane.GetValue(p.X, p.Y, 2);
+                    int r = Plane.GetValue(p.X, p.Y, 0);
+                    int g = Plane.GetValue(p.X, p.Y, 1);
+                    int b = Plane.GetValue(p.X, p.Y, 2);
                     mouseColor = "(" + p.X + "," + p.Y + "), " + r + "," + g + "," + b;
                 }
                 if (e.Button == MouseButtons.Left)
                 {
-                    AForge.Imaging.Drawing.FillRectangle(image.planeBitmapData, new Rectangle(e.X, e.Y, 10, 10), Color.White);
-                    /*
-                    if (image.plane.RGBChannelsCount > 0)
+                    if (Plane.RGBChannelsCount > 1)
                     {
-                        image.plane.SetValue(p.X, p.Y, cBar.Value, ushort.MaxValue);
+                        Plane.SetValueRGB(p.X, p.Y, cBar.Value, ushort.MaxValue);
                     }
                     else
                     {
-                        image.plane.SetValue(p.X, p.Y, ushort.MaxValue);
+                        image.SetValue(p.X, p.Y, Coordinate, ushort.MaxValue);
                     }
-                    */
                     UpdateView();
                 }
-                UpdateStatus();
             }
             else
-            if(Mode == ViewMode.Plane)
+            if(Mode == ViewMode.Filtered)
             {
-                int r = image.plane.GetValue(p.X, p.Y);
+                int r = Plane.GetValue(p.X, p.Y);
                 mouseColor = "(" + p.X + "," + p.Y + "), " + r;
                 if (e.Button == MouseButtons.Left)
                 {
-                    if (image.plane.RGBChannelsCount > 0)
+                    if (image.RGBCount > 1)
                     {
-                        image.plane.SetValue(p.X, p.Y, cBar.Value,ushort.MaxValue); 
+                        Plane.SetValueRGB(p.X, p.Y, cBar.Value, ushort.MaxValue); 
                     }
                     else
                     {
-                        image.plane.SetValue(p.X, p.Y, ushort.MaxValue);
+                        image.SetValue(p.X, p.Y, Coordinate, ushort.MaxValue);
                     }
                     UpdateView();
-                }  
+                }
             }
-   
+            else
+            if (Mode == ViewMode.Raw)
+            {
+                int r = Plane.GetValue(p.X, p.Y);
+                mouseColor = "(" + p.X + "," + p.Y + "), " + r;
+                if (e.Button == MouseButtons.Left)
+                {
+                    if (image.RGBCount > 1)
+                    {
+                        Plane.SetValueRGB(p.X, p.Y, cBar.Value, ushort.MaxValue);
+                    }
+                    else
+                    {
+                        image.SetValue(p.X, p.Y, Coordinate, ushort.MaxValue);
+                    }
+                    UpdateView();
+                }
+            }
+            UpdateStatus();
         }
 
         private void autoContrastChannelsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            image.AutoThresholdImage();
+            image.AutoThreshold();
             UpdateView();
         }
 
@@ -621,7 +747,9 @@ namespace BioImage
             PlaySpeed sp = null;
             if(Mode == ViewMode.RGBImage)
              sp = new PlaySpeed(timeEnabled, false, ZFps, TimeFps, CFps);
-            if (Mode == ViewMode.Plane)
+            if (Mode == ViewMode.Filtered)
+                sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
+            if (Mode == ViewMode.Raw)
                 sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (sp.ShowDialog() != DialogResult.OK)
                 return;
@@ -634,7 +762,7 @@ namespace BioImage
             PlaySpeed sp = null;
             if (Mode == ViewMode.RGBImage)
                 sp = new PlaySpeed(timeEnabled, false, ZFps, TimeFps, CFps);
-            if (Mode == ViewMode.Plane)
+            if (Mode == ViewMode.Filtered)
                 sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (sp.ShowDialog() != DialogResult.OK)
                 return;
@@ -647,7 +775,7 @@ namespace BioImage
             PlaySpeed sp = null;
             if (Mode == ViewMode.RGBImage)
                 sp = new PlaySpeed(timeEnabled, false, ZFps, TimeFps, CFps);
-            if (Mode == ViewMode.Plane)
+            if (Mode == ViewMode.Filtered)
                 sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (sp.ShowDialog() != DialogResult.OK)
                 return;
@@ -657,27 +785,31 @@ namespace BioImage
         }
         private void copyImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            /*
             if (Mode == ViewMode.RGBImage)
                 Clipboard.SetImage(image.rgbBitmap);
             if (Mode != ViewMode.Plane)
                 Clipboard.SetImage(image.planeBitmap);
+            */
         }
 
         private void ImageView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.C && e.Control)
             {
+                /*
                 if(Mode == ViewMode.RGBImage)   
                     Clipboard.SetImage(image.rgbBitmap);
                 if(Mode != ViewMode.Plane)
                     Clipboard.SetImage(image.planeBitmap);
+                */
             }
         }
 
         public void GetRange()
         {
             RangeTool t;
-            if (Mode == ViewMode.Plane)
+            if (Mode == ViewMode.Filtered)
                 t = new RangeTool(timeEnabled, true, zBar.Minimum, zBar.Maximum, timeBar.Minimum, timeBar.Maximum, cBar.Minimum, cBar.Maximum);
             else
                 t = new RangeTool(timeEnabled, false, zBar.Minimum, zBar.Maximum, timeBar.Minimum, timeBar.Maximum, cBar.Minimum, cBar.Maximum);
@@ -706,18 +838,7 @@ namespace BioImage
             GetRange();
         }
 
-        private void planeModeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if(planeModeToolStripMenuItem.Checked)
-            {
-                Mode = ViewMode.Plane;
-            }
-            else
-            {
-                Mode = ViewMode.RGBImage;
-            }
-            UpdateView();
-        }
+        
         private void ImageView_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Delta > 0)
@@ -763,7 +884,7 @@ namespace BioImage
         }
         private void CTrackBar_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (Mode != ViewMode.Plane)
+            if (Mode != ViewMode.Filtered)
                 return;
             if (e.Delta > 0)
             {
@@ -779,12 +900,15 @@ namespace BioImage
 
         private void cTimer_Tick(object sender, EventArgs e)
         {
-            if (playZToolStripMenuItem.Checked)
+            if (playCToolStripMenuItem.Checked)
             {
-                if (zBar.Maximum >= zBar.Value + 1)
-                    zBar.Value++;
+                if (cBar.Maximum >= cBar.Value + 1)
+                    cBar.Value++;
                 else
-                    zBar.Value = zBar.Minimum;
+                {
+                    if(loopC)
+                    cBar.Value = cBar.Minimum;
+                }
             }
         }
         private void zTimer_Tick(object sender, EventArgs e)
@@ -794,7 +918,10 @@ namespace BioImage
                 if (zBar.Maximum >= zBar.Value + 1)
                     zBar.Value++;
                 else
+                {
+                    if (loopZ)
                     zBar.Value = zBar.Minimum;
+                }
             }
         }
         private void timer_Tick(object sender, EventArgs e)
@@ -804,7 +931,10 @@ namespace BioImage
                 if (timeBar.Maximum >= timeBar.Value + 1)
                     timeBar.Value++;
                 else
+                {
+                    if(loopT)
                     timeBar.Value = timeBar.Minimum;
+                }
             }
         }
 
@@ -821,6 +951,42 @@ namespace BioImage
             UpdateView();
         }
 
-        
+        private void loopTimeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            loopT = loopTimeToolStripMenuItem.Checked;
+        }
+        private void loopZToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            loopZ = loopZToolStripMenuItem.Checked;
+        }
+        private void loopCToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            loopC = loopCToolStripMenuItem.Checked;
+        }
+
+        private void rawModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Mode = ViewMode.Raw;
+            rGBImageModeToolStripMenuItem.Checked = false;
+            rawModeToolStripMenuItem.Checked = false;
+        }
+        private void planeModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(planeModeToolStripMenuItem.Checked)
+            {
+                Mode = ViewMode.Filtered;
+            }
+            else
+            {
+                Mode = ViewMode.RGBImage;
+            }
+            UpdateView();
+        }
+        private void rGBImageModeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Mode = ViewMode.RGBImage;
+            rawModeToolStripMenuItem.Checked = false;
+            planeModeToolStripMenuItem.Checked = false;
+        }
     }
 }
