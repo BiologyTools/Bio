@@ -75,6 +75,8 @@ namespace BioImage
             // 
             // zPlayspeed
             // 
+            this.zPlayspeed.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.zPlayspeed.ForeColor = System.Drawing.Color.White;
             this.zPlayspeed.Location = new System.Drawing.Point(131, 11);
             this.zPlayspeed.Maximum = new decimal(new int[] {
             10000,
@@ -97,6 +99,8 @@ namespace BioImage
             // 
             // timePlayspeed
             // 
+            this.timePlayspeed.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.timePlayspeed.ForeColor = System.Drawing.Color.White;
             this.timePlayspeed.Location = new System.Drawing.Point(131, 37);
             this.timePlayspeed.Maximum = new decimal(new int[] {
             10000,
@@ -120,7 +124,6 @@ namespace BioImage
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.ForeColor = System.Drawing.Color.White;
             this.label3.Location = new System.Drawing.Point(195, 13);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(20, 13);
@@ -130,7 +133,6 @@ namespace BioImage
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.ForeColor = System.Drawing.Color.White;
             this.label4.Location = new System.Drawing.Point(195, 42);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(20, 13);
@@ -140,7 +142,6 @@ namespace BioImage
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.ForeColor = System.Drawing.Color.White;
             this.label5.Location = new System.Drawing.Point(285, 42);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(21, 13);
@@ -150,7 +151,6 @@ namespace BioImage
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.ForeColor = System.Drawing.Color.White;
             this.label6.Location = new System.Drawing.Point(285, 13);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(21, 13);
@@ -159,6 +159,8 @@ namespace BioImage
             // 
             // timeFpsBox
             // 
+            this.timeFpsBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.timeFpsBox.ForeColor = System.Drawing.Color.White;
             this.timeFpsBox.Location = new System.Drawing.Point(221, 37);
             this.timeFpsBox.Maximum = new decimal(new int[] {
             10000,
@@ -182,6 +184,8 @@ namespace BioImage
             // 
             // zFpsBox
             // 
+            this.zFpsBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.zFpsBox.ForeColor = System.Drawing.Color.White;
             this.zFpsBox.Location = new System.Drawing.Point(221, 11);
             this.zFpsBox.Maximum = new decimal(new int[] {
             10000,
@@ -206,7 +210,6 @@ namespace BioImage
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.ForeColor = System.Drawing.Color.White;
             this.label7.Location = new System.Drawing.Point(285, 70);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(21, 13);
@@ -215,6 +218,8 @@ namespace BioImage
             // 
             // cFpsBox
             // 
+            this.cFpsBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.cFpsBox.ForeColor = System.Drawing.Color.White;
             this.cFpsBox.Location = new System.Drawing.Point(221, 65);
             this.cFpsBox.Maximum = new decimal(new int[] {
             10000,
@@ -239,7 +244,6 @@ namespace BioImage
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.ForeColor = System.Drawing.Color.White;
             this.label8.Location = new System.Drawing.Point(195, 70);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(20, 13);
@@ -248,6 +252,8 @@ namespace BioImage
             // 
             // cPlayspeed
             // 
+            this.cPlayspeed.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.cPlayspeed.ForeColor = System.Drawing.Color.White;
             this.cPlayspeed.Location = new System.Drawing.Point(131, 65);
             this.cPlayspeed.Maximum = new decimal(new int[] {
             10000,
@@ -272,7 +278,7 @@ namespace BioImage
             // 
             this.label9.AutoSize = true;
             this.label9.ForeColor = System.Drawing.Color.White;
-            this.label9.Location = new System.Drawing.Point(14, 70);
+            this.label9.Location = new System.Drawing.Point(14, 67);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(66, 13);
             this.label9.TabIndex = 10;
@@ -282,8 +288,8 @@ namespace BioImage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(77)))), ((int)(((byte)(98)))));
-            this.ClientSize = new System.Drawing.Size(313, 97);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.ClientSize = new System.Drawing.Size(332, 97);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.cFpsBox);
             this.Controls.Add(this.label8);
@@ -299,7 +305,7 @@ namespace BioImage
             this.Controls.Add(this.zPlayspeed);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.ForeColor = System.Drawing.Color.White;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;

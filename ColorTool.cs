@@ -12,7 +12,7 @@ namespace BioImage
 {
     public partial class ColorTool : Form
     {
-        private BioImage.ColorS color;
+        private BioImage.ColorS color = new BioImage.ColorS();
         public BioImage.ColorS Color
         {
             get
@@ -24,11 +24,19 @@ namespace BioImage
                 color = value;
             }
         }
+
         public ColorTool()
         {
             InitializeComponent();
-            color = new BioImage.ColorS(0,0,0);
+            DialogResult = DialogResult.None;
         }
+        public ColorTool(BioImage.ColorS col)
+        {
+            InitializeComponent();
+            color = col;
+            DialogResult = DialogResult.OK;
+        }
+
         private void redBox_ValueChanged(object sender, EventArgs e)
         {
             color.R = (ushort)redBox.Value;
@@ -45,6 +53,11 @@ namespace BioImage
         {
             color.B = (ushort)blueBox.Value;
             colorPanel.BackColor = BioImage.ColorS.ToColor(color);
+        }
+
+        private void colorPanel_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

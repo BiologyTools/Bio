@@ -8,26 +8,68 @@ namespace BioImage
 {
     public partial class ImageViewer : Form
     {
-        Toolbox tools;
-        ImageView viewer;
+        Tools tools;
+        private ImageView viewer = null;
+        bool useFolderBrowser = false;
+
+        public ImageViewer(string id)
+        {
+            InitializeComponent();
+            string[] sp = id.Split('/');
+
+
+            tools = new Tools();
+            //viewer = new ImageView(sp[0],sp[1], sp[2] )
+            string s = "E:/TESTIMAGES/TIF16B-T3C4Z6.tif";
+            SetFolder(s, false, 0);
+            viewer.image.SaveSeries(s, 0);
+        }
+
         public ImageViewer(string[] arg)
         {
             InitializeComponent();
-            tools = new Toolbox();
+            tools = new Tools();
+
+
+            string s = "E:/TESTIMAGES/TIF16B-T3C4Z6.tif";
+            SetFolder(s, false, 0);
+            viewer.image.SaveSeries(s, 0);
+
+
             if (arg.Length == 0)
                 return;
-            string path = arg[0];
-            InitViewer(path);
+            else
+            if (arg.Length == 1)
+            {
+
+                SetFile(arg[0], 0, false);
+            }
         }
 
-        public void InitViewer(string file)
+        public void SetFile(string file, int seri, bool folder)
         {
-            viewer = new ImageView(file);
+            if (viewer == null)
+            {
+                viewer = new ImageView(file, seri, folder);
+            }
+            viewer.serie = seri;
+            viewer.filepath = file;
+            
             viewer.Dock = DockStyle.Fill;
+            
             panel.Controls.Add(viewer);
             string name = Path.GetFileName(file);
             this.Text = name;
-           
+        }
+
+        public void SetFolder(string file, bool folder, int seri)
+        {
+            viewer = new ImageView(file, seri, folder);
+            viewer.Dock = DockStyle.Fill;
+            panel.Controls.Add(viewer);
+            viewer.serie = seri;
+            string name = Path.GetFileName(file);
+            this.Text = name;
         }
 
         public BioImage Image
@@ -46,7 +88,23 @@ namespace BioImage
         {
             if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            InitViewer(openFileDialog.FileName);
+            SetFolder(openFileDialog.FileName, false, 0);
+        }
+
+        private void openFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (useFolderBrowser)
+            {
+                if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
+                    return;
+                SetFile(openFileDialog.FileName, Image.serie, true);
+            }
+            else
+            {
+                if (openFileDialog.ShowDialog() != DialogResult.OK)
+                    return;
+                SetFile(openFileDialog.FileName, Image.serie, true);
+            }
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -65,8 +123,7 @@ namespace BioImage
                 return;
             if (saveFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            viewer.image.Save(saveFileDialog.FileName, 0, Image.imageCount, Image.meta);
-            //viewer.image.Save(saveFileDialog.FileName,0,viewer.image.imageCount);
+            viewer.image.SaveSeries(saveFileDialog.FileName,0);
         }
 
         private void ImageViewer_SizeChanged(object sender, EventArgs e)
@@ -108,5 +165,17 @@ namespace BioImage
         {
             tools.Show();
         }
+
+        private void newWindowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+            Process p = new Process();
+            p.StartInfo.FileName = Application.ExecutablePath;
+            p.StartInfo.Arguments = openFileDialog.FileName;
+            p.Start();
+        }
+
+        
     }
 }

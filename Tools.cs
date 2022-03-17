@@ -11,46 +11,57 @@ using BioImage;
 
 namespace BioImage
 {
-    public partial class Toolbox : Form
+    public partial class Tools : Form
     {
         public static bool applyToStack = false;
         public static Pencil pencil;
-        private BioImage image;
-
-        public BioImage Image
-        {
-            get { return image; }
-            set { image = value; }
-        }
-        public class Tool
+        public class Tool : Control
         {
             public BioImage.ColorS Color;
             public List<Point> Points;
         }
         public class Pencil : Tool
         {
-            
+            public Pencil(BioImage.ColorS col)
+            {
+                Color = col;
+            }
         }
         public class Brush : Tool
         {
-            public int Width;
+            public int BrushWidth;
         }
         public class Eraser : Tool
         {
-            public int Width;
+            public int EraserWidth;
         }
         public static Tool currentTool;
         public BioImage.ColorS color;
-        public BioImage.ColorS colorg;
         public Font font;
-        public Toolbox()
+        public ColorTool ctool;
+        private BioImage image;
+        public BioImage Image
+        {
+            get
+            {
+                return image;
+            }
+            set
+            {
+                image = value;
+            }
+        }
+        public Tools()
         {
             InitializeComponent();
+            pencil = new Pencil(new BioImage.ColorS(ushort.MaxValue));
         }
-
+        
         private void pencilPanel_DoubleClick(object sender, EventArgs e)
         {
-            if (colorDialog.ShowDialog() != DialogResult.OK)
+            if (ctool == null)
+                ctool = new ColorTool();
+            if (ctool.ShowDialog() != DialogResult.OK)
                 return;
             Color col = colorDialog.Color;
             color = BioImage.ColorS.FromColor(col);
@@ -78,11 +89,11 @@ namespace BioImage
             Bitmap b;
             if(applyToStack)
             {
-                for (int i = 0; i < Image.imageCount; i++)
+                for (int i = 0; i < image.imageCount; i++)
                 {
-                    b = Image.Buffers[i].GetBuffer();
+                    b = image.Buffers[i].GetBitmap();
                     b.RotateFlip(RotateFlipType.RotateNoneFlipX);
-                    Image.Buffers[i].SetBuffer(b);
+                    image.Buffers[i].SetBuffer(b);
                 }
             }
             else
@@ -98,7 +109,7 @@ namespace BioImage
             {
                 for (int i = 0; i < Image.imageCount; i++)
                 {
-                    b = Image.Buffers[i].GetBuffer();
+                    b = Image.Buffers[i].GetBitmap();
                     b.RotateFlip(RotateFlipType.RotateNoneFlipY);
                     Image.Buffers[i].SetBuffer(b);
                 }
@@ -107,6 +118,11 @@ namespace BioImage
             {
 
             }
+        }
+
+        private void pencilPanel_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

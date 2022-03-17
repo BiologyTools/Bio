@@ -36,11 +36,14 @@ namespace BioImage
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolboxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.panel = new System.Windows.Forms.Panel();
-            this.toolboxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -58,8 +61,10 @@ namespace BioImage
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
+            this.openFolderToolStripMenuItem,
             this.closeToolStripMenuItem,
-            this.saveToolStripMenuItem});
+            this.saveToolStripMenuItem,
+            this.newWindowToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -67,23 +72,37 @@ namespace BioImage
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openToolStripMenuItem.Text = "Open";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.openToolStripMenuItem.Text = "Open File";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // newWindowToolStripMenuItem
+            // 
+            this.newWindowToolStripMenuItem.Name = "newWindowToolStripMenuItem";
+            this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.newWindowToolStripMenuItem.Text = "Open in New Window";
+            this.newWindowToolStripMenuItem.Click += new System.EventHandler(this.newWindowToolStripMenuItem_Click);
+            // 
+            // toolboxToolStripMenuItem
+            // 
+            this.toolboxToolStripMenuItem.Name = "toolboxToolStripMenuItem";
+            this.toolboxToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.toolboxToolStripMenuItem.Text = "Toolbox";
+            this.toolboxToolStripMenuItem.Click += new System.EventHandler(this.toolboxToolStripMenuItem_Click);
             // 
             // imageMenuStrip
             // 
@@ -92,18 +111,19 @@ namespace BioImage
             // 
             // panel
             // 
+            this.panel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel.Location = new System.Drawing.Point(0, 24);
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(569, 437);
             this.panel.TabIndex = 1;
             // 
-            // toolboxToolStripMenuItem
+            // openFolderToolStripMenuItem
             // 
-            this.toolboxToolStripMenuItem.Name = "toolboxToolStripMenuItem";
-            this.toolboxToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.toolboxToolStripMenuItem.Text = "Toolbox";
-            this.toolboxToolStripMenuItem.Click += new System.EventHandler(this.toolboxToolStripMenuItem_Click);
+            this.openFolderToolStripMenuItem.Name = "openFolderToolStripMenuItem";
+            this.openFolderToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.openFolderToolStripMenuItem.Text = "Open Folder";
+            this.openFolderToolStripMenuItem.Click += new System.EventHandler(this.openFolderToolStripMenuItem_Click);
             // 
             // ImageViewer
             // 
@@ -140,5 +160,8 @@ namespace BioImage
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.ToolStripMenuItem toolboxToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newWindowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openFolderToolStripMenuItem;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
     }
 }

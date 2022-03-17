@@ -109,5 +109,10 @@ namespace BioImage
             float ms = 1000 / fps;
             cPlayspeed.Value = (int)Math.Floor(ms);
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

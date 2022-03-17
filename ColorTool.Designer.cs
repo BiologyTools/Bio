@@ -70,6 +70,7 @@
             // 
             // redBox
             // 
+            this.redBox.BackColor = System.Drawing.SystemColors.Control;
             this.redBox.Location = new System.Drawing.Point(36, 7);
             this.redBox.Maximum = new decimal(new int[] {
             65535,
@@ -83,6 +84,7 @@
             // 
             // greenBox
             // 
+            this.greenBox.BackColor = System.Drawing.SystemColors.Control;
             this.greenBox.Location = new System.Drawing.Point(36, 33);
             this.greenBox.Maximum = new decimal(new int[] {
             65535,
@@ -96,6 +98,7 @@
             // 
             // blueBox
             // 
+            this.blueBox.BackColor = System.Drawing.SystemColors.Control;
             this.blueBox.Location = new System.Drawing.Point(35, 60);
             this.blueBox.Maximum = new decimal(new int[] {
             65535,
@@ -113,11 +116,13 @@
             this.colorPanel.Name = "colorPanel";
             this.colorPanel.Size = new System.Drawing.Size(64, 64);
             this.colorPanel.TabIndex = 6;
+            this.colorPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.colorPanel_Paint);
             // 
             // ColorTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.LightSteelBlue;
             this.ClientSize = new System.Drawing.Size(223, 88);
             this.Controls.Add(this.colorPanel);
             this.Controls.Add(this.blueBox);
