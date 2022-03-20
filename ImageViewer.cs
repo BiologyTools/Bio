@@ -24,8 +24,8 @@ namespace BioImage
             tools = new Tools();
             //string s = "E:/TESTIMAGES/ROIS.ome.tif";
             //string s = "E:/TESTIMAGES/text.ome.tif";
-            string s = "E:/TESTIMAGES/points.ome.tif";
-            SetFolder(s, false, 0);
+            //string s = "E:/TESTIMAGES/points.ome.tif";
+            //SetFolder(s, false, 0);
             //viewer.image.SaveSeries(s, 0);
             if (arg.Length == 0)
                 return;
