@@ -19,6 +19,7 @@ namespace BioImage
         public static bool gEnabled = true;
         public static bool bEnabled = true;
         public static Pencil pencil;
+        public static ROITool roiTool;
         public class Tool : Control
         {
             public enum ToolType
@@ -57,6 +58,13 @@ namespace BioImage
         {
             public int EraserWidth;
         }
+        public class ROITool : Tool
+        {
+            public ROITool()
+            {
+                type = ToolType.annotation;
+            }
+        }
 
         public static Tool currentTool;
         public Font font;
@@ -76,7 +84,8 @@ namespace BioImage
         {
             InitializeComponent();
             pencil = new Pencil(new BioImage.ColorS(ushort.MaxValue));
-            currentTool = pencil;
+            roiTool = new ROITool();
+            currentTool = roiTool;
             colorTool = new ColorTool();
         }
         
@@ -101,6 +110,8 @@ namespace BioImage
         private void pencilPanel_Click(object sender, EventArgs e)
         {
             currentTool = pencil;
+            pencilPanel.BackColor = Color.DarkGray;
+            selectPanel.BackColor = Color.White;
         }
 
         private void stackBox_CheckedChanged(object sender, EventArgs e)
@@ -147,6 +158,24 @@ namespace BioImage
         private void pencilPanel_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             colorTool.Show();
+            currentTool = pencil;
+            pencilPanel.BackColor = Color.DarkGray;
+            selectPanel.BackColor = Color.White;
+        }
+
+        private void selectPanel_Click(object sender, EventArgs e)
+        {
+            currentTool = roiTool;
+            pencilPanel.BackColor = Color.White;
+            selectPanel.BackColor = Color.DarkGray;
+        }
+
+        private void selectPanel_DoubleClick(object sender, EventArgs e)
+        {
+            currentTool = roiTool;
+            pencilPanel.BackColor = Color.White;
+            selectPanel.BackColor = Color.DarkGray;
+
         }
     }
 }

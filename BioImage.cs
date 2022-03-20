@@ -611,6 +611,8 @@ namespace BioImage
             {
                 get
                 {
+                    if (type == Type.Line || type == Type.Ellipse || type == Type.Label || type == Type.Freeform)
+                        return new PointD(BoundingBox.X, BoundingBox.Y);
                     return Points[0];
                 }
                 set
@@ -629,33 +631,36 @@ namespace BioImage
             {
                 get
                 {
-                    if(type == Type.Point)
-                        return new RectangleD(Points[0].X, Points[0].Y, 1, 1);
-                    else
+                    if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform)
+                        return BoundingBox;
+                    if (type == Type.Rectangle || type == Type.Ellipse)
                         return new RectangleD(Points[0].X, Points[0].Y, Points[1].X - Points[0].X, Points[2].Y - Points[0].Y);
+                    else
+                        return new RectangleD(Points[0].X, Points[0].Y, 1, 1);
                 }
                 set
                 {
-                    if (type == Type.Point || type == Type.Line)
-                        return;
-                    if (Points.Count == 0)
+                    if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform || type == Type.Label)
+                    {
+                        BoundingBox = value;
+                    }
+                    if (Points.Count == 0 && (type == Type.Rectangle || type == Type.Ellipse))
                     {
                         AddPoint(new PointD(value.X, value.Y));
                         AddPoint(new PointD(value.X + value.W, value.Y));
                         AddPoint(new PointD(value.X, value.Y + value.H));
                         AddPoint(new PointD(value.X + value.W, value.Y + value.H));
-                        UpdateSelectBoxs();
-                        UpdateBoundingBox();
                     }
                     else
+                    if(type == Type.Rectangle || type == Type.Ellipse)
                     {
                         Points[0] = new PointD(value.X, value.Y);
                         Points[1] = new PointD(value.X + value.W, value.Y);
                         Points[2] = new PointD(value.X, value.Y + value.H);
                         Points[3] = new PointD(value.X + value.W, value.Y + value.H);
-                        UpdateSelectBoxs();
-                        UpdateBoundingBox();
                     }
+                    UpdateSelectBoxs();
+                    UpdateBoundingBox();
                 }
             }
 
@@ -687,7 +692,11 @@ namespace BioImage
                 {
                     if (type == Type.Point)
                         return strokeWidth;
-                    return (Points[1].X - Points[0].X);
+                    else
+                    if (type == Type.Rectangle)
+                        return Rect.W;
+                    else
+                        return BoundingBox.W;
                 }
                 set
                 {
@@ -700,7 +709,11 @@ namespace BioImage
                 {
                     if (type == Type.Point)
                         return strokeWidth;
-                    return Points[2].Y - Points[0].Y;
+                    else
+                    if (type == Type.Rectangle)
+                        return Rect.H;
+                    else
+                        return BoundingBox.H;
                 }
                 set
                 {
@@ -715,7 +728,9 @@ namespace BioImage
             public RectangleD BoundingBox;
             public Font font;
             public SZCT coord;
-            public System.Drawing.Color color;
+            public System.Drawing.Color strokeColor;
+            public System.Drawing.Color fillColor;
+            public bool isFilled = false;
             public string roiID;
             public string roiName;
             public string text;
@@ -745,7 +760,7 @@ namespace BioImage
             public Annotation()
             {
                 coord = new SZCT(0, 0, 0, 0);
-                color = System.Drawing.Color.Yellow;
+                strokeColor = System.Drawing.Color.Yellow;
                 font = SystemFonts.DefaultFont;
             }
 
@@ -1723,8 +1738,10 @@ namespace BioImage
                         omexml.setPointText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
                     meta.setLineFontSize(fl, i, series);
-                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.color.R, an.color.G, an.color.B, an.color.A);
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setPointStrokeColor(col, i, series);
+                    ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
+                    omexml.setPointFillColor(colf, i, series);
                 }
                 else
                 if (an.type == Annotation.Type.Rectangle)
@@ -1747,10 +1764,12 @@ namespace BioImage
                         omexml.setRectangleText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
                     meta.setRectangleFontSize(fl, i, series);
-                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.color.R, an.color.G, an.color.B, an.color.A);
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setRectangleStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
                     omexml.setLineStrokeWidth(sw, i, series);
+                    ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
+                    omexml.setRectangleFillColor(colf, i, series);
                 }
                 else
                 if (an.type == Annotation.Type.Line)
@@ -1772,10 +1791,12 @@ namespace BioImage
                         omexml.setLineText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
                     meta.setLineFontSize(fl, i, series);
-                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.color.R, an.color.G, an.color.B, an.color.A);
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setLineStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
                     omexml.setLineStrokeWidth(sw, i, series);
+                    ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
+                    omexml.setLineFillColor(colf, i, series);
                 }
                 else
                 if (an.type == Annotation.Type.Ellipse)
@@ -1800,10 +1821,12 @@ namespace BioImage
                         omexml.setEllipseText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
                     meta.setEllipseFontSize(fl, i, series);
-                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.color.R, an.color.G, an.color.B, an.color.A);
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setEllipseStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
                     omexml.setEllipseStrokeWidth(sw, i, series);
+                    ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
+                    omexml.setEllipseFillColor(colf, i, series);
                 }
                 else
                 if (an.type == Annotation.Type.Label)
@@ -1824,10 +1847,12 @@ namespace BioImage
                         omexml.setLabelText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
                     meta.setLabelFontSize(fl, i, series);
-                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.color.R, an.color.G, an.color.B, an.color.A);
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setLabelStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
                     omexml.setLabelStrokeWidth(sw,i, series);
+                    ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
+                    omexml.setLabelFillColor(colf, i, series);
                 }
                 i++;
             }
@@ -2001,16 +2026,20 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
+                        
                         an.text = meta.getPointText(i, sc);
                         ome.units.quantity.Length fl = meta.getPointFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
                         ome.xml.model.primitives.Color col = meta.getPointStrokeColor(i, sc);
                         if(col != null)
-                        an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                        an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(),col.getRed(), col.getGreen(), col.getBlue());
                         ome.units.quantity.Length fw = meta.getPointStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getPointStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                     }
                     else
                     if (type == "Line")
@@ -2049,11 +2078,13 @@ namespace BioImage
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
                         ome.xml.model.primitives.Color col = meta.getLineStrokeColor(i, sc);
                         if (col != null)
-                            an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
-                        double? dw = meta.getLineStrokeWidth(i, sc).value().doubleValue();
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
                         ome.units.quantity.Length fw = meta.getLineStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getLineStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                     }
                     else
                     if (type == "Rectangle")
@@ -2091,10 +2122,14 @@ namespace BioImage
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
                         ome.xml.model.primitives.Color col = meta.getRectangleStrokeColor(i, sc);
                         if (col != null)
-                            an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
                         ome.units.quantity.Length fw = meta.getRectangleStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getRectangleStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
+                        ome.xml.model.enums.FillRule fr = meta.getRectangleFillRule(i, sc);
                     }
                     else
                     if (type == "Ellipse")
@@ -2137,10 +2172,13 @@ namespace BioImage
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
                         ome.xml.model.primitives.Color col = meta.getEllipseStrokeColor(i, sc);
                         if (col != null)
-                            an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
                         ome.units.quantity.Length fw = meta.getEllipseStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getEllipseStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                     }
                     else
                     if (type == "Polygon")
@@ -2180,10 +2218,13 @@ namespace BioImage
                         an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
                         ome.xml.model.primitives.Color col = meta.getPolygonStrokeColor(i, sc);
                         if(col!=null)
-                        an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                        an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
                         ome.units.quantity.Length fw = meta.getPolygonStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getPolygonStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                     }
                     else
                     if (type == "Polyline")
@@ -2218,10 +2259,13 @@ namespace BioImage
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
                         ome.xml.model.primitives.Color col = meta.getPolylineStrokeColor(i, sc);
                         if (col != null)
-                            an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
                         ome.units.quantity.Length fw = meta.getPolylineStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getPolylineStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                     }
                     else
                     if (type == "Label")
@@ -2255,11 +2299,13 @@ namespace BioImage
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
                         ome.xml.model.primitives.Color col = meta.getLabelStrokeColor(i, sc);
                         if (col != null)
-                            an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
                         ome.units.quantity.Length fw = meta.getLabelStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
-
+                        ome.xml.model.primitives.Color colf = meta.getLabelStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                     }
                     Annotations.Add(an);
                     }
@@ -2334,6 +2380,393 @@ namespace BioImage
             }
             Table.AddBioImageByID(idString, this);
 
+        }
+
+        public List<Annotation> OpenROIs(string file)
+        {
+            List<Annotation> Annotations = new List<Annotation>();
+            // create OME-XML metadata store
+            ServiceFactory factory = new ServiceFactory();
+            OMEXMLService service = (OMEXMLService)factory.getInstance(typeof(OMEXMLService));
+            meta = service.createOMEXMLMetadata();
+            // create format reader
+            imageReader = new ImageReader();
+            imageReader.setMetadataStore(meta);
+            // initialize file
+            imageReader.setId(file);
+            imageCount = imageReader.getImageCount();
+            seriesCount = imageReader.getSeriesCount();
+
+            int rc = meta.getROICount();
+            for (int i = 0; i < rc; i++)
+            {
+                string roiID = meta.getROIID(i);
+                string roiName = meta.getROIName(i);
+                SZCT co = new SZCT(0, 0, 0, 0);
+                int scount = meta.getShapeCount(i);
+                for (int sc = 0; sc < scount; sc++)
+                {
+                    string type = meta.getShapeType(i, sc);
+                    BioImage.Annotation an = new Annotation();
+                    an.roiID = roiID;
+                    an.roiName = roiName;
+                    an.shapeIndex = sc;
+                    if (type == "Point")
+                    {
+                        an.type = Annotation.Type.Point;
+                        an.id = meta.getPointID(i, sc);
+                        double dx = meta.getPointX(i, sc).doubleValue();
+                        double dy = meta.getPointY(i, sc).doubleValue();
+                        an.AddPoint(new PointD(dx, dy));
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getPointTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPointTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPointTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+
+                        an.text = meta.getPointText(i, sc);
+                        ome.units.quantity.Length fl = meta.getPointFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getPointStrokeColor(i, sc);
+                        if (col != null)
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getPointStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getPointStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
+                    }
+                    else
+                    if (type == "Line")
+                    {
+                        an.type = Annotation.Type.Line;
+                        an.id = meta.getLineID(i, sc);
+                        double px1 = meta.getLineX1(i, sc).doubleValue();
+                        double py1 = meta.getLineY1(i, sc).doubleValue();
+                        double px2 = meta.getLineX2(i, sc).doubleValue();
+                        double py2 = meta.getLineY2(i, sc).doubleValue();
+                        an.AddPoint(new PointD(px1, py1));
+                        an.AddPoint(new PointD(px2, py2));
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getLineTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getLineTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getLineTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        an.text = meta.getLineText(i, sc);
+                        ome.units.quantity.Length fl = meta.getLineFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getLineStrokeColor(i, sc);
+                        if (col != null)
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
+                        double? dw = meta.getLineStrokeWidth(i, sc).value().doubleValue();
+                        ome.units.quantity.Length fw = meta.getLineStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getLineStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
+                    }
+                    else
+                    if (type == "Rectangle")
+                    {
+                        an.type = Annotation.Type.Rectangle;
+                        an.id = meta.getRectangleID(i, sc);
+                        double px = meta.getRectangleX(i, sc).doubleValue();
+                        double py = meta.getRectangleY(i, sc).doubleValue();
+                        double pw = meta.getRectangleWidth(i, sc).doubleValue();
+                        double ph = meta.getRectangleHeight(i, sc).doubleValue();
+                        an.Rect = new RectangleD(px, py, pw, ph);
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getRectangleTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getRectangleTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getRectangleTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        an.text = meta.getRectangleText(i, sc);
+                        ome.units.quantity.Length fl = meta.getRectangleFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getRectangleStrokeColor(i, sc);
+                        if (col != null)
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getRectangleStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getRectangleStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
+                        ome.xml.model.enums.FillRule fr = meta.getRectangleFillRule(i, sc);
+                    }
+                    else
+                    if (type == "Ellipse")
+                    {
+                        an.type = Annotation.Type.Ellipse;
+                        an.id = meta.getEllipseID(i, sc);
+                        double px = meta.getEllipseX(i, sc).doubleValue();
+                        double py = meta.getEllipseY(i, sc).doubleValue();
+                        double ew = meta.getEllipseRadiusX(i, sc).doubleValue();
+                        double eh = meta.getEllipseRadiusY(i, sc).doubleValue();
+                        //We convert the ellipse radius to System.Drawing.Rectangle
+                        double w = ew * 2;
+                        double h = eh * 2;
+                        double x = px - ew;
+                        double y = py - eh;
+                        an.Rect = new RectangleD(x, y, w, h);
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getEllipseTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getEllipseTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getEllipseTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        an.text = meta.getEllipseText(i, sc);
+                        ome.units.quantity.Length fl = meta.getEllipseFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getEllipseStrokeColor(i, sc);
+                        if (col != null)
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getEllipseStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getEllipseStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
+                    }
+                    else
+                    if (type == "Polygon")
+                    {
+                        an.type = Annotation.Type.Polygon;
+                        an.id = meta.getPolygonID(i, sc);
+                        string pxs = meta.getPolygonPoints(i, sc);
+                        PointD[] pts = an.stringToPoints(pxs);
+                        if (pts.Length > 100)
+                        {
+                            an.type = Annotation.Type.Freeform;
+                        }
+                        an.AddPoints(pts);
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getPolygonTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPolygonTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPolygonTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        an.text = meta.getPolygonText(i, sc);
+                        ome.units.quantity.Length fl = meta.getPolygonFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getPolygonStrokeColor(i, sc);
+                        if (col != null)
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getPolygonStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getPolygonStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
+                    }
+                    else
+                    if (type == "Polyline")
+                    {
+                        an.type = Annotation.Type.Polyline;
+                        an.id = meta.getPolylineID(i, sc);
+                        string pxs = meta.getPolylinePoints(i, sc);
+                        an.AddPoints(an.stringToPoints(pxs));
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getPolylineTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPolylineTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPolylineTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        an.text = meta.getPolylineText(i, sc);
+                        ome.units.quantity.Length fl = meta.getPolylineFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getPolylineStrokeColor(i, sc);
+                        if (col != null)
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getPolylineStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getPolylineStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
+                    }
+                    else
+                    if (type == "Label")
+                    {
+                        an.type = Annotation.Type.Label;
+                        an.text = meta.getLabelText(i, sc);
+                        an.id = meta.getLabelID(i, sc);
+                        an.AddPoint(new PointD(meta.getLabelX(i, sc).doubleValue(), meta.getLabelY(i, sc).doubleValue()));
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getLabelTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getLabelTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getLabelTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        ome.units.quantity.Length fl = meta.getLabelFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getLabelStrokeColor(i, sc);
+                        if (col != null)
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getLabelStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                        ome.xml.model.primitives.Color colf = meta.getLabelStrokeColor(i, sc);
+                        if (colf != null)
+                            an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
+                    }
+                    Annotations.Add(an);
+                }
+            }
+            return Annotations;
+        }
+
+        public void ExportROIs(string filename, List<Annotation> Annotations)
+        {
+            string con = "";
+            string cols = "ROIID,ROINAME,TYPE,ID,SHAPEINDEX,TEXT,S,C,Z,T,X,Y,W,H,POINTS,STROKECOLOR,STROKECOLORW,FILLCOLOR,FONTSIZE" + Environment.NewLine;
+            con += cols;
+            for (int i = 0; i < Annotations.Count; i++)
+            {
+                BioImage.Annotation an = Annotations[i];
+                BioImage.PointD[] points = an.GetPoints();
+                string pts = "";
+                for (int j = 0; j < points.Length; j++)
+                {
+                    if (j == points.Length - 1)
+                        pts += points[j].X.ToString() + "," + points[j].Y.ToString();
+                    else
+                        pts += points[j].X.ToString() + "," + points[j].Y.ToString() + " ";
+                }
+
+                char sep = (char)34;
+                string sColor = sep.ToString() + an.strokeColor.A.ToString() + ',' + an.strokeColor.R.ToString() + ',' + an.strokeColor.G.ToString() + ',' + an.strokeColor.B.ToString() + sep.ToString();
+                string bColor = sep.ToString() + an.fillColor.A.ToString() + ',' + an.fillColor.R.ToString() + ',' + an.fillColor.G.ToString() + ',' + an.fillColor.B.ToString() + sep.ToString();
+
+                string line = an.roiID + ',' + an.roiName + ',' + an.type.ToString() + ',' + an.id + ',' + an.shapeIndex.ToString() + ',' +
+                    an.text + ',' + an.coord.S.ToString() + ',' + an.coord.Z.ToString() + ',' + an.coord.C.ToString() + ',' + an.coord.T.ToString() + ',' + an.X.ToString() + ',' + an.Y.ToString() + ',' +
+                    an.W.ToString() + ',' + an.H.ToString() + ',' + sep.ToString() + pts + sep.ToString() + ',' + sColor + ',' + an.strokeWidth.ToString() + ',' + bColor + ',' + an.font.Size.ToString() + ',' + Environment.NewLine;
+                con += line;
+            }
+            File.WriteAllText(filename, con);
+        }
+
+        public void ExportROIFolder(string path,string filename)
+        {
+            string[] fs = Directory.GetFiles(path);
+            int i = 0;
+            foreach (string f in fs)
+            {
+                List<Annotation> annotations = OpenROIs(f);
+                string ff = Path.GetFileNameWithoutExtension(f);
+                ExportROIs(path + "//" + ff + "-" + i.ToString(),annotations);
+                i++;
+            }
         }
 
         public List<string> OpenFolder(string path, int ser, out string nameId, char c)
