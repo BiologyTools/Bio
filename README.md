@@ -13,7 +13,5 @@ mainTabControl.TabPages[3].Controls.Add(imageview);
 //Another way of opening just image.
 
 BioImage image = new BioImage("16bitTestStack.tif");
-image.Save("16bitTestSaveStack.tif");
-
-To do: Add a scripting language with C# similar to ImageJ macros but with more functionality.
+image.SaveSeries("16bitTestSaveStack.tif", 0);
 
