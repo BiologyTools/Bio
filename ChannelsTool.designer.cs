@@ -48,7 +48,7 @@ namespace BioImage
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.Black;
+            this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.Location = new System.Drawing.Point(12, 55);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(80, 13);
@@ -58,7 +58,7 @@ namespace BioImage
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.ForeColor = System.Drawing.Color.Black;
+            this.label2.ForeColor = System.Drawing.Color.White;
             this.label2.Location = new System.Drawing.Point(12, 79);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(23, 13);
@@ -67,8 +67,8 @@ namespace BioImage
             // 
             // minBox
             // 
-            this.minBox.BackColor = System.Drawing.SystemColors.Control;
-            this.minBox.ForeColor = System.Drawing.Color.Black;
+            this.minBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.minBox.ForeColor = System.Drawing.Color.White;
             this.minBox.Location = new System.Drawing.Point(41, 77);
             this.minBox.Maximum = new decimal(new int[] {
             65535,
@@ -82,8 +82,8 @@ namespace BioImage
             // 
             // maxBox
             // 
-            this.maxBox.BackColor = System.Drawing.SystemColors.Control;
-            this.maxBox.ForeColor = System.Drawing.Color.Black;
+            this.maxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.maxBox.ForeColor = System.Drawing.Color.White;
             this.maxBox.Increment = new decimal(new int[] {
             100,
             0,
@@ -108,7 +108,7 @@ namespace BioImage
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.ForeColor = System.Drawing.Color.Black;
+            this.label3.ForeColor = System.Drawing.Color.White;
             this.label3.Location = new System.Drawing.Point(129, 79);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(26, 13);
@@ -118,7 +118,7 @@ namespace BioImage
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.ForeColor = System.Drawing.Color.Black;
+            this.label4.ForeColor = System.Drawing.Color.White;
             this.label4.Location = new System.Drawing.Point(12, 22);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(46, 13);
@@ -127,8 +127,8 @@ namespace BioImage
             // 
             // channelsBox
             // 
-            this.channelsBox.BackColor = System.Drawing.SystemColors.Control;
-            this.channelsBox.ForeColor = System.Drawing.Color.Black;
+            this.channelsBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.channelsBox.ForeColor = System.Drawing.Color.White;
             this.channelsBox.FormattingEnabled = true;
             this.channelsBox.Location = new System.Drawing.Point(73, 19);
             this.channelsBox.Name = "channelsBox";
@@ -138,8 +138,8 @@ namespace BioImage
             // 
             // maxUintBox
             // 
-            this.maxUintBox.BackColor = System.Drawing.SystemColors.Control;
-            this.maxUintBox.ForeColor = System.Drawing.Color.Black;
+            this.maxUintBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.maxUintBox.ForeColor = System.Drawing.Color.White;
             this.maxUintBox.FormattingEnabled = true;
             this.maxUintBox.Items.AddRange(new object[] {
             "256",
@@ -156,8 +156,8 @@ namespace BioImage
             // 
             // setMaxAllBut
             // 
-            this.setMaxAllBut.BackColor = System.Drawing.SystemColors.Control;
-            this.setMaxAllBut.ForeColor = System.Drawing.Color.Black;
+            this.setMaxAllBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.setMaxAllBut.ForeColor = System.Drawing.Color.White;
             this.setMaxAllBut.Location = new System.Drawing.Point(161, 103);
             this.setMaxAllBut.Name = "setMaxAllBut";
             this.setMaxAllBut.Size = new System.Drawing.Size(77, 23);
@@ -168,8 +168,8 @@ namespace BioImage
             // 
             // setMinAllBut
             // 
-            this.setMinAllBut.BackColor = System.Drawing.SystemColors.Control;
-            this.setMinAllBut.ForeColor = System.Drawing.Color.Black;
+            this.setMinAllBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.setMinAllBut.ForeColor = System.Drawing.Color.White;
             this.setMinAllBut.Location = new System.Drawing.Point(41, 103);
             this.setMinAllBut.Name = "setMinAllBut";
             this.setMinAllBut.Size = new System.Drawing.Size(77, 23);
@@ -182,8 +182,8 @@ namespace BioImage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.ClientSize = new System.Drawing.Size(265, 138);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.ClientSize = new System.Drawing.Size(260, 138);
             this.Controls.Add(this.setMinAllBut);
             this.Controls.Add(this.setMaxAllBut);
             this.Controls.Add(this.maxUintBox);

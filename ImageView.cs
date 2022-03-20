@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace BioImage
@@ -105,12 +105,23 @@ namespace BioImage
                 UpdateView(serie);
                 if(viewMode == ViewMode.RGBImage)
                 {
+                    rGBImageModeToolStripMenuItem.Checked = true;
                     rgbBoxsPanel.BringToFront();
                     cBar.SendToBack();
                     cLabel.SendToBack();
                 }
                 else
+                if (viewMode == ViewMode.Filtered)
                 {
+                    filteredModeToolStripMenuItem.Checked = true;
+                    rgbBoxsPanel.SendToBack();
+                    cBar.BringToFront();
+                    cLabel.BringToFront();
+                }
+                else
+                if (viewMode == ViewMode.Raw)
+                {
+                    rawModeToolStripMenuItem.Checked = true;
                     rgbBoxsPanel.SendToBack();
                     cBar.BringToFront();
                     cLabel.BringToFront();
@@ -255,6 +266,7 @@ namespace BioImage
 
         public void UpdateView(int ser)
         {
+
             if (Mode == ViewMode.Raw)
             {
                 foreach (BioImage.Channel c in image.Channels)
@@ -288,12 +300,6 @@ namespace BioImage
                             rr = RChannel.range;
                             pictureBox.Image = image.GetRGBBitmap16(GetCoordinate(), rr);
                         }
-                        if (image.SizeC == 2)
-                        {
-                            rr = RChannel.range;
-                            gr = GChannel.range;
-                            pictureBox.Image = image.GetRGBBitmap16(GetCoordinate(), rr, gr);
-                        }
                         else
                         {
                             rr = RChannel.range;
@@ -312,23 +318,41 @@ namespace BioImage
                     pictureBox.Image = image.GetBitmap(GetCoordinate());
                 }
             }
+
+
             
             UpdateStatus();
         }
 
         public void UpdateStatus()
         {
-            if (timeEnabled)
+            if (Mode == ViewMode.RGBImage)
             {
-                statusLabel.Text = zBar.Value + "/" + zBar.Maximum + ", " + timeBar.Value + "/" + timeBar.Maximum + ", " + mouseColor ;
+                if (timeEnabled)
+                {
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mouseColor;
+                }
+                else
+                {
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mouseColor;
+                }
+                //Since combining 3 planes to one image takes time we show the image load time.
+                float ms = image.loadTimeMS;
+                statusLabel.Text += " Ticks: " + image.loadTimeTicks;
             }
             else
             {
-                statusLabel.Text = zBar.Value + "/" + zBar.Maximum + ", " + mouseColor;
+                if (timeEnabled)
+                {
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mouseColor;
+                }
+                else
+                {
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mouseColor;
+                }
             }
 
-            float ms = image.loadTimeMS;
-            statusLabel.Text += " Ticks: " + image.loadTimeTicks;
+            
 
         }
 
@@ -545,76 +569,36 @@ namespace BioImage
             cTimer.Stop();
         }
 
-        private Point toImagePoint(int px,int py)
-        {
-            int x, y;
-            Point p = new Point(px, py);
-            if (pictureBox.SizeMode == PictureBoxSizeMode.StretchImage)
-            {
-                x = (int)((((float)p.X) / (float)pictureBox.Width) * (float)image.SizeX);
-                y = (int)((((float)p.Y) / (float)pictureBox.Height) * (float)image.SizeY);
-                return new Point(x, y);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.Zoom)
-            {
-                //First we calculate the scaling factor for image width based on picturebox width
-                float fw = (float)pictureBox.Width / (float)image.SizeX;
-                //Next we calculate the scaling factor for image height based on picturebox height
-                float fh = (float)pictureBox.Height / (float)image.SizeY;
-                //Next we calculate the (0,0) origin point of the image in the picturebox.
-                float x0 = (pictureBox.Width - (fh * image.SizeX)) / 2;
-                if (x0 < 0)
-                    x0 = 0;
-                float y0 = (pictureBox.Height - (fw * image.SizeY)) / 2;
-                if (y0 < 0)
-                    y0 = 0;
-                float sw = (float)image.SizeX / (float)(pictureBox.Width - (x0*2));
-                float sh = (float)image.SizeY / (float)(pictureBox.Height - (y0*2));
-                float xp = (px - x0) * sw;
-                float yp = (py - y0) * sh;
-                return new Point((int)xp,(int)yp);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.Normal || pictureBox.SizeMode == PictureBoxSizeMode.AutoSize)
-            {
-                x = p.X;
-                y = p.Y;
-                if (x > image.SizeX)
-                    x = image.SizeX;
-                if (y > image.SizeY)
-                    y = image.SizeY;
-                if (x < 0)
-                    x = 0;
-                if (y < 0)
-                    y = 0;
-                return new Point(x, y);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.CenterImage)
-            {
-                //We calculate the center position
-                float cpx = (float)(pictureBox.Width / 2);
-                float cpy = (float)(pictureBox.Height / 2);
-                //we calculate position of image X:0 Y:0.
-                float x0 = cpx - ((float)image.SizeX / 2);
-                float y0 = cpy - ((float)image.SizeY / 2);
-                x = p.X - (int)x0;
-                y = p.Y - (int)y0;
-                if (x < 0)
-                    x = 0;
-                if (y < 0)
-                    y = 0;
-                if (x > image.SizeX)
-                    x = image.SizeX;
-                if (y > image.SizeY)
-                    y = image.SizeY;
-                return new Point(x, y);
-            }
-            return new Point(-1,-1);
-        }
+        
 
         public string mouseColor = "";
+
+        private bool x1State = false;
+        private bool x2State = false;
         private void rgbPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             Point p = toImagePoint(e.Location.X, e.Location.Y);
+            if (Mode != ViewMode.RGBImage)
+            {
+                if (e.Button == MouseButtons.XButton1 && !x1State)
+                {
+                    if (cBar.Value < cBar.Maximum)
+                        cBar.Value++;
+                    x1State = true;
+                }
+                if (e.Button != MouseButtons.XButton1)
+                    x1State = false;
+                
+                if (e.Button == MouseButtons.XButton2 && !x2State)
+                {
+                    if (cBar.Value > cBar.Minimum)
+                        cBar.Value--;
+                    x2State = true;
+                }
+                if (e.Button != MouseButtons.XButton2)
+                    x2State = false;
+            }
+
             if (Mode == ViewMode.RGBImage)
             {
                 int sc = coordinate.S;
@@ -641,13 +625,26 @@ namespace BioImage
                     if (Buf.info.RGBChannelsCount > 1)
                     {
                         Tools.Tool tool = Tools.currentTool;
-                        Buf.SetValueRGB(p.X, p.Y, 0, Tools.pencil.Color.R);
-                        Buf.SetValueRGB(p.X, p.Y, 1, Tools.pencil.Color.G);
-                        Buf.SetValueRGB(p.X, p.Y, 2, Tools.pencil.Color.B);
+                        if (Tools.rEnabled)
+                            Buf.SetValueRGB(p.X, p.Y, 0, tool.Color.R);
+                        if (Tools.gEnabled)
+                            Buf.SetValueRGB(p.X, p.Y, 1, tool.Color.G);
+                        if (Tools.bEnabled)
+                            Buf.SetValueRGB(p.X, p.Y, 2, tool.Color.B);
+                    }
+                    else
+                    if(Mode == ViewMode.RGBImage)
+                    {
+                        if (Tools.rEnabled)
+                        image.SetValue(p.X, p.Y, RChannel.index, Tools.pencil.Color.R);
+                        if (Tools.gEnabled)
+                        image.SetValue(p.X, p.Y, GChannel.index, Tools.pencil.Color.G);
+                        if (Tools.bEnabled)
+                        image.SetValue(p.X, p.Y, BChannel.index, Tools.pencil.Color.B);
                     }
                     else
                     {
-                        image.SetValue(p.X, p.Y, GetCoordinate(), Tools.pencil.Color.R);
+                        image.SetValue(p.X, p.Y,GetCoordinate(), Tools.pencil.Color.R);
                     }
                     UpdateView(image.serie);
                 }
@@ -793,7 +790,6 @@ namespace BioImage
             GetRange();
         }
 
-        
         private void ImageView_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Delta > 0)
@@ -937,7 +933,396 @@ namespace BioImage
             rawModeToolStripMenuItem.Checked = false;
             filteredModeToolStripMenuItem.Checked = false;
         }
+        private Point toImagePoint(int px,int py)
+        {
+            int x, y;
+            Point p = new Point(px, py);
+            if (pictureBox.SizeMode == PictureBoxSizeMode.StretchImage)
+            {
+                x = (int)((((float)p.X) / (float)pictureBox.Width) * (float)image.SizeX);
+                y = (int)((((float)p.Y) / (float)pictureBox.Height) * (float)image.SizeY);
+                return new Point(x, y);
+            }
+            if (pictureBox.SizeMode == PictureBoxSizeMode.Zoom)
+            {
+                //First we calculate the scaling factor for image width based on picturebox width
+                float fw = (float)pictureBox.Width / (float)image.SizeX;
+                //Next we calculate the scaling factor for image height based on picturebox height
+                float fh = (float)pictureBox.Height / (float)image.SizeY;
+                //Next we calculate the (0,0) origin point of the image in the picturebox.
+                float x0 = (pictureBox.Width - (fh * image.SizeX)) / 2;
+                if (x0 < 0)
+                    x0 = 0;
+                float y0 = (pictureBox.Height - (fw * image.SizeY)) / 2;
+                if (y0 < 0)
+                    y0 = 0;
+                float sw = (float)image.SizeX / (float)(pictureBox.Width - (x0*2));
+                float sh = (float)image.SizeY / (float)(pictureBox.Height - (y0*2));
+                float xp = (px - x0) * sw;
+                float yp = (py - y0) * sh;
+                return new Point((int)xp,(int)yp);
+            }
+            if (pictureBox.SizeMode == PictureBoxSizeMode.Normal || pictureBox.SizeMode == PictureBoxSizeMode.AutoSize)
+            {
+                x = p.X;
+                y = p.Y;
+                if (x > image.SizeX)
+                    x = image.SizeX;
+                if (y > image.SizeY)
+                    y = image.SizeY;
+                if (x < 0)
+                    x = 0;
+                if (y < 0)
+                    y = 0;
+                return new Point(x, y);
+            }
+            if (pictureBox.SizeMode == PictureBoxSizeMode.CenterImage)
+            {
+                //We calculate the center position
+                float cpx = (float)(pictureBox.Width / 2);
+                float cpy = (float)(pictureBox.Height / 2);
+                //we calculate position of image X:0 Y:0.
+                float x0 = cpx - ((float)image.SizeX / 2);
+                float y0 = cpy - ((float)image.SizeY / 2);
+                x = p.X - (int)x0;
+                y = p.Y - (int)y0;
+                if (x < 0)
+                    x = 0;
+                if (y < 0)
+                    y = 0;
+                if (x > image.SizeX)
+                    x = image.SizeX;
+                if (y > image.SizeY)
+                    y = image.SizeY;
+                return new Point(x, y);
+            }
+            return new Point(-1,-1);
+        }
+        private Point GetImagePoint()
+        {
+            int x, y;
+            if (pictureBox.SizeMode == PictureBoxSizeMode.StretchImage)
+            {
+                x = (int)((((float)0) / (float)pictureBox.Width) * (float)image.SizeX);
+                y = (int)((((float)0) / (float)pictureBox.Height) * (float)image.SizeY);
+                return new Point(x, y);
+            }
+            if (pictureBox.SizeMode == PictureBoxSizeMode.Zoom)
+            {
+                //First we calculate the scaling factor for image width based on picturebox width
+                float fw = (float)pictureBox.Width / (float)image.SizeX;
+                //Next we calculate the scaling factor for image height based on picturebox height
+                float fh = (float)pictureBox.Height / (float)image.SizeY;
+                //Next we calculate the (0,0) origin point of the image in the picturebox.
+                float x0 = (pictureBox.Width - (fh * image.SizeX)) / 2;
+                if (x0 < 0)
+                    x0 = 0;
+                float y0 = (pictureBox.Height - (fw * image.SizeY)) / 2;
+                if (y0 < 0)
+                    y0 = 0;
+                return new Point((int)x0, (int)y0);
+            }
+            if (pictureBox.SizeMode == PictureBoxSizeMode.Normal || pictureBox.SizeMode == PictureBoxSizeMode.AutoSize)
+            {
+                return new Point(0, 0);
+            }
+            if (pictureBox.SizeMode == PictureBoxSizeMode.CenterImage)
+            {
+                //We calculate the center position
+                float cpx = (float)(pictureBox.Width / 2);
+                float cpy = (float)(pictureBox.Height / 2);
+                //we calculate position of image X:0 Y:0.
+                float x0 = cpx - ((float)image.SizeX / 2);
+                float y0 = cpy - ((float)image.SizeY / 2);
+                x = (int)x0;
+                y = (int)y0;
+                if (x < 0)
+                    x = 0;
+                if (y < 0)
+                    y = 0;
+                if (x > image.SizeX)
+                    x = image.SizeX;
+                if (y > image.SizeY)
+                    y = image.SizeY;
+                return new Point((int)x0, (int)y0);
+            }
+            return new Point(-1, -1);
+        }
+        private Point GetImageSize()
+        {
+            int x, y;
+            if (pictureBox.SizeMode == PictureBoxSizeMode.StretchImage)
+            {
+                return new Point(pictureBox.Width, pictureBox.Height);
+            }
+            if (pictureBox.SizeMode == PictureBoxSizeMode.Zoom)
+            {
+                //First we calculate the scaling factor for image width based on picturebox width
+                float fw = (float)pictureBox.Width / (float)image.SizeX;
+                //Next we calculate the scaling factor for image height based on picturebox height
+                float fh = (float)pictureBox.Height / (float)image.SizeY;
+                //Next we calculate the (0,0) origin point of the image in the picturebox.
+                float x0 = (pictureBox.Width - (fh * image.SizeX)) / 2;
+                if (x0 < 0)
+                    x0 = 0;
+                float y0 = (pictureBox.Height - (fw * image.SizeY)) / 2;
+                if (y0 < 0)
+                    y0 = 0;
+                float sw = (float)image.SizeX / (float)(pictureBox.Width - (x0 * 2));
+                float sh = (float)image.SizeY / (float)(pictureBox.Height - (y0 * 2));
 
-        
+                int wi = (int)(pictureBox.Width - (x0 * 2));
+                int hi = (int)(pictureBox.Height - (y0 * 2));
+
+                float xp = x0 * sw;
+                float yp = y0 * sh;
+                return new Point(wi, hi);
+            }
+            if (pictureBox.SizeMode == PictureBoxSizeMode.Normal || pictureBox.SizeMode == PictureBoxSizeMode.AutoSize)
+            {
+                return new Point(image.SizeX, image.SizeY);
+            }
+            if (pictureBox.SizeMode == PictureBoxSizeMode.CenterImage)
+            {
+                //We calculate the center position
+                float cpx = (float)(pictureBox.Width / 2);
+                float cpy = (float)(pictureBox.Height / 2);
+                //we calculate position of image X:0 Y:0.
+                float x0 = cpx - ((float)image.SizeX / 2);
+                float y0 = cpy - ((float)image.SizeY / 2);
+                x = (int)(pictureBox.Width - (x0 * 2));
+                y = (int)(pictureBox.Height - (y0 * 2));
+                if (x < 0)
+                    x = 0;
+                if (y < 0)
+                    y = 0;
+                if (x > image.SizeX)
+                    x = image.SizeX;
+                if (y > image.SizeY)
+                    y = image.SizeY;
+                return new Point(x, y);
+            }
+            return new Point(-1, -1);
+        }
+
+        private List<BioImage.Annotation> annotationsR = new List<BioImage.Annotation>();
+        public List<BioImage.Annotation> AnnotationsR
+        {
+            get
+            {
+                BioImage.SZCT coord = coordinate;
+                return image.GetAnnotations(coord.S, coord.Z, image.RChannel.index, coord.T);
+            }
+        }
+        private List<BioImage.Annotation> annotationsG = new List<BioImage.Annotation>();
+        public List<BioImage.Annotation> AnnotationsG
+        {
+            get
+            {
+                BioImage.SZCT coord = coordinate;
+                return image.GetAnnotations(coord.S, coord.Z, image.GChannel.index, coord.T);
+            }
+        }
+        private List<BioImage.Annotation> annotationsB = new List<BioImage.Annotation>();
+        public List<BioImage.Annotation> AnnotationsB
+        {
+            get
+            {
+                BioImage.SZCT coord = coordinate;
+                return image.GetAnnotations(coord.S, coord.Z, image.BChannel.index, coord.T);
+            }
+        }
+
+        private void pictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            Point pp = GetImagePoint();
+            Point s = GetImageSize();
+            image.overlay = new Bitmap(s.X, s.Y, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Graphics g = Graphics.FromImage(image.overlay);
+            g.Clear(Color.FromArgb(0, 0, 0, 0));
+            float xs = (float)s.X / (float)image.SizeX;
+            float ys = (float)s.Y / (float)image.SizeY;
+            //We use scale transform so that the drawing don't look pixelated when image is rendered larger than it's original size.
+            g.ScaleTransform(xs, ys);
+            Pen pen = null;
+            Brush b = null;
+            bool bounds = false;
+            bool labels = false;
+            if (Mode == ViewMode.RGBImage)
+            {  
+                foreach (BioImage.Annotation an in AnnotationsR)
+                {
+                    pen = new Pen(an.color,(float)an.strokeWidth);
+                    b = new SolidBrush(an.color);
+                    if (an.type == BioImage.Annotation.Type.Point)
+                    {
+                        g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X +1, (float)an.Point.Y+1));
+                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                        if (labels)
+                            g.DrawString(an.text, an.font, b, an.Point.ToPointF());
+                        if (bounds)
+                            g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    }
+                    else
+                    if (an.type == BioImage.Annotation.Type.Line)
+                    {
+                        g.DrawLine(pen, an.GetPoint(0).ToPointF(), an.GetPoint(1).ToPointF());
+                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                        if (bounds)
+                            g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    }
+                    else
+                    if (an.type == BioImage.Annotation.Type.Rectangle)
+                    {
+                        g.DrawRectangle(pen, an.Rect.ToRectangleInt());
+                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                        if (bounds)
+                            g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    }
+                    else
+                    if (an.type == BioImage.Annotation.Type.Polygon)
+                    {
+                        g.DrawPolygon(pen, an.GetPointsF());
+                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                        if (bounds)
+                            g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    }
+                    else
+                    if (an.type == BioImage.Annotation.Type.Polyline)
+                    {
+                        g.DrawLines(pen, an.GetPointsF());
+                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                        if (bounds)
+                            g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    }
+                    else
+                    if (an.type == BioImage.Annotation.Type.Ellipse)
+                    {
+                        g.DrawEllipse(pen, an.Rect.ToRectF());
+                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                        if (bounds)
+                            g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    }
+                    else
+                    if(an.type == BioImage.Annotation.Type.Freeform)
+                    {
+                        g.DrawPolygon(pen, an.GetPointsF());
+                        if (bounds)
+                            g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    }
+                    else
+                    if (an.type == BioImage.Annotation.Type.Label)
+                    {
+                        
+                        g.DrawString(an.text, an.font, b, an.Point.ToPointF());
+                        if (bounds)
+                            g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    }
+                    pen.Dispose();
+                }
+            }
+            else
+            {
+                
+            }
+            g.Dispose();
+            e.Graphics.DrawImage(image.overlay, pp.X, pp.Y, s.X, s.Y);
+        }
+
+        private void hideStatusBarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if(statusPanel.Visible == true)
+            {
+                statusPanel.Visible = false;
+                showStatusBarToolStripMenuItem.Visible = true;
+            }
+            else
+            {
+                statusPanel.Visible = true;
+                showStatusBarToolStripMenuItem.Visible = false;
+            }
+        }
+
+        BioImage.Annotation selected = null;
+        int selectedPoint = -1;
+        private void pictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (selected != null)
+                return;
+            PointF p = toImagePoint(e.Location.X, e.Location.Y);
+            if (e.Button == MouseButtons.Left)
+            {
+                foreach (BioImage.Annotation an in image.Annotations)
+                {
+                    if (an.GetSelectBound().IntersectsWith(p.X,p.Y))
+                    {
+                        selected = an;
+                        RectangleF r = new RectangleF(p.X, p.Y, 1, 1);
+                        for (int i = 0; i < an.selectBoxs.Count; i++)
+                        {
+                            if (an.selectBoxs[i].IntersectsWith(r))
+                            {
+                                selectedPoint = i;
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void pictureBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (selected == null)
+                return;
+            Point p = toImagePoint(e.Location.X, e.Location.Y);
+            if (selected.type == BioImage.Annotation.Type.Rectangle || selected.type == BioImage.Annotation.Type.Ellipse ||
+                selected.type == BioImage.Annotation.Type.Freeform || selected.type == BioImage.Annotation.Type.Label)
+            {
+                BioImage.RectangleD d = selected.Rect;
+                if(selectedPoint == 0)
+                {
+                    double dw = d.X - p.X;
+                    double dh = d.Y - p.Y;
+                    d.X = p.X;
+                    d.Y = p.Y;
+                    d.W += dw;
+                    d.H += dh;
+                }
+                else
+                if (selectedPoint == 1)
+                {
+                    double dw = p.X - (d.W + d.X);
+                    double dh = d.Y - p.Y;
+                    d.W += dw;
+                    d.H += dh;
+                    d.Y -= dh;
+                }
+                else
+                if (selectedPoint == 2)
+                {
+                    double dw = d.X - p.X;
+                    double dh = p.Y - (d.Y + d.H);
+                    d.W += dw;
+                    d.H += dh;
+                    d.X -= dw;
+                }
+                else
+                if (selectedPoint == 3)
+                {
+                    double dw = d.X - p.X;
+                    double dh = d.Y - p.Y;
+                    d.W = p.X - selected.X;
+                    d.H = p.Y - selected.Y;
+                }
+                selected.Rect = d;
+            }
+            else
+            selected.UpdatePoint(new BioImage.PointD(p.X, p.Y), selectedPoint);
+            selected.UpdateBoundingBox();
+            selected.UpdateSelectBoxs();
+            selected = null;
+            UpdateView(serie);
+        }
     }
 }

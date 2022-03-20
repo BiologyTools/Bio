@@ -44,12 +44,12 @@ namespace BioImage
             this.normalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.centerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showControlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openChannelsToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoContrastChannelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filteredModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rGBImageModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showControlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showStatusBarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zPlayMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.playZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,10 +78,11 @@ namespace BioImage
             this.timelineTimer = new System.Windows.Forms.Timer(this.components);
             this.zTimer = new System.Windows.Forms.Timer(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.cTimer = new System.Windows.Forms.Timer(this.components);
             this.trackBarPanel = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
+            this.statusPanel = new System.Windows.Forms.Panel();
+            this.statusContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.hideStatusBarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.zPlayMenuStrip.SuspendLayout();
@@ -92,7 +93,8 @@ namespace BioImage
             ((System.ComponentModel.ISupportInitialize)(this.zBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cBar)).BeginInit();
             this.trackBarPanel.SuspendLayout();
-            this.panel2.SuspendLayout();
+            this.statusPanel.SuspendLayout();
+            this.statusContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // timePlayMenuStrip
@@ -152,12 +154,12 @@ namespace BioImage
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.copyImageToolStripMenuItem,
             this.imageToolStripMenuItem,
-            this.showControlsToolStripMenuItem,
-            this.openChannelsToolToolStripMenuItem,
             this.autoContrastChannelsToolStripMenuItem,
             this.rawModeToolStripMenuItem,
             this.filteredModeToolStripMenuItem,
-            this.rGBImageModeToolStripMenuItem});
+            this.rGBImageModeToolStripMenuItem,
+            this.showControlsToolStripMenuItem,
+            this.showStatusBarToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
             this.contextMenuStrip.Size = new System.Drawing.Size(208, 180);
             // 
@@ -217,20 +219,6 @@ namespace BioImage
             this.autoSizeToolStripMenuItem.Text = "Auto Size";
             this.autoSizeToolStripMenuItem.Click += new System.EventHandler(this.autoSizeToolStripMenuItem_Click);
             // 
-            // showControlsToolStripMenuItem
-            // 
-            this.showControlsToolStripMenuItem.Name = "showControlsToolStripMenuItem";
-            this.showControlsToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.showControlsToolStripMenuItem.Text = "Hide Controls";
-            this.showControlsToolStripMenuItem.Click += new System.EventHandler(this.showControlsToolStripMenuItem_Click);
-            // 
-            // openChannelsToolToolStripMenuItem
-            // 
-            this.openChannelsToolToolStripMenuItem.Name = "openChannelsToolToolStripMenuItem";
-            this.openChannelsToolToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
-            this.openChannelsToolToolStripMenuItem.Text = "Open Channels Tool";
-            this.openChannelsToolToolStripMenuItem.Click += new System.EventHandler(this.openChannelsToolToolStripMenuItem_Click);
-            // 
             // autoContrastChannelsToolStripMenuItem
             // 
             this.autoContrastChannelsToolStripMenuItem.Name = "autoContrastChannelsToolStripMenuItem";
@@ -248,9 +236,7 @@ namespace BioImage
             // 
             // filteredModeToolStripMenuItem
             // 
-            this.filteredModeToolStripMenuItem.Checked = true;
             this.filteredModeToolStripMenuItem.CheckOnClick = true;
-            this.filteredModeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.filteredModeToolStripMenuItem.Name = "filteredModeToolStripMenuItem";
             this.filteredModeToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.filteredModeToolStripMenuItem.Text = "Filtered Mode";
@@ -263,6 +249,20 @@ namespace BioImage
             this.rGBImageModeToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.rGBImageModeToolStripMenuItem.Text = "RGB Image Mode";
             this.rGBImageModeToolStripMenuItem.Click += new System.EventHandler(this.rGBImageModeToolStripMenuItem_Click);
+            // 
+            // showControlsToolStripMenuItem
+            // 
+            this.showControlsToolStripMenuItem.Name = "showControlsToolStripMenuItem";
+            this.showControlsToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.showControlsToolStripMenuItem.Text = "Hide Controls";
+            this.showControlsToolStripMenuItem.Click += new System.EventHandler(this.showControlsToolStripMenuItem_Click);
+            // 
+            // showStatusBarToolStripMenuItem
+            // 
+            this.showStatusBarToolStripMenuItem.Name = "showStatusBarToolStripMenuItem";
+            this.showStatusBarToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.showStatusBarToolStripMenuItem.Text = "Show Status Bar";
+            this.showStatusBarToolStripMenuItem.Visible = false;
             // 
             // zPlayMenuStrip
             // 
@@ -377,7 +377,10 @@ namespace BioImage
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 4;
             this.pictureBox.TabStop = false;
+            this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
+            this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
             this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.rgbPictureBox_MouseMove);
+            this.pictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
             // 
             // rgbBoxsPanel
             // 
@@ -571,23 +574,38 @@ namespace BioImage
             this.trackBarPanel.Size = new System.Drawing.Size(425, 75);
             this.trackBarPanel.TabIndex = 17;
             // 
-            // panel2
+            // statusPanel
             // 
-            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.statusPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.panel2.Controls.Add(this.statusLabel);
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(425, 25);
-            this.panel2.TabIndex = 18;
+            this.statusPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.statusPanel.ContextMenuStrip = this.statusContextMenuStrip;
+            this.statusPanel.Controls.Add(this.statusLabel);
+            this.statusPanel.Location = new System.Drawing.Point(0, 0);
+            this.statusPanel.Name = "statusPanel";
+            this.statusPanel.Size = new System.Drawing.Size(425, 25);
+            this.statusPanel.TabIndex = 18;
+            // 
+            // statusContextMenuStrip
+            // 
+            this.statusContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.hideStatusBarToolStripMenuItem});
+            this.statusContextMenuStrip.Name = "statusContextMenuStrip";
+            this.statusContextMenuStrip.Size = new System.Drawing.Size(155, 26);
+            // 
+            // hideStatusBarToolStripMenuItem
+            // 
+            this.hideStatusBarToolStripMenuItem.Name = "hideStatusBarToolStripMenuItem";
+            this.hideStatusBarToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.hideStatusBarToolStripMenuItem.Text = "Hide Status Bar";
+            this.hideStatusBarToolStripMenuItem.Click += new System.EventHandler(this.hideStatusBarToolStripMenuItem_Click);
             // 
             // ImageView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.statusPanel);
             this.Controls.Add(this.trackBarPanel);
             this.Controls.Add(this.pictureBox);
             this.Name = "ImageView";
@@ -607,8 +625,9 @@ namespace BioImage
             ((System.ComponentModel.ISupportInitialize)(this.cBar)).EndInit();
             this.trackBarPanel.ResumeLayout(false);
             this.trackBarPanel.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
+            this.statusPanel.ResumeLayout(false);
+            this.statusPanel.PerformLayout();
+            this.statusContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -628,7 +647,6 @@ namespace BioImage
         private System.Windows.Forms.Label statusLabel;
         private System.Windows.Forms.ToolStripMenuItem showControlsToolStripMenuItem;
         private System.Windows.Forms.Panel rgbBoxsPanel;
-        private System.Windows.Forms.ToolStripMenuItem openChannelsToolToolStripMenuItem;
         private System.Windows.Forms.Timer timelineTimer;
         private System.Windows.Forms.ContextMenuStrip zPlayMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem playZToolStripMenuItem;
@@ -644,7 +662,6 @@ namespace BioImage
         private System.Windows.Forms.ToolStripMenuItem copyImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setValueRangeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setValueRangeToolStripMenuItem1;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private AForge.Controls.PictureBox pictureBox;
         private System.Windows.Forms.ToolStripMenuItem filteredModeToolStripMenuItem;
         private System.Windows.Forms.Timer cTimer;
@@ -665,6 +682,9 @@ namespace BioImage
         private System.Windows.Forms.Label tLabel;
         private System.Windows.Forms.TrackBar timeBar;
         private System.Windows.Forms.Panel trackBarPanel;
-        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel statusPanel;
+        private System.Windows.Forms.ContextMenuStrip statusContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem hideStatusBarToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showStatusBarToolStripMenuItem;
     }
 }

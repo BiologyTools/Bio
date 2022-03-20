@@ -15,33 +15,23 @@ namespace BioImage
         public ImageViewer(string id)
         {
             InitializeComponent();
-            string[] sp = id.Split('/');
-
-
-            tools = new Tools();
-            //viewer = new ImageView(sp[0],sp[1], sp[2] )
-            string s = "E:/TESTIMAGES/TIF16B-T3C4Z6.tif";
-            SetFolder(s, false, 0);
-            viewer.image.SaveSeries(s, 0);
+            SetFolder(id, false, 0);
         }
 
         public ImageViewer(string[] arg)
         {
             InitializeComponent();
             tools = new Tools();
-
-
-            string s = "E:/TESTIMAGES/TIF16B-T3C4Z6.tif";
+            //string s = "E:/TESTIMAGES/ROIS.ome.tif";
+            //string s = "E:/TESTIMAGES/text.ome.tif";
+            string s = "E:/TESTIMAGES/points.ome.tif";
             SetFolder(s, false, 0);
-            viewer.image.SaveSeries(s, 0);
-
-
+            //viewer.image.SaveSeries(s, 0);
             if (arg.Length == 0)
                 return;
             else
             if (arg.Length == 1)
             {
-
                 SetFile(arg[0], 0, false);
             }
         }
@@ -61,7 +51,6 @@ namespace BioImage
             string name = Path.GetFileName(file);
             this.Text = name;
         }
-
         public void SetFolder(string file, bool folder, int seri)
         {
             viewer = new ImageView(file, seri, folder);
@@ -176,6 +165,9 @@ namespace BioImage
             p.Start();
         }
 
-        
+        private void colorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

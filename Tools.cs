@@ -14,31 +14,52 @@ namespace BioImage
     public partial class Tools : Form
     {
         public static bool applyToStack = false;
+        public static ColorTool colorTool;
+        public static bool rEnabled = true;
+        public static bool gEnabled = true;
+        public static bool bEnabled = true;
         public static Pencil pencil;
         public class Tool : Control
         {
+            public enum ToolType
+            {
+                color,
+                annotation,
+                select,
+                function
+            }
             public BioImage.ColorS Color;
             public List<Point> Points;
+            public ToolType type;
         }
         public class Pencil : Tool
         {
             public Pencil(BioImage.ColorS col)
             {
                 Color = col;
+                type = ToolType.color;
             }
         }
         public class Brush : Tool
         {
             public int BrushWidth;
+            public Brush(BioImage.ColorS col,int BrushWidth)
+            {
+                this.BrushWidth = BrushWidth;
+                this.Color = col;
+            }
+        }
+        public class Bucket : Tool
+        {
+            
         }
         public class Eraser : Tool
         {
             public int EraserWidth;
         }
+
         public static Tool currentTool;
-        public BioImage.ColorS color;
         public Font font;
-        public ColorTool ctool;
         private BioImage image;
         public BioImage Image
         {
@@ -55,16 +76,19 @@ namespace BioImage
         {
             InitializeComponent();
             pencil = new Pencil(new BioImage.ColorS(ushort.MaxValue));
+            currentTool = pencil;
+            colorTool = new ColorTool();
         }
         
+        public static void SetColor(BioImage.ColorS col)
+        {
+            currentTool.Color = col;
+        }
+
         private void pencilPanel_DoubleClick(object sender, EventArgs e)
         {
-            if (ctool == null)
-                ctool = new ColorTool();
-            if (ctool.ShowDialog() != DialogResult.OK)
-                return;
-            Color col = colorDialog.Color;
-            color = BioImage.ColorS.FromColor(col);
+            currentTool = pencil;
+            colorTool.Show();
         }
 
         private void textPanel_DoubleClick(object sender, EventArgs e)
@@ -120,9 +144,9 @@ namespace BioImage
             }
         }
 
-        private void pencilPanel_Paint(object sender, PaintEventArgs e)
+        private void pencilPanel_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-
+            colorTool.Show();
         }
     }
 }

@@ -36,6 +36,9 @@
             this.greenBox = new System.Windows.Forms.NumericUpDown();
             this.blueBox = new System.Windows.Forms.NumericUpDown();
             this.colorPanel = new System.Windows.Forms.Panel();
+            this.rEnbaled = new System.Windows.Forms.CheckBox();
+            this.gEnabled = new System.Windows.Forms.CheckBox();
+            this.bEnabled = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.redBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.greenBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.blueBox)).BeginInit();
@@ -44,6 +47,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(18, 13);
@@ -53,6 +57,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.White;
             this.label2.Location = new System.Drawing.Point(12, 35);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(18, 13);
@@ -62,6 +67,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.Color.White;
             this.label3.Location = new System.Drawing.Point(12, 62);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(17, 13);
@@ -70,7 +76,8 @@
             // 
             // redBox
             // 
-            this.redBox.BackColor = System.Drawing.SystemColors.Control;
+            this.redBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.redBox.ForeColor = System.Drawing.Color.White;
             this.redBox.Location = new System.Drawing.Point(36, 7);
             this.redBox.Maximum = new decimal(new int[] {
             65535,
@@ -80,11 +87,17 @@
             this.redBox.Name = "redBox";
             this.redBox.Size = new System.Drawing.Size(80, 20);
             this.redBox.TabIndex = 3;
+            this.redBox.Value = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
             this.redBox.ValueChanged += new System.EventHandler(this.redBox_ValueChanged);
             // 
             // greenBox
             // 
-            this.greenBox.BackColor = System.Drawing.SystemColors.Control;
+            this.greenBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.greenBox.ForeColor = System.Drawing.Color.White;
             this.greenBox.Location = new System.Drawing.Point(36, 33);
             this.greenBox.Maximum = new decimal(new int[] {
             65535,
@@ -94,11 +107,17 @@
             this.greenBox.Name = "greenBox";
             this.greenBox.Size = new System.Drawing.Size(80, 20);
             this.greenBox.TabIndex = 4;
+            this.greenBox.Value = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
             this.greenBox.ValueChanged += new System.EventHandler(this.greenBox_ValueChanged);
             // 
             // blueBox
             // 
-            this.blueBox.BackColor = System.Drawing.SystemColors.Control;
+            this.blueBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.blueBox.ForeColor = System.Drawing.Color.White;
             this.blueBox.Location = new System.Drawing.Point(35, 60);
             this.blueBox.Maximum = new decimal(new int[] {
             65535,
@@ -108,22 +127,65 @@
             this.blueBox.Name = "blueBox";
             this.blueBox.Size = new System.Drawing.Size(80, 20);
             this.blueBox.TabIndex = 5;
+            this.blueBox.Value = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
             this.blueBox.ValueChanged += new System.EventHandler(this.blueBox_ValueChanged);
             // 
             // colorPanel
             // 
-            this.colorPanel.Location = new System.Drawing.Point(137, 12);
+            this.colorPanel.Location = new System.Drawing.Point(143, 12);
             this.colorPanel.Name = "colorPanel";
             this.colorPanel.Size = new System.Drawing.Size(64, 64);
             this.colorPanel.TabIndex = 6;
-            this.colorPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.colorPanel_Paint);
+            // 
+            // rEnbaled
+            // 
+            this.rEnbaled.AutoSize = true;
+            this.rEnbaled.Checked = true;
+            this.rEnbaled.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.rEnbaled.Location = new System.Drawing.Point(122, 9);
+            this.rEnbaled.Name = "rEnbaled";
+            this.rEnbaled.Size = new System.Drawing.Size(15, 14);
+            this.rEnbaled.TabIndex = 7;
+            this.rEnbaled.UseVisualStyleBackColor = true;
+            this.rEnbaled.CheckedChanged += new System.EventHandler(this.rEnbaled_CheckedChanged);
+            // 
+            // gEnabled
+            // 
+            this.gEnabled.AutoSize = true;
+            this.gEnabled.Checked = true;
+            this.gEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.gEnabled.Location = new System.Drawing.Point(122, 35);
+            this.gEnabled.Name = "gEnabled";
+            this.gEnabled.Size = new System.Drawing.Size(15, 14);
+            this.gEnabled.TabIndex = 8;
+            this.gEnabled.UseVisualStyleBackColor = true;
+            this.gEnabled.CheckedChanged += new System.EventHandler(this.gEnabled_CheckedChanged);
+            // 
+            // bEnabled
+            // 
+            this.bEnabled.AutoSize = true;
+            this.bEnabled.Checked = true;
+            this.bEnabled.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.bEnabled.Location = new System.Drawing.Point(121, 62);
+            this.bEnabled.Name = "bEnabled";
+            this.bEnabled.Size = new System.Drawing.Size(15, 14);
+            this.bEnabled.TabIndex = 9;
+            this.bEnabled.UseVisualStyleBackColor = true;
+            this.bEnabled.CheckedChanged += new System.EventHandler(this.bEnabled_CheckedChanged);
             // 
             // ColorTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.ClientSize = new System.Drawing.Size(223, 88);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.ClientSize = new System.Drawing.Size(217, 88);
+            this.Controls.Add(this.bEnabled);
+            this.Controls.Add(this.gEnabled);
+            this.Controls.Add(this.rEnbaled);
             this.Controls.Add(this.colorPanel);
             this.Controls.Add(this.blueBox);
             this.Controls.Add(this.greenBox);
@@ -134,7 +196,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ColorTool";
-            this.ShowInTaskbar = false;
             this.Text = "Color Tool";
             ((System.ComponentModel.ISupportInitialize)(this.redBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.greenBox)).EndInit();
@@ -153,5 +214,8 @@
         private System.Windows.Forms.NumericUpDown greenBox;
         private System.Windows.Forms.NumericUpDown blueBox;
         private System.Windows.Forms.Panel colorPanel;
+        private System.Windows.Forms.CheckBox rEnbaled;
+        private System.Windows.Forms.CheckBox gEnabled;
+        private System.Windows.Forms.CheckBox bEnabled;
     }
 }

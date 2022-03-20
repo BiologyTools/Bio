@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Tools));
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.fontDialog = new System.Windows.Forms.FontDialog();
@@ -49,11 +50,14 @@
             this.panel5 = new System.Windows.Forms.Panel();
             this.flipXPanel = new System.Windows.Forms.Panel();
             this.flipYPanel = new System.Windows.Forms.Panel();
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addNewToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bucketPanel.SuspendLayout();
             this.rotatePanel.SuspendLayout();
             this.selectPanel.SuspendLayout();
             this.eraserPanel.SuspendLayout();
             this.flipXPanel.SuspendLayout();
+            this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // colorDialog
@@ -83,7 +87,6 @@
             this.pencilPanel.Size = new System.Drawing.Size(30, 30);
             this.pencilPanel.TabIndex = 0;
             this.pencilPanel.Click += new System.EventHandler(this.pencilPanel_Click);
-            this.pencilPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.pencilPanel_Paint);
             this.pencilPanel.DoubleClick += new System.EventHandler(this.pencilPanel_DoubleClick);
             // 
             // brushPanel
@@ -249,12 +252,26 @@
             this.flipYPanel.TabIndex = 7;
             this.flipYPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.flipYPanel_Paint);
             // 
+            // contextMenuStrip
+            // 
+            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addNewToolToolStripMenuItem});
+            this.contextMenuStrip.Name = "contextMenuStrip";
+            this.contextMenuStrip.Size = new System.Drawing.Size(149, 26);
+            // 
+            // addNewToolToolStripMenuItem
+            // 
+            this.addNewToolToolStripMenuItem.Name = "addNewToolToolStripMenuItem";
+            this.addNewToolToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.addNewToolToolStripMenuItem.Text = "Add New Tool";
+            // 
             // Tools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.ClientSize = new System.Drawing.Size(63, 210);
+            this.ClientSize = new System.Drawing.Size(64, 210);
+            this.ContextMenuStrip = this.contextMenuStrip;
             this.Controls.Add(this.flipYPanel);
             this.Controls.Add(this.stackApplyBox);
             this.Controls.Add(this.flipXPanel);
@@ -273,15 +290,14 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Tools";
-            this.ShowIcon = false;
-            this.ShowInTaskbar = false;
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "Tools";
             this.bucketPanel.ResumeLayout(false);
             this.rotatePanel.ResumeLayout(false);
             this.selectPanel.ResumeLayout(false);
             this.eraserPanel.ResumeLayout(false);
             this.flipXPanel.ResumeLayout(false);
+            this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -309,5 +325,7 @@
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Panel flipXPanel;
         private System.Windows.Forms.Panel flipYPanel;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem addNewToolToolStripMenuItem;
     }
 }

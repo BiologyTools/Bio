@@ -12,7 +12,7 @@ namespace BioImage
 {
     public partial class ColorTool : Form
     {
-        private BioImage.ColorS color = new BioImage.ColorS();
+        private BioImage.ColorS color = new BioImage.ColorS(65535, 65535, 65535);
         public BioImage.ColorS Color
         {
             get
@@ -25,39 +25,63 @@ namespace BioImage
             }
         }
 
+        public void UpdateColor()
+        {
+            color = new BioImage.ColorS((ushort)redBox.Value, (ushort)greenBox.Value, (ushort)blueBox.Value);
+            colorPanel.BackColor = BioImage.ColorS.ToColor(color);
+            Tools.currentTool.Color = color;
+        }
+
+        public void SetColor()
+        {
+            redBox.Value = (decimal)color.R;
+            greenBox.Value = (decimal)color.G;
+            blueBox.Value = (decimal)color.B;
+        }
         public ColorTool()
         {
             InitializeComponent();
-            DialogResult = DialogResult.None;
+            UpdateColor();
         }
         public ColorTool(BioImage.ColorS col)
         {
             InitializeComponent();
             color = col;
-            DialogResult = DialogResult.OK;
+            SetColor();
+            UpdateColor();
         }
 
         private void redBox_ValueChanged(object sender, EventArgs e)
         {
             color.R = (ushort)redBox.Value;
-            colorPanel.BackColor = BioImage.ColorS.ToColor(color);
+            UpdateColor();
         }
 
         private void greenBox_ValueChanged(object sender, EventArgs e)
         {
             color.G = (ushort)greenBox.Value;
-            colorPanel.BackColor = BioImage.ColorS.ToColor(color);
+            UpdateColor();
         }
 
         private void blueBox_ValueChanged(object sender, EventArgs e)
         {
             color.B = (ushort)blueBox.Value;
-            colorPanel.BackColor = BioImage.ColorS.ToColor(color);
+            UpdateColor();
         }
 
-        private void colorPanel_Paint(object sender, PaintEventArgs e)
+        private void rEnbaled_CheckedChanged(object sender, EventArgs e)
         {
+            Tools.rEnabled = rEnbaled.Checked;
+        }
 
+        private void gEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            Tools.gEnabled = gEnabled.Checked;
+        }
+
+        private void bEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            Tools.bEnabled = bEnabled.Checked;
         }
     }
 }

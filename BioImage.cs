@@ -6,6 +6,8 @@ using loci.formats.meta;
 using loci.formats.services;
 using ome.xml.meta;
 using ome.xml;
+using ome.xml.model;
+using ome.xml.model.primitives;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -143,6 +145,7 @@ namespace BioImage
         public List<Buf> Buffers = new List<Buf>();
         public List<Channel> Channels = new List<Channel>();
         public List<VolumeD> Volumes = new List<VolumeD>();
+        public List<Annotation> Annotations = new List<Annotation>();
         public string idString;
         public int[] rgbChannels = new int[3];
         public int rGBChannelCount = 1;
@@ -153,26 +156,26 @@ namespace BioImage
         public BioImage(int ser, string file)
         {
             serie = ser;
-            Load(file);
+            OpenSeries(file, ser);
             rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
             rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
         }
 
-        public BioImage.Channel RChannel
+        public Channel RChannel
         {
             get
             {
                 return Channels[rgbChannels[0]];
             }
         }
-        public BioImage.Channel GChannel
+        public Channel GChannel
         {
             get
             {
                 return Channels[rgbChannels[1]];
             }
         }
-        public BioImage.Channel BChannel
+        public Channel BChannel
         {
             get
             {
@@ -190,6 +193,24 @@ namespace BioImage
                 C = c;
                 T = t;
             }
+            public static bool operator ==(SZCT c1, SZCT c2)
+            {
+                if (c1.S == c2.S && c1.Z == c2.Z && c1.C == c2.C && c1.T == c2.T)
+                    return true;
+                else
+                    return false;
+            }
+            public static bool operator !=(SZCT c1, SZCT c2)
+            {
+                if (c1.S != c2.S || c1.Z != c2.Z || c1.C != c2.C || c1.T != c2.T)
+                    return false;
+                else
+                    return true;
+            }
+            public override string ToString()
+            {
+                return S + "," + Z + "," + C + "," + T;
+            }
         }
         public struct SZCTXY
         {
@@ -203,6 +224,25 @@ namespace BioImage
                 X = x;
                 Y = y;
             }
+            public override string ToString()
+            {
+                return S + "," + Z + "," + C + "," + T + "," + X + "," + Y;
+            }
+
+            public static bool operator ==(SZCTXY c1, SZCTXY c2)
+            {
+                if (c1.S == c2.S && c1.Z == c2.Z && c1.C == c2.C && c1.T == c2.T && c1.X == c2.X && c2.Y == c2.Y)
+                    return true;
+                else
+                    return false;
+            }
+            public static bool operator !=(SZCTXY c1, SZCTXY c2)
+            {
+                if (c1.S != c2.S || c1.Z != c2.Z || c1.C != c2.C || c1.T != c2.T || c1.X != c2.X || c1.Y != c2.Y)
+                    return false;
+                else
+                    return true;
+            }
         }
         
         public int serie = 0;
@@ -213,7 +253,45 @@ namespace BioImage
         public bool isGroup = false;
         public long loadTimeMS = 0;
         public long loadTimeTicks = 0;
-        public int SizeX, SizeY, SizeZ, SizeC, SizeT;
+        public Bitmap overlay;
+        private int sizeX, sizeY, sizeZ, sizeC, sizeT;
+        public int SizeX
+        {
+            get { return sizeX; }
+            set 
+            { 
+                sizeX = value;
+                if (sizeX > 0 && sizeY > 0)
+                {
+                    overlay = new Bitmap(sizeX, sizeY, PixelFormat.Format32bppArgb);
+                }
+            }
+        }
+        public int SizeY
+        {
+            get { return sizeY; }
+            set
+            {
+                sizeY = value;
+                if (sizeX > 0 && sizeY > 0)
+                {
+                    overlay = new Bitmap(sizeX, sizeY, PixelFormat.Format32bppArgb);
+                }
+            }
+        }
+        public int SizeZ
+        {
+            get { return sizeZ; }
+        }
+        public int SizeC
+        {
+            get { return sizeC; }
+        }
+        public int SizeT
+        {
+            get { return sizeT; }
+        }
+
         public Stopwatch watch = new Stopwatch();
 
         public int RGBChannelCount
@@ -303,19 +381,13 @@ namespace BioImage
         {
             return Buffers[Coords[coord.S, coord.Z, coord.C, coord.T]];
         }
-
         public Bitmap GetBitmap(SZCT coord)
         {
             return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetBitmap();
         }
-
         public Bitmap GetFiltered(SZCT coord,  IntRange filt)
         {
             return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetFiltered(filt);
-        }
-        public Bitmap GetFiltered(SZCT coord, IntRange rr, IntRange rg)
-        {
-            return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetFiltered(rr, rg);
         }
         public Bitmap GetFiltered(SZCT coord, IntRange rr, IntRange rg, IntRange rb)
         {
@@ -335,26 +407,6 @@ namespace BioImage
                 replaceGFilter.ApplyInPlace(rgbBitmap16);
                 replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, Buffers[ri + BChannel.index].GetFiltered(rf, gf, bf));
                 replaceBFilter.ApplyInPlace(rgbBitmap16);
-            }
-            else
-            {
-                rgbBitmap16 = Buffers[ri].GetBitmap();
-            }
-            watch.Stop();
-            loadTimeMS = watch.ElapsedMilliseconds;
-            loadTimeTicks = watch.ElapsedTicks;
-            return rgbBitmap16;
-        }
-        public Bitmap GetRGBBitmap16(SZCT coord, IntRange rf, IntRange gf)
-        {
-            watch.Restart();
-            int ri = imageReader.getIndex(coord.Z, coord.C, coord.T);
-            if (RGBChannelCount == 1)
-            {
-                replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri + RChannel.index].GetFiltered(rf, gf));
-                replaceRFilter.ApplyInPlace(rgbBitmap16);
-                replaceGFilter = new ReplaceChannel(AForge.Imaging.RGB.G, Buffers[ri + GChannel.index].GetFiltered(rf, gf));
-                replaceGFilter.ApplyInPlace(rgbBitmap16);
             }
             else
             {
@@ -440,7 +492,7 @@ namespace BioImage
                 G = g;
                 B = b;
             }
-            public static ColorS FromColor(Color col)
+            public static ColorS FromColor(System.Drawing.Color col)
             {
                 float r = (((float)col.R) / 255) * ushort.MaxValue;
                 float g = (((float)col.G) / 255) * ushort.MaxValue;
@@ -451,12 +503,12 @@ namespace BioImage
                 color.B = (ushort)b;
                 return color;
             }
-            public static Color ToColor(ColorS col)
+            public static System.Drawing.Color ToColor(ColorS col)
             {
-                float r = (((float)col.R) / ushort.MaxValue) * 255;
-                float g = (((float)col.G) / ushort.MaxValue) * 255;
-                float b = (((float)col.B) / ushort.MaxValue) * 255;
-                Color c = Color.FromArgb((byte)r, (byte)g, (byte)b);
+                float r = ((float)(col.R)/65535)*255;
+                float g = ((float)(col.G)/65535)*255;
+                float b = ((float)(col.B)/65535)*255;
+                System.Drawing.Color c = System.Drawing.Color.FromArgb((byte)r, (byte)g, (byte)b);
                 return c;
             }
             public override string ToString()
@@ -464,15 +516,407 @@ namespace BioImage
                 return R + "," + G + "," + B;
             }
         }
+        public struct PointD
+        {
+            public double X;
+            public double Y;
+            public PointD(double x, double y)
+            {
+                X = x;
+                Y = y;
+            }
+            public PointF ToPointF()
+            {
+                return new PointF((float)X, (float)Y);
+            }
+            public PointF ToPointInt()
+            {
+                return new System.Drawing.Point((int)X, (int)Y);
+            }
+        }
+        public struct RectangleD
+        {
+            public double X;
+            public double Y;
+            public double W;
+            public double H;
+
+            public RectangleD(double x, double y, double w, double h)
+            {
+                X = x;
+                Y = y;
+                W = w;
+                H = h;
+            }
+
+            public System.Drawing.Rectangle ToRectangleInt()
+            {
+                return new System.Drawing.Rectangle((int)X, (int)Y, (int)W, (int)H);
+            }
+            public bool IntersectsWith(PointD p)
+            {
+                if (X <= p.X && (X + W) >= p.X && Y <= p.Y && (Y + H) >= p.Y)
+                    return true;
+                else
+                    return false;
+            }
+            public bool IntersectsWith(double x, double y)
+            {
+                if (X <= x && (X + W) >= x && Y <= y && (Y + H) >= y)
+                    return true;
+                else
+                    return false;
+            }
+            public RectangleF ToRectF()
+            {
+                return new RectangleF((float)X, (float)Y, (float)W, (float)H);
+            }
+        }
+        public List<Annotation> GetAnnotations(SZCT coord)
+        {
+            List<Annotation> annotations = new List<Annotation>();
+            foreach (Annotation an in Annotations)
+            {
+                if(an.coord == coord)
+                annotations.Add(an);
+            }
+            return annotations;
+        }
+        public List<Annotation> GetAnnotations(int S, int Z, int C, int T)
+        {
+            List<Annotation> annotations = new List<Annotation>();
+            foreach (Annotation an in Annotations)
+            {
+                if (an.coord.S == S && an.coord.Z == Z && an.coord.Z == Z && an.coord.C == C && an.coord.T == T) 
+                    annotations.Add(an);
+            }
+            return annotations;
+        }
+        public class Annotation
+        {
+            public float selectBoxSize = 4;
+            public enum Type
+            {
+                Rectangle,
+                Point,
+                Line,
+                Polygon,
+                Polyline,
+                Freeform,
+                Ellipse,
+                Label
+            }
+            public Type type;
+            public PointD Point
+            {
+                get
+                {
+                    return Points[0];
+                }
+                set
+                {
+                    if(Points.Count == 0)
+                    {
+                        AddPoint(value);
+                    }
+                    else
+                        UpdatePoint(value, 0);
+                    UpdateSelectBoxs();
+                    UpdateBoundingBox();
+                }
+            }
+            public RectangleD Rect
+            {
+                get
+                {
+                    if(type == Type.Point)
+                        return new RectangleD(Points[0].X, Points[0].Y, 1, 1);
+                    else
+                        return new RectangleD(Points[0].X, Points[0].Y, Points[1].X - Points[0].X, Points[2].Y - Points[0].Y);
+                }
+                set
+                {
+                    if (type == Type.Point || type == Type.Line)
+                        return;
+                    if (Points.Count == 0)
+                    {
+                        AddPoint(new PointD(value.X, value.Y));
+                        AddPoint(new PointD(value.X + value.W, value.Y));
+                        AddPoint(new PointD(value.X, value.Y + value.H));
+                        AddPoint(new PointD(value.X + value.W, value.Y + value.H));
+                        UpdateSelectBoxs();
+                        UpdateBoundingBox();
+                    }
+                    else
+                    {
+                        Points[0] = new PointD(value.X, value.Y);
+                        Points[1] = new PointD(value.X + value.W, value.Y);
+                        Points[2] = new PointD(value.X, value.Y + value.H);
+                        Points[3] = new PointD(value.X + value.W, value.Y + value.H);
+                        UpdateSelectBoxs();
+                        UpdateBoundingBox();
+                    }
+                }
+            }
+
+            public double X
+            {
+                get
+                {
+                    return Point.X;
+                }
+                set
+                {
+                    Rect = new RectangleD(value, Y, W, H);
+                }
+            }
+            public double Y
+            {
+                get
+                {
+                    return Point.Y;
+                }
+                set
+                {
+                    Rect = new RectangleD(X, value, W, H);
+                }
+            }
+            public double W
+            {
+                get
+                {
+                    if (type == Type.Point)
+                        return strokeWidth;
+                    return (Points[1].X - Points[0].X);
+                }
+                set
+                {
+                    Rect = new RectangleD(X, Y, value, H);
+                }
+            }
+            public double H
+            {
+                get
+                {
+                    if (type == Type.Point)
+                        return strokeWidth;
+                    return Points[2].Y - Points[0].Y;
+                }
+                set
+                {
+                    Rect = new RectangleD(X, Y, W, value);
+                }
+            }
+
+            public string name;
+            public string id;
+            private List<PointD> Points = new List<PointD>();
+            public List<RectangleF> selectBoxs = new List<RectangleF>();
+            public RectangleD BoundingBox;
+            public Font font;
+            public SZCT coord;
+            public System.Drawing.Color color;
+            public string roiID;
+            public string roiName;
+            public string text;
+            public double strokeWidth = 1;
+            public int shapeIndex = 0;
+
+            public RectangleD GetSelectBound()
+            {
+                double f = selectBoxSize / 2;
+                return new RectangleD(BoundingBox.X - f, BoundingBox.Y - f, BoundingBox.W + f, BoundingBox.H + f); 
+            }
+
+            public RectangleD GetSelectBound(Graphics g)
+            {
+                if (type == Type.Label)
+                {
+                    SizeF f = g.MeasureString(text, font);
+                    return new RectangleD(Point.X, Point.Y, f.Width, f.Height);
+                }
+                else
+                { 
+                    double f = selectBoxSize / 2;
+                    return new RectangleD(BoundingBox.X - f, BoundingBox.Y - f, BoundingBox.W + f, BoundingBox.H + f);
+                }
+            }
+
+            public Annotation()
+            {
+                coord = new SZCT(0, 0, 0, 0);
+                color = System.Drawing.Color.Yellow;
+                font = SystemFonts.DefaultFont;
+            }
+
+            public void UpdatePoint(PointD p, int i)
+            {
+                Points[i] = p;
+                selectBoxs[i] = new RectangleF((float)p.X - 2, (float)p.Y - 2, selectBoxSize, selectBoxSize);
+            }
+
+            public PointD GetPoint(int i)
+            {
+                return Points[i];
+            }
+
+            public PointD[] GetPoints()
+            {
+                return Points.ToArray();
+            }
+            public PointF[] GetPointsF()
+            {
+                PointF[] pfs = new PointF[Points.Count];
+                for (int i = 0; i < Points.Count; i++)
+                {
+                    pfs[i].X = (float)Points[i].X;
+                    pfs[i].Y = (float)Points[i].Y;
+                }
+                return pfs;
+            }
+            public void AddPoint(PointD p)
+            {
+                Points.Add(p);
+                UpdateSelectBoxs();
+                UpdateBoundingBox();
+            }
+            public void AddPoints(PointD[] p)
+            {
+                Points.AddRange(p);
+                if (type != Type.Freeform)
+                {
+                    UpdateSelectBoxs();
+                }
+                UpdateBoundingBox();
+            }
+
+            public int GetPointCount()
+            {
+                return Points.Count;
+            }
+            public PointD[] stringToPoints(string s)
+            {
+                List<PointD> pts = new List<PointD>();
+                string[] ints = s.Split(' ');
+                for (int i = 0; i < ints.Length; i++)
+                {
+                    string[] sints = ints[i].Split(',');
+                    int x = int.Parse(sints[0]);
+                    int y = int.Parse(sints[1]);
+                    pts.Add(new PointD(x, y));
+                }
+                return pts.ToArray();
+            }
+            public Annotation CreatePoint(PointD p)
+            {
+                Annotation an = new Annotation();
+                an.type = Type.Point;
+                an.Rect = new RectangleD(p.X -2, p.Y -2, selectBoxSize, selectBoxSize);
+                return an;
+            }
+            public Annotation CreateRectangle(RectangleD re)
+            {
+                Annotation roi = new Annotation();
+                roi.type = Type.Rectangle;
+                roi.Rect = re;
+                return roi;
+            }
+            public Annotation CreateEllipse(RectangleD re)
+            {
+                Annotation an = new Annotation();
+                an.type = Type.Rectangle;
+                an.Rect = re;
+                return an;
+            }
+            public Annotation CreateLine(PointD p1, PointD p2)
+            {
+                Annotation roi = new Annotation();
+                roi.type = Type.Line;
+                roi.Points.Add(p1);
+                roi.Points.Add(p2);
+                UpdateSelectBoxs();
+                return roi;
+            }
+            public Annotation CreatePolygon(string points)
+            {
+                Annotation roi = new Annotation();
+                roi.type = Type.Polygon;
+                roi.AddPoints(stringToPoints(points));
+                UpdateSelectBoxs();
+                UpdateBoundingBox();
+                return roi;
+            }
+            public void UpdateSelectBoxs()
+            {
+                if (type == Type.Freeform)
+                    return;
+                else
+                {
+                    selectBoxs.Clear();
+                    for (int i = 0; i < Points.Count; i++)
+                    {
+                        selectBoxs.Add(new RectangleF((float)Points[i].X - 2, (float)Points[i].Y - 2, selectBoxSize, selectBoxSize));
+                    }
+                }
+            }
+            public void UpdateBoundingBox()
+            {
+                RectangleD r = new RectangleD(float.MaxValue, float.MaxValue, 0, 0);
+                foreach (PointD p in Points)
+                {
+                    if (r.X > p.X)
+                        r.X = p.X;
+                    if (r.Y > p.Y)
+                        r.Y = p.Y;
+                    if (r.W < p.X)
+                        r.W = p.X;
+                    if (r.H < p.Y)
+                        r.H = p.Y;
+                }
+                r.W = r.W - r.X;
+                r.H = r.H - r.Y;
+                if (r.W == 0)
+                    r.W = 1;
+                if (r.H == 0)
+                    r.H = 1;
+                BoundingBox = r;
+            }
+            public void UpdateBoundingBox(Graphics g)
+            {
+                SizeF size = g.MeasureString(text, font);
+                Rect = new RectangleD(Point.X,Point.Y, size.Width, size.Height);
+            }
+            public Annotation CreatePolyline(string points)
+            {
+                Annotation roi = new Annotation();
+                roi.type = Type.Polyline;
+                roi.AddPoints(stringToPoints(points));
+                UpdateSelectBoxs();
+                UpdateBoundingBox();
+                return roi;
+            }
+            public Annotation CreateText(Font f, string s, PointD p1)
+            {
+                Annotation roi = new Annotation();
+                roi.type = Type.Label;
+                roi.font = f;
+                roi.Points.Add(p1);
+                return roi;
+            }
+
+            public override string ToString()
+            {
+                return "(" + Point.X + "." + Point.Y + ") " + coord.ToString() + " " + type.ToString();
+            }
+        }
         public class Channel
         {
             public string Name = "";
             public string ID = "";
             public int index;
-
             public string Fluor = "";
             public int SamplesPerPixel;
-            public Color color;
+            public System.Drawing.Color color;
             public int Emission;
             public int Excitation;
             public int Exposure;
@@ -530,7 +974,6 @@ namespace BioImage
                 Min = 0;
                 index = ind;
             }
-
             public Channel Copy()
             {
                 Channel c = new Channel(index, bitsPerPixel);
@@ -550,7 +993,6 @@ namespace BioImage
                 c.IlluminationType = IlluminationType;
                 return c;
             }
-
             public override string ToString()
             {
                 if (Name == "")
@@ -559,7 +1001,6 @@ namespace BioImage
                     return index + ", " + Name;
             }
         }
-
         public struct BufferInfo
         {
             public static LevelsLinear filter8 = new LevelsLinear();
@@ -612,7 +1053,6 @@ namespace BioImage
             }
 
         }
-
         public struct Buf
         {
             public BufferInfo info;
@@ -621,7 +1061,6 @@ namespace BioImage
             public BinaryWriter writer;
             public BinaryReader read;
             public int serie;
-
             public byte[] bytes
             {
                 get
@@ -741,6 +1180,11 @@ namespace BioImage
                 return read.ReadBytes(info.length);
             }
 
+            public void Seek0()
+            {
+                read.BaseStream.Position = 0;
+            }
+
             public void SetBytes(byte[] bytes)
             {
                 writer.Seek(0, SeekOrigin.Begin);
@@ -753,15 +1197,21 @@ namespace BioImage
                 writer.Write(bt);
             }
 
-            public void SetByte(byte[] bytes, int ind)
+            public void SetBytes(byte[] bytes, int ind)
             {
                 writer.Seek(ind, SeekOrigin.Begin);
-                writer.Write(bytes, ind, info.length);
+                writer.Write(bytes, ind, bytes.Length);
+            }
+
+            public void SetShort(ushort val, int ind)
+            {
+                writer.Seek(ind, SeekOrigin.Begin);
+                writer.Write(val);
             }
 
             public void SetBuffer(Bitmap bitmap)
             {
-                BitmapData data = bitmap.LockBits(new Rectangle(0, 0, info.SizeX, info.SizeY), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, info.SizeX, info.SizeY), ImageLockMode.ReadWrite, bitmap.PixelFormat);
                 info.pixelFormat = data.PixelFormat;
                 IntPtr ptr = data.Scan0;
                 int length = data.Stride * bitmap.Height;
@@ -833,7 +1283,7 @@ namespace BioImage
             {
                 Bitmap bitmap = GetBitmap();
                 bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                BitmapData data = bitmap.LockBits(new Rectangle(0, 0, info.SizeX, info.SizeY), ImageLockMode.ReadWrite, info.pixelFormat);
+                BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, info.SizeX, info.SizeY), ImageLockMode.ReadWrite, info.pixelFormat);
                 IntPtr ptr = data.Scan0;
                 int length = this.bytes.Length;
                 byte[] bytes = new byte[length];
@@ -861,24 +1311,6 @@ namespace BioImage
                     filter8.InRed = range;
                     filter8.InGreen = range;
                     filter8.InBlue = range;
-                    return filter8.Apply(bitmap);
-                }
-            }
-            public unsafe Bitmap GetFiltered(IntRange r, IntRange g)
-            {
-                Bitmap bitmap = GetBitmap();
-                if (info.bitsPerPixel > 8)
-                {
-                    // set ranges
-                    filter16.InRed = r;
-                    filter16.InGreen = g;
-                    return filter16.Apply(bitmap);
-                }
-                else
-                {
-                    // set ranges
-                    filter8.InRed = r;
-                    filter8.InGreen = g;
                     return filter8.Apply(bitmap);
                 }
             }
@@ -1067,7 +1499,7 @@ namespace BioImage
             }
             public ushort GetValue(int ix, int iy)
             {
-                int i = -1;
+                int i = 0;
                 int stridex = info.SizeX;
                 //For 16bit (2*8bit) images we multiply buffer index by 2
                 int x = ix;
@@ -1120,14 +1552,6 @@ namespace BioImage
                 //For 16bit (2*8bit) images we multiply buffer index by 2
                 int x = ix;
                 int y = iy;
-                if (ix < 0)
-                    x = 0;
-                if (iy < 0)
-                    y = 0;
-                if (ix >= info.SizeX)
-                    x = info.SizeX - 1;
-                if (iy >= info.SizeY)
-                    y = info.SizeY - 1;
                 if (!info.littleEndian)
                 {
                     x = (info.SizeX - 1) - x;
@@ -1137,18 +1561,14 @@ namespace BioImage
                         int index2 = (y * stridex + x) * 2 * info.RGBChannelsCount;
                         byte upper = (byte)(value >> 8);
                         byte lower = (byte)(value & 0xff);
-
+                        SetBytes(BitConverter.GetBytes(value), index2);
                         SetByte(upper, index2);
                         SetByte(lower, index2 + 1);
-
-                        //bytes[index2] = upper;
-                        //bytes[index2 + 1] = lower;
                     }
                     else
                     {
                         int index = (y * stridex + x) * info.RGBChannelsCount;
                         SetByte((byte)value, index);
-                        bytes[index] = (byte)value;
                     }
                 }
                 else
@@ -1158,18 +1578,13 @@ namespace BioImage
                         int index2 = ((y * stridex + x) * 2 * info.RGBChannelsCount);
                         byte upper = (byte)(value >> 8);
                         byte lower = (byte)(value & 0xff);
-
-                        SetByte(upper, index2);
-                        SetByte(lower, index2 + 1);
-
-                        //bytes[index2] = lower;
-                        //bytes[index2 + 1] = upper;
+                        SetByte(lower, index2);
+                        SetByte(upper, index2 + 1);
                     }
                     else
                     {
                         int index = (y * stridex + x) * info.RGBChannelsCount;
                         SetByte((byte)value, index);
-                        //bytes[index] = (byte)value;
                     }
                 }
             }
@@ -1186,14 +1601,6 @@ namespace BioImage
                 //For 16bit (2*8bit) images we multiply buffer index by 2
                 int x = ix;
                 int y = iy;
-                if (ix < 0)
-                    x = 0;
-                if (iy < 0)
-                    y = 0;
-                if (ix >= info.SizeX)
-                    x = info.SizeX - 1;
-                if (iy >= info.SizeY)
-                    y = info.SizeY - 1;
                 if (!info.littleEndian)
                 {
                     x = (info.SizeX - 1) - x;
@@ -1205,8 +1612,6 @@ namespace BioImage
                         byte lower = (byte)(value & 0xff);
                         SetByte(upper, index2);
                         SetByte(lower, index2 + 1);
-                        bytes[index2] = upper;
-                        bytes[index2 + 1] = lower;
                     }
                     else
                     {
@@ -1221,10 +1626,8 @@ namespace BioImage
                         int index2 = ((y * stride + x) * 2 * info.RGBChannelsCount);
                         byte upper = (byte)(value >> 8);
                         byte lower = (byte)(value & 0xff);
-                        SetByte(upper, index2);
-                        SetByte(lower, index2 + 1);
-                        bytes[index2] = lower;
-                        bytes[index2 + 1] = upper;
+                        SetByte(lower, index2);
+                        SetByte(upper, index2 + 1);
                     }
                     else
                     {
@@ -1257,7 +1660,6 @@ namespace BioImage
             }
             return true;
         }
-
         public bool SaveSeries(string path, int series)
         {
             // create OME-XML metadata store
@@ -1267,8 +1669,7 @@ namespace BioImage
 
             omexml.setImageID("Image:0", series);
             omexml.setPixelsID("Pixels:0", series);
-            // specify that the pixel data is stored in big-endian order
-            // replace 'TRUE' with 'FALSE' to specify little-endian order
+
             if (littleEndian)
                 omexml.setPixelsBinDataBigEndian(java.lang.Boolean.TRUE, 0, 0);
             else
@@ -1279,46 +1680,176 @@ namespace BioImage
                 omexml.setPixelsType(ome.xml.model.enums.PixelType.UINT16, series);
             else
                 omexml.setPixelsType(ome.xml.model.enums.PixelType.UINT8, series);
-            omexml.setPixelsSizeX(new ome.xml.model.primitives.PositiveInteger(java.lang.Integer.valueOf(SizeX)), series);
-            omexml.setPixelsSizeY(new ome.xml.model.primitives.PositiveInteger(java.lang.Integer.valueOf(SizeY)), series);
-            omexml.setPixelsSizeZ(new ome.xml.model.primitives.PositiveInteger(java.lang.Integer.valueOf(SizeZ)), series);
+            omexml.setPixelsSizeX(new PositiveInteger(java.lang.Integer.valueOf(SizeX)), series);
+            omexml.setPixelsSizeY(new PositiveInteger(java.lang.Integer.valueOf(SizeY)), series);
+            omexml.setPixelsSizeZ(new PositiveInteger(java.lang.Integer.valueOf(SizeZ)), series);
             int samples = 1;
             if (isRGB)
                 samples = 3;
-            omexml.setPixelsSizeC(new ome.xml.model.primitives.PositiveInteger(java.lang.Integer.valueOf(SizeC * samples)), series);
-            omexml.setPixelsSizeT(new ome.xml.model.primitives.PositiveInteger(java.lang.Integer.valueOf(SizeT)), series);
+            omexml.setPixelsSizeC(new PositiveInteger(java.lang.Integer.valueOf(SizeC * samples)), series);
+            omexml.setPixelsSizeT(new PositiveInteger(java.lang.Integer.valueOf(SizeT)), series);
 
-            //ome.units.unit.Unit unit = ome.units.UNITS.MICROMETER;
-            //java.lang.Number intg = new java.lang.Integer(meta.getPixelsPhysicalSizeX(0));
+            //We set the image physical size to be same as opened image.
             omexml.setPixelsPhysicalSizeX(meta.getPixelsPhysicalSizeX(series), series);
             omexml.setPixelsPhysicalSizeY(meta.getPixelsPhysicalSizeY(series), series);
             omexml.setPixelsPhysicalSizeZ(meta.getPixelsPhysicalSizeZ(series), series);
 
+
             for (int channel = 0; channel < Channels.Count; channel++)
             {
-                omexml.setChannelID("Channel:" + series + ":" + channel, series, channel);
-                omexml.setChannelSamplesPerPixel(new ome.xml.model.primitives.PositiveInteger(java.lang.Integer.valueOf(samples)), series, channel);
+                omexml.setChannelID("Channel:" + channel + ":" + series, series, channel);
+                omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(samples)), series, channel);
             }
+
+            int i = 0;
+            foreach (Annotation an in Annotations)
+            {
+                omexml.setROIID(an.roiID, i);
+                omexml.setROIName(an.roiName, i);
+                if (an.type == Annotation.Type.Point)
+                {
+                    if (an.id == "")
+                        omexml.setPointID(an.id, i, series);
+                    else
+                        omexml.setPointID("Shape:" + i + ":" + series, i, series);
+                    omexml.setPointX(java.lang.Double.valueOf(an.X), i, series);
+                    omexml.setPointY(java.lang.Double.valueOf(an.Y), i, series);
+                    omexml.setPointTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
+                    omexml.setPointTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
+                    omexml.setPointTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
+                    if (an.text != "")
+                        omexml.setPointText(an.text, i, series);
+                    else
+                        omexml.setPointText(i.ToString(), i, series);
+                    ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
+                    meta.setLineFontSize(fl, i, series);
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.color.R, an.color.G, an.color.B, an.color.A);
+                    omexml.setPointStrokeColor(col, i, series);
+                }
+                else
+                if (an.type == Annotation.Type.Rectangle)
+                {
+                    if(an.id != "")
+                        omexml.setRectangleID(an.id, i, series); 
+                    else
+                        omexml.setRectangleID("Shape:" + i + ":" + series, i, series);
+                    omexml.setRectangleWidth(java.lang.Double.valueOf(an.W), i, series);
+                    omexml.setRectangleHeight(java.lang.Double.valueOf(an.H), i, series);
+                    omexml.setRectangleX(java.lang.Double.valueOf(an.Rect.X), i, series);
+                    omexml.setRectangleY(java.lang.Double.valueOf(an.Rect.Y), i, series);
+                    omexml.setRectangleTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
+                    omexml.setRectangleTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
+                    omexml.setRectangleTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
+                    omexml.setRectangleText(i.ToString(), i, series);
+                    if (an.text != "")
+                        omexml.setRectangleText(an.text, i, series);
+                    else
+                        omexml.setRectangleText(i.ToString(), i, series);
+                    ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
+                    meta.setRectangleFontSize(fl, i, series);
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.color.R, an.color.G, an.color.B, an.color.A);
+                    omexml.setRectangleStrokeColor(col, i, series);
+                    ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
+                    omexml.setLineStrokeWidth(sw, i, series);
+                }
+                else
+                if (an.type == Annotation.Type.Line)
+                {
+                    if (an.id == "")
+                        omexml.setLineID(an.id, i, series);
+                    else
+                        omexml.setLineID("Shape:" + i + ":" + series, i, series);
+                    omexml.setLineX1(java.lang.Double.valueOf(an.X), i, series);
+                    omexml.setLineY1(java.lang.Double.valueOf(an.Y), i, series);
+                    omexml.setLineX2(java.lang.Double.valueOf(an.GetPoint(1).X), i, series);
+                    omexml.setLineY2(java.lang.Double.valueOf(an.GetPoint(1).Y), i, series);
+                    omexml.setLineTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
+                    omexml.setLineTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
+                    omexml.setLineTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
+                    if (an.text != "")
+                        omexml.setLineText(an.text, i, series);
+                    else
+                        omexml.setLineText(i.ToString(), i, series);
+                    ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
+                    meta.setLineFontSize(fl, i, series);
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.color.R, an.color.G, an.color.B, an.color.A);
+                    omexml.setLineStrokeColor(col, i, series);
+                    ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
+                    omexml.setLineStrokeWidth(sw, i, series);
+                }
+                else
+                if (an.type == Annotation.Type.Ellipse)
+                {
+                    if (an.id == "")
+                        omexml.setEllipseID(an.id, i, series);
+                    else
+                        omexml.setEllipseID("Shape:" + i + ":" + series, i, series);
+                    //We need to change System.Drawing.Rectangle to ellipse radius;
+                    double w = (double)an.W / 2;
+                    double h = (double)an.W / 2;
+                    omexml.setEllipseRadiusX(java.lang.Double.valueOf(w), i, series);
+                    omexml.setEllipseRadiusY(java.lang.Double.valueOf(h), i, series);
+                    omexml.setEllipseX(java.lang.Double.valueOf(an.X), i, series);
+                    omexml.setEllipseY(java.lang.Double.valueOf(an.Y), i, series);
+                    omexml.setEllipseTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
+                    omexml.setEllipseTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
+                    omexml.setEllipseTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
+                    if (an.text != "")
+                        omexml.setEllipseText(an.text, i, series);
+                    else
+                        omexml.setEllipseText(i.ToString(), i, series);
+                    ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
+                    meta.setEllipseFontSize(fl, i, series);
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.color.R, an.color.G, an.color.B, an.color.A);
+                    omexml.setEllipseStrokeColor(col, i, series);
+                    ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
+                    omexml.setEllipseStrokeWidth(sw, i, series);
+                }
+                else
+                if (an.type == Annotation.Type.Label)
+                {
+                    if (an.id != "")
+                        omexml.setLabelID(an.id, i, series);
+                    else
+                        omexml.setLabelID("Shape:" + i + ":" + series, i, series);
+                    omexml.setLabelX(java.lang.Double.valueOf(an.Rect.X), i, series);
+                    omexml.setLabelY(java.lang.Double.valueOf(an.Rect.Y), i, series);
+                    omexml.setLabelTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
+                    omexml.setLabelTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
+                    omexml.setLabelTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
+                    omexml.setLabelText(i.ToString(), i, series);
+                    if (an.text != "")
+                        omexml.setLabelText(an.text, i, series);
+                    else
+                        omexml.setLabelText(i.ToString(), i, series);
+                    ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
+                    meta.setLabelFontSize(fl, i, series);
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.color.R, an.color.G, an.color.B, an.color.A);
+                    omexml.setLabelStrokeColor(col, i, series);
+                    ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
+                    omexml.setLabelStrokeWidth(sw,i, series);
+                }
+                i++;
+            }
+
             //Method used to save a range of an image stack defined by start & count.
             loci.formats.ImageWriter writer = new loci.formats.ImageWriter();
             writer.setMetadataRetrieve(omexml);
-            string str = Path.GetDirectoryName(path) + "\\TestWrite.tif";
             //We delete the file so we don't just add more images to an existing file;
-            if (File.Exists(str))
-                File.Delete(str);
-            writer.setId(str);
-            //reader.setSeries(series);
+            if (File.Exists(path))
+                File.Delete(path);
+            writer.setId(path);
             writer.setSeries(series);
             writer.setWriteSequentially(true);
-            for (int i = 0; i < imageCount; i++)
+            for (int im = 0; im < imageCount; im++)
             {
-                writer.saveBytes(i, Buffers[i].GetEndianBytes());
+                writer.saveBytes(im, Buffers[im].GetEndianBytes());
                 Application.DoEvents();
             }
             writer.close();
             return true;
         }
-        public void Load(string file)
+        public void OpenSeries(string file, int series)
         {
             // create OME-XML metadata store
             ServiceFactory factory = new ServiceFactory();
@@ -1334,14 +1865,14 @@ namespace BioImage
 
             SizeX = imageReader.getSizeX();
             SizeY = imageReader.getSizeY();
-            SizeC = imageReader.getSizeC();
-            SizeZ = imageReader.getSizeZ();
-            SizeT = imageReader.getSizeT();
+            sizeC = imageReader.getSizeC();
+            sizeZ = imageReader.getSizeZ();
+            sizeT = imageReader.getSizeT();
             imageCount = imageReader.getImageCount();
             littleEndian = imageReader.isLittleEndian();
             seriesCount = imageReader.getSeriesCount();
             imagesPerSeries = imageCount / seriesCount;
-            Coords = new int[seriesCount ,SizeZ, SizeC, SizeT];
+            Coords = new int[seriesCount, SizeZ, SizeC, SizeT];
             idString = file;
 
             if (RGBChannelCount == 1)
@@ -1357,12 +1888,12 @@ namespace BioImage
             }
             else
             {
-                if(bitsPerPixel > 8)
+                if (bitsPerPixel > 8)
                     px = PixelFormat.Format48bppRgb;
                 else
                     px = PixelFormat.Format24bppRgb;
             }
-            
+
             int ccount = SizeC / rGBChannelCount;
             //Lets get the channels amd initialize them.
             for (int i = 0; i < ccount; i++)
@@ -1384,7 +1915,7 @@ namespace BioImage
                     if (meta.getChannelColor(0, i) != null)
                     {
                         ome.xml.model.primitives.Color c = meta.getChannelColor(0, i);
-                        ch.color = Color.FromArgb(c.getRed(), c.getGreen(), c.getBlue());
+                        ch.color = System.Drawing.Color.FromArgb(c.getRed(), c.getGreen(), c.getBlue());
                         if (ch.color.R == 255 && ch.color.G == 0 && ch.color.B == 0)
                             ch.rgb = RGB.R;
                         if (ch.color.R == 0 && ch.color.G == 255 && ch.color.B == 0)
@@ -1428,6 +1959,311 @@ namespace BioImage
                 }
                 Channels.Add(ch);
             }
+            
+            int rc = meta.getROICount();
+            for (int i = 0; i < rc; i++)
+            {
+                string roiID = meta.getROIID(i);
+                string roiName = meta.getROIName(i);
+                SZCT co = new SZCT(0,0,0,0);
+                int scount = meta.getShapeCount(i);
+                for (int sc = 0; sc < scount; sc++)
+                {
+                    string type = meta.getShapeType(i, sc);
+                    BioImage.Annotation an = new Annotation();
+                    an.roiID = roiID;
+                    an.roiName = roiName;
+                    an.shapeIndex = sc;
+                    if (type == "Point")
+                    {
+                        an.type = Annotation.Type.Point;
+                        an.id = meta.getPointID(i, sc);
+                        double dx = meta.getPointX(i, sc).doubleValue();
+                        double dy = meta.getPointY(i, sc).doubleValue();
+                        an.AddPoint(new PointD(dx, dy));
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getPointTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPointTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPointTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        an.text = meta.getPointText(i, sc);
+                        ome.units.quantity.Length fl = meta.getPointFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getPointStrokeColor(i, sc);
+                        if(col != null)
+                        an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getPointStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                    }
+                    else
+                    if (type == "Line")
+                    {
+                        an.type = Annotation.Type.Line;
+                        an.id = meta.getLineID(i, sc);
+                        double px1 = meta.getLineX1(i, sc).doubleValue();
+                        double py1 = meta.getLineY1(i, sc).doubleValue();
+                        double px2 = meta.getLineX2(i, sc).doubleValue();
+                        double py2 = meta.getLineY2(i, sc).doubleValue();
+                        an.AddPoint(new PointD(px1, py1));
+                        an.AddPoint(new PointD(px2, py2));
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getLineTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getLineTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getLineTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        an.text = meta.getLineText(i, sc);
+                        ome.units.quantity.Length fl = meta.getLineFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getLineStrokeColor(i, sc);
+                        if (col != null)
+                            an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                        double? dw = meta.getLineStrokeWidth(i, sc).value().doubleValue();
+                        ome.units.quantity.Length fw = meta.getLineStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                    }
+                    else
+                    if (type == "Rectangle")
+                    {
+                        an.type = Annotation.Type.Rectangle;
+                        an.id = meta.getRectangleID(i, sc);
+                        double px = meta.getRectangleX(i, sc).doubleValue();
+                        double py = meta.getRectangleY(i, sc).doubleValue();
+                        double pw = meta.getRectangleWidth(i, sc).doubleValue();
+                        double ph = meta.getRectangleHeight(i, sc).doubleValue();
+                        an.Rect = new RectangleD(px, py, pw, ph);
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getRectangleTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getRectangleTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getRectangleTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        an.text = meta.getRectangleText(i, sc);
+                        ome.units.quantity.Length fl = meta.getRectangleFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getRectangleStrokeColor(i, sc);
+                        if (col != null)
+                            an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getRectangleStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                    }
+                    else
+                    if (type == "Ellipse")
+                    {
+                        an.type = Annotation.Type.Ellipse;
+                        an.id = meta.getEllipseID(i, sc);
+                        double px = meta.getEllipseX(i, sc).doubleValue();
+                        double py = meta.getEllipseY(i, sc).doubleValue();
+                        double ew = meta.getEllipseRadiusX(i, sc).doubleValue();
+                        double eh = meta.getEllipseRadiusY(i, sc).doubleValue();
+                        //We convert the ellipse radius to System.Drawing.Rectangle
+                        double w = ew * 2;
+                        double h = eh * 2;
+                        double x = px - ew;
+                        double y = py - eh;
+                        an.Rect = new RectangleD(x, y, w, h);
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getEllipseTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getEllipseTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getEllipseTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        an.text = meta.getEllipseText(i, sc);
+                        ome.units.quantity.Length fl = meta.getEllipseFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getEllipseStrokeColor(i, sc);
+                        if (col != null)
+                            an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getEllipseStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                    }
+                    else
+                    if (type == "Polygon")
+                    {
+                        an.type = Annotation.Type.Polygon;
+                        an.id = meta.getPolygonID(i, sc);
+                        string pxs = meta.getPolygonPoints(i, sc);
+                        PointD[] pts = an.stringToPoints(pxs);
+                        if (pts.Length > 100)
+                        {
+                            an.type = Annotation.Type.Freeform;
+                        }
+                        an.AddPoints(pts);
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getPolygonTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPolygonTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPolygonTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        an.text = meta.getPolygonText(i, sc);
+                        ome.units.quantity.Length fl = meta.getPolygonFontSize(i, sc);
+                        if(fl!=null)
+                        an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getPolygonStrokeColor(i, sc);
+                        if(col!=null)
+                        an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getPolygonStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                    }
+                    else
+                    if (type == "Polyline")
+                    {
+                        an.type = Annotation.Type.Polyline;
+                        an.id = meta.getPolylineID(i, sc);
+                        string pxs = meta.getPolylinePoints(i, sc);
+                        an.AddPoints(an.stringToPoints(pxs));
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getPolylineTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPolylineTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPolylineTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        an.text = meta.getPolylineText(i, sc);
+                        ome.units.quantity.Length fl = meta.getPolylineFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getPolylineStrokeColor(i, sc);
+                        if (col != null)
+                            an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getPolylineStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+                    }
+                    else
+                    if (type == "Label")
+                    {
+                        an.type = Annotation.Type.Label;
+                        an.text = meta.getLabelText(i, sc);
+                        an.id = meta.getLabelID(i, sc);
+                        an.AddPoint(new PointD(meta.getLabelX(i, sc).doubleValue(),meta.getLabelY(i, sc).doubleValue()));
+                        if (imageCount > 1)
+                        {
+                            if (sc > 0)
+                            {
+                                an.coord = co;
+                            }
+                            else
+                            {
+                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getLabelTheZ(i, sc);
+                                if (nz != null)
+                                    co.Z = nz.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getLabelTheZ(i, sc);
+                                if (nc != null)
+                                    co.Z = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getLabelTheZ(i, sc);
+                                if (nt != null)
+                                    co.Z = nt.getNumberValue().intValue();
+                                an.coord = co;
+                            }
+                        }
+                        ome.units.quantity.Length fl = meta.getLabelFontSize(i, sc);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        ome.xml.model.primitives.Color col = meta.getLabelStrokeColor(i, sc);
+                        if (col != null)
+                            an.color = System.Drawing.Color.FromArgb(col.getRed(), col.getGreen(), col.getBlue());
+                        ome.units.quantity.Length fw = meta.getLabelStrokeWidth(i, sc);
+                        if (fw != null)
+                            an.strokeWidth = (float)fw.value().floatValue();
+
+                    }
+                    Annotations.Add(an);
+                    }
+            }
 
             int stride;
             if (bitsPerPixel > 8)
@@ -1436,10 +2272,6 @@ namespace BioImage
                 stride = SizeX * rGBChannelCount;
 
             bufferTable = new Hashtable();
-            //id = CreateHash(file, serie, 0).ToString();
-
-            //bufferTable.Add(id, file);
-            //bufferTable.Add(id.GetHashCode(), file);
 
             fileHashTable = new Hashtable();
             fileHashTable.Add(file, file.GetHashCode());
@@ -1500,22 +2332,7 @@ namespace BioImage
 
                 Volumes.Add(new VolumeD(new Point3D(stx, sty, stz), new Point3D(six * SizeX, siy * SizeY, siz * SizeZ)));
             }
-
             Table.AddBioImageByID(idString, this);
-
-            /*
-            if (imageReader.getRGBChannelCount() == 3)
-            {
-                //We copy the first channel so that each RGB channel has a Channel attribute,
-                //despite the file not specifying them.
-                Channels.Add(Channels[0].Copy());
-                Channels[1].rgb = RGB.G;
-                Channels[1].index = 1;
-                Channels.Add(Channels[0].Copy());
-                Channels[2].index = 2;
-                Channels[2].rgb = RGB.B;
-            }
-            */
 
         }
 
@@ -1548,9 +2365,9 @@ namespace BioImage
 
                 imageReader.setId(file);
 
-                SizeZ = 0;
-                SizeC = 0;
-                SizeT = 0;
+                sizeZ = 0;
+                sizeC = 0;
+                sizeT = 0;
 
                 SizeX = imageReader.getSizeX();
                 SizeY = imageReader.getSizeY();
@@ -1574,15 +2391,15 @@ namespace BioImage
 
                     if (iz > SizeZ)
                     {
-                        SizeZ = iz;
+                        sizeZ = iz;
                     }
                     if (ic > SizeC)
                     {
-                        SizeC = ic;
+                        sizeC = ic;
                     }
                     if (it > SizeT)
                     {
-                        SizeT = it;
+                        sizeT = it;
                     }
 
                     //int stride = 0;
