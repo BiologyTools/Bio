@@ -16,5 +16,5 @@ mainTabControl.TabPages[3].Controls.Add(imageview);
 
 BioImage image = new BioImage("16bitTestStack.ome.tif");
 
-image.SaveSeries("16bitTestSaveStack.tif", 0);
+image.SaveSeries("16bitTestSaveStack.ome.tif", 0);
 
