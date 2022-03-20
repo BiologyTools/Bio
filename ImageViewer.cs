@@ -359,11 +359,16 @@ namespace BioImage
             
         }
 
-        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportROIsOfFolderOfImagesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
                 return;
-            //Bio
+            saveFileDialog.InitialDirectory = folderBrowserDialog.SelectedPath;
+            if (saveCSVFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+            string f = Path.GetFileName(saveCSVFileDialog.FileName);
+
+            BioImage.ExportROIFolder(folderBrowserDialog.SelectedPath, f);
         }
     }
 }

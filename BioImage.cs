@@ -2382,20 +2382,20 @@ namespace BioImage
 
         }
 
-        public List<Annotation> OpenROIs(string file)
+        public static List<Annotation> OpenROIs(string file)
         {
             List<Annotation> Annotations = new List<Annotation>();
             // create OME-XML metadata store
             ServiceFactory factory = new ServiceFactory();
             OMEXMLService service = (OMEXMLService)factory.getInstance(typeof(OMEXMLService));
-            meta = service.createOMEXMLMetadata();
+            loci.formats.ome.OMEXMLMetadata meta = service.createOMEXMLMetadata();
             // create format reader
-            imageReader = new ImageReader();
+            ImageReader imageReader = new ImageReader();
             imageReader.setMetadataStore(meta);
             // initialize file
             imageReader.setId(file);
-            imageCount = imageReader.getImageCount();
-            seriesCount = imageReader.getSeriesCount();
+            int imageCount = imageReader.getImageCount();
+            int seriesCount = imageReader.getSeriesCount();
 
             int rc = meta.getROICount();
             for (int i = 0; i < rc; i++)
@@ -2491,7 +2491,6 @@ namespace BioImage
                         ome.xml.model.primitives.Color col = meta.getLineStrokeColor(i, sc);
                         if (col != null)
                             an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
-                        double? dw = meta.getLineStrokeWidth(i, sc).value().doubleValue();
                         ome.units.quantity.Length fw = meta.getLineStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
@@ -2723,10 +2722,11 @@ namespace BioImage
                     Annotations.Add(an);
                 }
             }
+            imageReader.close();
             return Annotations;
         }
 
-        public void ExportROIs(string filename, List<Annotation> Annotations)
+        public static void ExportROIs(string filename, List<Annotation> Annotations)
         {
             string con = "";
             string cols = "ROIID,ROINAME,TYPE,ID,SHAPEINDEX,TEXT,S,C,Z,T,X,Y,W,H,POINTS,STROKECOLOR,STROKECOLORW,FILLCOLOR,FONTSIZE" + Environment.NewLine;
@@ -2756,7 +2756,7 @@ namespace BioImage
             File.WriteAllText(filename, con);
         }
 
-        public void ExportROIFolder(string path,string filename)
+        public static void ExportROIFolder(string path,string filename)
         {
             string[] fs = Directory.GetFiles(path);
             int i = 0;
@@ -2764,7 +2764,7 @@ namespace BioImage
             {
                 List<Annotation> annotations = OpenROIs(f);
                 string ff = Path.GetFileNameWithoutExtension(f);
-                ExportROIs(path + "//" + ff + "-" + i.ToString(),annotations);
+                ExportROIs(path + "//" + ff + "-" + i.ToString() + ".csv",annotations);
                 i++;
             }
         }

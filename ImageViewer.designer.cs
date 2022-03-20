@@ -50,6 +50,7 @@ namespace BioImage
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.importCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportROIsOfFolderOfImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -156,7 +157,8 @@ namespace BioImage
             // 
             this.rOIToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportCSVToolStripMenuItem,
-            this.importCSVToolStripMenuItem});
+            this.importCSVToolStripMenuItem,
+            this.exportROIsOfFolderOfImagesToolStripMenuItem});
             this.rOIToolStripMenuItem.Name = "rOIToolStripMenuItem";
             this.rOIToolStripMenuItem.Size = new System.Drawing.Size(38, 20);
             this.rOIToolStripMenuItem.Text = "ROI";
@@ -164,7 +166,7 @@ namespace BioImage
             // exportCSVToolStripMenuItem
             // 
             this.exportCSVToolStripMenuItem.Name = "exportCSVToolStripMenuItem";
-            this.exportCSVToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.exportCSVToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
             this.exportCSVToolStripMenuItem.Text = "Export ROI\'s to CSV";
             this.exportCSVToolStripMenuItem.Click += new System.EventHandler(this.exportCSVToolStripMenuItem_Click);
             // 
@@ -183,9 +185,16 @@ namespace BioImage
             // importCSVToolStripMenuItem
             // 
             this.importCSVToolStripMenuItem.Name = "importCSVToolStripMenuItem";
-            this.importCSVToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.importCSVToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
             this.importCSVToolStripMenuItem.Text = "Import ROI\'s from CSV";
             this.importCSVToolStripMenuItem.Click += new System.EventHandler(this.importCSVToolStripMenuItem_Click);
+            // 
+            // exportROIsOfFolderOfImagesToolStripMenuItem
+            // 
+            this.exportROIsOfFolderOfImagesToolStripMenuItem.Name = "exportROIsOfFolderOfImagesToolStripMenuItem";
+            this.exportROIsOfFolderOfImagesToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
+            this.exportROIsOfFolderOfImagesToolStripMenuItem.Text = "Export ROI\'s of Folder of Images";
+            this.exportROIsOfFolderOfImagesToolStripMenuItem.Click += new System.EventHandler(this.exportROIsOfFolderOfImagesToolStripMenuItem_Click);
             // 
             // ImageViewer
             // 
@@ -231,5 +240,6 @@ namespace BioImage
         private System.Windows.Forms.SaveFileDialog saveCSVFileDialog;
         private System.Windows.Forms.OpenFileDialog openCSVFileDialog;
         private System.Windows.Forms.ToolStripMenuItem importCSVToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportROIsOfFolderOfImagesToolStripMenuItem;
     }
 }
