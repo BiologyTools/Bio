@@ -762,6 +762,8 @@ namespace BioImage
                 coord = new SZCT(0, 0, 0, 0);
                 strokeColor = System.Drawing.Color.Yellow;
                 font = SystemFonts.DefaultFont;
+                BoundingBox = new RectangleD(0, 0, 1, 1);
+
             }
 
             public void UpdatePoint(PointD p, int i)

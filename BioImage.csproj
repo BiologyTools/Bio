@@ -250,6 +250,12 @@
     <Compile Include="RangeTool.designer.cs">
       <DependentUpon>RangeTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="ROIManager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ROIManager.Designer.cs">
+      <DependentUpon>ROIManager.cs</DependentUpon>
+    </Compile>
     <Compile Include="Slider.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -292,6 +298,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="RangeTool.resx">
       <DependentUpon>RangeTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ROIManager.resx">
+      <DependentUpon>ROIManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Slider.resx">
       <DependentUpon>Slider.cs</DependentUpon>

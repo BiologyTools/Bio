@@ -60,8 +60,8 @@ namespace BioImage
             TimeFps = 60;
             ZFps = 60;
             CFps = 1;
-            UpdateView(serie);
-            
+            UpdateView();
+            viewer = this;
         }
         ~ImageView()
         {
@@ -72,9 +72,11 @@ namespace BioImage
         public string filepath = "";
         public int serie = 0;
         private BioImage.SZCT coordinate = new BioImage.SZCT(0, 0, 0, 0);
+        public static BioImage.SZCT Coordinate = new BioImage.SZCT(0, 0, 0, 0);
         public void SetCoordinate(int s, int z, int c, int t)
         {
             coordinate = new BioImage.SZCT(s, z, c, t);
+            Coordinate = coordinate;
         }
         public BioImage.SZCT GetCoordinate()
         {
@@ -102,7 +104,7 @@ namespace BioImage
             set
             {
                 viewMode = value;
-                UpdateView(serie);
+                UpdateView();
                 if(viewMode == ViewMode.RGBImage)
                 {
                     rGBImageModeToolStripMenuItem.Checked = true;
@@ -264,7 +266,7 @@ namespace BioImage
 
         }
 
-        public void UpdateView(int ser)
+        public void UpdateView()
         {
 
             if (Mode == ViewMode.Raw)
@@ -274,19 +276,19 @@ namespace BioImage
                     c.Min = 0;
                     c.Max = ushort.MaxValue;
                 }
-                SetCoordinate(ser, zBar.Value, cBar.Value, timeBar.Value);
+                SetCoordinate(image.serie, zBar.Value, cBar.Value, timeBar.Value);
                 pictureBox.Image = image.GetBitmap(GetCoordinate());
             }
             else
             if (Mode == ViewMode.Filtered)
             {
-                SetCoordinate(ser, zBar.Value, cBar.Value, timeBar.Value);
+                SetCoordinate(image.serie, zBar.Value, cBar.Value, timeBar.Value);
                 pictureBox.Image = image.GetFiltered(GetCoordinate(), image.Channels[cBar.Value].range);
             }
             else
             if (Mode == ViewMode.RGBImage)
             {
-                SetCoordinate(ser, zBar.Value, image.Channels[image.rgbChannels[0]].Index, timeBar.Value);
+                SetCoordinate(image.serie, zBar.Value, image.Channels[image.rgbChannels[0]].Index, timeBar.Value);
                 UpdateRGBChannels();
                 if (image.RGBChannelCount == 1)
                 {
@@ -318,8 +320,6 @@ namespace BioImage
                     pictureBox.Image = image.GetBitmap(GetCoordinate());
                 }
             }
-
-
             
             UpdateStatus();
         }
@@ -364,7 +364,7 @@ namespace BioImage
             //image.SetRGBChannelIndex(BioImage.RGB.Blue, ch.Index);
             //image.rgbimage.BChannel = ch;
             //UpdateRGBChannels();
-            UpdateView(image.serie);
+            UpdateView();
         }
 
         private void channelBoxG_SelectedIndexChanged(object sender, EventArgs e)
@@ -376,7 +376,7 @@ namespace BioImage
             //image.SetRGBChannelIndex(BioImage.RGB.Green, ch.Index);
             //image.rgbimage.GChannel = ch;
             //UpdateRGBChannels();
-            UpdateView(image.serie);
+            UpdateView();
         }
 
         private void channelBoxB_SelectedIndexChanged(object sender, EventArgs e)
@@ -388,7 +388,7 @@ namespace BioImage
             //image.SetRGBChannelIndex(BioImage.RGB.Blue, ch.Index);
             //image.rgbimage.BChannel = ch;
             //UpdateRGBChannels();
-            UpdateView(image.serie);
+            UpdateView();
         }
 
         private void normalToolStripMenuItem_Click(object sender, EventArgs e)
@@ -490,7 +490,7 @@ namespace BioImage
             if (channelsTool.ShowDialog() != DialogResult.OK)
                 return;
             image.Channels = channelsTool.Channels;
-            UpdateView(image.serie);
+            UpdateView();
         }
 
         private void playZToolStripMenuItem_Click(object sender, EventArgs e)
@@ -577,7 +577,11 @@ namespace BioImage
         private bool x2State = false;
         private void rgbPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
+            selectedImage = image;
             Point p = toImagePoint(e.Location.X, e.Location.Y);
+            MouseEventArgs arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
+            tools.ToolMove(this, arg);
+
             if (Mode != ViewMode.RGBImage)
             {
                 if (e.Button == MouseButtons.XButton1 && !x1State)
@@ -620,7 +624,8 @@ namespace BioImage
                     int b = image.GetValue(sc, zc, BChannel.index, tc, p.X, p.Y, 2);
                     mouseColor = "(" + p.X + "," + p.Y + "), " + r + "," + g + "," + b;
                 }
-                if (e.Button == MouseButtons.Left && Tools.currentTool.type == Tools.Tool.ToolType.color)
+                if(Tools.currentTool!=null)
+                if (e.Button == MouseButtons.Left && Tools.currentTool.toolType == Tools.Tool.ToolType.color)
                 {
                     if (Buf.info.RGBChannelsCount > 1)
                     {
@@ -646,7 +651,7 @@ namespace BioImage
                     {
                         image.SetValue(p.X, p.Y, GetCoordinate(), Tools.pencil.Color.R);
                     }
-                    UpdateView(image.serie);
+                    UpdateView();
                 }
             }
             else
@@ -664,7 +669,7 @@ namespace BioImage
                     {
                         image.SetValue(p.X, p.Y, GetCoordinate(), Tools.pencil.Color.R);
                     }
-                    UpdateView(image.serie);
+                    UpdateView();
                 }
             }
             else
@@ -682,7 +687,7 @@ namespace BioImage
                     {
                         image.SetValue(p.X, p.Y, GetCoordinate(), ushort.MaxValue);
                     }
-                    UpdateView(image.serie);
+                    UpdateView();
                 }
             }
             UpdateStatus();
@@ -691,7 +696,7 @@ namespace BioImage
         private void autoContrastChannelsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             image.AutoThreshold();
-            UpdateView(image.serie);
+            UpdateView();
         }
 
         private void playSpeedToolStripMenuItem_Click(object sender, EventArgs e)
@@ -891,15 +896,15 @@ namespace BioImage
 
         private void zBar_ValueChanged(object sender, EventArgs e)
         {
-            UpdateView(image.serie);
+            UpdateView();
         }
         private void timeBar_ValueChanged(object sender, EventArgs e)
         {
-            UpdateView(image.serie);
+            UpdateView();
         }
         private void cBar_ValueChanged(object sender, EventArgs e)
         {
-            UpdateView(image.serie);
+            UpdateView();
         }
 
         private void loopTimeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1312,20 +1317,34 @@ namespace BioImage
             }
         }
 
-        BioImage.Annotation selected = null;
+        public static BioImage.Annotation selectedAnnotation = null;
+        public static BioImage selectedImage = null;
+        public static ImageView viewer = null;
         int selectedPoint = -1;
+
+        public static PointF mouseDown;
+        public static bool down;
         private void pictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            if (selected != null)
-                return;
+            viewer = this;
+            selectedImage = image;
             PointF p = toImagePoint(e.Location.X, e.Location.Y);
+            MouseEventArgs arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
+            tools.ToolDown(this, arg);
+            
+            if (selectedAnnotation != null)
+                return;
+            
+            mouseDown = p;
+            down = true;
+            up = false;
             if (e.Button == MouseButtons.Left)
             {
                 foreach (BioImage.Annotation an in image.Annotations)
                 {
                     if (an.GetSelectBound().IntersectsWith(p.X,p.Y))
                     {
-                        selected = an;
+                        selectedAnnotation = an;
                         RectangleF r = new RectangleF(p.X, p.Y, 1, 1);
                         for (int i = 0; i < an.selectBoxs.Count; i++)
                         {
@@ -1337,61 +1356,85 @@ namespace BioImage
                         }
                     }
                 }
+
             }
+
         }
+        public static PointF mouseUp;
+        public static bool up;
 
         private void pictureBox_MouseUp(object sender, MouseEventArgs e)
         {
-            if (selected == null)
+            viewer = this;
+            selectedImage = image;
+            PointF p = toImagePoint(e.Location.X, e.Location.Y);
+            MouseEventArgs arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
+            tools.ToolUp(this, arg);
+
+            if (selectedAnnotation == null)
                 return;
-            Point p = toImagePoint(e.Location.X, e.Location.Y);
-            if (selected.type == BioImage.Annotation.Type.Rectangle || selected.type == BioImage.Annotation.Type.Ellipse ||
-                selected.type == BioImage.Annotation.Type.Freeform || selected.type == BioImage.Annotation.Type.Label)
+            
+            mouseUp = p;
+            up = true;
+            if (Tools.currentTool.toolType == Tools.Tool.ToolType.annotation)
             {
-                BioImage.RectangleD d = selected.Rect;
-                if(selectedPoint == 0)
+                if (selectedAnnotation.type == BioImage.Annotation.Type.Rectangle || selectedAnnotation.type == BioImage.Annotation.Type.Ellipse ||
+                    selectedAnnotation.type == BioImage.Annotation.Type.Freeform || selectedAnnotation.type == BioImage.Annotation.Type.Label)
                 {
-                    double dw = d.X - p.X;
-                    double dh = d.Y - p.Y;
-                    d.X = p.X;
-                    d.Y = p.Y;
-                    d.W += dw;
-                    d.H += dh;
+                    BioImage.RectangleD d = selectedAnnotation.Rect;
+                    if (selectedPoint == 0)
+                    {
+                        double dw = d.X - p.X;
+                        double dh = d.Y - p.Y;
+                        d.X = p.X;
+                        d.Y = p.Y;
+                        d.W += dw;
+                        d.H += dh;
+                    }
+                    else
+                    if (selectedPoint == 1)
+                    {
+                        double dw = p.X - (d.W + d.X);
+                        double dh = d.Y - p.Y;
+                        d.W += dw;
+                        d.H += dh;
+                        d.Y -= dh;
+                    }
+                    else
+                    if (selectedPoint == 2)
+                    {
+                        double dw = d.X - p.X;
+                        double dh = p.Y - (d.Y + d.H);
+                        d.W += dw;
+                        d.H += dh;
+                        d.X -= dw;
+                    }
+                    else
+                    if (selectedPoint == 3)
+                    {
+                        double dw = d.X - p.X;
+                        double dh = d.Y - p.Y;
+                        d.W = p.X - selectedAnnotation.X;
+                        d.H = p.Y - selectedAnnotation.Y;
+                    }
+                    selectedAnnotation.Rect = d;
                 }
                 else
-                if (selectedPoint == 1)
-                {
-                    double dw = p.X - (d.W + d.X);
-                    double dh = d.Y - p.Y;
-                    d.W += dw;
-                    d.H += dh;
-                    d.Y -= dh;
-                }
-                else
-                if (selectedPoint == 2)
-                {
-                    double dw = d.X - p.X;
-                    double dh = p.Y - (d.Y + d.H);
-                    d.W += dw;
-                    d.H += dh;
-                    d.X -= dw;
-                }
-                else
-                if (selectedPoint == 3)
-                {
-                    double dw = d.X - p.X;
-                    double dh = d.Y - p.Y;
-                    d.W = p.X - selected.X;
-                    d.H = p.Y - selected.Y;
-                }
-                selected.Rect = d;
+                    selectedAnnotation.UpdatePoint(new BioImage.PointD(p.X, p.Y), selectedPoint);
+                selectedAnnotation.UpdateBoundingBox();
+                selectedAnnotation.UpdateSelectBoxs();
+                selectedAnnotation = null;
             }
-            else
-            selected.UpdatePoint(new BioImage.PointD(p.X, p.Y), selectedPoint);
-            selected.UpdateBoundingBox();
-            selected.UpdateSelectBoxs();
-            selected = null;
-            UpdateView(serie);
+            
+            UpdateView();
+        }
+        private void pictureBox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            viewer = this;
+            selectedImage = image;
+            PointF p = toImagePoint(e.Location.X, e.Location.Y);
+            MouseEventArgs arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
+            tools.ToolUp(this, arg);
         }
     }
 }

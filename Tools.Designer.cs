@@ -40,24 +40,29 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.rotatePanel = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
-            this.selectPanel = new System.Windows.Forms.Panel();
+            this.movePanel = new System.Windows.Forms.Panel();
             this.resizePanel = new System.Windows.Forms.Panel();
             this.panel10 = new System.Windows.Forms.Panel();
             this.eraserPanel = new System.Windows.Forms.Panel();
             this.lassoPanel = new System.Windows.Forms.Panel();
             this.cropPanel = new System.Windows.Forms.Panel();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.flipXPanel = new System.Windows.Forms.Panel();
-            this.flipYPanel = new System.Windows.Forms.Panel();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addNewToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.brushPanel = new System.Windows.Forms.Panel();
+            this.rectPanel = new System.Windows.Forms.Panel();
+            this.ellipsePanel = new System.Windows.Forms.Panel();
+            this.linePanel = new System.Windows.Forms.Panel();
+            this.polyPanel = new System.Windows.Forms.Panel();
+            this.panel11 = new System.Windows.Forms.Panel();
+            this.pointPanel = new System.Windows.Forms.Panel();
+            this.panel13 = new System.Windows.Forms.Panel();
             this.bucketPanel.SuspendLayout();
             this.rotatePanel.SuspendLayout();
-            this.selectPanel.SuspendLayout();
+            this.movePanel.SuspendLayout();
             this.eraserPanel.SuspendLayout();
-            this.flipXPanel.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
+            this.polyPanel.SuspendLayout();
+            this.pointPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // colorDialog
@@ -69,7 +74,7 @@
             // 
             this.stackApplyBox.AutoSize = true;
             this.stackApplyBox.ForeColor = System.Drawing.Color.Black;
-            this.stackApplyBox.Location = new System.Drawing.Point(75, 12);
+            this.stackApplyBox.Location = new System.Drawing.Point(115, 92);
             this.stackApplyBox.Name = "stackApplyBox";
             this.stackApplyBox.Size = new System.Drawing.Size(54, 17);
             this.stackApplyBox.TabIndex = 8;
@@ -100,24 +105,25 @@
             // 
             // bucketPanel
             // 
-            this.bucketPanel.BackColor = System.Drawing.SystemColors.Control;
+            this.bucketPanel.BackColor = System.Drawing.Color.White;
             this.bucketPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bucketPanel.BackgroundImage")));
             this.bucketPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.bucketPanel.Controls.Add(this.panel4);
-            this.bucketPanel.Location = new System.Drawing.Point(75, 35);
+            this.bucketPanel.Location = new System.Drawing.Point(115, 115);
             this.bucketPanel.Name = "bucketPanel";
             this.bucketPanel.Size = new System.Drawing.Size(30, 30);
             this.bucketPanel.TabIndex = 2;
             // 
             // textPanel
             // 
-            this.textPanel.BackColor = System.Drawing.SystemColors.Control;
+            this.textPanel.BackColor = System.Drawing.Color.White;
             this.textPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("textPanel.BackgroundImage")));
             this.textPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.textPanel.Location = new System.Drawing.Point(106, 35);
+            this.textPanel.Location = new System.Drawing.Point(97, 33);
             this.textPanel.Name = "textPanel";
             this.textPanel.Size = new System.Drawing.Size(30, 30);
             this.textPanel.TabIndex = 3;
+            this.textPanel.Click += new System.EventHandler(this.textPanel_Click);
             this.textPanel.DoubleClick += new System.EventHandler(this.textPanel_DoubleClick);
             // 
             // panel3
@@ -131,11 +137,11 @@
             // 
             // rotatePanel
             // 
-            this.rotatePanel.BackColor = System.Drawing.SystemColors.Control;
+            this.rotatePanel.BackColor = System.Drawing.Color.White;
             this.rotatePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("rotatePanel.BackgroundImage")));
             this.rotatePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.rotatePanel.Controls.Add(this.panel3);
-            this.rotatePanel.Location = new System.Drawing.Point(75, 97);
+            this.rotatePanel.Location = new System.Drawing.Point(115, 177);
             this.rotatePanel.Name = "rotatePanel";
             this.rotatePanel.Size = new System.Drawing.Size(30, 30);
             this.rotatePanel.TabIndex = 4;
@@ -149,25 +155,24 @@
             this.panel7.Size = new System.Drawing.Size(30, 30);
             this.panel7.TabIndex = 3;
             // 
-            // selectPanel
+            // movePanel
             // 
-            this.selectPanel.BackColor = System.Drawing.Color.LightGray;
-            this.selectPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("selectPanel.BackgroundImage")));
-            this.selectPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.selectPanel.Controls.Add(this.panel7);
-            this.selectPanel.Location = new System.Drawing.Point(29, 0);
-            this.selectPanel.Name = "selectPanel";
-            this.selectPanel.Size = new System.Drawing.Size(30, 30);
-            this.selectPanel.TabIndex = 6;
-            this.selectPanel.Click += new System.EventHandler(this.selectPanel_Click);
-            this.selectPanel.DoubleClick += new System.EventHandler(this.selectPanel_DoubleClick);
+            this.movePanel.BackColor = System.Drawing.Color.LightGray;
+            this.movePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("movePanel.BackgroundImage")));
+            this.movePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.movePanel.Controls.Add(this.panel7);
+            this.movePanel.Location = new System.Drawing.Point(29, 0);
+            this.movePanel.Name = "movePanel";
+            this.movePanel.Size = new System.Drawing.Size(30, 30);
+            this.movePanel.TabIndex = 6;
+            this.movePanel.Click += new System.EventHandler(this.movePanel_Click);
             // 
             // resizePanel
             // 
-            this.resizePanel.BackColor = System.Drawing.SystemColors.Control;
+            this.resizePanel.BackColor = System.Drawing.Color.White;
             this.resizePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("resizePanel.BackgroundImage")));
             this.resizePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.resizePanel.Location = new System.Drawing.Point(106, 97);
+            this.resizePanel.Location = new System.Drawing.Point(146, 177);
             this.resizePanel.Name = "resizePanel";
             this.resizePanel.Size = new System.Drawing.Size(30, 30);
             this.resizePanel.TabIndex = 5;
@@ -183,66 +188,34 @@
             // 
             // eraserPanel
             // 
-            this.eraserPanel.BackColor = System.Drawing.SystemColors.Control;
+            this.eraserPanel.BackColor = System.Drawing.Color.White;
             this.eraserPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("eraserPanel.BackgroundImage")));
             this.eraserPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.eraserPanel.Controls.Add(this.panel10);
-            this.eraserPanel.Location = new System.Drawing.Point(75, 66);
+            this.eraserPanel.Location = new System.Drawing.Point(115, 146);
             this.eraserPanel.Name = "eraserPanel";
             this.eraserPanel.Size = new System.Drawing.Size(30, 30);
             this.eraserPanel.TabIndex = 4;
             // 
             // lassoPanel
             // 
-            this.lassoPanel.BackColor = System.Drawing.SystemColors.Control;
+            this.lassoPanel.BackColor = System.Drawing.Color.White;
             this.lassoPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("lassoPanel.BackgroundImage")));
             this.lassoPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.lassoPanel.Location = new System.Drawing.Point(106, 159);
+            this.lassoPanel.Location = new System.Drawing.Point(146, 215);
             this.lassoPanel.Name = "lassoPanel";
             this.lassoPanel.Size = new System.Drawing.Size(30, 30);
             this.lassoPanel.TabIndex = 7;
             // 
             // cropPanel
             // 
-            this.cropPanel.BackColor = System.Drawing.SystemColors.Control;
+            this.cropPanel.BackColor = System.Drawing.Color.White;
             this.cropPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cropPanel.BackgroundImage")));
             this.cropPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cropPanel.Location = new System.Drawing.Point(106, 66);
+            this.cropPanel.Location = new System.Drawing.Point(146, 146);
             this.cropPanel.Name = "cropPanel";
             this.cropPanel.Size = new System.Drawing.Size(30, 30);
             this.cropPanel.TabIndex = 5;
-            // 
-            // panel5
-            // 
-            this.panel5.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel5.BackgroundImage")));
-            this.panel5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel5.Location = new System.Drawing.Point(0, 33);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(30, 30);
-            this.panel5.TabIndex = 3;
-            // 
-            // flipXPanel
-            // 
-            this.flipXPanel.BackColor = System.Drawing.SystemColors.Control;
-            this.flipXPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("flipXPanel.BackgroundImage")));
-            this.flipXPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.flipXPanel.Controls.Add(this.panel5);
-            this.flipXPanel.Location = new System.Drawing.Point(75, 128);
-            this.flipXPanel.Name = "flipXPanel";
-            this.flipXPanel.Size = new System.Drawing.Size(30, 30);
-            this.flipXPanel.TabIndex = 6;
-            this.flipXPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.flipXPanel_Paint);
-            // 
-            // flipYPanel
-            // 
-            this.flipYPanel.BackColor = System.Drawing.SystemColors.Control;
-            this.flipYPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("flipYPanel.BackgroundImage")));
-            this.flipYPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.flipYPanel.Location = new System.Drawing.Point(106, 128);
-            this.flipYPanel.Name = "flipYPanel";
-            this.flipYPanel.Size = new System.Drawing.Size(30, 30);
-            this.flipYPanel.TabIndex = 7;
-            this.flipYPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.flipYPanel_Paint);
             // 
             // contextMenuStrip
             // 
@@ -259,33 +232,111 @@
             // 
             // brushPanel
             // 
-            this.brushPanel.BackColor = System.Drawing.SystemColors.Control;
+            this.brushPanel.BackColor = System.Drawing.Color.White;
             this.brushPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("brushPanel.BackgroundImage")));
             this.brushPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.brushPanel.Location = new System.Drawing.Point(75, 159);
+            this.brushPanel.Location = new System.Drawing.Point(115, 215);
             this.brushPanel.Name = "brushPanel";
             this.brushPanel.Size = new System.Drawing.Size(30, 30);
             this.brushPanel.TabIndex = 1;
+            // 
+            // rectPanel
+            // 
+            this.rectPanel.BackColor = System.Drawing.Color.White;
+            this.rectPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("rectPanel.BackgroundImage")));
+            this.rectPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.rectPanel.Location = new System.Drawing.Point(29, 30);
+            this.rectPanel.Name = "rectPanel";
+            this.rectPanel.Size = new System.Drawing.Size(30, 30);
+            this.rectPanel.TabIndex = 2;
+            this.rectPanel.Click += new System.EventHandler(this.rectPanel_Click);
+            // 
+            // ellipsePanel
+            // 
+            this.ellipsePanel.BackColor = System.Drawing.Color.White;
+            this.ellipsePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("ellipsePanel.BackgroundImage")));
+            this.ellipsePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.ellipsePanel.Location = new System.Drawing.Point(0, 30);
+            this.ellipsePanel.Name = "ellipsePanel";
+            this.ellipsePanel.Size = new System.Drawing.Size(30, 30);
+            this.ellipsePanel.TabIndex = 8;
+            this.ellipsePanel.Click += new System.EventHandler(this.ellipsePanel_Click);
+            // 
+            // linePanel
+            // 
+            this.linePanel.BackColor = System.Drawing.Color.White;
+            this.linePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("linePanel.BackgroundImage")));
+            this.linePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.linePanel.Location = new System.Drawing.Point(29, 60);
+            this.linePanel.Name = "linePanel";
+            this.linePanel.Size = new System.Drawing.Size(30, 30);
+            this.linePanel.TabIndex = 3;
+            this.linePanel.Click += new System.EventHandler(this.linePanel_Click);
+            // 
+            // polyPanel
+            // 
+            this.polyPanel.BackColor = System.Drawing.Color.White;
+            this.polyPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("polyPanel.BackgroundImage")));
+            this.polyPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.polyPanel.Controls.Add(this.panel11);
+            this.polyPanel.Location = new System.Drawing.Point(133, 33);
+            this.polyPanel.Name = "polyPanel";
+            this.polyPanel.Size = new System.Drawing.Size(30, 30);
+            this.polyPanel.TabIndex = 4;
+            this.polyPanel.Click += new System.EventHandler(this.polyPanel_Click);
+            // 
+            // panel11
+            // 
+            this.panel11.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel11.BackgroundImage")));
+            this.panel11.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel11.Location = new System.Drawing.Point(0, 33);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(30, 30);
+            this.panel11.TabIndex = 3;
+            // 
+            // pointPanel
+            // 
+            this.pointPanel.BackColor = System.Drawing.Color.White;
+            this.pointPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pointPanel.BackgroundImage")));
+            this.pointPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.pointPanel.Controls.Add(this.panel13);
+            this.pointPanel.Location = new System.Drawing.Point(0, 60);
+            this.pointPanel.Name = "pointPanel";
+            this.pointPanel.Size = new System.Drawing.Size(30, 30);
+            this.pointPanel.TabIndex = 5;
+            this.pointPanel.Click += new System.EventHandler(this.pointPanel_Click);
+            // 
+            // panel13
+            // 
+            this.panel13.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel13.BackgroundImage")));
+            this.panel13.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel13.Location = new System.Drawing.Point(0, 33);
+            this.panel13.Name = "panel13";
+            this.panel13.Size = new System.Drawing.Size(30, 30);
+            this.panel13.TabIndex = 3;
             // 
             // Tools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.ClientSize = new System.Drawing.Size(61, 32);
+            this.ClientSize = new System.Drawing.Size(62, 92);
             this.ContextMenuStrip = this.contextMenuStrip;
-            this.Controls.Add(this.flipYPanel);
+            this.Controls.Add(this.brushPanel);
+            this.Controls.Add(this.textPanel);
+            this.Controls.Add(this.pointPanel);
+            this.Controls.Add(this.polyPanel);
+            this.Controls.Add(this.linePanel);
+            this.Controls.Add(this.ellipsePanel);
+            this.Controls.Add(this.rectPanel);
             this.Controls.Add(this.stackApplyBox);
-            this.Controls.Add(this.flipXPanel);
             this.Controls.Add(this.cropPanel);
             this.Controls.Add(this.lassoPanel);
             this.Controls.Add(this.eraserPanel);
             this.Controls.Add(this.resizePanel);
-            this.Controls.Add(this.selectPanel);
+            this.Controls.Add(this.movePanel);
             this.Controls.Add(this.rotatePanel);
-            this.Controls.Add(this.textPanel);
             this.Controls.Add(this.bucketPanel);
-            this.Controls.Add(this.brushPanel);
             this.Controls.Add(this.pencilPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -296,10 +347,11 @@
             this.Text = "Tools";
             this.bucketPanel.ResumeLayout(false);
             this.rotatePanel.ResumeLayout(false);
-            this.selectPanel.ResumeLayout(false);
+            this.movePanel.ResumeLayout(false);
             this.eraserPanel.ResumeLayout(false);
-            this.flipXPanel.ResumeLayout(false);
             this.contextMenuStrip.ResumeLayout(false);
+            this.polyPanel.ResumeLayout(false);
+            this.pointPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -317,17 +369,21 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel rotatePanel;
         private System.Windows.Forms.Panel panel7;
-        private System.Windows.Forms.Panel selectPanel;
+        private System.Windows.Forms.Panel movePanel;
         private System.Windows.Forms.Panel resizePanel;
         private System.Windows.Forms.Panel panel10;
         private System.Windows.Forms.Panel eraserPanel;
         private System.Windows.Forms.Panel lassoPanel;
         private System.Windows.Forms.Panel cropPanel;
-        private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.Panel flipXPanel;
-        private System.Windows.Forms.Panel flipYPanel;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem addNewToolToolStripMenuItem;
         private System.Windows.Forms.Panel brushPanel;
+        private System.Windows.Forms.Panel rectPanel;
+        private System.Windows.Forms.Panel ellipsePanel;
+        private System.Windows.Forms.Panel linePanel;
+        private System.Windows.Forms.Panel polyPanel;
+        private System.Windows.Forms.Panel panel11;
+        private System.Windows.Forms.Panel pointPanel;
+        private System.Windows.Forms.Panel panel13;
     }
 }

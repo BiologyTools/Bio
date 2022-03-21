@@ -25,8 +25,8 @@ namespace BioImage
             //string s = "E:/TESTIMAGES/ROIS.ome.tif";
             //string s = "E:/TESTIMAGES/text.ome.tif";
             //string s = "E:/TESTIMAGES/points5.ome.tif";
-            //string s = "E:/TESTIMAGES/fill.ome.tif";
-            //SetFolder(s, false, 0);
+            string s = "E:/TESTIMAGES/texte.ome.tif";
+            SetFolder(s, false, 0);
 
             //viewer.image.SaveSeries(s, 0);
             if (arg.Length == 0)
@@ -369,6 +369,16 @@ namespace BioImage
             string f = Path.GetFileName(saveCSVFileDialog.FileName);
 
             BioImage.ExportROIFolder(folderBrowserDialog.SelectedPath, f);
+        }
+
+        private void ImageViewer_Click(object sender, EventArgs e)
+        {
+            ImageView.selectedImage = viewer.image;
+        }
+
+        private void panel_Click(object sender, EventArgs e)
+        {
+            ImageView.selectedImage = viewer.image;
         }
     }
 }
