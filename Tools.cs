@@ -29,6 +29,7 @@ namespace BioImage
         public static EllipseTool ellipse;
         public static PolygonTool polygon;
         public static TextTool text;
+        public static DeleteTool delete;
 
         public class Tool : Control
         {
@@ -53,6 +54,7 @@ namespace BioImage
                 polyline,
                 polygon,
                 text,
+                delete,
             }
 
             public BioImage.ColorS Color;
@@ -153,6 +155,14 @@ namespace BioImage
                 type = Type.text;
             }
         }
+        public class DeleteTool : Tool
+        {
+            public DeleteTool()
+            {
+                toolType = ToolType.annotation;
+                type = Type.delete;
+            }
+        }
 
         public static Tool currentTool;
         public Font font;
@@ -186,6 +196,7 @@ namespace BioImage
             ellipse = new EllipseTool();
             polygon = new PolygonTool();
             text = new TextTool();
+            delete = new DeleteTool();
         }
 
         public void UpdateView()
@@ -263,6 +274,11 @@ namespace BioImage
                 anno.type = BioImage.Annotation.Type.Ellipse;
                 anno.Rect = new BioImage.RectangleD(e.X, e.Y, 1, 1);
                 anno.coord = ImageView.Coordinate;
+            }
+            else
+            if(currentTool.type == Tool.Type.delete)
+            {
+                ImageView.selectedImage.Annotations.Remove(ImageView.selectedAnnotation);
             }
             UpdateView();
         }
@@ -399,6 +415,13 @@ namespace BioImage
             currentTool = polygon;
             UpdateSelected();
             polyPanel.BackColor = Color.LightGray;
+        }
+
+        private void deletePanel_Click(object sender, EventArgs e)
+        {
+            currentTool = delete;
+            UpdateSelected();
+            deletePanel.BackColor = Color.LightGray;
         }
     }
 }

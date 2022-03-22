@@ -15,6 +15,7 @@ namespace BioImage
     {
         public ImageView(string file, int ser, bool folder)
         {
+            
             file = file.Replace("\\", "/");
             InitializeComponent();
             serie = ser;
@@ -62,6 +63,7 @@ namespace BioImage
             CFps = 1;
             UpdateView();
             viewer = this;
+            UpdateOverlaySize();
         }
         ~ImageView()
         {
@@ -165,9 +167,16 @@ namespace BioImage
         public void UpdateRGBChannels()
         {
             Buf = image.GetBufByCoord(GetCoordinate());
-            image.rgbChannels[0] = channelBoxR.SelectedIndex;
-            image.rgbChannels[1] = channelBoxG.SelectedIndex;
-            image.rgbChannels[2] = channelBoxB.SelectedIndex;
+            if (channelBoxR.SelectedIndex == -1)
+                image.rgbChannels[0] = channelBoxR.SelectedIndex;
+            if (channelBoxG.SelectedIndex == -1)
+                image.rgbChannels[1] = 0;
+            else
+                image.rgbChannels[1] = channelBoxG.SelectedIndex;
+            if (channelBoxB.SelectedIndex == -1)
+                image.rgbChannels[2] = 0;
+            else
+                image.rgbChannels[2] = channelBoxB.SelectedIndex;
         }
 
         private bool timeEnabled = false;
@@ -328,6 +337,9 @@ namespace BioImage
         {
             if (Mode == ViewMode.RGBImage)
             {
+                //Since combining 3 planes to one image takes time we show the image load time.
+                float ms = image.loadTimeMS;
+                ticksLabel.Text = " Ticks: " + image.loadTimeTicks;
                 if (timeEnabled)
                 {
                     statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mouseColor;
@@ -336,9 +348,7 @@ namespace BioImage
                 {
                     statusLabel.Text = (zBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mouseColor;
                 }
-                //Since combining 3 planes to one image takes time we show the image load time.
-                float ms = image.loadTimeMS;
-                statusLabel.Text += " Ticks: " + image.loadTimeTicks;
+                
             }
             else
             {
@@ -351,9 +361,6 @@ namespace BioImage
                     statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mouseColor;
                 }
             }
-
-
-
         }
 
         private void channelBoxR_SelectedIndexChanged(object sender, EventArgs e)
@@ -1134,13 +1141,18 @@ namespace BioImage
                 return image.GetAnnotations(coord.S, coord.Z, image.BChannel.index, coord.T);
             }
         }
+        Graphics g = null;
 
+        public void UpdateOverlaySize()
+        {
+            Point s = GetImageSize();
+            image.overlay = new Bitmap(s.X, s.Y, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+        }
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
             Point pp = GetImagePoint();
             Point s = GetImageSize();
-            image.overlay = new Bitmap(s.X, s.Y, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Graphics g = Graphics.FromImage(image.overlay);
+            g = Graphics.FromImage(image.overlay);
             g.Clear(Color.FromArgb(0, 0, 0, 0));
             float xs = (float)s.X / (float)image.SizeX;
             float ys = (float)s.Y / (float)image.SizeY;
@@ -1343,11 +1355,6 @@ namespace BioImage
             selectedImage = image;
             PointF p = toImagePoint(e.Location.X, e.Location.Y);
             MouseEventArgs arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
-            tools.ToolDown(this, arg);
-            
-            if (selectedAnnotation != null)
-                return;
-            
             mouseDown = p;
             down = true;
             up = false;
@@ -1371,7 +1378,7 @@ namespace BioImage
                 }
 
             }
-
+            tools.ToolDown(this, arg);
         }
         public static PointF mouseUp;
         public static bool up;
@@ -1453,6 +1460,20 @@ namespace BioImage
             tools.BringToFront();
             tools.TopMost = true;
             
+        }
+
+        private void pictureBox_SizeModeChanged(object sender, EventArgs e)
+        {
+            UpdateOverlaySize();
+        }
+        private void pictureBox_Resize(object sender, EventArgs e)
+        {
+            UpdateOverlaySize();
+        }
+
+        private void pictureBox_SizeChanged(object sender, EventArgs e)
+        {
+            UpdateOverlaySize();
         }
     }
 }

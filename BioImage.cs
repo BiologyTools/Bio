@@ -157,6 +157,9 @@ namespace BioImage
         public BioImage(int ser, string file)
         {
             serie = ser;
+            rgbChannels[0] = 0;
+            rgbChannels[1] = 0;
+            rgbChannels[2] = 0;
             OpenSeries(file, ser);
             rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
             rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);

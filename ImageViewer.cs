@@ -415,5 +415,13 @@ namespace BioImage
             app = this;
             ImageView.app = this;
         }
+
+        private void channelsToolToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ChannelsTool ch = new ChannelsTool(viewer.image.Channels);
+            if(ch.DialogResult == DialogResult.OK)
+                viewer.image.Channels = ch.Channels;
+
+        }
     }
 }

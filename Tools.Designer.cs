@@ -56,6 +56,8 @@
             this.panel11 = new System.Windows.Forms.Panel();
             this.pointPanel = new System.Windows.Forms.Panel();
             this.panel13 = new System.Windows.Forms.Panel();
+            this.deletePanel = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.bucketPanel.SuspendLayout();
             this.rotatePanel.SuspendLayout();
             this.movePanel.SuspendLayout();
@@ -63,6 +65,7 @@
             this.contextMenuStrip.SuspendLayout();
             this.polyPanel.SuspendLayout();
             this.pointPanel.SuspendLayout();
+            this.deletePanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // colorDialog
@@ -315,13 +318,35 @@
             this.panel13.Size = new System.Drawing.Size(30, 30);
             this.panel13.TabIndex = 3;
             // 
+            // deletePanel
+            // 
+            this.deletePanel.BackColor = System.Drawing.Color.White;
+            this.deletePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("deletePanel.BackgroundImage")));
+            this.deletePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.deletePanel.Controls.Add(this.panel2);
+            this.deletePanel.Location = new System.Drawing.Point(30, 90);
+            this.deletePanel.Name = "deletePanel";
+            this.deletePanel.Size = new System.Drawing.Size(30, 30);
+            this.deletePanel.TabIndex = 5;
+            this.deletePanel.Click += new System.EventHandler(this.deletePanel_Click);
+            // 
+            // panel2
+            // 
+            this.panel2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel2.BackgroundImage")));
+            this.panel2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panel2.Location = new System.Drawing.Point(0, 33);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(30, 30);
+            this.panel2.TabIndex = 3;
+            // 
             // Tools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(59, 121);
+            this.ClientSize = new System.Drawing.Size(61, 121);
             this.ContextMenuStrip = this.contextMenuStrip;
+            this.Controls.Add(this.deletePanel);
             this.Controls.Add(this.textPanel);
             this.Controls.Add(this.brushPanel);
             this.Controls.Add(this.pointPanel);
@@ -353,6 +378,7 @@
             this.contextMenuStrip.ResumeLayout(false);
             this.polyPanel.ResumeLayout(false);
             this.pointPanel.ResumeLayout(false);
+            this.deletePanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -386,5 +412,7 @@
         private System.Windows.Forms.Panel panel11;
         private System.Windows.Forms.Panel pointPanel;
         private System.Windows.Forms.Panel panel13;
+        private System.Windows.Forms.Panel deletePanel;
+        private System.Windows.Forms.Panel panel2;
     }
 }

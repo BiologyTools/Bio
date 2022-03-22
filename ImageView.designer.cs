@@ -83,6 +83,7 @@ namespace BioImage
             this.statusPanel = new System.Windows.Forms.Panel();
             this.statusContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.hideStatusBarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ticksLabel = new System.Windows.Forms.Label();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.zPlayMenuStrip.SuspendLayout();
@@ -377,12 +378,15 @@ namespace BioImage
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 4;
             this.pictureBox.TabStop = false;
+            this.pictureBox.SizeModeChanged += new System.EventHandler(this.pictureBox_SizeModeChanged);
+            this.pictureBox.SizeChanged += new System.EventHandler(this.pictureBox_SizeChanged);
             this.pictureBox.Click += new System.EventHandler(this.pictureBox_Click);
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
             this.pictureBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDoubleClick);
             this.pictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
             this.pictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.rgbPictureBox_MouseMove);
             this.pictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
+            this.pictureBox.Resize += new System.EventHandler(this.pictureBox_Resize);
             // 
             // rgbBoxsPanel
             // 
@@ -582,6 +586,7 @@ namespace BioImage
             | System.Windows.Forms.AnchorStyles.Right)));
             this.statusPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.statusPanel.ContextMenuStrip = this.statusContextMenuStrip;
+            this.statusPanel.Controls.Add(this.ticksLabel);
             this.statusPanel.Controls.Add(this.statusLabel);
             this.statusPanel.Location = new System.Drawing.Point(0, 0);
             this.statusPanel.Name = "statusPanel";
@@ -601,6 +606,16 @@ namespace BioImage
             this.hideStatusBarToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.hideStatusBarToolStripMenuItem.Text = "Hide Status Bar";
             this.hideStatusBarToolStripMenuItem.Click += new System.EventHandler(this.hideStatusBarToolStripMenuItem_Click);
+            // 
+            // ticksLabel
+            // 
+            this.ticksLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ticksLabel.AutoSize = true;
+            this.ticksLabel.ForeColor = System.Drawing.Color.White;
+            this.ticksLabel.Location = new System.Drawing.Point(332, 6);
+            this.ticksLabel.Name = "ticksLabel";
+            this.ticksLabel.Size = new System.Drawing.Size(0, 13);
+            this.ticksLabel.TabIndex = 4;
             // 
             // ImageView
             // 
@@ -688,5 +703,6 @@ namespace BioImage
         private System.Windows.Forms.ContextMenuStrip statusContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem hideStatusBarToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showStatusBarToolStripMenuItem;
+        private System.Windows.Forms.Label ticksLabel;
     }
 }
