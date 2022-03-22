@@ -1108,12 +1108,9 @@ namespace BioImage
                 
                 if(info.RGBChannelsCount == 3)
                 {
-                    if (info.bitsPerPixel > 8)
-                    {
-                        //RGB Channels are stored in BGR so we switch them to RGB
-                        switchRedBlue(GetBitmap());
-                        //Then turn the 48bpp buffers to 3 RGB 16bpp buffers
-                    }
+                    //RGB Channels are stored in BGR so we switch them to RGB
+                    SetBuffer(switchRedBlue(GetBitmap()));
+                    //Then turn the 48bpp buffers to 3 RGB 16bpp buffers
                 }
                 if (!info.littleEndian)
                 {
@@ -1148,12 +1145,9 @@ namespace BioImage
                 SetBytes(read.ReadBytes(inf.length));
                 if (inf.RGBChannelsCount == 3)
                 {
-                    if (inf.bitsPerPixel > 8)
-                    {
-                        //RGB Channels are stored in BGR so we switch them to RGB
-                        switchRedBlue(GetBitmap());
-                        //Then turn the 48bpp buffers to 3 RGB 16bpp buffers
-                    }
+                    //RGB Channels are stored in BGR so we switch them to RGB
+                    SetBuffer(switchRedBlue(GetBitmap()));
+                    //Then turn the 48bpp buffers to 3 RGB 16bpp buffers
                 }
                 if (!inf.littleEndian)
                 {
@@ -1302,9 +1296,13 @@ namespace BioImage
                 bitmap.Dispose();
             }
 
-            public byte[] GetEndianBytes()
+            public byte[] GetEndianBytes(int RGBChannelsCount)
             {
-                Bitmap bitmap = GetBitmap();
+                Bitmap bitmap;
+                if (RGBChannelsCount == 1)
+                    bitmap = GetBitmap();
+                else
+                    bitmap = switchRedBlue(GetBitmap());
                 bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, info.SizeX, info.SizeY), ImageLockMode.ReadWrite, info.pixelFormat);
                 IntPtr ptr = data.Scan0;
@@ -1677,7 +1675,7 @@ namespace BioImage
                 for (int i = 0; i < imageCount; i++)
                 {
                     Buf b = Buffers[i];
-                    writer.saveBytes(i, b.GetEndianBytes());
+                    writer.saveBytes(i, b.GetEndianBytes(RGBChannelCount));
                     Application.DoEvents();
                 }
             }
@@ -1879,7 +1877,8 @@ namespace BioImage
             writer.setWriteSequentially(true);
             for (int im = 0; im < imageCount; im++)
             {
-                writer.saveBytes(im, Buffers[im].GetEndianBytes());
+                
+                writer.saveBytes(im, Buffers[im].GetEndianBytes(RGBChannelCount));
                 Application.DoEvents();
             }
             writer.close();
@@ -1904,6 +1903,7 @@ namespace BioImage
             sizeC = imageReader.getSizeC();
             sizeZ = imageReader.getSizeZ();
             sizeT = imageReader.getSizeT();
+            bool isRGb = imageReader.isRGB();
             imageCount = imageReader.getImageCount();
             littleEndian = imageReader.isLittleEndian();
             seriesCount = imageReader.getSeriesCount();
@@ -2334,6 +2334,7 @@ namespace BioImage
             fileHashTable = new Hashtable();
             fileHashTable.Add(file, file.GetHashCode());
             bool gr = imageReader.isGroupFiles();
+            long len = stride * SizeY;
             for (int ser= 0; ser < seriesCount; ser++)
             {
                 imageReader.setSeries(ser);
@@ -2387,8 +2388,15 @@ namespace BioImage
                 {
                     Console.WriteLine(e.Message);
                 }
-
-                Volumes.Add(new VolumeD(new Point3D(stx, sty, stz), new Point3D(six * SizeX, siy * SizeY, siz * SizeZ)));
+                try
+                {
+                    Volumes.Add(new VolumeD(new Point3D(stx, sty, stz), new Point3D(six * SizeX, siy * SizeY, siz * SizeZ)));
+                }
+                catch (Exception)
+                {
+                    //Volume is used only for stage coordinates if error iss thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
+                }
+                
             }
             Table.AddBioImageByID(idString, this);
 

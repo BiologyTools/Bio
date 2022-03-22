@@ -175,8 +175,8 @@ namespace BioImage
             // channelsToolToolStripMenuItem
             // 
             this.channelsToolToolStripMenuItem.Name = "channelsToolToolStripMenuItem";
-            this.channelsToolToolStripMenuItem.Size = new System.Drawing.Size(93, 20);
-            this.channelsToolToolStripMenuItem.Text = "Channels Tool";
+            this.channelsToolToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
+            this.channelsToolToolStripMenuItem.Text = "Channels";
             this.channelsToolToolStripMenuItem.Click += new System.EventHandler(this.channelsToolToolStripMenuItem_Click);
             // 
             // ImageViewer

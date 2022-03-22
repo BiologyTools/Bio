@@ -418,6 +418,8 @@ namespace BioImage
 
         private void channelsToolToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (viewer.image == null)
+                return;
             ChannelsTool ch = new ChannelsTool(viewer.image.Channels);
             if(ch.DialogResult == DialogResult.OK)
                 viewer.image.Channels = ch.Channels;
