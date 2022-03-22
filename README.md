@@ -6,7 +6,7 @@ A .NET Library for opening & annotating various microscopy imaging formats. Supp
 Best for working with ROI's in OME format.
 
 ## Features
--Editing, & saving ROI's in images to OME format image stacks.
+-Editing & saving ROI's in images to OME format image stacks.
 
 -Exporting ROI's to CSV files for easy analysis in statistics programs.
 
