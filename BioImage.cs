@@ -2334,7 +2334,6 @@ namespace BioImage
             fileHashTable = new Hashtable();
             fileHashTable.Add(file, file.GetHashCode());
             bool gr = imageReader.isGroupFiles();
-            long len = stride * SizeY;
             for (int ser= 0; ser < seriesCount; ser++)
             {
                 imageReader.setSeries(ser);
