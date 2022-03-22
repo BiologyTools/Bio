@@ -3,7 +3,7 @@
 # BioImage Library
 
 A .NET Library for opening & annotating various microscopy imaging formats. Supports all bioformats supported images like .TIF, .CZI etc. 
-Best for working with ROI's in OME format.
+Best for working with ROI's in OME format & CSV.
 
 ## Features
 -Editing & saving ROI's in images to OME format image stacks.
