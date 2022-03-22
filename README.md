@@ -5,7 +5,7 @@
 A .NET Library for opening & annotating various microscopy imaging formats. Supports all bioformats supported images like .TIF, .CZI etc. 
 Best for working with ROI's in OME format.
 
-# Features
+## Features
 -Editing, & saving ROI's in images to OME format image stacks.
 
 -Exporting ROI's to CSV files for easy analysis in statistics programs.
