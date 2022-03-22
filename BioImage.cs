@@ -2187,6 +2187,7 @@ namespace BioImage
                     {
                         an.type = Annotation.Type.Polygon;
                         an.id = meta.getPolygonID(i, sc);
+                        an.closed = true;
                         string pxs = meta.getPolygonPoints(i, sc);
                         PointD[] pts = an.stringToPoints(pxs);
                         if (pts.Length > 100)

@@ -34,8 +34,6 @@ namespace BioImage
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolboxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,6 +42,7 @@ namespace BioImage
             this.exportCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportROIsOfFolderOfImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rOIManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -51,7 +50,6 @@ namespace BioImage
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.rOIManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -70,8 +68,6 @@ namespace BioImage
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
-            this.openFolderToolStripMenuItem,
-            this.closeToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.newWindowToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -84,20 +80,6 @@ namespace BioImage
             this.openToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.openToolStripMenuItem.Text = "Open File";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
-            // 
-            // openFolderToolStripMenuItem
-            // 
-            this.openFolderToolStripMenuItem.Name = "openFolderToolStripMenuItem";
-            this.openFolderToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.openFolderToolStripMenuItem.Text = "Open Folder";
-            this.openFolderToolStripMenuItem.Click += new System.EventHandler(this.openFolderToolStripMenuItem_Click);
-            // 
-            // closeToolStripMenuItem
-            // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.closeToolStripMenuItem.Text = "Close";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
@@ -161,6 +143,13 @@ namespace BioImage
             this.exportROIsOfFolderOfImagesToolStripMenuItem.Text = "Export ROI\'s of Folder of Images";
             this.exportROIsOfFolderOfImagesToolStripMenuItem.Click += new System.EventHandler(this.exportROIsOfFolderOfImagesToolStripMenuItem_Click);
             // 
+            // rOIManagerToolStripMenuItem
+            // 
+            this.rOIManagerToolStripMenuItem.Name = "rOIManagerToolStripMenuItem";
+            this.rOIManagerToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
+            this.rOIManagerToolStripMenuItem.Text = "ROI Manager";
+            this.rOIManagerToolStripMenuItem.Click += new System.EventHandler(this.rOIManagerToolStripMenuItem_Click);
+            // 
             // imageMenuStrip
             // 
             this.imageMenuStrip.Name = "contextMenuStrip1";
@@ -199,13 +188,6 @@ namespace BioImage
             this.openCSVFileDialog.Filter = "\"CSV Files (*.csv)|*.csv|All files (*.*)|*.*\"";
             this.openCSVFileDialog.Title = "Import ROI from CSV";
             // 
-            // rOIManagerToolStripMenuItem
-            // 
-            this.rOIManagerToolStripMenuItem.Name = "rOIManagerToolStripMenuItem";
-            this.rOIManagerToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
-            this.rOIManagerToolStripMenuItem.Text = "ROI Manager";
-            this.rOIManagerToolStripMenuItem.Click += new System.EventHandler(this.rOIManagerToolStripMenuItem_Click);
-            // 
             // ImageViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -236,7 +218,6 @@ namespace BioImage
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip imageMenuStrip;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
@@ -244,7 +225,6 @@ namespace BioImage
         private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.ToolStripMenuItem toolboxToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newWindowToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openFolderToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.ToolStripMenuItem colorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rOIToolStripMenuItem;
