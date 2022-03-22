@@ -769,8 +769,11 @@ namespace BioImage
 
             public void UpdatePoint(PointD p, int i)
             {
-                Points[i] = p;
-                selectBoxs[i] = new RectangleF((float)p.X - 2, (float)p.Y - 2, selectBoxSize, selectBoxSize);
+                if (i > 0 && i < Points.Count)
+                {
+                    Points[i] = p;
+                    selectBoxs[i] = new RectangleF((float)p.X - 2, (float)p.Y - 2, selectBoxSize, selectBoxSize);
+                }
             }
 
             public PointD GetPoint(int i)
@@ -1721,7 +1724,10 @@ namespace BioImage
             int i = 0;
             foreach (Annotation an in Annotations)
             {
-                omexml.setROIID(an.roiID, i);
+                if(an.roiID == "")
+                    omexml.setROIID("ROI:" + i.ToString() + ":" + series, i);
+                else
+                    omexml.setROIID(an.roiID, i);
                 omexml.setROIName(an.roiName, i);
                 if (an.type == Annotation.Type.Point)
                 {

@@ -8,28 +8,29 @@ namespace BioImage
 {
     public partial class ImageViewer : Form
     {
-        Tools tools;
-        ROIManager manager = null;
+        public static Tools tools;
+        public static ROIManager manager = null;
         private ImageView viewer = null;
         bool useFolderBrowser = false;
 
-        public ImageViewer(string id)
+        public static ImageViewer app = null;
+
+        public ImageViewer()
         {
             InitializeComponent();
-            SetFolder(id, false, 0);
+            if(tools == null)
+            tools = new Tools();
+            if(manager == null)
+            manager = new ROIManager();
+            app = this;
         }
-
         public ImageViewer(string[] arg)
         {
             InitializeComponent();
             tools = new Tools();
-            //string s = "E:/TESTIMAGES/ROIS.ome.tif";
-            //string s = "E:/TESTIMAGES/text.ome.tif";
-            //string s = "E:/TESTIMAGES/points5.ome.tif";
             //string s = "E:/TESTIMAGES/text.ome.tif";
             //SetFolder(s, false, 0);
             manager = new ROIManager();
-            //viewer.image.SaveSeries(s, 0);
             if (arg.Length == 0)
                 return;
             else
@@ -37,6 +38,7 @@ namespace BioImage
             {
                 SetFile(arg[0], 0, false);
             }
+            app = this;
         }
 
         public void SetFile(string file, int seri, bool folder)
@@ -53,15 +55,7 @@ namespace BioImage
             panel.Controls.Add(viewer);
             string name = Path.GetFileName(file);
             this.Text = name;
-        }
-        public void SetFolder(string file, bool folder, int seri)
-        {
-            viewer = new ImageView(file, seri, folder);
-            viewer.Dock = DockStyle.Fill;
-            panel.Controls.Add(viewer);
-            viewer.serie = seri;
-            string name = Path.GetFileName(file);
-            this.Text = name;
+           
         }
 
         public BioImage Image
@@ -74,13 +68,32 @@ namespace BioImage
                     return null;
                 return viewer.image; 
             }
+            set
+            {
+                viewer.image = value;
+            }
+        }
+
+        public void Open(string[] files)
+        {
+            foreach (string file in files)
+            {
+                if(viewer != null)
+                {
+                    ImageViewer viewer = new ImageViewer();
+                    viewer.Show();
+                    viewer.SetFile(file, 0, false);
+                }
+                else
+                    SetFile(openFilesDialog.FileName,0, false);
+            }
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (openFileDialog.ShowDialog() != DialogResult.OK)
+            if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            SetFolder(openFileDialog.FileName, false, 0);
+            Open(openFilesDialog.FileNames);
         }
 
         private void openFolderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -89,13 +102,13 @@ namespace BioImage
             {
                 if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
                     return;
-                SetFile(openFileDialog.FileName, Image.serie, true);
+                SetFile(openFilesDialog.FileName, Image.serie, true);
             }
             else
             {
-                if (openFileDialog.ShowDialog() != DialogResult.OK)
+                if (openFilesDialog.ShowDialog() != DialogResult.OK)
                     return;
-                SetFile(openFileDialog.FileName, Image.serie, true);
+                SetFile(openFilesDialog.FileName, Image.serie, true);
             }
         }
 
@@ -157,7 +170,7 @@ namespace BioImage
         {
             tools.Show();
         }
-
+        /*
         private void newWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (openFileDialog.ShowDialog() != DialogResult.OK)
@@ -167,7 +180,7 @@ namespace BioImage
             p.StartInfo.Arguments = openFileDialog.FileName;
             p.Start();
         }
-
+        */
         private void colorToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -395,6 +408,12 @@ namespace BioImage
             tools.SendToBack();
             tools.TopMost = false;
             manager.SendToBack();
+        }
+
+        private void ImageViewer_Activated(object sender, EventArgs e)
+        {
+            app = this;
+            ImageView.app = this;
         }
     }
 }

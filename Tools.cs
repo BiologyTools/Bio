@@ -271,6 +271,10 @@ namespace BioImage
         {
             if (currentTool == null)
                 return;
+            if (anno == null)
+                return;
+            if (anno.GetPointCount() == 0)
+                return;
             if (currentTool.type == Tool.Type.point)    
             {
                 BioImage.Annotation an = new BioImage.Annotation();

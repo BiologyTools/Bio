@@ -24,7 +24,7 @@ namespace BioImage
                 return;
             SetCoordinate(ser, 0, 0, 0);
 
-            image = new BioImage(ser,file);
+            image = new BioImage(ser, file);
             if (folder)
             {
                 Console.WriteLine("Opening folder files. Serie: " + ser + " File: " + file);
@@ -43,7 +43,7 @@ namespace BioImage
 
             Buf = image.GetBufByCoord(GetCoordinate());
             if (image.SizeC > 2)
-            {   
+            {
                 Mode = ViewMode.RGBImage;
             }
             else
@@ -65,7 +65,7 @@ namespace BioImage
         }
         ~ImageView()
         {
-            
+
         }
 
         public BioImage image;
@@ -105,7 +105,7 @@ namespace BioImage
             {
                 viewMode = value;
                 UpdateView();
-                if(viewMode == ViewMode.RGBImage)
+                if (viewMode == ViewMode.RGBImage)
                 {
                     rGBImageModeToolStripMenuItem.Checked = true;
                     rgbBoxsPanel.BringToFront();
@@ -221,11 +221,11 @@ namespace BioImage
         {
             filepath = path;
             //image = new BioImage(filePath);
-            zBar.Maximum = image.SizeZ-1;
-            cBar.Maximum = image.SizeC-1;
+            zBar.Maximum = image.SizeZ - 1;
+            cBar.Maximum = image.SizeC - 1;
             if (image.SizeT > 1)
             {
-                timeBar.Maximum = image.imageReader.getSizeT()-1;
+                timeBar.Maximum = image.imageReader.getSizeT() - 1;
                 timeEnabled = true;
             }
             else
@@ -320,7 +320,7 @@ namespace BioImage
                     pictureBox.Image = image.GetBitmap(GetCoordinate());
                 }
             }
-            
+
             UpdateStatus();
         }
 
@@ -352,7 +352,7 @@ namespace BioImage
                 }
             }
 
-            
+
 
         }
 
@@ -443,8 +443,8 @@ namespace BioImage
 
         private void showControlsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
-            if(trackBarPanel.Visible)
+
+            if (trackBarPanel.Visible)
             {
                 trackBarPanel.Hide();
                 pictureBox.Height += trackBarPanel.Height;
@@ -472,7 +472,7 @@ namespace BioImage
             UpdateViewMode();
             */
         }
-        
+
         private void ImageView_Resize(object sender, EventArgs e)
         {
             /*
@@ -519,7 +519,7 @@ namespace BioImage
                 playZToolStripMenuItem.Checked = true;
                 stopZToolStripMenuItem.Checked = false;
                 zTimer.Start();
-                
+
             }
             else
             {
@@ -529,7 +529,7 @@ namespace BioImage
                 zTimer.Stop();
             }
         }
-        
+
         private void playTimeToolStripMenu_Click(object sender, EventArgs e)
         {
             if (playTimeToolStripMenu.Checked)
@@ -569,10 +569,7 @@ namespace BioImage
             cTimer.Stop();
         }
 
-        
-
         public string mouseColor = "";
-
         private bool x1State = false;
         private bool x2State = false;
         private void rgbPictureBox_MouseMove(object sender, MouseEventArgs e)
@@ -624,35 +621,35 @@ namespace BioImage
                     int b = image.GetValue(sc, zc, BChannel.index, tc, p.X, p.Y, 2);
                     mouseColor = "(" + p.X + "," + p.Y + "), " + r + "," + g + "," + b;
                 }
-                if(Tools.currentTool!=null)
-                if (e.Button == MouseButtons.Left && Tools.currentTool.toolType == Tools.Tool.ToolType.color)
-                {
-                    if (Buf.info.RGBChannelsCount > 1)
+                if (Tools.currentTool != null)
+                    if (e.Button == MouseButtons.Left && Tools.currentTool.toolType == Tools.Tool.ToolType.color)
                     {
-                        Tools.Tool tool = Tools.currentTool;
-                        if (Tools.rEnabled)
-                            Buf.SetValueRGB(p.X, p.Y, 0, tool.Color.R);
-                        if (Tools.gEnabled)
-                            Buf.SetValueRGB(p.X, p.Y, 1, tool.Color.G);
-                        if (Tools.bEnabled)
-                            Buf.SetValueRGB(p.X, p.Y, 2, tool.Color.B);
+                        if (Buf.info.RGBChannelsCount > 1)
+                        {
+                            Tools.Tool tool = Tools.currentTool;
+                            if (Tools.rEnabled)
+                                Buf.SetValueRGB(p.X, p.Y, 0, tool.Color.R);
+                            if (Tools.gEnabled)
+                                Buf.SetValueRGB(p.X, p.Y, 1, tool.Color.G);
+                            if (Tools.bEnabled)
+                                Buf.SetValueRGB(p.X, p.Y, 2, tool.Color.B);
+                        }
+                        else
+                        if (Mode == ViewMode.RGBImage)
+                        {
+                            if (Tools.rEnabled)
+                                image.SetValue(p.X, p.Y, RChannel.index, Tools.pencil.Color.R);
+                            if (Tools.gEnabled)
+                                image.SetValue(p.X, p.Y, GChannel.index, Tools.pencil.Color.G);
+                            if (Tools.bEnabled)
+                                image.SetValue(p.X, p.Y, BChannel.index, Tools.pencil.Color.B);
+                        }
+                        else
+                        {
+                            image.SetValue(p.X, p.Y, GetCoordinate(), Tools.pencil.Color.R);
+                        }
+                        UpdateView();
                     }
-                    else
-                    if (Mode == ViewMode.RGBImage)
-                    {
-                        if (Tools.rEnabled)
-                            image.SetValue(p.X, p.Y, RChannel.index, Tools.pencil.Color.R);
-                        if (Tools.gEnabled)
-                            image.SetValue(p.X, p.Y, GChannel.index, Tools.pencil.Color.G);
-                        if (Tools.bEnabled)
-                            image.SetValue(p.X, p.Y, BChannel.index, Tools.pencil.Color.B);
-                    }
-                    else
-                    {
-                        image.SetValue(p.X, p.Y, GetCoordinate(), Tools.pencil.Color.R);
-                    }
-                    UpdateView();
-                }
             }
             else
             if (Mode == ViewMode.Filtered)
@@ -702,8 +699,8 @@ namespace BioImage
         private void playSpeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PlaySpeed sp = null;
-            if(Mode == ViewMode.RGBImage)
-             sp = new PlaySpeed(timeEnabled, false, ZFps, TimeFps, CFps);
+            if (Mode == ViewMode.RGBImage)
+                sp = new PlaySpeed(timeEnabled, false, ZFps, TimeFps, CFps);
             if (Mode == ViewMode.Filtered)
                 sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (Mode == ViewMode.Raw)
@@ -821,7 +818,7 @@ namespace BioImage
                 if (zBar.Value - 1 >= zBar.Minimum)
                     zBar.Value -= 1;
             }
-            
+
         }
         private void TimeTrackBar_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
@@ -862,34 +859,34 @@ namespace BioImage
                     cBar.Value++;
                 else
                 {
-                    if(loopC)
-                    cBar.Value = cBar.Minimum;
+                    if (loopC)
+                        cBar.Value = cBar.Minimum;
                 }
             }
         }
         private void zTimer_Tick(object sender, EventArgs e)
         {
-            if(playZToolStripMenuItem.Checked)
+            if (playZToolStripMenuItem.Checked)
             {
                 if (zBar.Maximum >= zBar.Value + 1)
                     zBar.Value++;
                 else
                 {
                     if (loopZ)
-                    zBar.Value = zBar.Minimum;
+                        zBar.Value = zBar.Minimum;
                 }
             }
         }
         private void timer_Tick(object sender, EventArgs e)
-        {           
+        {
             if (playTimeToolStripMenu.Checked)
             {
                 if (timeBar.Maximum >= timeBar.Value + 1)
                     timeBar.Value++;
                 else
                 {
-                    if(loopT)
-                    timeBar.Value = timeBar.Minimum;
+                    if (loopT)
+                        timeBar.Value = timeBar.Minimum;
                 }
             }
         }
@@ -938,7 +935,7 @@ namespace BioImage
             rawModeToolStripMenuItem.Checked = false;
             filteredModeToolStripMenuItem.Checked = false;
         }
-        private Point toImagePoint(int px,int py)
+        private Point toImagePoint(int px, int py)
         {
             int x, y;
             Point p = new Point(px, py);
@@ -961,11 +958,11 @@ namespace BioImage
                 float y0 = (pictureBox.Height - (fw * image.SizeY)) / 2;
                 if (y0 < 0)
                     y0 = 0;
-                float sw = (float)image.SizeX / (float)(pictureBox.Width - (x0*2));
-                float sh = (float)image.SizeY / (float)(pictureBox.Height - (y0*2));
+                float sw = (float)image.SizeX / (float)(pictureBox.Width - (x0 * 2));
+                float sh = (float)image.SizeY / (float)(pictureBox.Height - (y0 * 2));
                 float xp = (px - x0) * sw;
                 float yp = (py - y0) * sh;
-                return new Point((int)xp,(int)yp);
+                return new Point((int)xp, (int)yp);
             }
             if (pictureBox.SizeMode == PictureBoxSizeMode.Normal || pictureBox.SizeMode == PictureBoxSizeMode.AutoSize)
             {
@@ -1001,7 +998,7 @@ namespace BioImage
                     y = image.SizeY;
                 return new Point(x, y);
             }
-            return new Point(-1,-1);
+            return new Point(-1, -1);
         }
         private Point GetImagePoint()
         {
@@ -1154,14 +1151,14 @@ namespace BioImage
             bool bounds = true;
             bool labels = false;
             if (Mode == ViewMode.RGBImage)
-            {  
+            {
                 foreach (BioImage.Annotation an in AnnotationsR)
                 {
-                    pen = new Pen(an.strokeColor,(float)an.strokeWidth);
+                    pen = new Pen(an.strokeColor, (float)an.strokeWidth);
                     b = new SolidBrush(an.strokeColor);
                     if (an.type == BioImage.Annotation.Type.Point)
                     {
-                        g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X +1, (float)an.Point.Y+1));
+                        g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                         if (labels)
                             g.DrawString(an.text, an.font, b, an.Point.ToPointF());
@@ -1196,12 +1193,12 @@ namespace BioImage
                     if (an.type == BioImage.Annotation.Type.Polygon && !an.closed)
                     {
                         PointF[] points = an.GetPointsF();
-                        if(points.Length == 1)
+                        if (points.Length == 1)
                         {
                             g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
                         }
                         else
-                        g.DrawLines(pen, points);
+                            g.DrawLines(pen, points);
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                         if (bounds)
                             g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
@@ -1223,7 +1220,7 @@ namespace BioImage
                             g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
                     }
                     else
-                    if(an.type == BioImage.Annotation.Type.Freeform)
+                    if (an.type == BioImage.Annotation.Type.Freeform)
                     {
                         g.DrawPolygon(pen, an.GetPointsF());
                         if (bounds)
@@ -1232,7 +1229,7 @@ namespace BioImage
                     else
                     if (an.type == BioImage.Annotation.Type.Label)
                     {
-                        
+
                         g.DrawString(an.text, an.font, b, an.Point.ToPointF());
                         if (bounds)
                             g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
@@ -1319,7 +1316,7 @@ namespace BioImage
 
         private void hideStatusBarToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(statusPanel.Visible == true)
+            if (statusPanel.Visible == true)
             {
                 statusPanel.Visible = false;
                 showStatusBarToolStripMenuItem.Visible = true;
@@ -1333,7 +1330,9 @@ namespace BioImage
 
         public static BioImage.Annotation selectedAnnotation = null;
         public static BioImage selectedImage = null;
+
         public static ImageView viewer = null;
+        public static ImageViewer app = null;
         int selectedPoint = -1;
 
         public static PointF mouseDown;
@@ -1388,7 +1387,7 @@ namespace BioImage
                 return;
             mouseUp = p;
             up = true;
-            if (Tools.currentTool.toolType == Tools.Tool.ToolType.annotation)
+            if (Tools.currentTool.type == Tools.Tool.Type.move)
             {
                 if (selectedAnnotation.type == BioImage.Annotation.Type.Rectangle || selectedAnnotation.type == BioImage.Annotation.Type.Ellipse ||
                     selectedAnnotation.type == BioImage.Annotation.Type.Freeform || selectedAnnotation.type == BioImage.Annotation.Type.Label)

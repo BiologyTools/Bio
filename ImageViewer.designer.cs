@@ -35,7 +35,6 @@ namespace BioImage
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolboxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rOIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,7 +43,7 @@ namespace BioImage
             this.exportROIsOfFolderOfImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rOIManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.panel = new System.Windows.Forms.Panel();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -68,8 +67,7 @@ namespace BioImage
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
-            this.saveToolStripMenuItem,
-            this.newWindowToolStripMenuItem});
+            this.saveToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -77,23 +75,16 @@ namespace BioImage
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.openToolStripMenuItem.Text = "Open File";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Text = "Open Files";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
-            // 
-            // newWindowToolStripMenuItem
-            // 
-            this.newWindowToolStripMenuItem.Name = "newWindowToolStripMenuItem";
-            this.newWindowToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.newWindowToolStripMenuItem.Text = "Open in New Window";
-            this.newWindowToolStripMenuItem.Click += new System.EventHandler(this.newWindowToolStripMenuItem_Click);
             // 
             // toolboxToolStripMenuItem
             // 
@@ -155,9 +146,10 @@ namespace BioImage
             this.imageMenuStrip.Name = "contextMenuStrip1";
             this.imageMenuStrip.Size = new System.Drawing.Size(61, 4);
             // 
-            // openFileDialog
+            // openFilesDialog
             // 
-            this.openFileDialog.Title = "Open Image";
+            this.openFilesDialog.Multiselect = true;
+            this.openFilesDialog.Title = "Open Images";
             // 
             // saveFileDialog
             // 
@@ -201,6 +193,7 @@ namespace BioImage
             this.MinimumSize = new System.Drawing.Size(400, 90);
             this.Name = "ImageViewer";
             this.Text = "BioImage";
+            this.Activated += new System.EventHandler(this.ImageViewer_Activated);
             this.Deactivate += new System.EventHandler(this.ImageViewer_Deactivate);
             this.SizeChanged += new System.EventHandler(this.ImageViewer_SizeChanged);
             this.Click += new System.EventHandler(this.ImageViewer_Click);
@@ -219,12 +212,11 @@ namespace BioImage
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip imageMenuStrip;
-        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.OpenFileDialog openFilesDialog;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.ToolStripMenuItem toolboxToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem newWindowToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.ToolStripMenuItem colorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rOIToolStripMenuItem;
