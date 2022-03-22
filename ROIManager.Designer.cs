@@ -30,64 +30,70 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ROIManager));
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.roiView = new System.Windows.Forms.ListView();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.label1 = new System.Windows.Forms.Label();
             this.rBox = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown5 = new System.Windows.Forms.NumericUpDown();
+            this.gBox = new System.Windows.Forms.NumericUpDown();
+            this.bBox = new System.Windows.Forms.NumericUpDown();
+            this.tBox = new System.Windows.Forms.NumericUpDown();
+            this.cBox = new System.Windows.Forms.NumericUpDown();
+            this.zBox = new System.Windows.Forms.NumericUpDown();
             this.label2 = new System.Windows.Forms.Label();
-            this.numericUpDown6 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown7 = new System.Windows.Forms.NumericUpDown();
+            this.yBox = new System.Windows.Forms.NumericUpDown();
+            this.xBox = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.numericUpDown8 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown9 = new System.Windows.Forms.NumericUpDown();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.hBox = new System.Windows.Forms.NumericUpDown();
+            this.wBox = new System.Windows.Forms.NumericUpDown();
+            this.typeBox = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.showBoundsBox = new System.Windows.Forms.CheckBox();
+            this.showTextBox = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label7 = new System.Windows.Forms.Label();
             this.imageNameLabel = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.idBox = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.numericUpDown10 = new System.Windows.Forms.NumericUpDown();
+            this.sBox = new System.Windows.Forms.NumericUpDown();
+            this.exportToCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAllToCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateBut = new System.Windows.Forms.Button();
+            this.addButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.rBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown7)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown8)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown9)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.wBox)).BeginInit();
             this.contextMenuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown10)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sBox)).BeginInit();
             this.SuspendLayout();
             // 
-            // listView1
+            // roiView
             // 
-            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.roiView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.listView1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.listView1.ForeColor = System.Drawing.Color.White;
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(-1, 0);
-            this.listView1.MultiSelect = false;
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(221, 306);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.roiView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.roiView.ForeColor = System.Drawing.Color.White;
+            this.roiView.HideSelection = false;
+            this.roiView.Location = new System.Drawing.Point(-1, 0);
+            this.roiView.MultiSelect = false;
+            this.roiView.Name = "roiView";
+            this.roiView.Size = new System.Drawing.Size(221, 338);
+            this.roiView.TabIndex = 0;
+            this.roiView.UseCompatibleStateImageBehavior = false;
+            this.roiView.View = System.Windows.Forms.View.List;
+            this.roiView.SelectedIndexChanged += new System.EventHandler(this.roiView_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -114,81 +120,87 @@
             this.rBox.Name = "rBox";
             this.rBox.Size = new System.Drawing.Size(48, 20);
             this.rBox.TabIndex = 2;
+            this.rBox.ValueChanged += new System.EventHandler(this.rBox_ValueChanged);
             // 
-            // numericUpDown1
+            // gBox
             // 
-            this.numericUpDown1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.numericUpDown1.ForeColor = System.Drawing.Color.White;
-            this.numericUpDown1.Location = new System.Drawing.Point(283, 155);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
+            this.gBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.gBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.gBox.ForeColor = System.Drawing.Color.White;
+            this.gBox.Location = new System.Drawing.Point(283, 155);
+            this.gBox.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDown1.TabIndex = 3;
+            this.gBox.Name = "gBox";
+            this.gBox.Size = new System.Drawing.Size(48, 20);
+            this.gBox.TabIndex = 3;
+            this.gBox.ValueChanged += new System.EventHandler(this.gBox_ValueChanged);
             // 
-            // numericUpDown2
+            // bBox
             // 
-            this.numericUpDown2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.numericUpDown2.ForeColor = System.Drawing.Color.White;
-            this.numericUpDown2.Location = new System.Drawing.Point(337, 155);
-            this.numericUpDown2.Maximum = new decimal(new int[] {
+            this.bBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.bBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.bBox.ForeColor = System.Drawing.Color.White;
+            this.bBox.Location = new System.Drawing.Point(337, 155);
+            this.bBox.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
-            this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDown2.TabIndex = 4;
+            this.bBox.Name = "bBox";
+            this.bBox.Size = new System.Drawing.Size(48, 20);
+            this.bBox.TabIndex = 4;
+            this.bBox.ValueChanged += new System.EventHandler(this.bBox_ValueChanged);
             // 
-            // numericUpDown3
+            // tBox
             // 
-            this.numericUpDown3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.numericUpDown3.ForeColor = System.Drawing.Color.White;
-            this.numericUpDown3.Location = new System.Drawing.Point(337, 115);
-            this.numericUpDown3.Maximum = new decimal(new int[] {
+            this.tBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.tBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.tBox.ForeColor = System.Drawing.Color.White;
+            this.tBox.Location = new System.Drawing.Point(337, 115);
+            this.tBox.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
-            this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDown3.TabIndex = 8;
+            this.tBox.Name = "tBox";
+            this.tBox.Size = new System.Drawing.Size(48, 20);
+            this.tBox.TabIndex = 8;
+            this.tBox.ValueChanged += new System.EventHandler(this.tBox_ValueChanged);
             // 
-            // numericUpDown4
+            // cBox
             // 
-            this.numericUpDown4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.numericUpDown4.ForeColor = System.Drawing.Color.White;
-            this.numericUpDown4.Location = new System.Drawing.Point(283, 115);
-            this.numericUpDown4.Maximum = new decimal(new int[] {
+            this.cBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.cBox.ForeColor = System.Drawing.Color.White;
+            this.cBox.Location = new System.Drawing.Point(283, 115);
+            this.cBox.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
-            this.numericUpDown4.Name = "numericUpDown4";
-            this.numericUpDown4.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDown4.TabIndex = 7;
+            this.cBox.Name = "cBox";
+            this.cBox.Size = new System.Drawing.Size(48, 20);
+            this.cBox.TabIndex = 7;
+            this.cBox.ValueChanged += new System.EventHandler(this.cBox_ValueChanged);
             // 
-            // numericUpDown5
+            // zBox
             // 
-            this.numericUpDown5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.numericUpDown5.ForeColor = System.Drawing.Color.White;
-            this.numericUpDown5.Location = new System.Drawing.Point(229, 115);
-            this.numericUpDown5.Maximum = new decimal(new int[] {
+            this.zBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.zBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.zBox.ForeColor = System.Drawing.Color.White;
+            this.zBox.Location = new System.Drawing.Point(229, 115);
+            this.zBox.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
-            this.numericUpDown5.Name = "numericUpDown5";
-            this.numericUpDown5.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDown5.TabIndex = 6;
+            this.zBox.Name = "zBox";
+            this.zBox.Size = new System.Drawing.Size(48, 20);
+            this.zBox.TabIndex = 6;
+            this.zBox.ValueChanged += new System.EventHandler(this.zBox_ValueChanged);
             // 
             // label2
             // 
@@ -201,42 +213,44 @@
             this.label2.TabIndex = 5;
             this.label2.Text = "ZCT";
             // 
-            // numericUpDown6
+            // yBox
             // 
-            this.numericUpDown6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.numericUpDown6.ForeColor = System.Drawing.Color.White;
-            this.numericUpDown6.Location = new System.Drawing.Point(337, 48);
-            this.numericUpDown6.Maximum = new decimal(new int[] {
-            255,
+            this.yBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.yBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.yBox.ForeColor = System.Drawing.Color.White;
+            this.yBox.Location = new System.Drawing.Point(325, 48);
+            this.yBox.Maximum = new decimal(new int[] {
+            100000,
             0,
             0,
             0});
-            this.numericUpDown6.Name = "numericUpDown6";
-            this.numericUpDown6.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDown6.TabIndex = 10;
+            this.yBox.Name = "yBox";
+            this.yBox.Size = new System.Drawing.Size(60, 20);
+            this.yBox.TabIndex = 10;
+            this.yBox.ValueChanged += new System.EventHandler(this.yBox_ValueChanged);
             // 
-            // numericUpDown7
+            // xBox
             // 
-            this.numericUpDown7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.numericUpDown7.ForeColor = System.Drawing.Color.White;
-            this.numericUpDown7.Location = new System.Drawing.Point(283, 48);
-            this.numericUpDown7.Maximum = new decimal(new int[] {
-            255,
+            this.xBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.xBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.xBox.ForeColor = System.Drawing.Color.White;
+            this.xBox.Location = new System.Drawing.Point(263, 48);
+            this.xBox.Maximum = new decimal(new int[] {
+            100000,
             0,
             0,
             0});
-            this.numericUpDown7.Name = "numericUpDown7";
-            this.numericUpDown7.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDown7.TabIndex = 9;
+            this.xBox.Name = "xBox";
+            this.xBox.Size = new System.Drawing.Size(56, 20);
+            this.xBox.TabIndex = 9;
+            this.xBox.ValueChanged += new System.EventHandler(this.xBox_ValueChanged);
             // 
             // label3
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(253, 50);
+            this.label3.Location = new System.Drawing.Point(230, 50);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(30, 13);
             this.label3.TabIndex = 11;
@@ -247,52 +261,55 @@
             this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
             this.label4.ForeColor = System.Drawing.Color.White;
-            this.label4.Location = new System.Drawing.Point(242, 76);
+            this.label4.Location = new System.Drawing.Point(225, 76);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(35, 13);
             this.label4.TabIndex = 14;
             this.label4.Text = "W, H:";
             // 
-            // numericUpDown8
+            // hBox
             // 
-            this.numericUpDown8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.numericUpDown8.ForeColor = System.Drawing.Color.White;
-            this.numericUpDown8.Location = new System.Drawing.Point(337, 74);
-            this.numericUpDown8.Maximum = new decimal(new int[] {
-            255,
+            this.hBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.hBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.hBox.ForeColor = System.Drawing.Color.White;
+            this.hBox.Location = new System.Drawing.Point(325, 74);
+            this.hBox.Maximum = new decimal(new int[] {
+            100000,
             0,
             0,
             0});
-            this.numericUpDown8.Name = "numericUpDown8";
-            this.numericUpDown8.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDown8.TabIndex = 13;
+            this.hBox.Name = "hBox";
+            this.hBox.Size = new System.Drawing.Size(60, 20);
+            this.hBox.TabIndex = 13;
+            this.hBox.ValueChanged += new System.EventHandler(this.hBox_ValueChanged);
             // 
-            // numericUpDown9
+            // wBox
             // 
-            this.numericUpDown9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.numericUpDown9.ForeColor = System.Drawing.Color.White;
-            this.numericUpDown9.Location = new System.Drawing.Point(283, 74);
-            this.numericUpDown9.Maximum = new decimal(new int[] {
-            255,
+            this.wBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.wBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.wBox.ForeColor = System.Drawing.Color.White;
+            this.wBox.Location = new System.Drawing.Point(263, 74);
+            this.wBox.Maximum = new decimal(new int[] {
+            100000,
             0,
             0,
             0});
-            this.numericUpDown9.Name = "numericUpDown9";
-            this.numericUpDown9.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDown9.TabIndex = 12;
+            this.wBox.Name = "wBox";
+            this.wBox.Size = new System.Drawing.Size(56, 20);
+            this.wBox.TabIndex = 12;
+            this.wBox.ValueChanged += new System.EventHandler(this.wBox_ValueChanged);
             // 
-            // comboBox1
+            // typeBox
             // 
-            this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.comboBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.comboBox1.ForeColor = System.Drawing.Color.White;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(283, 181);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(103, 21);
-            this.comboBox1.TabIndex = 15;
+            this.typeBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.typeBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.typeBox.ForeColor = System.Drawing.Color.White;
+            this.typeBox.FormattingEnabled = true;
+            this.typeBox.Location = new System.Drawing.Point(283, 181);
+            this.typeBox.Name = "typeBox";
+            this.typeBox.Size = new System.Drawing.Size(103, 21);
+            this.typeBox.TabIndex = 15;
+            this.typeBox.SelectedIndexChanged += new System.EventHandler(this.typeBox_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -305,14 +322,15 @@
             this.label5.TabIndex = 16;
             this.label5.Text = "Type:";
             // 
-            // textBox1
+            // textBox
             // 
-            this.textBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.textBox1.ForeColor = System.Drawing.Color.White;
-            this.textBox1.Location = new System.Drawing.Point(283, 206);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(103, 20);
-            this.textBox1.TabIndex = 17;
+            this.textBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.textBox.ForeColor = System.Drawing.Color.White;
+            this.textBox.Location = new System.Drawing.Point(283, 206);
+            this.textBox.Name = "textBox";
+            this.textBox.Size = new System.Drawing.Size(103, 20);
+            this.textBox.TabIndex = 17;
+            this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             // 
             // label6
             // 
@@ -325,39 +343,41 @@
             this.label6.TabIndex = 18;
             this.label6.Text = "Text:";
             // 
-            // checkBox1
+            // showBoundsBox
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.ForeColor = System.Drawing.Color.White;
-            this.checkBox1.Location = new System.Drawing.Point(229, 261);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(92, 17);
-            this.checkBox1.TabIndex = 19;
-            this.checkBox1.Text = "Show Bounds";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.showBoundsBox.AutoSize = true;
+            this.showBoundsBox.ForeColor = System.Drawing.Color.White;
+            this.showBoundsBox.Location = new System.Drawing.Point(229, 261);
+            this.showBoundsBox.Name = "showBoundsBox";
+            this.showBoundsBox.Size = new System.Drawing.Size(92, 17);
+            this.showBoundsBox.TabIndex = 19;
+            this.showBoundsBox.Text = "Show Bounds";
+            this.showBoundsBox.UseVisualStyleBackColor = true;
             // 
-            // checkBox2
+            // showTextBox
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.ForeColor = System.Drawing.Color.White;
-            this.checkBox2.Location = new System.Drawing.Point(318, 261);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(77, 17);
-            this.checkBox2.TabIndex = 20;
-            this.checkBox2.Text = "Show Text";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.showTextBox.AutoSize = true;
+            this.showTextBox.ForeColor = System.Drawing.Color.White;
+            this.showTextBox.Location = new System.Drawing.Point(318, 261);
+            this.showTextBox.Name = "showTextBox";
+            this.showTextBox.Size = new System.Drawing.Size(77, 17);
+            this.showTextBox.TabIndex = 20;
+            this.showTextBox.Text = "Show Text";
+            this.showTextBox.UseVisualStyleBackColor = true;
             // 
             // contextMenuStrip
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteToolStripMenuItem});
+            this.deleteToolStripMenuItem,
+            this.exportToCSVToolStripMenuItem,
+            this.exportAllToCSVToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(108, 26);
+            this.contextMenuStrip.Size = new System.Drawing.Size(164, 70);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             // 
             // label7
@@ -367,9 +387,9 @@
             this.label7.ForeColor = System.Drawing.Color.White;
             this.label7.Location = new System.Drawing.Point(233, 9);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(70, 13);
+            this.label7.Size = new System.Drawing.Size(67, 13);
             this.label7.TabIndex = 22;
-            this.label7.Text = "Image Name:";
+            this.label7.Text = "Image Name";
             // 
             // imageNameLabel
             // 
@@ -392,14 +412,15 @@
             this.label8.TabIndex = 24;
             this.label8.Text = "ID:";
             // 
-            // textBox2
+            // idBox
             // 
-            this.textBox2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.textBox2.ForeColor = System.Drawing.Color.White;
-            this.textBox2.Location = new System.Drawing.Point(283, 229);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(103, 20);
-            this.textBox2.TabIndex = 25;
+            this.idBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.idBox.ForeColor = System.Drawing.Color.White;
+            this.idBox.Location = new System.Drawing.Point(283, 229);
+            this.idBox.Name = "idBox";
+            this.idBox.Size = new System.Drawing.Size(103, 20);
+            this.idBox.TabIndex = 25;
+            this.idBox.TextChanged += new System.EventHandler(this.idBox_TextChanged);
             // 
             // label9
             // 
@@ -412,69 +433,105 @@
             this.label9.TabIndex = 27;
             this.label9.Text = "Series:";
             // 
-            // numericUpDown10
+            // sBox
             // 
-            this.numericUpDown10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.numericUpDown10.ForeColor = System.Drawing.Color.White;
-            this.numericUpDown10.Location = new System.Drawing.Point(338, 284);
-            this.numericUpDown10.Maximum = new decimal(new int[] {
+            this.sBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.sBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.sBox.ForeColor = System.Drawing.Color.White;
+            this.sBox.Location = new System.Drawing.Point(338, 284);
+            this.sBox.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
-            this.numericUpDown10.Name = "numericUpDown10";
-            this.numericUpDown10.Size = new System.Drawing.Size(48, 20);
-            this.numericUpDown10.TabIndex = 26;
+            this.sBox.Name = "sBox";
+            this.sBox.Size = new System.Drawing.Size(48, 20);
+            this.sBox.TabIndex = 26;
+            this.sBox.ValueChanged += new System.EventHandler(this.sBox_ValueChanged);
+            // 
+            // exportToCSVToolStripMenuItem
+            // 
+            this.exportToCSVToolStripMenuItem.Name = "exportToCSVToolStripMenuItem";
+            this.exportToCSVToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.exportToCSVToolStripMenuItem.Text = "Export to CSV";
+            // 
+            // exportAllToCSVToolStripMenuItem
+            // 
+            this.exportAllToCSVToolStripMenuItem.Name = "exportAllToCSVToolStripMenuItem";
+            this.exportAllToCSVToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.exportAllToCSVToolStripMenuItem.Text = "Export All to CSV";
+            // 
+            // updateBut
+            // 
+            this.updateBut.Location = new System.Drawing.Point(229, 308);
+            this.updateBut.Name = "updateBut";
+            this.updateBut.Size = new System.Drawing.Size(75, 25);
+            this.updateBut.TabIndex = 28;
+            this.updateBut.Text = "Update";
+            this.updateBut.UseVisualStyleBackColor = true;
+            this.updateBut.Click += new System.EventHandler(this.updateBut_Click);
+            // 
+            // addButton
+            // 
+            this.addButton.Location = new System.Drawing.Point(312, 308);
+            this.addButton.Name = "addButton";
+            this.addButton.Size = new System.Drawing.Size(75, 25);
+            this.addButton.TabIndex = 29;
+            this.addButton.Text = "Add";
+            this.addButton.UseVisualStyleBackColor = true;
+            this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
             // ROIManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(397, 307);
+            this.ClientSize = new System.Drawing.Size(397, 339);
+            this.Controls.Add(this.addButton);
+            this.Controls.Add(this.updateBut);
             this.Controls.Add(this.label9);
-            this.Controls.Add(this.numericUpDown10);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.sBox);
+            this.Controls.Add(this.idBox);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.imageNameLabel);
             this.Controls.Add(this.label7);
-            this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.showTextBox);
+            this.Controls.Add(this.showBoundsBox);
             this.Controls.Add(this.label6);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.textBox);
             this.Controls.Add(this.label5);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.typeBox);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.numericUpDown8);
-            this.Controls.Add(this.numericUpDown9);
+            this.Controls.Add(this.hBox);
+            this.Controls.Add(this.wBox);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.numericUpDown6);
-            this.Controls.Add(this.numericUpDown7);
-            this.Controls.Add(this.numericUpDown3);
-            this.Controls.Add(this.numericUpDown4);
-            this.Controls.Add(this.numericUpDown5);
+            this.Controls.Add(this.yBox);
+            this.Controls.Add(this.xBox);
+            this.Controls.Add(this.tBox);
+            this.Controls.Add(this.cBox);
+            this.Controls.Add(this.zBox);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.numericUpDown2);
-            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.bBox);
+            this.Controls.Add(this.gBox);
             this.Controls.Add(this.rBox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.listView1);
+            this.Controls.Add(this.roiView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ROIManager";
             this.Text = "ROI Manager";
+            this.Activated += new System.EventHandler(this.ROIManager_Activated);
             ((System.ComponentModel.ISupportInitialize)(this.rBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown7)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown8)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown9)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.bBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.cBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.zBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.xBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.hBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.wBox)).EndInit();
             this.contextMenuStrip.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown10)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.sBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -482,35 +539,39 @@
 
         #endregion
 
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView roiView;
         private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown rBox;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.NumericUpDown numericUpDown2;
-        private System.Windows.Forms.NumericUpDown numericUpDown3;
-        private System.Windows.Forms.NumericUpDown numericUpDown4;
-        private System.Windows.Forms.NumericUpDown numericUpDown5;
+        private System.Windows.Forms.NumericUpDown gBox;
+        private System.Windows.Forms.NumericUpDown bBox;
+        private System.Windows.Forms.NumericUpDown tBox;
+        private System.Windows.Forms.NumericUpDown cBox;
+        private System.Windows.Forms.NumericUpDown zBox;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.NumericUpDown numericUpDown6;
-        private System.Windows.Forms.NumericUpDown numericUpDown7;
+        private System.Windows.Forms.NumericUpDown yBox;
+        private System.Windows.Forms.NumericUpDown xBox;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown numericUpDown8;
-        private System.Windows.Forms.NumericUpDown numericUpDown9;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.NumericUpDown hBox;
+        private System.Windows.Forms.NumericUpDown wBox;
+        private System.Windows.Forms.ComboBox typeBox;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.CheckBox showBoundsBox;
+        private System.Windows.Forms.CheckBox showTextBox;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label imageNameLabel;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox idBox;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.NumericUpDown numericUpDown10;
+        private System.Windows.Forms.NumericUpDown sBox;
+        private System.Windows.Forms.ToolStripMenuItem exportToCSVToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportAllToCSVToolStripMenuItem;
+        private System.Windows.Forms.Button updateBut;
+        private System.Windows.Forms.Button addButton;
     }
 }

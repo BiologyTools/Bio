@@ -119,7 +119,7 @@
             this.textPanel.BackColor = System.Drawing.Color.White;
             this.textPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("textPanel.BackgroundImage")));
             this.textPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.textPanel.Location = new System.Drawing.Point(97, 33);
+            this.textPanel.Location = new System.Drawing.Point(115, 60);
             this.textPanel.Name = "textPanel";
             this.textPanel.Size = new System.Drawing.Size(30, 30);
             this.textPanel.TabIndex = 3;
@@ -279,7 +279,7 @@
             this.polyPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("polyPanel.BackgroundImage")));
             this.polyPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.polyPanel.Controls.Add(this.panel11);
-            this.polyPanel.Location = new System.Drawing.Point(133, 33);
+            this.polyPanel.Location = new System.Drawing.Point(0, 90);
             this.polyPanel.Name = "polyPanel";
             this.polyPanel.Size = new System.Drawing.Size(30, 30);
             this.polyPanel.TabIndex = 4;
@@ -320,10 +320,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.ClientSize = new System.Drawing.Size(62, 92);
+            this.ClientSize = new System.Drawing.Size(59, 121);
             this.ContextMenuStrip = this.contextMenuStrip;
-            this.Controls.Add(this.brushPanel);
             this.Controls.Add(this.textPanel);
+            this.Controls.Add(this.brushPanel);
             this.Controls.Add(this.pointPanel);
             this.Controls.Add(this.polyPanel);
             this.Controls.Add(this.linePanel);
@@ -345,6 +345,7 @@
             this.Name = "Tools";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Tools";
+            this.TopMost = true;
             this.bucketPanel.ResumeLayout(false);
             this.rotatePanel.ResumeLayout(false);
             this.movePanel.ResumeLayout(false);

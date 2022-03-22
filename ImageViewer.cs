@@ -9,6 +9,7 @@ namespace BioImage
     public partial class ImageViewer : Form
     {
         Tools tools;
+        ROIManager manager = null;
         private ImageView viewer = null;
         bool useFolderBrowser = false;
 
@@ -25,9 +26,9 @@ namespace BioImage
             //string s = "E:/TESTIMAGES/ROIS.ome.tif";
             //string s = "E:/TESTIMAGES/text.ome.tif";
             //string s = "E:/TESTIMAGES/points5.ome.tif";
-            string s = "E:/TESTIMAGES/texte.ome.tif";
-            SetFolder(s, false, 0);
-
+            //string s = "E:/TESTIMAGES/text.ome.tif";
+            //SetFolder(s, false, 0);
+            manager = new ROIManager();
             //viewer.image.SaveSeries(s, 0);
             if (arg.Length == 0)
                 return;
@@ -379,6 +380,21 @@ namespace BioImage
         private void panel_Click(object sender, EventArgs e)
         {
             ImageView.selectedImage = viewer.image;
+        }
+
+        private void rOIManagerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            manager.Show();
+            
+        }
+
+        private void ImageViewer_Deactivate(object sender, EventArgs e)
+        {
+            //tools.TopMost = false;
+            //manager.TopMost = false;
+            tools.SendToBack();
+            tools.TopMost = false;
+            manager.SendToBack();
         }
     }
 }

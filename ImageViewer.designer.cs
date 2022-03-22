@@ -51,6 +51,7 @@ namespace BioImage
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.rOIManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -133,7 +134,8 @@ namespace BioImage
             this.rOIToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exportCSVToolStripMenuItem,
             this.importCSVToolStripMenuItem,
-            this.exportROIsOfFolderOfImagesToolStripMenuItem});
+            this.exportROIsOfFolderOfImagesToolStripMenuItem,
+            this.rOIManagerToolStripMenuItem});
             this.rOIToolStripMenuItem.Name = "rOIToolStripMenuItem";
             this.rOIToolStripMenuItem.Size = new System.Drawing.Size(38, 20);
             this.rOIToolStripMenuItem.Text = "ROI";
@@ -197,6 +199,13 @@ namespace BioImage
             this.openCSVFileDialog.Filter = "\"CSV Files (*.csv)|*.csv|All files (*.*)|*.*\"";
             this.openCSVFileDialog.Title = "Import ROI from CSV";
             // 
+            // rOIManagerToolStripMenuItem
+            // 
+            this.rOIManagerToolStripMenuItem.Name = "rOIManagerToolStripMenuItem";
+            this.rOIManagerToolStripMenuItem.Size = new System.Drawing.Size(243, 22);
+            this.rOIManagerToolStripMenuItem.Text = "ROI Manager";
+            this.rOIManagerToolStripMenuItem.Click += new System.EventHandler(this.rOIManagerToolStripMenuItem_Click);
+            // 
             // ImageViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -210,6 +219,7 @@ namespace BioImage
             this.MinimumSize = new System.Drawing.Size(400, 90);
             this.Name = "ImageViewer";
             this.Text = "BioImage";
+            this.Deactivate += new System.EventHandler(this.ImageViewer_Deactivate);
             this.SizeChanged += new System.EventHandler(this.ImageViewer_SizeChanged);
             this.Click += new System.EventHandler(this.ImageViewer_Click);
             this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.ImageViewer_PreviewKeyDown);
@@ -243,5 +253,6 @@ namespace BioImage
         private System.Windows.Forms.OpenFileDialog openCSVFileDialog;
         private System.Windows.Forms.ToolStripMenuItem importCSVToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportROIsOfFolderOfImagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rOIManagerToolStripMenuItem;
     }
 }

@@ -205,18 +205,50 @@ namespace BioImage
         {
             if (currentTool == null)
                 return;
-            if (currentTool.type == Tool.Type.line || currentTool.type == Tool.Type.polyline || currentTool.type == Tool.Type.polygon)
+            if (currentTool.type == Tool.Type.point)
             {
                 anno.type = BioImage.Annotation.Type.Point;
-                anno.AddPoint(new BioImage.PointD(e.X,e.Y));
+                anno.AddPoint(new BioImage.PointD(e.X, e.Y));
                 anno.coord = ImageView.Coordinate;
-                if (anno.GetPointCount() == 2)
+                if (anno.GetPointCount() == 2 && currentTool.type == Tool.Type.line)
                 {
                     anno.type = BioImage.Annotation.Type.Line;
                     ImageView.selectedImage.Annotations.Add(anno);
                     anno = new BioImage.Annotation();
                 }
-
+            }
+            if (currentTool.type == Tool.Type.line)
+            {
+                anno.type = BioImage.Annotation.Type.Line;
+                anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                anno.coord = ImageView.Coordinate;
+                if (anno.GetPointCount() == 2 && currentTool.type == Tool.Type.line)
+                {
+                    anno.type = BioImage.Annotation.Type.Line;
+                    ImageView.selectedImage.Annotations.Add(anno);
+                    anno = new BioImage.Annotation();
+                }
+            }
+            else
+            if (currentTool.type == Tool.Type.polygon)
+            {
+                anno.type = BioImage.Annotation.Type.Polygon;
+                anno.AddPoint(new BioImage.PointD(e.X,e.Y));
+                anno.coord = ImageView.Coordinate;
+                if (anno.GetPointCount() == 1)
+                {
+                    ImageView.selectedImage.Annotations.Add(anno);
+                }
+                else
+                {
+                    //If we click on a point 1 we close this polygon
+                    BioImage.RectangleD d = new BioImage.RectangleD(e.X, e.Y, anno.selectBoxSize, anno.selectBoxSize);
+                    if (d.IntersectsWith(anno.Point))
+                    {
+                        anno.closed = true;
+                        anno = new BioImage.Annotation();
+                    }
+                }
             }
             else
             if (currentTool.type == Tool.Type.rect)

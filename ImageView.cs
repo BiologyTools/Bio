@@ -1185,7 +1185,7 @@ namespace BioImage
                             g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
                     }
                     else
-                    if (an.type == BioImage.Annotation.Type.Polygon)
+                    if (an.type == BioImage.Annotation.Type.Polygon && an.closed)
                     {
                         g.DrawPolygon(pen, an.GetPointsF());
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
@@ -1193,6 +1193,20 @@ namespace BioImage
                             g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
                     }
                     else
+                    if (an.type == BioImage.Annotation.Type.Polygon && !an.closed)
+                    {
+                        PointF[] points = an.GetPointsF();
+                        if(points.Length == 1)
+                        {
+                            g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
+                        }
+                        else
+                        g.DrawLines(pen, points);
+                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                        if (bounds)
+                            g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    }
+
                     if (an.type == BioImage.Annotation.Type.Polyline)
                     {
                         g.DrawLines(pen, an.GetPointsF());
@@ -1370,10 +1384,8 @@ namespace BioImage
             PointF p = toImagePoint(e.Location.X, e.Location.Y);
             MouseEventArgs arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
             tools.ToolUp(this, arg);
-
             if (selectedAnnotation == null)
                 return;
-            
             mouseUp = p;
             up = true;
             if (Tools.currentTool.toolType == Tools.Tool.ToolType.annotation)
@@ -1435,6 +1447,13 @@ namespace BioImage
             PointF p = toImagePoint(e.Location.X, e.Location.Y);
             MouseEventArgs arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
             tools.ToolUp(this, arg);
+        }
+
+        private void pictureBox_Click(object sender, EventArgs e)
+        {
+            tools.BringToFront();
+            tools.TopMost = true;
+            
         }
     }
 }

@@ -152,6 +152,7 @@ namespace BioImage
         public int bitsPerPixel;
         private PixelFormat px;
         public bool convertedToLittleEndian = false;
+        public string filename;
 
         public BioImage(int ser, string file)
         {
@@ -644,7 +645,7 @@ namespace BioImage
                     {
                         BoundingBox = value;
                     }
-                    if (Points.Count == 0 && (type == Type.Rectangle || type == Type.Ellipse))
+                    if (Points.Count < 4 && (type == Type.Rectangle || type == Type.Ellipse))
                     {
                         AddPoint(new PointD(value.X, value.Y));
                         AddPoint(new PointD(value.X + value.W, value.Y));
@@ -736,6 +737,7 @@ namespace BioImage
             public string text;
             public double strokeWidth = 1;
             public int shapeIndex = 0;
+            public bool closed = false;
 
             public RectangleD GetSelectBound()
             {
@@ -763,7 +765,6 @@ namespace BioImage
                 strokeColor = System.Drawing.Color.Yellow;
                 font = SystemFonts.DefaultFont;
                 BoundingBox = new RectangleD(0, 0, 1, 1);
-
             }
 
             public void UpdatePoint(PointD p, int i)
@@ -920,10 +921,9 @@ namespace BioImage
                 roi.Points.Add(p1);
                 return roi;
             }
-
             public override string ToString()
             {
-                return "(" + Point.X + "." + Point.Y + ") " + coord.ToString() + " " + type.ToString();
+                return "(" + Point.X + "." + Point.Y + ") " + coord.ToString() + " " + type.ToString() + " " + roiName;
             }
         }
         public class Channel
@@ -1889,7 +1889,7 @@ namespace BioImage
             imageReader.setId(file);
             rGBChannelCount = imageReader.getRGBChannelCount();
             bitsPerPixel = imageReader.getBitsPerPixel();
-
+            filename = file;
             SizeX = imageReader.getSizeX();
             SizeY = imageReader.getSizeY();
             sizeC = imageReader.getSizeC();
