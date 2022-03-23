@@ -94,6 +94,8 @@ namespace BioImage
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
             Open(openFilesDialog.FileNames);
+            viewer.Size = new System.Drawing.Size(viewer.image.SizeX + 100, viewer.image.SizeY + 100);
+            //this.Size = new System.Drawing.Size()
         }
 
         private void openFolderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -128,7 +130,7 @@ namespace BioImage
                 return;
             if (saveFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            viewer.image.SaveSeries(saveFileDialog.FileName,0);
+            viewer.image.SaveSeries(saveFileDialog.FileName,0,false);
         }
 
         private void ImageViewer_SizeChanged(object sender, EventArgs e)
@@ -387,11 +389,13 @@ namespace BioImage
 
         private void ImageViewer_Click(object sender, EventArgs e)
         {
-            ImageView.selectedImage = viewer.image;
+            if (Image != null)
+                ImageView.selectedImage = viewer.image;
         }
 
         private void panel_Click(object sender, EventArgs e)
         {
+            if(Image != null)
             ImageView.selectedImage = viewer.image;
         }
 

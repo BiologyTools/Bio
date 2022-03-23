@@ -234,7 +234,7 @@ namespace BioImage
             cBar.Maximum = image.SizeC - 1;
             if (image.SizeT > 1)
             {
-                timeBar.Maximum = image.imageReader.getSizeT() - 1;
+                timeBar.Maximum = image.reader.getSizeT() - 1;
                 timeEnabled = true;
             }
             else
@@ -1146,6 +1146,7 @@ namespace BioImage
         public void UpdateOverlaySize()
         {
             Point s = GetImageSize();
+            if(s.X > 0 && s.Y > 0)
             image.overlay = new Bitmap(s.X, s.Y, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
         }
         private void pictureBox_Paint(object sender, PaintEventArgs e)

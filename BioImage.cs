@@ -139,7 +139,7 @@ namespace BioImage
         public Hashtable bufferTable;
         public Hashtable fileHashTable;
         public Random _random = new Random();
-        public ImageReader imageReader;
+        public ImageReader reader;
         public loci.formats.ImageWriter imageWriter;
         public loci.formats.meta.IMetadata meta;
         public List<Buf> Buffers = new List<Buf>();
@@ -402,7 +402,7 @@ namespace BioImage
         public Bitmap GetRGBBitmap16(SZCT coord, IntRange rf, IntRange gf, IntRange bf)
         {
             watch.Restart();
-            int ri = imageReader.getIndex(coord.Z, coord.C, coord.T);
+            int ri = reader.getIndex(coord.Z, coord.C, coord.T);
             if (RGBChannelCount == 1)
             {
                 replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri + RChannel.index].GetFiltered(rf, gf, bf));
@@ -424,7 +424,7 @@ namespace BioImage
         public Bitmap GetRGBBitmap16(SZCT coord, IntRange rf)
         {
             watch.Restart();
-            int ri = imageReader.getIndex(coord.Z, coord.C, coord.T);
+            int ri = reader.getIndex(coord.Z, coord.C, coord.T);
             if (RGBChannelCount == 1)
             {
                 replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R,Buffers[ri].GetFiltered(rf));
@@ -444,7 +444,7 @@ namespace BioImage
         public Bitmap GetRGBBitmap8(SZCT coord)
         {
             watch.Restart();
-            int ri = imageReader.getIndex(coord.Z, coord.C, coord.T);
+            int ri = reader.getIndex(coord.Z, coord.C, coord.T);
             if (RGBChannelCount == 1)
             {
                 Bitmap rb = Buffers[ri].GetBitmap();
@@ -939,15 +939,15 @@ namespace BioImage
             public int index;
             public string Fluor = "";
             public int SamplesPerPixel;
-            public System.Drawing.Color color;
-            public int Emission;
-            public int Excitation;
-            public int Exposure;
-            public string LightSource;
-            public double LightSourceIntensity;
-            public int LightSourceWavelength;
-            public string ContrastMethod;
-            public string IlluminationType;
+            public System.Drawing.Color? color;
+            public int Emission = -1;
+            public int Excitation = -1;
+            public int Exposure = -1;
+            public string LightSource = "";
+            public double LightSourceIntensity = -1;
+            public int LightSourceWavelength = -1;
+            public string ContrastMethod = "";
+            public string IlluminationType = "";
             public int bitsPerPixel;
 
             public IntRange range;
@@ -1658,30 +1658,7 @@ namespace BioImage
                 }
             }
         }
-
-        public bool Save(string path)
-        {
-            //Method used to save a range of an image stack defined by start & count.
-            loci.formats.ImageWriter writer = new loci.formats.ImageWriter();
-            writer.setMetadataRetrieve(meta);
-            writer.setId(path);
-            int sc = imageReader.getSeriesCount();
-            for (int series = 0; series < sc; series++)
-            {
-                //reader.setSeries(series);
-                writer.setSeries(series);
-
-                //writer.setWriteSequentially(true);
-                for (int i = 0; i < imageCount; i++)
-                {
-                    Buf b = Buffers[i];
-                    writer.saveBytes(i, b.GetEndianBytes(RGBChannelCount));
-                    Application.DoEvents();
-                }
-            }
-            return true;
-        }
-        public bool SaveSeries(string path, int series)
+        public bool SaveSeries(string path, int series, bool folder)
         {
             // create OME-XML metadata store
             ServiceFactory factory = new ServiceFactory();
@@ -1715,13 +1692,54 @@ namespace BioImage
             omexml.setPixelsPhysicalSizeY(meta.getPixelsPhysicalSizeY(series), series);
             omexml.setPixelsPhysicalSizeZ(meta.getPixelsPhysicalSizeZ(series), series);
 
-
             for (int channel = 0; channel < Channels.Count; channel++)
             {
+                Channel c = Channels[channel];
                 omexml.setChannelID("Channel:" + channel + ":" + series, series, channel);
                 omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(samples)), series, channel);
+                if (c.Name != "")
+                    omexml.setChannelName(c.Name, series, channel);
+                if (c != null)
+                {
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(c.color.Value.R, c.color.Value.G, c.color.Value.B, c.color.Value.A);
+                    omexml.setChannelColor(col, series, channel);
+                }
+                if (c.Emission != -1)
+                {
+                    ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(c.Emission), ome.units.UNITS.NANOMETER);
+                    omexml.setChannelEmissionWavelength(fl, series, channel);
+                }
+                if (c.Excitation != -1)
+                {
+                    ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(c.Excitation), ome.units.UNITS.NANOMETER);
+                    omexml.setChannelEmissionWavelength(fl, series, channel);
+                }
+                if (c.Exposure != -1)
+                {
+                    ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(c.Exposure), ome.units.UNITS.MILLISECOND);
+                    omexml.setChannelEmissionWavelength(fl, series, channel);
+                }
+                if (c.ContrastMethod != "")
+                {
+                    ome.xml.model.enums.ContrastMethod cm = (ome.xml.model.enums.ContrastMethod)Enum.Parse(typeof(ome.xml.model.enums.ContrastMethod), c.ContrastMethod);
+                    omexml.setChannelContrastMethod(cm, series, channel);
+                }
+                if (c.Fluor != "")
+                {
+                    omexml.setChannelFluor(c.Fluor, series, channel);
+                }
+                if (c.IlluminationType != "")
+                {
+                    ome.xml.model.enums.IlluminationType cm = (ome.xml.model.enums.IlluminationType)Enum.Parse(typeof(ome.xml.model.enums.IlluminationType), c.IlluminationType);
+                    omexml.setChannelIlluminationType(cm, series, channel);
+                }
+                if (c.LightSourceIntensity != -1)
+                {
+                    ome.units.quantity.Power fl = new ome.units.quantity.Power(java.lang.Double.valueOf(c.LightSourceIntensity), ome.units.UNITS.VOLT);
+                    omexml.setLightEmittingDiodePower(fl, series, channel);
+                }
             }
-
+            
             int i = 0;
             foreach (Annotation an in Annotations)
             {
@@ -1877,36 +1895,35 @@ namespace BioImage
             writer.setWriteSequentially(true);
             for (int im = 0; im < imageCount; im++)
             {
-                
                 writer.saveBytes(im, Buffers[im].GetEndianBytes(RGBChannelCount));
                 Application.DoEvents();
             }
             writer.close();
             return true;
         }
-        public void OpenSeries(string file, int series)
+        public void OpenSeries(string file, int ser)
         {
             // create OME-XML metadata store
             ServiceFactory factory = new ServiceFactory();
             OMEXMLService service = (OMEXMLService)factory.getInstance(typeof(OMEXMLService));
             meta = service.createOMEXMLMetadata();
             // create format reader
-            imageReader = new ImageReader();
-            imageReader.setMetadataStore(meta);
+            reader = new ImageReader();
+            reader.setMetadataStore(meta);
             // initialize file
-            imageReader.setId(file);
-            rGBChannelCount = imageReader.getRGBChannelCount();
-            bitsPerPixel = imageReader.getBitsPerPixel();
+            reader.setId(file);
+            reader.setSeries(ser);
+            rGBChannelCount = reader.getRGBChannelCount();
+            bitsPerPixel = reader.getBitsPerPixel();
             filename = file;
-            SizeX = imageReader.getSizeX();
-            SizeY = imageReader.getSizeY();
-            sizeC = imageReader.getSizeC();
-            sizeZ = imageReader.getSizeZ();
-            sizeT = imageReader.getSizeT();
-            bool isRGb = imageReader.isRGB();
-            imageCount = imageReader.getImageCount();
-            littleEndian = imageReader.isLittleEndian();
-            seriesCount = imageReader.getSeriesCount();
+            SizeX = reader.getSizeX();
+            SizeY = reader.getSizeY();
+            sizeC = reader.getSizeC();
+            sizeZ = reader.getSizeZ();
+            sizeT = reader.getSizeT();
+            imageCount = reader.getImageCount();
+            littleEndian = reader.isLittleEndian();
+            seriesCount = reader.getSeriesCount();
             imagesPerSeries = imageCount / seriesCount;
             Coords = new int[seriesCount, SizeZ, SizeC, SizeT];
             idString = file;
@@ -1934,7 +1951,7 @@ namespace BioImage
             //Lets get the channels amd initialize them.
             for (int i = 0; i < ccount; i++)
             {
-                Channel ch = new Channel(i, imageReader.getBitsPerPixel());
+                Channel ch = new Channel(i, reader.getBitsPerPixel());
                 try
                 {
                     if (meta.getChannelName(0, i) != null)
@@ -1952,11 +1969,11 @@ namespace BioImage
                     {
                         ome.xml.model.primitives.Color c = meta.getChannelColor(0, i);
                         ch.color = System.Drawing.Color.FromArgb(c.getRed(), c.getGreen(), c.getBlue());
-                        if (ch.color.R == 255 && ch.color.G == 0 && ch.color.B == 0)
+                        if (ch.color.Value.R == 255 && ch.color.Value.G == 0 && ch.color.Value.B == 0)
                             ch.rgb = RGB.R;
-                        if (ch.color.R == 0 && ch.color.G == 255 && ch.color.B == 0)
+                        if (ch.color.Value.R == 0 && ch.color.Value.G == 255 && ch.color.Value.B == 0)
                             ch.rgb = RGB.G;
-                        if (ch.color.R == 0 && ch.color.G == 0 && ch.color.B == 255)
+                        if (ch.color.Value.R == 0 && ch.color.Value.G == 0 && ch.color.Value.B == 255)
                             ch.rgb = RGB.B;
                     }
                     if (meta.getChannelIlluminationType(0, i) != null)
@@ -1971,6 +1988,8 @@ namespace BioImage
                         ch.Excitation = meta.getChannelExcitationWavelength(0, i).value().intValue();
                     if (meta.getChannelLightSourceSettingsAttenuation(0, i) != null)
                         ch.LightSourceIntensity = meta.getChannelLightSourceSettingsAttenuation(0, i).getNumberValue().doubleValue();
+                    if (meta.getLightEmittingDiodePower(0, i) != null)
+                        ch.LightSourceIntensity = meta.getLightEmittingDiodePower(0, i).value().doubleValue();
                 }
                 catch (Exception e)
                 {
@@ -2028,12 +2047,12 @@ namespace BioImage
                                 ome.xml.model.primitives.NonNegativeInteger nz = meta.getPointTheZ(i, sc);
                                 if (nz != null)
                                     co.Z = nz.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPointTheZ(i, sc);
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPointTheC(i, sc);
                                 if (nc != null)
-                                    co.Z = nc.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPointTheZ(i, sc);
+                                    co.C = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPointTheT(i, sc);
                                 if (nt != null)
-                                    co.Z = nt.getNumberValue().intValue();
+                                    co.T = nt.getNumberValue().intValue();
                                 an.coord = co;
                             }
                         }
@@ -2074,12 +2093,12 @@ namespace BioImage
                                 ome.xml.model.primitives.NonNegativeInteger nz = meta.getLineTheZ(i, sc);
                                 if (nz != null)
                                     co.Z = nz.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getLineTheZ(i, sc);
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getLineTheC(i, sc);
                                 if (nc != null)
-                                    co.Z = nc.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getLineTheZ(i, sc);
+                                    co.C = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getLineTheT(i, sc);
                                 if (nt != null)
-                                    co.Z = nt.getNumberValue().intValue();
+                                    co.T = nt.getNumberValue().intValue();
                                 an.coord = co;
                             }
                         }
@@ -2118,12 +2137,12 @@ namespace BioImage
                                 ome.xml.model.primitives.NonNegativeInteger nz = meta.getRectangleTheZ(i, sc);
                                 if (nz != null)
                                     co.Z = nz.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getRectangleTheZ(i, sc);
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getRectangleTheC(i, sc);
                                 if (nc != null)
-                                    co.Z = nc.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getRectangleTheZ(i, sc);
+                                    co.C = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getRectangleTheT(i, sc);
                                 if (nt != null)
-                                    co.Z = nt.getNumberValue().intValue();
+                                    co.T = nt.getNumberValue().intValue();
                                 an.coord = co;
                             }
                         }
@@ -2168,12 +2187,12 @@ namespace BioImage
                                 ome.xml.model.primitives.NonNegativeInteger nz = meta.getEllipseTheZ(i, sc);
                                 if (nz != null)
                                     co.Z = nz.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getEllipseTheZ(i, sc);
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getEllipseTheC(i, sc);
                                 if (nc != null)
-                                    co.Z = nc.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getEllipseTheZ(i, sc);
+                                    co.C = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getEllipseTheT(i, sc);
                                 if (nt != null)
-                                    co.Z = nt.getNumberValue().intValue();
+                                    co.T = nt.getNumberValue().intValue();
                                 an.coord = co;
                             }
                         }
@@ -2215,12 +2234,12 @@ namespace BioImage
                                 ome.xml.model.primitives.NonNegativeInteger nz = meta.getPolygonTheZ(i, sc);
                                 if (nz != null)
                                     co.Z = nz.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPolygonTheZ(i, sc);
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPolygonTheC(i, sc);
                                 if (nc != null)
-                                    co.Z = nc.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPolygonTheZ(i, sc);
+                                    co.C = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPolygonTheT(i, sc);
                                 if (nt != null)
-                                    co.Z = nt.getNumberValue().intValue();
+                                    co.T = nt.getNumberValue().intValue();
                                 an.coord = co;
                             }
                         }
@@ -2256,12 +2275,12 @@ namespace BioImage
                                 ome.xml.model.primitives.NonNegativeInteger nz = meta.getPolylineTheZ(i, sc);
                                 if (nz != null)
                                     co.Z = nz.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPolylineTheZ(i, sc);
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPolylineTheC(i, sc);
                                 if (nc != null)
-                                    co.Z = nc.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPolylineTheZ(i, sc);
+                                    co.C = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPolylineTheT(i, sc);
                                 if (nt != null)
-                                    co.Z = nt.getNumberValue().intValue();
+                                    co.T = nt.getNumberValue().intValue();
                                 an.coord = co;
                             }
                         }
@@ -2297,12 +2316,12 @@ namespace BioImage
                                 ome.xml.model.primitives.NonNegativeInteger nz = meta.getLabelTheZ(i, sc);
                                 if (nz != null)
                                     co.Z = nz.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getLabelTheZ(i, sc);
+                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getLabelTheC(i, sc);
                                 if (nc != null)
-                                    co.Z = nc.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getLabelTheZ(i, sc);
+                                    co.C = nc.getNumberValue().intValue();
+                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getLabelTheT(i, sc);
                                 if (nt != null)
-                                    co.Z = nt.getNumberValue().intValue();
+                                    co.T = nt.getNumberValue().intValue();
                                 an.coord = co;
                             }
                         }
@@ -2333,72 +2352,82 @@ namespace BioImage
 
             fileHashTable = new Hashtable();
             fileHashTable.Add(file, file.GetHashCode());
-            bool gr = imageReader.isGroupFiles();
-            for (int ser= 0; ser < seriesCount; ser++)
+
+            List<string> serFiles = new List<string>();
+            serFiles.AddRange(reader.getSeriesUsedFiles());
+            //List<BufferInfo> BufferInfos = new List<BufferInfo>(); 
+            //List<string> Files = new List<string>();
+            for (int i = 0; i < imagesPerSeries; i++)
             {
-                imageReader.setSeries(ser);
+                byte[] bytes = reader.openBytes(i);
+                int[] ints = reader.getZCTCoords(i);
+                int z = ints[0];
+                int channel = ints[1];
+                int time = ints[2];
+                int lenbuf = bytes.Length;
+                Coords[ser, z, channel, time] = i;
+                //Here we generate an id for the buffer which we wish to create
+                BufferInfo fi = new BufferInfo(file, lenbuf, ser, SizeX, SizeY, stride, RGBChannelCount, bitsPerPixel, px, time, channel, z, i, littleEndian, convertedToLittleEndian);
+                Buf buf = new Buf(fi, bytes);
+                Buffers.Add(buf);
+                bufferTable.Add(fi.HashID, buf);
+                Table.AddBufferByHash(fi.HashID, buf);
+            }
+            double stx = 0;
+            double sty = 0;
+            double stz = 0;
+            double six = 0;
+            double siy = 0;
+            double siz = 0;
 
-                List<string> serFiles = new List<string>();
-                serFiles.AddRange(imageReader.getSeriesUsedFiles());
-                //List<BufferInfo> BufferInfos = new List<BufferInfo>(); 
-                //List<string> Files = new List<string>();
-                for (int i = 0; i < imagesPerSeries; i++)
-                {
-                    byte[] bytes = imageReader.openBytes(i);
-                    int[] ints = imageReader.getZCTCoords(i);
-                    int z = ints[0];
-                    int channel = ints[1];
-                    int time = ints[2];
-                    int lenbuf = bytes.Length;
-                    Coords[ser, z, channel, time] = i;
-                    //Here we generate an id for the buffer which we wish to create
-                    BufferInfo fi = new BufferInfo(file, lenbuf, ser, SizeX, SizeY, stride, RGBChannelCount, bitsPerPixel, px, time, channel, z, i, littleEndian, convertedToLittleEndian);
-                    Buf buf = new Buf(fi, bytes);
-                    Buffers.Add(buf);
-                    bufferTable.Add(fi.HashID, buf);
-                    Table.AddBufferByHash(fi.HashID, buf);
-                }
-                double stx = 0;
-                double sty = 0;
-                double stz = 0;
-                double six = 0;
-                double siy = 0;
-                double siz = 0;
+            try
+            {
 
-                try
-                {
+                if (meta.getPixelsPhysicalSizeX(ser) != null)
+                    six = meta.getPixelsPhysicalSizeX(ser).value().doubleValue();
+                if (meta.getPixelsPhysicalSizeY(ser) != null)
+                    siy = meta.getPixelsPhysicalSizeY(ser).value().doubleValue();
+                if (meta.getPixelsPhysicalSizeZ(ser) != null)
+                    siz = meta.getPixelsPhysicalSizeZ(ser).value().doubleValue();
 
-                    if (meta.getPixelsPhysicalSizeX(ser) != null)
-                        six = meta.getPixelsPhysicalSizeX(ser).value().doubleValue();
-                    if (meta.getPixelsPhysicalSizeY(ser) != null)
-                        siy = meta.getPixelsPhysicalSizeY(ser).value().doubleValue();
-                    if (meta.getPixelsPhysicalSizeZ(ser) != null)
-                        siz = meta.getPixelsPhysicalSizeZ(ser).value().doubleValue();
-
-                    //Calling these when they are not defined causes an error so we use the try catch block.
-                    if (meta.getStageLabelX(ser) != null)
-                        stx = meta.getStageLabelX(ser).value().doubleValue();
-                    if (meta.getStageLabelY(ser) != null)
-                        sty = meta.getStageLabelY(ser).value().doubleValue();
-                    if (meta.getStageLabelZ(ser) != null)
-                        stz = meta.getStageLabelZ(ser).value().doubleValue();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-                try
-                {
-                    Volumes.Add(new VolumeD(new Point3D(stx, sty, stz), new Point3D(six * SizeX, siy * SizeY, siz * SizeZ)));
-                }
-                catch (Exception)
-                {
-                    //Volume is used only for stage coordinates if error iss thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
-                }
-                
+                //Calling these when they are not defined causes an error so we use the try catch block.
+                if (meta.getStageLabelX(ser) != null)
+                    stx = meta.getStageLabelX(ser).value().doubleValue();
+                if (meta.getStageLabelY(ser) != null)
+                    sty = meta.getStageLabelY(ser).value().doubleValue();
+                if (meta.getStageLabelZ(ser) != null)
+                    stz = meta.getStageLabelZ(ser).value().doubleValue();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            try
+            {
+                Volumes.Add(new VolumeD(new Point3D(stx, sty, stz), new Point3D(six * SizeX, siy * SizeY, siz * SizeZ)));
+            }
+            catch (Exception)
+            {
+                //Volume is used only for stage coordinates if error iss thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
             }
             Table.AddBioImageByID(idString, this);
 
+        }
+
+        public int GetSeriesCount(string file)
+        {
+            // create OME-XML metadata store
+            ServiceFactory factory = new ServiceFactory();
+            OMEXMLService service = (OMEXMLService)factory.getInstance(typeof(OMEXMLService));
+            loci.formats.ome.OMEXMLMetadata meta = service.createOMEXMLMetadata();
+            // create format reader
+            ImageReader imageReader = new ImageReader();
+            imageReader.setMetadataStore(meta);
+            // initialize file
+            imageReader.setId(file);
+            int c = imageReader.getSeriesCount();
+            imageReader.close();
+            return c;
         }
 
         public static List<Annotation> OpenROIs(string file)
@@ -2815,14 +2844,14 @@ namespace BioImage
                 imagesPerSeries = ims.Count;
                 Buffers = new List<Buf>();
 
-                imageReader.setId(file);
+                reader.setId(file);
 
                 sizeZ = 0;
                 sizeC = 0;
                 sizeT = 0;
 
-                SizeX = imageReader.getSizeX();
-                SizeY = imageReader.getSizeY();
+                SizeX = reader.getSizeX();
+                SizeY = reader.getSizeY();
 
                 for (int i = 0; i < ims.Count; i++)
                 {
@@ -2884,7 +2913,7 @@ namespace BioImage
             {
                 for (int z = 0; z < SizeZ; z++)
                 {
-                    int i = imageReader.getIndex(z, c1.Index, time);
+                    int i = reader.getIndex(z, c1.Index, time);
                     autoBytes = Buffers[i].bytes;
                     int index, index2, x, y;
                     if (!littleEndian)

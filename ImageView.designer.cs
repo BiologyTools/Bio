@@ -373,6 +373,7 @@ namespace BioImage
             this.pictureBox.ContextMenuStrip = this.contextMenuStrip;
             this.pictureBox.Image = null;
             this.pictureBox.Location = new System.Drawing.Point(0, 25);
+            this.pictureBox.MinimumSize = new System.Drawing.Size(50, 50);
             this.pictureBox.Name = "pictureBox";
             this.pictureBox.Size = new System.Drawing.Size(425, 269);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -625,6 +626,7 @@ namespace BioImage
             this.Controls.Add(this.statusPanel);
             this.Controls.Add(this.trackBarPanel);
             this.Controls.Add(this.pictureBox);
+            this.MinimumSize = new System.Drawing.Size(100, 100);
             this.Name = "ImageView";
             this.Size = new System.Drawing.Size(425, 368);
             this.SizeChanged += new System.EventHandler(this.ImageView_SizeChanged);
