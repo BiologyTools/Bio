@@ -29,6 +29,7 @@ namespace BioImage
             InitializeComponent();
             tools = new Tools();
             //string s = "E:/TESTIMAGES/text.ome.tif";
+            //SetFile(s, 0, false);
             //SetFolder(s, false, 0);
             manager = new ROIManager();
             if (arg.Length == 0)
@@ -425,9 +426,9 @@ namespace BioImage
             if (viewer.image == null)
                 return;
             ChannelsTool ch = new ChannelsTool(viewer.image.Channels);
-            if(ch.DialogResult == DialogResult.OK)
+            ch.ShowDialog();
+            if (ch.ShowDialog() == DialogResult.OK)
                 viewer.image.Channels = ch.Channels;
-
         }
     }
 }

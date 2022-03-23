@@ -1893,6 +1893,9 @@ namespace BioImage
             writer.setId(path);
             writer.setSeries(series);
             writer.setWriteSequentially(true);
+            wr = writer;
+            imCount = imageCount;
+
             for (int im = 0; im < imageCount; im++)
             {
                 writer.saveBytes(im, Buffers[im].GetEndianBytes(RGBChannelCount));
@@ -1900,6 +1903,18 @@ namespace BioImage
             }
             writer.close();
             return true;
+        }
+        private static ImageWriter wr;
+        private static int imCount;
+        private static List<Buf> bufs;
+        private static int rgbChans;
+        public static void WriteBytes()
+        {
+            for (int im = 0; im < imCount; im++)
+            {
+                wr.saveBytes(im, bufs[im].GetEndianBytes(rgbChans));
+                Application.DoEvents();
+            }
         }
         public void OpenSeries(string file, int ser)
         {
@@ -2038,12 +2053,6 @@ namespace BioImage
                         an.AddPoint(new PointD(dx, dy));
                         if (imageCount > 1)
                         {
-                            if (sc > 0)
-                            {
-                                an.coord = co;
-                            }
-                            else
-                            {
                                 ome.xml.model.primitives.NonNegativeInteger nz = meta.getPointTheZ(i, sc);
                                 if (nz != null)
                                     co.Z = nz.getNumberValue().intValue();
@@ -2054,7 +2063,7 @@ namespace BioImage
                                 if (nt != null)
                                     co.T = nt.getNumberValue().intValue();
                                 an.coord = co;
-                            }
+                            
                         }
                         
                         an.text = meta.getPointText(i, sc);
@@ -2112,7 +2121,7 @@ namespace BioImage
                         ome.units.quantity.Length fw = meta.getLineStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
-                        ome.xml.model.primitives.Color colf = meta.getLineStrokeColor(i, sc);
+                        ome.xml.model.primitives.Color colf = meta.getLineFillColor(i, sc);
                         if (colf != null)
                             an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                     }
@@ -2156,7 +2165,7 @@ namespace BioImage
                         ome.units.quantity.Length fw = meta.getRectangleStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
-                        ome.xml.model.primitives.Color colf = meta.getRectangleStrokeColor(i, sc);
+                        ome.xml.model.primitives.Color colf = meta.getRectangleFillColor(i, sc);
                         if (colf != null)
                             an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                         ome.xml.model.enums.FillRule fr = meta.getRectangleFillRule(i, sc);
@@ -2206,7 +2215,7 @@ namespace BioImage
                         ome.units.quantity.Length fw = meta.getEllipseStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
-                        ome.xml.model.primitives.Color colf = meta.getEllipseStrokeColor(i, sc);
+                        ome.xml.model.primitives.Color colf = meta.getEllipseFillColor(i, sc);
                         if (colf != null)
                             an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                     }
@@ -2253,7 +2262,7 @@ namespace BioImage
                         ome.units.quantity.Length fw = meta.getPolygonStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
-                        ome.xml.model.primitives.Color colf = meta.getPolygonStrokeColor(i, sc);
+                        ome.xml.model.primitives.Color colf = meta.getPolygonFillColor(i, sc);
                         if (colf != null)
                             an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                     }
@@ -2294,7 +2303,7 @@ namespace BioImage
                         ome.units.quantity.Length fw = meta.getPolylineStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
-                        ome.xml.model.primitives.Color colf = meta.getPolylineStrokeColor(i, sc);
+                        ome.xml.model.primitives.Color colf = meta.getPolylineFillColor(i, sc);
                         if (colf != null)
                             an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                     }
@@ -2334,7 +2343,7 @@ namespace BioImage
                         ome.units.quantity.Length fw = meta.getLabelStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
-                        ome.xml.model.primitives.Color colf = meta.getLabelStrokeColor(i, sc);
+                        ome.xml.model.primitives.Color colf = meta.getLabelFillColor(i, sc);
                         if (colf != null)
                             an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                     }

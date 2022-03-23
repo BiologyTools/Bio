@@ -41,6 +41,7 @@ namespace BioImage
             this.importCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportROIsOfFolderOfImagesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rOIManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.channelsToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -48,7 +49,6 @@ namespace BioImage
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.channelsToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -76,14 +76,14 @@ namespace BioImage
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open Files";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -133,6 +133,13 @@ namespace BioImage
             this.rOIManagerToolStripMenuItem.Text = "ROI Manager";
             this.rOIManagerToolStripMenuItem.Click += new System.EventHandler(this.rOIManagerToolStripMenuItem_Click);
             // 
+            // channelsToolToolStripMenuItem
+            // 
+            this.channelsToolToolStripMenuItem.Name = "channelsToolToolStripMenuItem";
+            this.channelsToolToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
+            this.channelsToolToolStripMenuItem.Text = "Channels";
+            this.channelsToolToolStripMenuItem.Click += new System.EventHandler(this.channelsToolToolStripMenuItem_Click);
+            // 
             // imageMenuStrip
             // 
             this.imageMenuStrip.Name = "contextMenuStrip1";
@@ -156,7 +163,7 @@ namespace BioImage
             this.panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel.Location = new System.Drawing.Point(0, 24);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(569, 437);
+            this.panel.Size = new System.Drawing.Size(569, 385);
             this.panel.TabIndex = 1;
             this.panel.Click += new System.EventHandler(this.panel_Click);
             // 
@@ -172,19 +179,12 @@ namespace BioImage
             this.openCSVFileDialog.Filter = "\"CSV Files (*.csv)|*.csv|All files (*.*)|*.*\"";
             this.openCSVFileDialog.Title = "Import ROI from CSV";
             // 
-            // channelsToolToolStripMenuItem
-            // 
-            this.channelsToolToolStripMenuItem.Name = "channelsToolToolStripMenuItem";
-            this.channelsToolToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
-            this.channelsToolToolStripMenuItem.Text = "Channels";
-            this.channelsToolToolStripMenuItem.Click += new System.EventHandler(this.channelsToolToolStripMenuItem_Click);
-            // 
             // ImageViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(77)))), ((int)(((byte)(98)))));
-            this.ClientSize = new System.Drawing.Size(569, 461);
+            this.ClientSize = new System.Drawing.Size(569, 409);
             this.Controls.Add(this.panel);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

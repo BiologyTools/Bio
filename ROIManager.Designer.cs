@@ -54,16 +54,22 @@
             this.showTextBox = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAllToCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label7 = new System.Windows.Forms.Label();
             this.imageNameLabel = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.idBox = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.sBox = new System.Windows.Forms.NumericUpDown();
-            this.exportToCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportAllToCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateBut = new System.Windows.Forms.Button();
             this.addButton = new System.Windows.Forms.Button();
+            this.pointYBox = new System.Windows.Forms.NumericUpDown();
+            this.pointXBox = new System.Windows.Forms.NumericUpDown();
+            this.pointIndexBox = new System.Windows.Forms.NumericUpDown();
+            this.label10 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.rBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bBox)).BeginInit();
@@ -76,6 +82,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.wBox)).BeginInit();
             this.contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointYBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointXBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointIndexBox)).BeginInit();
             this.SuspendLayout();
             // 
             // roiView
@@ -89,7 +98,7 @@
             this.roiView.Location = new System.Drawing.Point(-1, 0);
             this.roiView.MultiSelect = false;
             this.roiView.Name = "roiView";
-            this.roiView.Size = new System.Drawing.Size(221, 338);
+            this.roiView.Size = new System.Drawing.Size(221, 372);
             this.roiView.TabIndex = 0;
             this.roiView.UseCompatibleStateImageBehavior = false;
             this.roiView.View = System.Windows.Forms.View.List;
@@ -346,24 +355,28 @@
             // showBoundsBox
             // 
             this.showBoundsBox.AutoSize = true;
+            this.showBoundsBox.Checked = true;
+            this.showBoundsBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showBoundsBox.ForeColor = System.Drawing.Color.White;
-            this.showBoundsBox.Location = new System.Drawing.Point(229, 261);
+            this.showBoundsBox.Location = new System.Drawing.Point(229, 295);
             this.showBoundsBox.Name = "showBoundsBox";
             this.showBoundsBox.Size = new System.Drawing.Size(92, 17);
             this.showBoundsBox.TabIndex = 19;
             this.showBoundsBox.Text = "Show Bounds";
             this.showBoundsBox.UseVisualStyleBackColor = true;
+            this.showBoundsBox.CheckedChanged += new System.EventHandler(this.showBoundsBox_CheckedChanged);
             // 
             // showTextBox
             // 
             this.showTextBox.AutoSize = true;
             this.showTextBox.ForeColor = System.Drawing.Color.White;
-            this.showTextBox.Location = new System.Drawing.Point(318, 261);
+            this.showTextBox.Location = new System.Drawing.Point(318, 295);
             this.showTextBox.Name = "showTextBox";
             this.showTextBox.Size = new System.Drawing.Size(77, 17);
             this.showTextBox.TabIndex = 20;
             this.showTextBox.Text = "Show Text";
             this.showTextBox.UseVisualStyleBackColor = true;
+            this.showTextBox.CheckedChanged += new System.EventHandler(this.showTextBox_CheckedChanged);
             // 
             // contextMenuStrip
             // 
@@ -379,6 +392,18 @@
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
+            // 
+            // exportToCSVToolStripMenuItem
+            // 
+            this.exportToCSVToolStripMenuItem.Name = "exportToCSVToolStripMenuItem";
+            this.exportToCSVToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.exportToCSVToolStripMenuItem.Text = "Export to CSV";
+            // 
+            // exportAllToCSVToolStripMenuItem
+            // 
+            this.exportAllToCSVToolStripMenuItem.Name = "exportAllToCSVToolStripMenuItem";
+            this.exportAllToCSVToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.exportAllToCSVToolStripMenuItem.Text = "Export All to CSV";
             // 
             // label7
             // 
@@ -396,7 +421,7 @@
             this.imageNameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.imageNameLabel.AutoSize = true;
             this.imageNameLabel.ForeColor = System.Drawing.Color.White;
-            this.imageNameLabel.Location = new System.Drawing.Point(238, 27);
+            this.imageNameLabel.Location = new System.Drawing.Point(233, 27);
             this.imageNameLabel.Name = "imageNameLabel";
             this.imageNameLabel.Size = new System.Drawing.Size(0, 13);
             this.imageNameLabel.TabIndex = 23;
@@ -427,7 +452,7 @@
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
             this.label9.ForeColor = System.Drawing.Color.White;
-            this.label9.Location = new System.Drawing.Point(293, 286);
+            this.label9.Location = new System.Drawing.Point(312, 315);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(39, 13);
             this.label9.TabIndex = 27;
@@ -438,32 +463,20 @@
             this.sBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.sBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.sBox.ForeColor = System.Drawing.Color.White;
-            this.sBox.Location = new System.Drawing.Point(338, 284);
+            this.sBox.Location = new System.Drawing.Point(352, 313);
             this.sBox.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.sBox.Name = "sBox";
-            this.sBox.Size = new System.Drawing.Size(48, 20);
+            this.sBox.Size = new System.Drawing.Size(35, 20);
             this.sBox.TabIndex = 26;
             this.sBox.ValueChanged += new System.EventHandler(this.sBox_ValueChanged);
             // 
-            // exportToCSVToolStripMenuItem
-            // 
-            this.exportToCSVToolStripMenuItem.Name = "exportToCSVToolStripMenuItem";
-            this.exportToCSVToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.exportToCSVToolStripMenuItem.Text = "Export to CSV";
-            // 
-            // exportAllToCSVToolStripMenuItem
-            // 
-            this.exportAllToCSVToolStripMenuItem.Name = "exportAllToCSVToolStripMenuItem";
-            this.exportAllToCSVToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.exportAllToCSVToolStripMenuItem.Text = "Export All to CSV";
-            // 
             // updateBut
             // 
-            this.updateBut.Location = new System.Drawing.Point(229, 308);
+            this.updateBut.Location = new System.Drawing.Point(229, 342);
             this.updateBut.Name = "updateBut";
             this.updateBut.Size = new System.Drawing.Size(75, 25);
             this.updateBut.TabIndex = 28;
@@ -473,7 +486,7 @@
             // 
             // addButton
             // 
-            this.addButton.Location = new System.Drawing.Point(312, 308);
+            this.addButton.Location = new System.Drawing.Point(312, 342);
             this.addButton.Name = "addButton";
             this.addButton.Size = new System.Drawing.Size(75, 25);
             this.addButton.TabIndex = 29;
@@ -481,12 +494,98 @@
             this.addButton.UseVisualStyleBackColor = true;
             this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
+            // pointYBox
+            // 
+            this.pointYBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pointYBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.pointYBox.ForeColor = System.Drawing.Color.White;
+            this.pointYBox.Location = new System.Drawing.Point(337, 268);
+            this.pointYBox.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.pointYBox.Name = "pointYBox";
+            this.pointYBox.Size = new System.Drawing.Size(48, 20);
+            this.pointYBox.TabIndex = 32;
+            this.pointYBox.ValueChanged += new System.EventHandler(this.pointYBox_ValueChanged);
+            // 
+            // pointXBox
+            // 
+            this.pointXBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pointXBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.pointXBox.ForeColor = System.Drawing.Color.White;
+            this.pointXBox.Location = new System.Drawing.Point(283, 268);
+            this.pointXBox.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.pointXBox.Name = "pointXBox";
+            this.pointXBox.Size = new System.Drawing.Size(48, 20);
+            this.pointXBox.TabIndex = 31;
+            this.pointXBox.ValueChanged += new System.EventHandler(this.pointXBox_ValueChanged);
+            // 
+            // pointIndexBox
+            // 
+            this.pointIndexBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pointIndexBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.pointIndexBox.ForeColor = System.Drawing.Color.White;
+            this.pointIndexBox.Location = new System.Drawing.Point(230, 268);
+            this.pointIndexBox.Maximum = new decimal(new int[] {
+            100000,
+            0,
+            0,
+            0});
+            this.pointIndexBox.Name = "pointIndexBox";
+            this.pointIndexBox.Size = new System.Drawing.Size(48, 20);
+            this.pointIndexBox.TabIndex = 33;
+            // 
+            // label10
+            // 
+            this.label10.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label10.AutoSize = true;
+            this.label10.ForeColor = System.Drawing.Color.White;
+            this.label10.Location = new System.Drawing.Point(230, 252);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(31, 13);
+            this.label10.TabIndex = 34;
+            this.label10.Text = "Point";
+            // 
+            // label11
+            // 
+            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label11.AutoSize = true;
+            this.label11.ForeColor = System.Drawing.Color.White;
+            this.label11.Location = new System.Drawing.Point(284, 252);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(14, 13);
+            this.label11.TabIndex = 35;
+            this.label11.Text = "X";
+            // 
+            // label12
+            // 
+            this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label12.AutoSize = true;
+            this.label12.ForeColor = System.Drawing.Color.White;
+            this.label12.Location = new System.Drawing.Point(337, 252);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(14, 13);
+            this.label12.TabIndex = 36;
+            this.label12.Text = "Y";
+            // 
             // ROIManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(397, 339);
+            this.ClientSize = new System.Drawing.Size(397, 373);
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.label11);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.pointIndexBox);
+            this.Controls.Add(this.pointYBox);
+            this.Controls.Add(this.pointXBox);
             this.Controls.Add(this.addButton);
             this.Controls.Add(this.updateBut);
             this.Controls.Add(this.label9);
@@ -532,6 +631,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.wBox)).EndInit();
             this.contextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.sBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointYBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointXBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointIndexBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -573,5 +675,11 @@
         private System.Windows.Forms.ToolStripMenuItem exportAllToCSVToolStripMenuItem;
         private System.Windows.Forms.Button updateBut;
         private System.Windows.Forms.Button addButton;
+        private System.Windows.Forms.NumericUpDown pointYBox;
+        private System.Windows.Forms.NumericUpDown pointXBox;
+        private System.Windows.Forms.NumericUpDown pointIndexBox;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label12;
     }
 }
