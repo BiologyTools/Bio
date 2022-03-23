@@ -62,14 +62,13 @@
             this.idBox = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.sBox = new System.Windows.Forms.NumericUpDown();
-            this.updateBut = new System.Windows.Forms.Button();
-            this.addButton = new System.Windows.Forms.Button();
             this.pointYBox = new System.Windows.Forms.NumericUpDown();
             this.pointXBox = new System.Windows.Forms.NumericUpDown();
             this.pointIndexBox = new System.Windows.Forms.NumericUpDown();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
+            this.duplicateBut = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.rBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bBox)).BeginInit();
@@ -98,7 +97,7 @@
             this.roiView.Location = new System.Drawing.Point(-1, 0);
             this.roiView.MultiSelect = false;
             this.roiView.Name = "roiView";
-            this.roiView.Size = new System.Drawing.Size(221, 372);
+            this.roiView.Size = new System.Drawing.Size(221, 348);
             this.roiView.TabIndex = 0;
             this.roiView.UseCompatibleStateImageBehavior = false;
             this.roiView.View = System.Windows.Forms.View.List;
@@ -452,7 +451,7 @@
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label9.AutoSize = true;
             this.label9.ForeColor = System.Drawing.Color.White;
-            this.label9.Location = new System.Drawing.Point(312, 315);
+            this.label9.Location = new System.Drawing.Point(310, 323);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(39, 13);
             this.label9.TabIndex = 27;
@@ -463,7 +462,7 @@
             this.sBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.sBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.sBox.ForeColor = System.Drawing.Color.White;
-            this.sBox.Location = new System.Drawing.Point(352, 313);
+            this.sBox.Location = new System.Drawing.Point(350, 321);
             this.sBox.Maximum = new decimal(new int[] {
             255,
             0,
@@ -473,26 +472,6 @@
             this.sBox.Size = new System.Drawing.Size(35, 20);
             this.sBox.TabIndex = 26;
             this.sBox.ValueChanged += new System.EventHandler(this.sBox_ValueChanged);
-            // 
-            // updateBut
-            // 
-            this.updateBut.Location = new System.Drawing.Point(229, 342);
-            this.updateBut.Name = "updateBut";
-            this.updateBut.Size = new System.Drawing.Size(75, 25);
-            this.updateBut.TabIndex = 28;
-            this.updateBut.Text = "Update";
-            this.updateBut.UseVisualStyleBackColor = true;
-            this.updateBut.Click += new System.EventHandler(this.updateBut_Click);
-            // 
-            // addButton
-            // 
-            this.addButton.Location = new System.Drawing.Point(312, 342);
-            this.addButton.Name = "addButton";
-            this.addButton.Size = new System.Drawing.Size(75, 25);
-            this.addButton.TabIndex = 29;
-            this.addButton.Text = "Add";
-            this.addButton.UseVisualStyleBackColor = true;
-            this.addButton.Click += new System.EventHandler(this.addButton_Click);
             // 
             // pointYBox
             // 
@@ -574,20 +553,29 @@
             this.label12.TabIndex = 36;
             this.label12.Text = "Y";
             // 
+            // duplicateBut
+            // 
+            this.duplicateBut.Location = new System.Drawing.Point(228, 317);
+            this.duplicateBut.Name = "duplicateBut";
+            this.duplicateBut.Size = new System.Drawing.Size(75, 25);
+            this.duplicateBut.TabIndex = 29;
+            this.duplicateBut.Text = "Duplicate";
+            this.duplicateBut.UseVisualStyleBackColor = true;
+            this.duplicateBut.Click += new System.EventHandler(this.addButton_Click);
+            // 
             // ROIManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(397, 373);
+            this.ClientSize = new System.Drawing.Size(397, 349);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.pointIndexBox);
             this.Controls.Add(this.pointYBox);
             this.Controls.Add(this.pointXBox);
-            this.Controls.Add(this.addButton);
-            this.Controls.Add(this.updateBut);
+            this.Controls.Add(this.duplicateBut);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.sBox);
             this.Controls.Add(this.idBox);
@@ -673,13 +661,12 @@
         private System.Windows.Forms.NumericUpDown sBox;
         private System.Windows.Forms.ToolStripMenuItem exportToCSVToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportAllToCSVToolStripMenuItem;
-        private System.Windows.Forms.Button updateBut;
-        private System.Windows.Forms.Button addButton;
         private System.Windows.Forms.NumericUpDown pointYBox;
         private System.Windows.Forms.NumericUpDown pointXBox;
         private System.Windows.Forms.NumericUpDown pointIndexBox;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Button duplicateBut;
     }
 }

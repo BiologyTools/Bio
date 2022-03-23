@@ -263,5 +263,11 @@ namespace BioImage
             anno.UpdatePoint(new BioImage.PointD((double)pointXBox.Value, (double)pointYBox.Value), (int)pointIndexBox.Value);
             UpdateView();
         }
+
+        public bool autoUpdate = true;
+        private void autoUpdateBut_CheckedChanged(object sender, EventArgs e)
+        {
+            autoUpdate = autoUpdateBut.Checked;
+        }
     }
 }
