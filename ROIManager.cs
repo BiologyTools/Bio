@@ -180,11 +180,15 @@ namespace BioImage
             {
                 xBox.Enabled = false;
                 yBox.Enabled = false;
+                wBox.Enabled = false;
+                hBox.Enabled = false;
             }
             else
             {
                 xBox.Enabled = true;
                 yBox.Enabled = true;
+                wBox.Enabled = true;
+                hBox.Enabled = true;
             }
             if(anno.type == BioImage.Annotation.Type.Rectangle || anno.type == BioImage.Annotation.Type.Ellipse)
             {
@@ -212,6 +216,7 @@ namespace BioImage
             idBox.Text = anno.id;
             textBox.Text = anno.text;
             typeBox.SelectedIndex = (int)anno.type;
+            UpdatePointBox();
         }
 
         private void updateBut_Click(object sender, EventArgs e)
@@ -227,6 +232,8 @@ namespace BioImage
         private void addButton_Click(object sender, EventArgs e)
         {
             if (ImageView.selectedImage == null)
+                return;
+            if (anno == null)
                 return;
             ImageView.selectedImage.Annotations.Add(anno);
             UpdateView();
@@ -265,5 +272,18 @@ namespace BioImage
         }
 
         public bool autoUpdate = true;
+
+        public void UpdatePointBox()
+        {
+            if (anno == null)
+                return;
+            BioImage.PointD d = anno.GetPoint((int)pointIndexBox.Value);
+            pointXBox.Value = (int)d.X;
+            pointYBox.Value = (int)d.Y;
+        }
+        private void pointIndexBox_ValueChanged(object sender, EventArgs e)
+        {
+            UpdatePointBox();
+        }
     }
 }

@@ -519,6 +519,7 @@
             this.pointIndexBox.Name = "pointIndexBox";
             this.pointIndexBox.Size = new System.Drawing.Size(48, 20);
             this.pointIndexBox.TabIndex = 33;
+            this.pointIndexBox.ValueChanged += new System.EventHandler(this.pointIndexBox_ValueChanged);
             // 
             // label10
             // 
