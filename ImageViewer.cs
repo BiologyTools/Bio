@@ -78,10 +78,9 @@ namespace BioImage
                 if(viewer != null)
                 {
                     string[] sts = new string[1];
-                    sts[0] = "";
+                    sts[0] = file;
                     ImageViewer viewer = new ImageViewer(sts);
                     viewer.Show();
-                    viewer.SetFile(file, 0, false);
                 }
                 else
                     SetFile(openFilesDialog.FileName,0, false);
