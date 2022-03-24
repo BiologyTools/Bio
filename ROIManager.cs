@@ -213,6 +213,7 @@ namespace BioImage
             rBox.Value = anno.strokeColor.R;
             gBox.Value = anno.strokeColor.G;
             bBox.Value = anno.strokeColor.B;
+            strokeWBox.Value = (decimal)anno.strokeWidth;
             idBox.Text = anno.id;
             textBox.Text = anno.text;
             typeBox.SelectedIndex = (int)anno.type;
@@ -284,6 +285,23 @@ namespace BioImage
         private void pointIndexBox_ValueChanged(object sender, EventArgs e)
         {
             UpdatePointBox();
+        }
+
+        private void fontBut_Click(object sender, EventArgs e)
+        {
+            if (anno == null)
+                return;
+            if (fontDialog.ShowDialog() != DialogResult.OK)
+                return;
+            anno.font = fontDialog.Font;
+        }
+
+        private void strokeWBox_ValueChanged(object sender, EventArgs e)
+        {
+            if (anno == null)
+                return;
+            anno.strokeWidth = (int)strokeWBox.Value;
+            UpdateView();
         }
     }
 }

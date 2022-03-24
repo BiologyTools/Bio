@@ -32,23 +32,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Tools));
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.fontDialog = new System.Windows.Forms.FontDialog();
-            this.stackApplyBox = new System.Windows.Forms.CheckBox();
             this.pencilPanel = new System.Windows.Forms.Panel();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.bucketPanel = new System.Windows.Forms.Panel();
             this.textPanel = new System.Windows.Forms.Panel();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.rotatePanel = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
             this.movePanel = new System.Windows.Forms.Panel();
-            this.resizePanel = new System.Windows.Forms.Panel();
-            this.panel10 = new System.Windows.Forms.Panel();
-            this.eraserPanel = new System.Windows.Forms.Panel();
-            this.lassoPanel = new System.Windows.Forms.Panel();
-            this.cropPanel = new System.Windows.Forms.Panel();
+            this.freeformPanel = new System.Windows.Forms.Panel();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addNewToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.brushPanel = new System.Windows.Forms.Panel();
             this.rectPanel = new System.Windows.Forms.Panel();
             this.ellipsePanel = new System.Windows.Forms.Panel();
             this.linePanel = new System.Windows.Forms.Panel();
@@ -58,10 +48,7 @@
             this.panel13 = new System.Windows.Forms.Panel();
             this.deletePanel = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.bucketPanel.SuspendLayout();
-            this.rotatePanel.SuspendLayout();
             this.movePanel.SuspendLayout();
-            this.eraserPanel.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.polyPanel.SuspendLayout();
             this.pointPanel.SuspendLayout();
@@ -72,18 +59,6 @@
             // 
             this.colorDialog.Color = System.Drawing.Color.White;
             this.colorDialog.SolidColorOnly = true;
-            // 
-            // stackApplyBox
-            // 
-            this.stackApplyBox.AutoSize = true;
-            this.stackApplyBox.ForeColor = System.Drawing.Color.Black;
-            this.stackApplyBox.Location = new System.Drawing.Point(115, 92);
-            this.stackApplyBox.Name = "stackApplyBox";
-            this.stackApplyBox.Size = new System.Drawing.Size(54, 17);
-            this.stackApplyBox.TabIndex = 8;
-            this.stackApplyBox.Text = "Stack";
-            this.stackApplyBox.UseVisualStyleBackColor = true;
-            this.stackApplyBox.CheckedChanged += new System.EventHandler(this.stackBox_CheckedChanged);
             // 
             // pencilPanel
             // 
@@ -97,57 +72,16 @@
             this.pencilPanel.Click += new System.EventHandler(this.pencilPanel_Click);
             this.pencilPanel.DoubleClick += new System.EventHandler(this.pencilPanel_DoubleClick);
             // 
-            // panel4
-            // 
-            this.panel4.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel4.BackgroundImage")));
-            this.panel4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel4.Location = new System.Drawing.Point(0, 33);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(30, 30);
-            this.panel4.TabIndex = 3;
-            // 
-            // bucketPanel
-            // 
-            this.bucketPanel.BackColor = System.Drawing.Color.White;
-            this.bucketPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bucketPanel.BackgroundImage")));
-            this.bucketPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.bucketPanel.Controls.Add(this.panel4);
-            this.bucketPanel.Location = new System.Drawing.Point(115, 115);
-            this.bucketPanel.Name = "bucketPanel";
-            this.bucketPanel.Size = new System.Drawing.Size(30, 30);
-            this.bucketPanel.TabIndex = 2;
-            // 
             // textPanel
             // 
             this.textPanel.BackColor = System.Drawing.Color.White;
             this.textPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("textPanel.BackgroundImage")));
             this.textPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.textPanel.Location = new System.Drawing.Point(115, 60);
+            this.textPanel.Location = new System.Drawing.Point(65, 57);
             this.textPanel.Name = "textPanel";
             this.textPanel.Size = new System.Drawing.Size(30, 30);
             this.textPanel.TabIndex = 3;
             this.textPanel.Click += new System.EventHandler(this.textPanel_Click);
-            this.textPanel.DoubleClick += new System.EventHandler(this.textPanel_DoubleClick);
-            // 
-            // panel3
-            // 
-            this.panel3.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel3.BackgroundImage")));
-            this.panel3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel3.Location = new System.Drawing.Point(0, 33);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(30, 30);
-            this.panel3.TabIndex = 3;
-            // 
-            // rotatePanel
-            // 
-            this.rotatePanel.BackColor = System.Drawing.Color.White;
-            this.rotatePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("rotatePanel.BackgroundImage")));
-            this.rotatePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.rotatePanel.Controls.Add(this.panel3);
-            this.rotatePanel.Location = new System.Drawing.Point(115, 177);
-            this.rotatePanel.Name = "rotatePanel";
-            this.rotatePanel.Size = new System.Drawing.Size(30, 30);
-            this.rotatePanel.TabIndex = 4;
             // 
             // panel7
             // 
@@ -170,55 +104,15 @@
             this.movePanel.TabIndex = 6;
             this.movePanel.Click += new System.EventHandler(this.movePanel_Click);
             // 
-            // resizePanel
+            // freeformPanel
             // 
-            this.resizePanel.BackColor = System.Drawing.Color.White;
-            this.resizePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("resizePanel.BackgroundImage")));
-            this.resizePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.resizePanel.Location = new System.Drawing.Point(146, 177);
-            this.resizePanel.Name = "resizePanel";
-            this.resizePanel.Size = new System.Drawing.Size(30, 30);
-            this.resizePanel.TabIndex = 5;
-            // 
-            // panel10
-            // 
-            this.panel10.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panel10.BackgroundImage")));
-            this.panel10.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.panel10.Location = new System.Drawing.Point(0, 33);
-            this.panel10.Name = "panel10";
-            this.panel10.Size = new System.Drawing.Size(30, 30);
-            this.panel10.TabIndex = 3;
-            // 
-            // eraserPanel
-            // 
-            this.eraserPanel.BackColor = System.Drawing.Color.White;
-            this.eraserPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("eraserPanel.BackgroundImage")));
-            this.eraserPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.eraserPanel.Controls.Add(this.panel10);
-            this.eraserPanel.Location = new System.Drawing.Point(115, 146);
-            this.eraserPanel.Name = "eraserPanel";
-            this.eraserPanel.Size = new System.Drawing.Size(30, 30);
-            this.eraserPanel.TabIndex = 4;
-            // 
-            // lassoPanel
-            // 
-            this.lassoPanel.BackColor = System.Drawing.Color.White;
-            this.lassoPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("lassoPanel.BackgroundImage")));
-            this.lassoPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.lassoPanel.Location = new System.Drawing.Point(146, 215);
-            this.lassoPanel.Name = "lassoPanel";
-            this.lassoPanel.Size = new System.Drawing.Size(30, 30);
-            this.lassoPanel.TabIndex = 7;
-            // 
-            // cropPanel
-            // 
-            this.cropPanel.BackColor = System.Drawing.Color.White;
-            this.cropPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cropPanel.BackgroundImage")));
-            this.cropPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cropPanel.Location = new System.Drawing.Point(146, 146);
-            this.cropPanel.Name = "cropPanel";
-            this.cropPanel.Size = new System.Drawing.Size(30, 30);
-            this.cropPanel.TabIndex = 5;
+            this.freeformPanel.BackColor = System.Drawing.Color.White;
+            this.freeformPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("freeformPanel.BackgroundImage")));
+            this.freeformPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.freeformPanel.Location = new System.Drawing.Point(66, 93);
+            this.freeformPanel.Name = "freeformPanel";
+            this.freeformPanel.Size = new System.Drawing.Size(30, 30);
+            this.freeformPanel.TabIndex = 7;
             // 
             // contextMenuStrip
             // 
@@ -232,16 +126,6 @@
             this.addNewToolToolStripMenuItem.Name = "addNewToolToolStripMenuItem";
             this.addNewToolToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.addNewToolToolStripMenuItem.Text = "Add New Tool";
-            // 
-            // brushPanel
-            // 
-            this.brushPanel.BackColor = System.Drawing.Color.White;
-            this.brushPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("brushPanel.BackgroundImage")));
-            this.brushPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.brushPanel.Location = new System.Drawing.Point(115, 215);
-            this.brushPanel.Name = "brushPanel";
-            this.brushPanel.Size = new System.Drawing.Size(30, 30);
-            this.brushPanel.TabIndex = 1;
             // 
             // rectPanel
             // 
@@ -344,24 +228,17 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(61, 121);
+            this.ClientSize = new System.Drawing.Size(62, 121);
             this.ContextMenuStrip = this.contextMenuStrip;
             this.Controls.Add(this.deletePanel);
             this.Controls.Add(this.textPanel);
-            this.Controls.Add(this.brushPanel);
             this.Controls.Add(this.pointPanel);
             this.Controls.Add(this.polyPanel);
             this.Controls.Add(this.linePanel);
             this.Controls.Add(this.ellipsePanel);
             this.Controls.Add(this.rectPanel);
-            this.Controls.Add(this.stackApplyBox);
-            this.Controls.Add(this.cropPanel);
-            this.Controls.Add(this.lassoPanel);
-            this.Controls.Add(this.eraserPanel);
-            this.Controls.Add(this.resizePanel);
+            this.Controls.Add(this.freeformPanel);
             this.Controls.Add(this.movePanel);
-            this.Controls.Add(this.rotatePanel);
-            this.Controls.Add(this.bucketPanel);
             this.Controls.Add(this.pencilPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -371,16 +248,12 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Tools";
             this.TopMost = true;
-            this.bucketPanel.ResumeLayout(false);
-            this.rotatePanel.ResumeLayout(false);
             this.movePanel.ResumeLayout(false);
-            this.eraserPanel.ResumeLayout(false);
             this.contextMenuStrip.ResumeLayout(false);
             this.polyPanel.ResumeLayout(false);
             this.pointPanel.ResumeLayout(false);
             this.deletePanel.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -388,23 +261,13 @@
 
         private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.FontDialog fontDialog;
-        private System.Windows.Forms.CheckBox stackApplyBox;
         private System.Windows.Forms.Panel pencilPanel;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.Panel bucketPanel;
         private System.Windows.Forms.Panel textPanel;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.Panel rotatePanel;
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Panel movePanel;
-        private System.Windows.Forms.Panel resizePanel;
-        private System.Windows.Forms.Panel panel10;
-        private System.Windows.Forms.Panel eraserPanel;
-        private System.Windows.Forms.Panel lassoPanel;
-        private System.Windows.Forms.Panel cropPanel;
+        private System.Windows.Forms.Panel freeformPanel;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem addNewToolToolStripMenuItem;
-        private System.Windows.Forms.Panel brushPanel;
         private System.Windows.Forms.Panel rectPanel;
         private System.Windows.Forms.Panel ellipsePanel;
         private System.Windows.Forms.Panel linePanel;

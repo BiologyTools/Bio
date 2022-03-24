@@ -379,11 +379,6 @@ namespace BioImage
             pencilPanel.BackColor = Color.LightGray;
         }
 
-        private void stackBox_CheckedChanged(object sender, EventArgs e)
-        {
-            applyToStack = stackApplyBox.Checked;
-        }
-
         private void movePanel_Click(object sender, EventArgs e)
         {
             currentTool = move;
