@@ -102,7 +102,6 @@ namespace BioImage
                 return;
             Open(openFilesDialog.FileNames);
             viewer.Size = new System.Drawing.Size(viewer.image.SizeX + 100, viewer.image.SizeY + 100);
-            //this.Size = new System.Drawing.Size()
         }
 
         private void openFolderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -417,7 +416,6 @@ namespace BioImage
             //tools.TopMost = false;
             //manager.TopMost = false;
             tools.SendToBack();
-            tools.TopMost = false;
             manager.SendToBack();
         }
 

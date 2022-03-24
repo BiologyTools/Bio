@@ -269,6 +269,7 @@
       <DependentUpon>Tools.cs</DependentUpon>
     </Compile>
     <Compile Include="Units.cs" />
+    <Compile Include="Win32.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ChannelsTool.resx">

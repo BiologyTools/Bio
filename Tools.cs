@@ -278,7 +278,23 @@ namespace BioImage
             else
             if(currentTool.type == Tool.Type.delete)
             {
-                ImageView.selectedImage.Annotations.Remove(ImageView.selectedAnnotation);
+                if(ImageView.selectedAnnotation != null)
+                {
+                    if (ImageView.selectedPoints.Count == 0)
+                    {
+                        ImageView.selectedImage.Annotations.Remove(ImageView.selectedAnnotation);
+                    }
+                    else
+                    {
+                        if (ImageView.selectedAnnotation.type == BioImage.Annotation.Type.Polygon ||
+                            ImageView.selectedAnnotation.type == BioImage.Annotation.Type.Polyline ||
+                            ImageView.selectedAnnotation.type == BioImage.Annotation.Type.Freeform)
+                        {
+                            ImageView.selectedAnnotation.closed = false;
+                            ImageView.selectedAnnotation.RemovePoints(ImageView.selectedPoints.ToArray());
+                        }
+                    }
+                }
             }
             UpdateView();
         }

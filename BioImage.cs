@@ -728,6 +728,13 @@ namespace BioImage
             public string name;
             public string id;
             private List<PointD> Points = new List<PointD>();
+            public List<PointD> PointsD
+            {
+                get
+                {
+                    return Points;
+                }
+            }
             public List<RectangleF> selectBoxs = new List<RectangleF>();
             public RectangleD BoundingBox;
             public Font font;
@@ -742,6 +749,7 @@ namespace BioImage
             public int shapeIndex = 0;
             public bool closed = false;
             public bool selected = false;
+
 
             public RectangleD GetSelectBound()
             {
@@ -815,6 +823,26 @@ namespace BioImage
                 UpdateBoundingBox();
             }
 
+            public void RemovePoints(int[] indexs)
+            {
+                //Points.remo
+                //List<car> result = GetSomeOtherList().Except(GetTheList()).ToList();
+                List<PointD> inds = new List<PointD>();
+                for (int i = 0; i < Points.Count; i++)
+                {
+                    bool found = false;
+                    for (int ind = 0; ind < indexs.Length; ind++)
+                    {
+                        if (ind == i)
+                            found = true;
+                    }
+                    if (!found)
+                        inds.Add(Points[i]);
+                }
+                Points = inds;
+                UpdateBoundingBox();
+                UpdateSelectBoxs();
+            }
             public int GetPointCount()
             {
                 return Points.Count;
@@ -873,15 +901,10 @@ namespace BioImage
             }
             public void UpdateSelectBoxs()
             {
-                if (type == Type.Freeform)
-                    return;
-                else
+                selectBoxs.Clear();
+                for (int i = 0; i < Points.Count; i++)
                 {
-                    selectBoxs.Clear();
-                    for (int i = 0; i < Points.Count; i++)
-                    {
-                        selectBoxs.Add(new RectangleF((float)Points[i].X - 2, (float)Points[i].Y - 2, selectBoxSize, selectBoxSize));
-                    }
+                    selectBoxs.Add(new RectangleF((float)Points[i].X - 2, (float)Points[i].Y - 2, selectBoxSize, selectBoxSize));
                 }
             }
             public void UpdateBoundingBox()

@@ -1132,8 +1132,10 @@ namespace BioImage
                 foreach (BioImage.Annotation an in AnnotationsR)
                 {
                     pen = new Pen(an.strokeColor, (float)an.strokeWidth);
-                    if(an.selected)
+                    if (an.selected)
+                    {
                         b = new SolidBrush(Color.Magenta);
+                    }
                     else
                         b = new SolidBrush(an.strokeColor);
                     PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
@@ -1188,6 +1190,8 @@ namespace BioImage
                     if (an.type == BioImage.Annotation.Type.Freeform)
                     {
                         g.DrawPolygon(pen, an.GetPointsF());
+                        if(an.selected)
+                            g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     else
                     if (an.type == BioImage.Annotation.Type.Label)
@@ -1200,6 +1204,14 @@ namespace BioImage
                         g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
                     if (an.selected)
                         g.DrawRectangle(Pens.Magenta, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    if (an.selected)
+                    {
+                        for (int i = 0; i < selectedPoints.Count; i++)
+                        {
+                            RectangleF r = an.selectBoxs[selectedPoints[i]];
+                            g.DrawRectangle(Pens.Blue, new Rectangle((int)r.X, (int)r.Y, (int)r.Width, (int)r.Height));
+                        }
+                    }
                     pen.Dispose();
                 }
             }
@@ -1298,12 +1310,15 @@ namespace BioImage
 
         public static ImageView viewer = null;
         public static ImageViewer app = null;
-        int selectedPoint = -1;
+        public static List<int> selectedPoints = new List<int>();
 
         public static PointF mouseDown;
         public static bool down;
         private void pictureBox_MouseDown(object sender, MouseEventArgs e)
         {
+            tools.BringToFront();
+            if (!Ctrl)
+                selectedPoints.Clear();
             viewer = this;
             selectedImage = image;
             PointF p = toImagePoint(e.Location.X, e.Location.Y);
@@ -1324,20 +1339,30 @@ namespace BioImage
                         {
                             if (an.selectBoxs[i].IntersectsWith(r))
                             {
-                                selectedPoint = i;
-                                return;
+                                selectedPoints.Add(i);
                             }
                         }
                     }
                     else
                         an.selected = false;
                 }
-
             }
             tools.ToolDown(this, arg);
         }
         public static PointF mouseUp;
         public static bool up;
+
+        public static bool Ctrl
+        {
+            get
+            {
+                int si = (int)Win32.GetAsyncKeyState(Keys.LControlKey);
+                if (si == 0)
+                    return false;
+                else
+                    return true;
+            }
+        }
 
         private void pictureBox_MouseUp(object sender, MouseEventArgs e)
         {
@@ -1352,52 +1377,63 @@ namespace BioImage
             up = true;
             if (Tools.currentTool.type == Tools.Tool.Type.move)
             {
-                if (selectedAnnotation.type == BioImage.Annotation.Type.Rectangle || selectedAnnotation.type == BioImage.Annotation.Type.Ellipse ||
-                    selectedAnnotation.type == BioImage.Annotation.Type.Freeform || selectedAnnotation.type == BioImage.Annotation.Type.Label)
+                if (selectedPoints.Count > 0)
                 {
-                    BioImage.RectangleD d = selectedAnnotation.Rect;
-                    if (selectedPoint == 0)
+                    if (selectedAnnotation.type == BioImage.Annotation.Type.Rectangle || selectedAnnotation.type == BioImage.Annotation.Type.Ellipse ||
+                        selectedAnnotation.type == BioImage.Annotation.Type.Freeform || selectedAnnotation.type == BioImage.Annotation.Type.Label)
                     {
-                        double dw = d.X - p.X;
-                        double dh = d.Y - p.Y;
-                        d.X = p.X;
-                        d.Y = p.Y;
-                        d.W += dw;
-                        d.H += dh;
+                        BioImage.RectangleD d = selectedAnnotation.Rect;
+                        if (selectedPoints[0] == 0)
+                        {
+                            double dw = d.X - p.X;
+                            double dh = d.Y - p.Y;
+                            d.X = p.X;
+                            d.Y = p.Y;
+                            d.W += dw;
+                            d.H += dh;
+                        }
+                        else
+                        if (selectedPoints[0] == 1)
+                        {
+                            double dw = p.X - (d.W + d.X);
+                            double dh = d.Y - p.Y;
+                            d.W += dw;
+                            d.H += dh;
+                            d.Y -= dh;
+                        }
+                        else
+                        if (selectedPoints[0] == 2)
+                        {
+                            double dw = d.X - p.X;
+                            double dh = p.Y - (d.Y + d.H);
+                            d.W += dw;
+                            d.H += dh;
+                            d.X -= dw;
+                        }
+                        else
+                        if (selectedPoints[0] == 3)
+                        {
+                            double dw = d.X - p.X;
+                            double dh = d.Y - p.Y;
+                            d.W = p.X - selectedAnnotation.X;
+                            d.H = p.Y - selectedAnnotation.Y;
+                        }
+                        selectedAnnotation.Rect = d;
                     }
                     else
-                    if (selectedPoint == 1)
                     {
-                        double dw = p.X - (d.W + d.X);
-                        double dh = d.Y - p.Y;
-                        d.W += dw;
-                        d.H += dh;
-                        d.Y -= dh;
+                        for (int i = 0; i < selectedPoints.Count; i++)
+                        {
+                            BioImage.PointD pp = new BioImage.PointD(mouseDown.X - mouseUp.X, mouseDown.Y - mouseUp.Y);
+                            BioImage.PointD pd = selectedAnnotation.PointsD[selectedPoints[i]];
+                            selectedAnnotation.UpdatePoint(new BioImage.PointD(pd.X - pp.X, pd.Y - pp.Y), selectedPoints[i]);
+                        }
                     }
-                    else
-                    if (selectedPoint == 2)
-                    {
-                        double dw = d.X - p.X;
-                        double dh = p.Y - (d.Y + d.H);
-                        d.W += dw;
-                        d.H += dh;
-                        d.X -= dw;
-                    }
-                    else
-                    if (selectedPoint == 3)
-                    {
-                        double dw = d.X - p.X;
-                        double dh = d.Y - p.Y;
-                        d.W = p.X - selectedAnnotation.X;
-                        d.H = p.Y - selectedAnnotation.Y;
-                    }
-                    selectedAnnotation.Rect = d;
+                    selectedAnnotation.UpdateBoundingBox();
+                    selectedAnnotation.UpdateSelectBoxs();
+                    selectedAnnotation = null;
                 }
-                else
-                    selectedAnnotation.UpdatePoint(new BioImage.PointD(p.X, p.Y), selectedPoint);
-                selectedAnnotation.UpdateBoundingBox();
-                selectedAnnotation.UpdateSelectBoxs();
-                selectedAnnotation = null;
+                
             }
             
             UpdateView();
