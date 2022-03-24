@@ -243,11 +243,11 @@ namespace BioImage
             else
             if (currentTool.type == Tool.Type.polygon)
             {
-                anno.type = BioImage.Annotation.Type.Polygon;
-                anno.AddPoint(new BioImage.PointD(e.X,e.Y));
-                anno.coord = ImageView.Coordinate;
                 if (anno.GetPointCount() == 1)
                 {
+                    anno.type = BioImage.Annotation.Type.Polygon;
+                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                    anno.coord = ImageView.Coordinate;
                     ImageView.selectedImage.Annotations.Add(anno);
                 }
                 else
@@ -258,6 +258,10 @@ namespace BioImage
                     {
                         anno.closed = true;
                         anno = new BioImage.Annotation();
+                    }
+                    else
+                    {
+                        anno.AddPoint(new BioImage.PointD(e.X, e.Y));
                     }
                 }
             }
