@@ -19,6 +19,8 @@ Best for working with ROI's in OME format & CSV.
 
 -Exports bounding boxes of ROI's in CSV format.
 
+-Select multiple points by holding down left control key for move & delete tools.
+
 Example usage.
 
 ImageView imageview = new ImageView("16bitTestStack.ome.tif");
