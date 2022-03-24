@@ -15,23 +15,20 @@ namespace BioImage
 
         public static ImageViewer app = null;
 
-        public ImageViewer()
+        public ImageViewer(string arg)
         {
             InitializeComponent();
-            if(tools == null)
-            tools = new Tools();
-            if(manager == null)
             manager = new ROIManager();
+            tools = new Tools();
             app = this;
         }
+
         public ImageViewer(string[] arg)
         {
             InitializeComponent();
             tools = new Tools();
-            //string s = "E:/TESTIMAGES/text.ome.tif";
-            //SetFile(s, 0, false);
-            //SetFolder(s, false, 0);
             manager = new ROIManager();
+            app = this;
             if (arg.Length == 0)
                 return;
             else
@@ -39,7 +36,6 @@ namespace BioImage
             {
                 SetFile(arg[0], 0, false);
             }
-            app = this;
         }
 
         public void SetFile(string file, int seri, bool folder)
@@ -81,13 +77,23 @@ namespace BioImage
             {
                 if(viewer != null)
                 {
-                    ImageViewer viewer = new ImageViewer();
+                    string[] sts = new string[1];
+                    sts[0] = "";
+                    ImageViewer viewer = new ImageViewer(sts);
                     viewer.Show();
                     viewer.SetFile(file, 0, false);
                 }
                 else
                     SetFile(openFilesDialog.FileName,0, false);
             }
+        }
+
+        public void OpenInNewProcess(string file)
+        {
+            Process p = new Process();
+            p.StartInfo.FileName = Application.ExecutablePath;
+            p.StartInfo.Arguments = file;
+            p.Start();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -426,9 +432,7 @@ namespace BioImage
             if (viewer.image == null)
                 return;
             ChannelsTool ch = new ChannelsTool(viewer.image.Channels);
-            ch.ShowDialog();
-            if (ch.ShowDialog() == DialogResult.OK)
-                viewer.image.Channels = ch.Channels;
+            ch.Show();
         }
     }
 }

@@ -629,9 +629,7 @@ namespace BioImage
             this.MinimumSize = new System.Drawing.Size(100, 100);
             this.Name = "ImageView";
             this.Size = new System.Drawing.Size(425, 368);
-            this.SizeChanged += new System.EventHandler(this.ImageView_SizeChanged);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ImageView_KeyDown);
-            this.Resize += new System.EventHandler(this.ImageView_Resize);
             this.timePlayMenuStrip.ResumeLayout(false);
             this.contextMenuStrip.ResumeLayout(false);
             this.zPlayMenuStrip.ResumeLayout(false);

@@ -7,6 +7,15 @@ namespace BioImage
     public partial class ChannelsTool : Form
     {
         public List<BioImage.Channel> Channels;
+
+        public void UpdateChannels()
+        {
+            if (ImageView.viewer != null)
+            {
+                ImageView.viewer.image.Channels = Channels;
+                ImageView.viewer.UpdateView();
+            }
+        }
         public ChannelsTool(List<BioImage.Channel> channels)
         {
             InitializeComponent();
@@ -26,6 +35,7 @@ namespace BioImage
                 return;
             BioImage.Channel c = (BioImage.Channel)channelsBox.SelectedItem;
             Channels[channelsBox.SelectedIndex].Min = (int)minBox.Value;
+            UpdateChannels();
         }
 
         private void maxBox_ValueChanged(object sender, EventArgs e)
@@ -34,14 +44,8 @@ namespace BioImage
                 return;
             BioImage.Channel c = (BioImage.Channel)channelsBox.SelectedItem;
             Channels[channelsBox.SelectedIndex].Max = (int)maxBox.Value;
-
+            UpdateChannels();
         }
-
-        private void okButton_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.OK;
-        }
-
         private void channelsBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (channelsBox.SelectedIndex == -1)
@@ -68,6 +72,7 @@ namespace BioImage
             {
                 c.Max = (int)maxBox.Value;
             }
+            UpdateChannels();
         }
 
         private void setMinAllBut_Click(object sender, EventArgs e)
@@ -76,6 +81,7 @@ namespace BioImage
             {
                 c.Min = (int)minBox.Value;
             }
+            UpdateChannels();
         }
     }
 }

@@ -322,6 +322,15 @@ namespace BioImage
             }
             UpdateView();
         }
+
+        public void ToolMove(object sender, MouseEventArgs e)
+        {
+            if (currentTool.type == Tool.Type.move)
+            {
+
+            }
+        }
+
         public void ToolDoubleClick(object sender, MouseEventArgs e)
         {
             if (currentTool == null)
@@ -329,12 +338,7 @@ namespace BioImage
             
         }
 
-        public void ToolMove(object sender, MouseEventArgs e)
-        {
-            
-        }
-
-
+        
         public static void SetColor(BioImage.ColorS col)
         {
             currentTool.Color = col;

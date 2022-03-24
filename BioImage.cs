@@ -741,6 +741,7 @@ namespace BioImage
             public double strokeWidth = 1;
             public int shapeIndex = 0;
             public bool closed = false;
+            public bool selected = false;
 
             public RectangleD GetSelectBound()
             {

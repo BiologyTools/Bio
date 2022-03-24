@@ -279,7 +279,6 @@ namespace BioImage
 
         public void UpdateView()
         {
-
             if (Mode == ViewMode.Raw)
             {
                 foreach (BioImage.Channel c in image.Channels)
@@ -468,40 +467,6 @@ namespace BioImage
 
         }
 
-        private void ImageView_SizeChanged(object sender, EventArgs e)
-        {
-            /*
-            if (timeEnabled)
-            {
-                splitContainer.SplitterDistance = splitContainer.Height - 75;
-                
-            }
-            else
-                splitContainer.SplitterDistance = splitContainer.Height - 50;
-            UpdateViewMode();
-            */
-        }
-
-        private void ImageView_Resize(object sender, EventArgs e)
-        {
-            /*
-            if (timeEnabled)
-                splitContainer.SplitterDistance = splitContainer.Height - 75;
-            else
-                splitContainer.SplitterDistance = splitContainer.Height - 50;
-            UpdateViewMode();
-            */
-        }
-
-        private void openChannelsToolToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ChannelsTool channelsTool = new ChannelsTool(image.Channels);
-            if (channelsTool.ShowDialog() != DialogResult.OK)
-                return;
-            image.Channels = channelsTool.Channels;
-            UpdateView();
-        }
-
         private void playZToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (playZToolStripMenuItem.Checked)
@@ -581,13 +546,14 @@ namespace BioImage
         public string mouseColor = "";
         private bool x1State = false;
         private bool x2State = false;
+        private MouseEventArgs arg;
+        private Point p;
         private void rgbPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             selectedImage = image;
-            Point p = toImagePoint(e.Location.X, e.Location.Y);
-            MouseEventArgs arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
+            p = toImagePoint(e.Location.X, e.Location.Y);
+            arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
             tools.ToolMove(this, arg);
-
             if (Mode != ViewMode.RGBImage)
             {
                 if (e.Button == MouseButtons.XButton1 && !x1State)
@@ -657,7 +623,6 @@ namespace BioImage
                         {
                             image.SetValue(p.X, p.Y, GetCoordinate(), Tools.pencil.Color.R);
                         }
-                        UpdateView();
                     }
             }
             else
@@ -675,7 +640,6 @@ namespace BioImage
                     {
                         image.SetValue(p.X, p.Y, GetCoordinate(), Tools.pencil.Color.R);
                     }
-                    UpdateView();
                 }
             }
             else
@@ -693,12 +657,10 @@ namespace BioImage
                     {
                         image.SetValue(p.X, p.Y, GetCoordinate(), ushort.MaxValue);
                     }
-                    UpdateView();
                 }
             }
             UpdateStatus();
         }
-
         private void autoContrastChannelsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             image.AutoThreshold();
@@ -1170,7 +1132,10 @@ namespace BioImage
                 foreach (BioImage.Annotation an in AnnotationsR)
                 {
                     pen = new Pen(an.strokeColor, (float)an.strokeWidth);
-                    b = new SolidBrush(an.strokeColor);
+                    if(an.selected)
+                        b = new SolidBrush(Color.Magenta);
+                    else
+                        b = new SolidBrush(an.strokeColor);
                     PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
                     if (an.type == BioImage.Annotation.Type.Point)
                     {
@@ -1233,6 +1198,8 @@ namespace BioImage
                         g.DrawString(an.text, an.font, b, pc);
                     if (bounds)
                         g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    if (an.selected)
+                        g.DrawRectangle(Pens.Magenta, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
                     pen.Dispose();
                 }
             }
@@ -1351,6 +1318,7 @@ namespace BioImage
                     if (an.GetSelectBound().IntersectsWith(p.X,p.Y))
                     {
                         selectedAnnotation = an;
+                        an.selected = true;
                         RectangleF r = new RectangleF(p.X, p.Y, 1, 1);
                         for (int i = 0; i < an.selectBoxs.Count; i++)
                         {
@@ -1361,6 +1329,8 @@ namespace BioImage
                             }
                         }
                     }
+                    else
+                        an.selected = false;
                 }
 
             }

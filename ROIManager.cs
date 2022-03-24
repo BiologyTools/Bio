@@ -265,9 +265,5 @@ namespace BioImage
         }
 
         public bool autoUpdate = true;
-        private void autoUpdateBut_CheckedChanged(object sender, EventArgs e)
-        {
-            autoUpdate = autoUpdateBut.Checked;
-        }
     }
 }
