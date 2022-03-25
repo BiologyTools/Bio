@@ -75,6 +75,10 @@
             this.label13 = new System.Windows.Forms.Label();
             this.selectBoxSize = new System.Windows.Forms.NumericUpDown();
             this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.rChBox = new System.Windows.Forms.CheckBox();
+            this.gChBox = new System.Windows.Forms.CheckBox();
+            this.bChBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.rBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bBox)).BeginInit();
@@ -105,7 +109,7 @@
             this.roiView.Location = new System.Drawing.Point(-1, 0);
             this.roiView.MultiSelect = false;
             this.roiView.Name = "roiView";
-            this.roiView.Size = new System.Drawing.Size(221, 405);
+            this.roiView.Size = new System.Drawing.Size(221, 450);
             this.roiView.TabIndex = 0;
             this.roiView.UseCompatibleStateImageBehavior = false;
             this.roiView.View = System.Windows.Forms.View.List;
@@ -565,7 +569,7 @@
             // 
             // duplicateBut
             // 
-            this.duplicateBut.Location = new System.Drawing.Point(226, 374);
+            this.duplicateBut.Location = new System.Drawing.Point(228, 417);
             this.duplicateBut.Name = "duplicateBut";
             this.duplicateBut.Size = new System.Drawing.Size(75, 25);
             this.duplicateBut.TabIndex = 29;
@@ -615,7 +619,7 @@
             this.selectBoxSize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.selectBoxSize.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.selectBoxSize.ForeColor = System.Drawing.Color.White;
-            this.selectBoxSize.Location = new System.Drawing.Point(314, 377);
+            this.selectBoxSize.Location = new System.Drawing.Point(316, 420);
             this.selectBoxSize.Maximum = new decimal(new int[] {
             255,
             0,
@@ -641,18 +645,75 @@
             this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label14.AutoSize = true;
             this.label14.ForeColor = System.Drawing.Color.White;
-            this.label14.Location = new System.Drawing.Point(311, 358);
+            this.label14.Location = new System.Drawing.Point(313, 401);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(81, 13);
             this.label14.TabIndex = 40;
             this.label14.Text = "Select Box Size";
+            // 
+            // label15
+            // 
+            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label15.AutoSize = true;
+            this.label15.ForeColor = System.Drawing.Color.White;
+            this.label15.Location = new System.Drawing.Point(225, 360);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(121, 13);
+            this.label15.TabIndex = 42;
+            this.label15.Text = "Show ROI\'s in Channels";
+            // 
+            // rChBox
+            // 
+            this.rChBox.AutoSize = true;
+            this.rChBox.Checked = true;
+            this.rChBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.rChBox.ForeColor = System.Drawing.Color.White;
+            this.rChBox.Location = new System.Drawing.Point(228, 381);
+            this.rChBox.Name = "rChBox";
+            this.rChBox.Size = new System.Drawing.Size(52, 17);
+            this.rChBox.TabIndex = 43;
+            this.rChBox.Text = "R/C1";
+            this.rChBox.UseVisualStyleBackColor = true;
+            this.rChBox.CheckedChanged += new System.EventHandler(this.rChBox_CheckedChanged);
+            // 
+            // gChBox
+            // 
+            this.gChBox.AutoSize = true;
+            this.gChBox.Checked = true;
+            this.gChBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.gChBox.ForeColor = System.Drawing.Color.White;
+            this.gChBox.Location = new System.Drawing.Point(280, 381);
+            this.gChBox.Name = "gChBox";
+            this.gChBox.Size = new System.Drawing.Size(52, 17);
+            this.gChBox.TabIndex = 44;
+            this.gChBox.Text = "G/C2";
+            this.gChBox.UseVisualStyleBackColor = true;
+            this.gChBox.CheckedChanged += new System.EventHandler(this.gChBox_CheckedChanged);
+            // 
+            // bChBox
+            // 
+            this.bChBox.AutoSize = true;
+            this.bChBox.Checked = true;
+            this.bChBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.bChBox.ForeColor = System.Drawing.Color.White;
+            this.bChBox.Location = new System.Drawing.Point(331, 381);
+            this.bChBox.Name = "bChBox";
+            this.bChBox.Size = new System.Drawing.Size(51, 17);
+            this.bChBox.TabIndex = 45;
+            this.bChBox.Text = "B/C3";
+            this.bChBox.UseVisualStyleBackColor = true;
+            this.bChBox.CheckedChanged += new System.EventHandler(this.bChBox_CheckedChanged);
             // 
             // ROIManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(397, 406);
+            this.ClientSize = new System.Drawing.Size(397, 451);
+            this.Controls.Add(this.bChBox);
+            this.Controls.Add(this.gChBox);
+            this.Controls.Add(this.rChBox);
+            this.Controls.Add(this.label15);
             this.Controls.Add(this.selectBoxSize);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.label13);
@@ -765,5 +826,9 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.NumericUpDown selectBoxSize;
         private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.CheckBox rChBox;
+        private System.Windows.Forms.CheckBox gChBox;
+        private System.Windows.Forms.CheckBox bChBox;
     }
 }

@@ -1463,9 +1463,6 @@ namespace BioImage
             mouseUpButtons = e.Button;
             mouseDownButtons = MouseButtons.None;
             MouseEventArgs arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
-            
-            if (selectedAnnotation == null)
-                return;
             mouseUp = p;
             down = false;
             up = true;

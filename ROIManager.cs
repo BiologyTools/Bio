@@ -309,5 +309,26 @@ namespace BioImage
             ImageView.viewer.UpdateSelectBoxSize((float)selectBoxSize.Value);
             UpdateOverlay();
         }
+
+        private void rChBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ImageView.viewer == null)
+                return;
+            ImageView.viewer.showRROIs = rChBox.Checked;
+        }
+
+        private void gChBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ImageView.viewer == null)
+                return;
+            ImageView.viewer.showGROIs = gChBox.Checked;
+        }
+
+        private void bChBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ImageView.viewer == null)
+                return;
+            ImageView.viewer.showBROIs = bChBox.Checked;
+        }
     }
 }

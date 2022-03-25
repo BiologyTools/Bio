@@ -257,11 +257,15 @@ namespace BioImage
                 return;
             if (currentTool.type == Tool.Type.line)
             {
-                anno = new BioImage.Annotation();
-                anno.type = BioImage.Annotation.Type.Line;
-                anno.AddPoint(new BioImage.PointD(e.X, e.Y));
-                anno.coord = ImageView.Coordinate;
-                ImageView.selectedImage.Annotations.Add(anno);
+                if (anno.GetPointCount() == 0)
+                {
+                    anno = new BioImage.Annotation();
+                    anno.type = BioImage.Annotation.Type.Line;
+                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                    anno.coord = ImageView.Coordinate;
+                    ImageView.selectedImage.Annotations.Add(anno);
+                }
             }
             else
             if (currentTool.type == Tool.Type.polygon)
@@ -311,6 +315,7 @@ namespace BioImage
                 anno.type = BioImage.Annotation.Type.Rectangle;
                 anno.Rect = new BioImage.RectangleD(e.X, e.Y, 1, 1);
                 anno.coord = ImageView.Coordinate;
+                ImageView.selectedImage.Annotations.Add(anno);
             }
             else
             if (currentTool.type == Tool.Type.ellipse)
@@ -318,6 +323,7 @@ namespace BioImage
                 anno.type = BioImage.Annotation.Type.Ellipse;
                 anno.Rect = new BioImage.RectangleD(e.X, e.Y, 1, 1);
                 anno.coord = ImageView.Coordinate;
+                ImageView.selectedImage.Annotations.Add(anno);
             }
             else
             if(currentTool.type == Tool.Type.delete)
@@ -366,7 +372,7 @@ namespace BioImage
             if (currentTool.type == Tool.Type.point)    
             {
                 BioImage.Annotation an = new BioImage.Annotation();
-                an.Point = new BioImage.PointD(e.X, e.Y);
+                an.AddPoint(new BioImage.PointD(e.X, e.Y));
                 an.type = BioImage.Annotation.Type.Point;
                 an.coord = ImageView.Coordinate;
                 ImageView.selectedImage.Annotations.Add(an);
@@ -374,8 +380,11 @@ namespace BioImage
             else
             if (currentTool.type == Tool.Type.line && anno.type == BioImage.Annotation.Type.Line)
             {
-                if(anno.GetPointCount() > 1)
-                anno.UpdatePoint(new BioImage.PointD(e.X, e.Y),1);
+                if (anno.GetPointCount() > 0)
+                {
+                    anno.UpdatePoint(new BioImage.PointD(e.X, e.Y), 1);
+                    anno = new BioImage.Annotation();
+                }
             }
             else
             if (currentTool.type == Tool.Type.rect && anno.type == BioImage.Annotation.Type.Rectangle)
@@ -383,7 +392,6 @@ namespace BioImage
                 if (anno.GetPointCount() == 4)
                 {
                     anno.Rect = new BioImage.RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
-                    ImageView.selectedImage.Annotations.Add(anno);
                     anno = new BioImage.Annotation();
                 }
             }
@@ -393,7 +401,6 @@ namespace BioImage
                 if (anno.GetPointCount() == 4)
                 {
                     anno.Rect = new BioImage.RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
-                    ImageView.selectedImage.Annotations.Add(anno);
                     anno = new BioImage.Annotation();
                 }
             }
@@ -428,10 +435,13 @@ namespace BioImage
         {
             if(currentTool.type == Tool.Type.line && ImageView.down)
             {
-                if(anno.GetPointCount() == 1)
-                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
-                else
-                    anno.UpdatePoint(new BioImage.PointD(e.X, e.Y), 1);
+                anno.UpdatePoint(new BioImage.PointD(e.X, e.Y), 1);
+            }
+            else
+            if ((currentTool.type == Tool.Type.rect || currentTool.type == Tool.Type.ellipse) && ImageView.down)
+            {
+                BioImage.PointD d = new BioImage.PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
+                anno.Rect = new BioImage.RectangleD(ImageView.mouseDown.X, ImageView.mouseDown.Y, d.X, d.Y);
             }
             else
             if (currentTool.type == Tool.Type.freeform && e.Button == MouseButtons.Left && ImageView.down)

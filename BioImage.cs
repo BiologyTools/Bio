@@ -796,6 +796,8 @@ namespace BioImage
                     Points[i] = p;
                     selectBoxs[i] = new RectangleF((float)p.X - 2, (float)p.Y - 2, selectBoxSize, selectBoxSize);
                 }
+                UpdateBoundingBox();
+                UpdateSelectBoxs();
             }
 
             public PointD GetPoint(int i)
