@@ -13,7 +13,7 @@ namespace BioImage
 {
     public partial class ImageView : UserControl
     {
-        public ImageView(string file, int ser, bool folder)
+        public ImageView(string file, int ser)
         {
             
             file = file.Replace("\\", "/");
@@ -26,20 +26,6 @@ namespace BioImage
             SetCoordinate(ser, 0, 0, 0);
 
             image = new BioImage(ser, file);
-            if (folder)
-            {
-                Console.WriteLine("Opening folder files. Serie: " + ser + " File: " + file);
-                if (image.seriesCount == 0)
-                {
-                    for (int seri = 0; seri <= image.seriesCount; seri++)
-                    {
-                        //this is a folder so we load it's images.
-                        string name;
-                        string fol = System.IO.Path.GetDirectoryName(file);
-                        image.OpenFolder(fol, serie, out name, '_');
-                    }
-                }
-            }
             InitGUI(file);
 
             Buf = image.GetBufByCoord(GetCoordinate());
@@ -337,9 +323,17 @@ namespace BioImage
             UpdateStatus();
         }
 
+        public void UpdateSelectBoxSize(float size)
+        {
+            foreach (BioImage.Annotation item in image.Annotations)
+            {
+                item.selectBoxSize = size;
+            }
+        }
+
         public void UpdateOverlay()
         {
-            overlayPictureBox.Update();
+            overlayPictureBox.Invalidate();
         }
 
         public void UpdateStatus()
@@ -988,6 +982,10 @@ namespace BioImage
             return new Point(-1, -1);
         }
 
+        public bool showRROIs = true;
+        public bool showGROIs = true;
+        public bool showBROIs = true;
+
         private List<BioImage.Annotation> annotationsR = new List<BioImage.Annotation>();
         public List<BioImage.Annotation> AnnotationsR
         {
@@ -1015,6 +1013,22 @@ namespace BioImage
                 return image.GetAnnotations(coord.S, coord.Z, image.BChannel.index, coord.T);
             }
         }
+
+        public List<BioImage.Annotation> AnnotationsRGB
+        {
+            get
+            {
+                BioImage.SZCT coord = coordinate;
+                List<BioImage.Annotation> ans = new List<BioImage.Annotation>();
+                if(showRROIs)
+                    ans.AddRange(AnnotationsR);
+                if (showGROIs)
+                    ans.AddRange(AnnotationsG);
+                if (showRROIs)
+                    ans.AddRange(AnnotationsB);
+                return ans;
+            }
+        }
         Graphics g = null;
 
         public void UpdateOverlaySize()
@@ -1039,7 +1053,7 @@ namespace BioImage
             bool labels = showText;
             if (Mode == ViewMode.RGBImage)
             {
-                foreach (BioImage.Annotation an in AnnotationsR)
+                foreach (BioImage.Annotation an in AnnotationsRGB)
                 {
                     pen = new Pen(an.strokeColor, (float)an.strokeWidth);
                     if (an.selected)
@@ -1093,7 +1107,7 @@ namespace BioImage
                     else
                     if (an.type == BioImage.Annotation.Type.Ellipse)
                     {
-                        g.DrawEllipse(pen, an.Rect.ToRectF());
+                        g.DrawEllipse(pen, an.Rect.ToRectangleF());
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     else
@@ -1129,7 +1143,7 @@ namespace BioImage
                     if (labels)
                         g.DrawString(an.Text, an.font, b, pc);
                     if (bounds)
-                        g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                        g.DrawRectangle(Pens.Green, an.BoundingBox.ToRectangleInt());
                     if (an.selected)
                         g.DrawRectangle(Pens.Magenta, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
                     if (an.selected)
@@ -1195,7 +1209,7 @@ namespace BioImage
                     else
                     if (an.type == BioImage.Annotation.Type.Ellipse)
                     {
-                        g.DrawEllipse(pen, an.Rect.ToRectF());
+                        g.DrawEllipse(pen, an.Rect.ToRectangleF());
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     else
@@ -1216,11 +1230,12 @@ namespace BioImage
                 }
             }
 
-            if(Tools.currentTool.type == Tools.Tool.Type.rectSel)
+            if (Tools.currentTool.type == Tools.Tool.Type.rectSel && down)
             {
                 g.DrawRectangle(Pens.Magenta, Tools.rectSel.Selection.ToRectangleInt());
             }
-
+            else
+                Tools.rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
             g.Dispose();
             //e.Graphics.DrawRectangle(Pens.Blue, new Rectangle(overlayPictureBox.Location, overlayPictureBox.Size));
             e.Graphics.DrawImage(image.overlay, pp.X, pp.Y, s.X, s.Y);
@@ -1346,7 +1361,7 @@ namespace BioImage
             selectedImage = image;
             p = toImagePoint(e.Location.X, e.Location.Y);
             arg = new MouseEventArgs(mouseDownButtons, 1, (int)p.X, (int)p.Y, e.Delta);
-            tools.ToolMove(this, arg);
+            
             mouseColor = "(" + p.X + ", " + p.Y + ")";
             if (Mode != ViewMode.RGBImage)
             {
@@ -1437,6 +1452,7 @@ namespace BioImage
                     }
                 }
             }
+            tools.ToolMove(this, arg);
             UpdateStatus();
         }
         private void pictureBox_MouseUp(object sender, MouseEventArgs e)
@@ -1451,6 +1467,7 @@ namespace BioImage
             if (selectedAnnotation == null)
                 return;
             mouseUp = p;
+            down = false;
             up = true;
             if (Tools.currentTool.type == Tools.Tool.Type.pointSel)
             {

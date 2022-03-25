@@ -135,7 +135,7 @@ namespace BioImage
                 return idString.GetHashCode();
             }
         }
-        int [,,,] Coords;
+        int[,,,] Coords;
         public Hashtable bufferTable;
         public Hashtable fileHashTable;
         public Random _random = new Random();
@@ -219,7 +219,7 @@ namespace BioImage
         public struct SZCTXY
         {
             public int S, Z, C, T, X, Y;
-            public SZCTXY(int s,int z, int c, int t, int x, int y)
+            public SZCTXY(int s, int z, int c, int t, int x, int y)
             {
                 S = s;
                 Z = z;
@@ -248,7 +248,7 @@ namespace BioImage
                     return true;
             }
         }
-        
+
         public int serie = 0;
         public int imageCount = 0;
         public int imagesPerSeries = 0;
@@ -262,8 +262,8 @@ namespace BioImage
         public int SizeX
         {
             get { return sizeX; }
-            set 
-            { 
+            set
+            {
                 sizeX = value;
                 if (sizeX > 0 && sizeY > 0)
                 {
@@ -379,7 +379,7 @@ namespace BioImage
 
         public Buf GetBufByCoord(int s, int z, int c, int t)
         {
-            return Buffers[Coords[s,z,c,t]];
+            return Buffers[Coords[s, z, c, t]];
         }
         public Buf GetBufByCoord(SZCT coord)
         {
@@ -389,13 +389,13 @@ namespace BioImage
         {
             return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetBitmap();
         }
-        public Bitmap GetFiltered(SZCT coord,  IntRange filt)
+        public Bitmap GetFiltered(SZCT coord, IntRange filt)
         {
             return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetFiltered(filt);
         }
         public Bitmap GetFiltered(SZCT coord, IntRange rr, IntRange rg, IntRange rb)
         {
-            return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetFiltered(rr,rg,rb);
+            return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetFiltered(rr, rg, rb);
         }
 
         private Bitmap rgbBitmap16 = null;
@@ -427,7 +427,7 @@ namespace BioImage
             int ri = reader.getIndex(coord.Z, coord.C, coord.T);
             if (RGBChannelCount == 1)
             {
-                replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R,Buffers[ri].GetFiltered(rf));
+                replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri].GetFiltered(rf));
                 replaceRFilter.ApplyInPlace(rgbBitmap16);
             }
             else
@@ -509,9 +509,9 @@ namespace BioImage
             }
             public static System.Drawing.Color ToColor(ColorS col)
             {
-                float r = ((float)(col.R)/65535)*255;
-                float g = ((float)(col.G)/65535)*255;
-                float b = ((float)(col.B)/65535)*255;
+                float r = ((float)(col.R) / 65535) * 255;
+                float g = ((float)(col.G) / 65535) * 255;
+                float b = ((float)(col.B) / 65535) * 255;
                 System.Drawing.Color c = System.Drawing.Color.FromArgb((byte)r, (byte)g, (byte)b);
                 return c;
             }
@@ -571,7 +571,7 @@ namespace BioImage
                 else
                     return false;
             }
-            public RectangleF ToRectF()
+            public RectangleF ToRectangleF()
             {
                 return new RectangleF((float)X, (float)Y, (float)W, (float)H);
             }
@@ -581,8 +581,8 @@ namespace BioImage
             List<Annotation> annotations = new List<Annotation>();
             foreach (Annotation an in Annotations)
             {
-                if(an.coord == coord)
-                annotations.Add(an);
+                if (an.coord == coord)
+                    annotations.Add(an);
             }
             return annotations;
         }
@@ -591,14 +591,14 @@ namespace BioImage
             List<Annotation> annotations = new List<Annotation>();
             foreach (Annotation an in Annotations)
             {
-                if (an.coord.S == S && an.coord.Z == Z && an.coord.Z == Z && an.coord.C == C && an.coord.T == T) 
+                if (an.coord.S == S && an.coord.Z == Z && an.coord.Z == Z && an.coord.C == C && an.coord.T == T)
                     annotations.Add(an);
             }
             return annotations;
         }
         public class Annotation
         {
-            public static float selectBoxSize = 4;
+            public float selectBoxSize = 4;
             public enum Type
             {
                 Rectangle,
@@ -621,7 +621,7 @@ namespace BioImage
                 }
                 set
                 {
-                    if(Points.Count == 0)
+                    if (Points.Count == 0)
                     {
                         AddPoint(value);
                     }
@@ -656,7 +656,7 @@ namespace BioImage
                         AddPoint(new PointD(value.X + value.W, value.Y + value.H));
                     }
                     else
-                    if(type == Type.Rectangle || type == Type.Ellipse)
+                    if (type == Type.Rectangle || type == Type.Ellipse)
                     {
                         Points[0] = new PointD(value.X, value.Y);
                         Points[1] = new PointD(value.X + value.W, value.Y);
@@ -697,9 +697,6 @@ namespace BioImage
                     if (type == Type.Point)
                         return strokeWidth;
                     else
-                    if (type == Type.Rectangle)
-                        return Rect.W;
-                    else
                         return BoundingBox.W;
                 }
                 set
@@ -714,9 +711,6 @@ namespace BioImage
                     if (type == Type.Point)
                         return strokeWidth;
                     else
-                    if (type == Type.Rectangle)
-                        return Rect.H;
-                    else
                         return BoundingBox.H;
                 }
                 set
@@ -725,8 +719,8 @@ namespace BioImage
                 }
             }
 
-            public string name;
-            public string id;
+            public string name = "";
+            public string id = "";
             private List<PointD> Points = new List<PointD>();
             public List<PointD> PointsD
             {
@@ -737,14 +731,18 @@ namespace BioImage
             }
             public List<RectangleF> selectBoxs = new List<RectangleF>();
             public RectangleD BoundingBox;
-            public Font font;
+            public Font font = System.Drawing.SystemFonts.DefaultFont;
             public SZCT coord;
             public System.Drawing.Color strokeColor;
             public System.Drawing.Color fillColor;
             public bool isFilled = false;
-            public string roiID;
-            public string roiName;
-            private string text;
+            public string roiID = "";
+            public string roiName = "";
+            private string text = "";
+            public double strokeWidth = 1;
+            public int shapeIndex = 0;
+            public bool closed = false;
+            public bool selected = false;
             public string Text
             {
                 get
@@ -753,32 +751,31 @@ namespace BioImage
                 }
                 set
                 {
-                    Size s = TextRenderer.MeasureText(text, font);
-                    BoundingBox = new RectangleD(X + s.Width, Y + s.Height, s.Width, s.Height);
+                    if(type == Type.Label)
+                    {
+                        Size s = TextRenderer.MeasureText(value, font);
+                        BoundingBox = new RectangleD(X, Y, s.Width, s.Height);
+                    }
+                    text = value;
                 }
             }
-            public double strokeWidth = 1;
-            public int shapeIndex = 0;
-            public bool closed = false;
-            public bool selected = false;
 
-            
 
             public RectangleD GetSelectBound()
             {
                 double f = selectBoxSize / 2;
-                return new RectangleD(BoundingBox.X - f, BoundingBox.Y - f, BoundingBox.W + f, BoundingBox.H + f); 
+                return new RectangleD(BoundingBox.X - f, BoundingBox.Y - f, BoundingBox.W + f, BoundingBox.H + f);
             }
 
             public RectangleD GetSelectBound(Graphics g)
             {
                 if (type == Type.Label)
                 {
-                    SizeF f = g.MeasureString(text, font);
+                    SizeF f = g.MeasureString(Text, font);
                     return new RectangleD(Point.X, Point.Y, f.Width, f.Height);
                 }
                 else
-                { 
+                {
                     double f = selectBoxSize / 2;
                     return new RectangleD(BoundingBox.X - f, BoundingBox.Y - f, BoundingBox.W + f, BoundingBox.H + f);
                 }
@@ -829,10 +826,7 @@ namespace BioImage
             public void AddPoints(PointD[] p)
             {
                 Points.AddRange(p);
-                if (type != Type.Freeform)
-                {
-                    UpdateSelectBoxs();
-                }
+                UpdateSelectBoxs();
                 UpdateBoundingBox();
             }
 
@@ -877,7 +871,7 @@ namespace BioImage
             {
                 Annotation an = new Annotation();
                 an.type = Type.Point;
-                an.Rect = new RectangleD(p.X -2, p.Y -2, selectBoxSize, selectBoxSize);
+                an.Rect = new RectangleD(p.X - 2, p.Y - 2, selectBoxSize, selectBoxSize);
                 return an;
             }
             public Annotation CreateRectangle(RectangleD re)
@@ -944,8 +938,8 @@ namespace BioImage
             }
             public void UpdateBoundingBox(Graphics g)
             {
-                SizeF size = g.MeasureString(text, font);
-                Rect = new RectangleD(Point.X,Point.Y, size.Width, size.Height);
+                SizeF size = g.MeasureString(Text, font);
+                Rect = new RectangleD(Point.X, Point.Y, size.Width, size.Height);
             }
             public Annotation CreatePolyline(string points)
             {
@@ -1082,7 +1076,7 @@ namespace BioImage
             public int stride;
             public int series;
             public int Zcoord;
-            
+
             public int RGBChannelsCount;
             public int bitsPerPixel;
             public PixelFormat pixelFormat;
@@ -1109,7 +1103,7 @@ namespace BioImage
 
             public override string ToString()
             {
-                return stringId;  
+                return stringId;
             }
 
         }
@@ -1142,8 +1136,8 @@ namespace BioImage
                 writer = new BinaryWriter(stream);
                 serie = inf.series;
                 bytes = bts;
-                
-                if(info.RGBChannelsCount == 3)
+
+                if (info.RGBChannelsCount == 3)
                 {
                     //RGB Channels are stored in BGR so we switch them to RGB
                     SetBuffer(switchRedBlue(GetBitmap()));
@@ -1711,7 +1705,7 @@ namespace BioImage
                 omexml.setPixelsBinDataBigEndian(java.lang.Boolean.FALSE, 0, 0);
 
             omexml.setPixelsDimensionOrder(ome.xml.model.enums.DimensionOrder.XYCZT, series);
-            if(bitsPerPixel > 8)
+            if (bitsPerPixel > 8)
                 omexml.setPixelsType(ome.xml.model.enums.PixelType.UINT16, series);
             else
                 omexml.setPixelsType(ome.xml.model.enums.PixelType.UINT8, series);
@@ -1776,11 +1770,11 @@ namespace BioImage
                     omexml.setLightEmittingDiodePower(fl, series, channel);
                 }
             }
-            
+
             int i = 0;
             foreach (Annotation an in Annotations)
             {
-                if(an.roiID == "")
+                if (an.roiID == "")
                     omexml.setROIID("ROI:" + i.ToString() + ":" + series, i);
                 else
                     omexml.setROIID(an.roiID, i);
@@ -1810,8 +1804,8 @@ namespace BioImage
                 else
                 if (an.type == Annotation.Type.Rectangle)
                 {
-                    if(an.id != "")
-                        omexml.setRectangleID(an.id, i, series); 
+                    if (an.id != "")
+                        omexml.setRectangleID(an.id, i, series);
                     else
                         omexml.setRectangleID("Shape:" + i + ":" + series, i, series);
                     omexml.setRectangleWidth(java.lang.Double.valueOf(an.W), i, series);
@@ -1914,7 +1908,7 @@ namespace BioImage
                     ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setLabelStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                    omexml.setLabelStrokeWidth(sw,i, series);
+                    omexml.setLabelStrokeWidth(sw, i, series);
                     ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
                     omexml.setLabelFillColor(colf, i, series);
                 }
@@ -2066,13 +2060,13 @@ namespace BioImage
                 }
                 Channels.Add(ch);
             }
-            
+
             int rc = meta.getROICount();
             for (int i = 0; i < rc; i++)
             {
                 string roiID = meta.getROIID(i);
                 string roiName = meta.getROIName(i);
-                SZCT co = new SZCT(0,0,0,0);
+                SZCT co = new SZCT(0, 0, 0, 0);
                 int scount = meta.getShapeCount(i);
                 for (int sc = 0; sc < scount; sc++)
                 {
@@ -2090,26 +2084,26 @@ namespace BioImage
                         an.AddPoint(new PointD(dx, dy));
                         if (imageCount > 1)
                         {
-                                ome.xml.model.primitives.NonNegativeInteger nz = meta.getPointTheZ(i, sc);
-                                if (nz != null)
-                                    co.Z = nz.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nc = meta.getPointTheC(i, sc);
-                                if (nc != null)
-                                    co.C = nc.getNumberValue().intValue();
-                                ome.xml.model.primitives.NonNegativeInteger nt = meta.getPointTheT(i, sc);
-                                if (nt != null)
-                                    co.T = nt.getNumberValue().intValue();
-                                an.coord = co;
-                            
+                            ome.xml.model.primitives.NonNegativeInteger nz = meta.getPointTheZ(i, sc);
+                            if (nz != null)
+                                co.Z = nz.getNumberValue().intValue();
+                            ome.xml.model.primitives.NonNegativeInteger nc = meta.getPointTheC(i, sc);
+                            if (nc != null)
+                                co.C = nc.getNumberValue().intValue();
+                            ome.xml.model.primitives.NonNegativeInteger nt = meta.getPointTheT(i, sc);
+                            if (nt != null)
+                                co.T = nt.getNumberValue().intValue();
+                            an.coord = co;
+
                         }
-                        
+
                         an.Text = meta.getPointText(i, sc);
                         ome.units.quantity.Length fl = meta.getPointFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
                         ome.xml.model.primitives.Color col = meta.getPointStrokeColor(i, sc);
-                        if(col != null)
-                        an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(),col.getRed(), col.getGreen(), col.getBlue());
+                        if (col != null)
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
                         ome.units.quantity.Length fw = meta.getPointStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
@@ -2291,11 +2285,11 @@ namespace BioImage
                         }
                         an.Text = meta.getPolygonText(i, sc);
                         ome.units.quantity.Length fl = meta.getPolygonFontSize(i, sc);
-                        if(fl!=null)
-                        an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
+                        if (fl != null)
+                            an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
                         ome.xml.model.primitives.Color col = meta.getPolygonStrokeColor(i, sc);
-                        if(col!=null)
-                        an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
+                        if (col != null)
+                            an.strokeColor = System.Drawing.Color.FromArgb(col.getAlpha(), col.getRed(), col.getGreen(), col.getBlue());
                         ome.units.quantity.Length fw = meta.getPolygonStrokeWidth(i, sc);
                         if (fw != null)
                             an.strokeWidth = (float)fw.value().floatValue();
@@ -2348,9 +2342,9 @@ namespace BioImage
                     if (type == "Label")
                     {
                         an.type = Annotation.Type.Label;
-                        an.Text = meta.getLabelText(i, sc);
+                        
                         an.id = meta.getLabelID(i, sc);
-                        an.AddPoint(new PointD(meta.getLabelX(i, sc).doubleValue(),meta.getLabelY(i, sc).doubleValue()));
+                        an.AddPoint(new PointD(meta.getLabelX(i, sc).doubleValue(), meta.getLabelY(i, sc).doubleValue()));
                         if (imageCount > 1)
                         {
                             if (sc > 0)
@@ -2371,6 +2365,7 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
+                        
                         ome.units.quantity.Length fl = meta.getLabelFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2383,9 +2378,11 @@ namespace BioImage
                         ome.xml.model.primitives.Color colf = meta.getLabelFillColor(i, sc);
                         if (colf != null)
                             an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
+                        //We set this last so the text is measured correctly.
+                        an.Text = meta.getLabelText(i, sc);
                     }
                     Annotations.Add(an);
-                    }
+                }
             }
 
             int stride;
@@ -2823,7 +2820,7 @@ namespace BioImage
         public static void ExportROIs(string filename, List<Annotation> Annotations)
         {
             string con = "";
-            string cols = "ROIID,ROINAME,TYPE,ID,SHAPEINDEX,TEXT,S,C,Z,T,X,Y,W,H,POINTS,STROKECOLOR,STROKECOLORW,FILLCOLOR,FONTSIZE" + Environment.NewLine;
+            string cols = "ROIID,ROINAME,TYPE,ID,SHAPEINDEX,Text,S,C,Z,T,X,Y,W,H,POINTS,STROKECOLOR,STROKECOLORW,FILLCOLOR,FONTSIZE" + Environment.NewLine;
             con += cols;
             for (int i = 0; i < Annotations.Count; i++)
             {
@@ -2850,7 +2847,7 @@ namespace BioImage
             File.WriteAllText(filename, con);
         }
 
-        public static void ExportROIFolder(string path,string filename)
+        public static void ExportROIFolder(string path, string filename)
         {
             string[] fs = Directory.GetFiles(path);
             int i = 0;
@@ -2858,7 +2855,7 @@ namespace BioImage
             {
                 List<Annotation> annotations = OpenROIs(f);
                 string ff = Path.GetFileNameWithoutExtension(f);
-                ExportROIs(path + "//" + ff + "-" + i.ToString() + ".csv",annotations);
+                ExportROIs(path + "//" + ff + "-" + i.ToString() + ".csv", annotations);
                 i++;
             }
         }
@@ -2869,11 +2866,11 @@ namespace BioImage
             List<string> ims = new List<string>();
             List<string> ids = new List<string>();
             string p = Path.GetDirectoryName(path);
-            
+
 
             foreach (string file in Directory.GetFiles(p))
             {
-                if(file.EndsWith(ext))
+                if (file.EndsWith(ext))
                 {
                     ims.Add(file);
                 }
@@ -2954,56 +2951,56 @@ namespace BioImage
         private byte[] autoBytes;
         public unsafe bool AutoThresholdChannel(Channel c1)
         {
-            if(bitsPerPixel > 8)
-            for (int time = 0; time < SizeT; time++)
-            {
-                for (int z = 0; z < SizeZ; z++)
+            if (bitsPerPixel > 8)
+                for (int time = 0; time < SizeT; time++)
                 {
-                    int i = reader.getIndex(z, c1.Index, time);
-                    autoBytes = Buffers[i].bytes;
-                    int index, index2, x, y;
-                    if (!littleEndian)
+                    for (int z = 0; z < SizeZ; z++)
                     {
-                        //stride 1 is for the destination image and stride2 for source image.
-                        //destination image will always be 3channels(RGB) with 24bits
-                        int stride1 = SizeX * 3;
-                        int stride2 = SizeX * RGBChannelCount;
-                        for (y = SizeY - 1; y > -1; y--)
+                        int i = reader.getIndex(z, c1.Index, time);
+                        autoBytes = Buffers[i].bytes;
+                        int index, index2, x, y;
+                        if (!littleEndian)
                         {
-                            for (x = SizeX - 1; x > -1; x--)
+                            //stride 1 is for the destination image and stride2 for source image.
+                            //destination image will always be 3channels(RGB) with 24bits
+                            int stride1 = SizeX * 3;
+                            int stride2 = SizeX * RGBChannelCount;
+                            for (y = SizeY - 1; y > -1; y--)
                             {
-                                //index is for destination image and index2 for source image
-                                index = ((SizeY - y) * stride1) + ((SizeX - x) * 3);
-                                //For 16bit (2*8bit) images we multiply buffer index by 2
-                                index2 = (y * stride2 + (x * RGBChannelCount)) * 2;
-                                int px = BitConverter.ToUInt16(autoBytes, index2);
-                                if (px > c1.Max)
-                                    c1.Max = px;
+                                for (x = SizeX - 1; x > -1; x--)
+                                {
+                                    //index is for destination image and index2 for source image
+                                    index = ((SizeY - y) * stride1) + ((SizeX - x) * 3);
+                                    //For 16bit (2*8bit) images we multiply buffer index by 2
+                                    index2 = (y * stride2 + (x * RGBChannelCount)) * 2;
+                                    int px = BitConverter.ToUInt16(autoBytes, index2);
+                                    if (px > c1.Max)
+                                        c1.Max = px;
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        //stride 1 is for the destination image and stride2 for source image.
-                        //destination image will always be 3channels(RGB) with 24bits
-                        int stride1 = SizeX * 3;
-                        int stride2 = SizeX * RGBChannelCount;
-                        for (y = 0; y < SizeY; y++)
+                        else
                         {
-                            for (x = 0; x < SizeX; x++)
+                            //stride 1 is for the destination image and stride2 for source image.
+                            //destination image will always be 3channels(RGB) with 24bits
+                            int stride1 = SizeX * 3;
+                            int stride2 = SizeX * RGBChannelCount;
+                            for (y = 0; y < SizeY; y++)
                             {
-                                //index is for destination image and index2 for source image
-                                index = ((SizeY - y) * stride1) + ((SizeX - x) * 3);
-                                //For 16bit (2*8bit) images we multiply buffer index by 2
-                                index2 = (y * stride2 + (x * RGBChannelCount)) * 2;
-                                int px = BitConverter.ToUInt16(autoBytes, index2);
-                                if (px > c1.Max)
-                                    c1.Max = px;
+                                for (x = 0; x < SizeX; x++)
+                                {
+                                    //index is for destination image and index2 for source image
+                                    index = ((SizeY - y) * stride1) + ((SizeX - x) * 3);
+                                    //For 16bit (2*8bit) images we multiply buffer index by 2
+                                    index2 = (y * stride2 + (x * RGBChannelCount)) * 2;
+                                    int px = BitConverter.ToUInt16(autoBytes, index2);
+                                    if (px > c1.Max)
+                                        c1.Max = px;
+                                }
                             }
                         }
                     }
                 }
-            }
             return true;
         }
         public void AutoThreshold()
