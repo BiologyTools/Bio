@@ -1284,6 +1284,41 @@ namespace BioImage
                         an.selected = false;
                 }
             }
+
+            if (e.Button == MouseButtons.Right)
+            if (Mode == ViewMode.RGBImage)
+            {
+                int sc = coordinate.S;
+                int zc = coordinate.Z;
+                int cc = coordinate.C;
+                int tc = coordinate.T;
+                if (image.RGBChannelCount == 1)
+                {
+                    int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y);
+                    int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y);
+                    int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y);
+                    mouseColor += "," + r + "," + g + "," + b;
+                }
+                else
+                {
+                    int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y, 0);
+                    int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y, 1);
+                    int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y, 2);
+                    mouseColor += "," + r + "," + g + "," + b;
+                }
+            }
+            else
+            if (Mode == ViewMode.Filtered)
+            {
+                int r = Buf.GetValue((int)p.X, (int)p.Y);
+                mouseColor += ", " + r;
+            }
+            else
+            if (Mode == ViewMode.Raw)
+            {
+                int r = Buf.GetValue((int)p.X, (int)p.Y);
+                mouseColor += ", " + r;
+            }
             tools.ToolDown(this, arg);
         }
         public static PointF mouseUp;
@@ -1334,28 +1369,15 @@ namespace BioImage
                     x2State = false;
             }
 
+            if (Tools.currentTool != null)
+            if(Tools.currentTool.type == Tools.Tool.Type.pencil)
             if (Mode == ViewMode.RGBImage)
             {
                 int sc = coordinate.S;
                 int zc = coordinate.Z;
                 int cc = coordinate.C;
                 int tc = coordinate.T;
-
-                if (image.RGBChannelCount == 1)
-                {
-                    int r = image.GetValue(sc, zc, RChannel.index, tc, p.X, p.Y);
-                    int g = image.GetValue(sc, zc, GChannel.index, tc, p.X, p.Y);
-                    int b = image.GetValue(sc, zc, BChannel.index, tc, p.X, p.Y);
-                    mouseColor += "," + r + "," + g + "," + b;
-                }
-                else
-                {
-                    int r = image.GetValue(sc, zc, RChannel.index, tc, p.X, p.Y, 0);
-                    int g = image.GetValue(sc, zc, GChannel.index, tc, p.X, p.Y, 1);
-                    int b = image.GetValue(sc, zc, BChannel.index, tc, p.X, p.Y, 2);
-                    mouseColor += "," + r + "," + g + "," + b;
-                }
-                if (Tools.currentTool != null)
+                
                 if (e.Button == MouseButtons.Left && Tools.currentTool.toolType == Tools.Tool.ToolType.color)
                 {
                     if (Buf.info.RGBChannelsCount > 1)
@@ -1388,8 +1410,6 @@ namespace BioImage
             else
             if (Mode == ViewMode.Filtered)
             {
-                int r = Buf.GetValue(p.X, p.Y);
-                mouseColor += ", " + r;
                 if (e.Button == MouseButtons.Left)
                 {
                     if (image.RGBChannelCount > 1)
@@ -1405,9 +1425,6 @@ namespace BioImage
             else
             if (Mode == ViewMode.Raw)
             {
-                
-                int r = Buf.GetValue(p.X, p.Y);
-                mouseColor += ", " + r;
                 if (e.Button == MouseButtons.Left)
                 {
                     if (image.RGBChannelCount > 1)
