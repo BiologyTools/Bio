@@ -598,7 +598,7 @@ namespace BioImage
         }
         public class Annotation
         {
-            public float selectBoxSize = 4;
+            public static float selectBoxSize = 4;
             public enum Type
             {
                 Rectangle,
@@ -744,12 +744,25 @@ namespace BioImage
             public bool isFilled = false;
             public string roiID;
             public string roiName;
-            public string text;
+            private string text;
+            public string Text
+            {
+                get
+                {
+                    return text;
+                }
+                set
+                {
+                    Size s = TextRenderer.MeasureText(text, font);
+                    BoundingBox = new RectangleD(X + s.Width, Y + s.Height, s.Width, s.Height);
+                }
+            }
             public double strokeWidth = 1;
             public int shapeIndex = 0;
             public bool closed = false;
             public bool selected = false;
 
+            
 
             public RectangleD GetSelectBound()
             {
@@ -1783,8 +1796,8 @@ namespace BioImage
                     omexml.setPointTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
                     omexml.setPointTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
                     omexml.setPointTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
-                    if (an.text != "")
-                        omexml.setPointText(an.text, i, series);
+                    if (an.Text != "")
+                        omexml.setPointText(an.Text, i, series);
                     else
                         omexml.setPointText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
@@ -1809,8 +1822,8 @@ namespace BioImage
                     omexml.setRectangleTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
                     omexml.setRectangleTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
                     omexml.setRectangleText(i.ToString(), i, series);
-                    if (an.text != "")
-                        omexml.setRectangleText(an.text, i, series);
+                    if (an.Text != "")
+                        omexml.setRectangleText(an.Text, i, series);
                     else
                         omexml.setRectangleText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
@@ -1836,8 +1849,8 @@ namespace BioImage
                     omexml.setLineTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
                     omexml.setLineTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
                     omexml.setLineTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
-                    if (an.text != "")
-                        omexml.setLineText(an.text, i, series);
+                    if (an.Text != "")
+                        omexml.setLineText(an.Text, i, series);
                     else
                         omexml.setLineText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
@@ -1866,8 +1879,8 @@ namespace BioImage
                     omexml.setEllipseTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
                     omexml.setEllipseTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
                     omexml.setEllipseTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
-                    if (an.text != "")
-                        omexml.setEllipseText(an.text, i, series);
+                    if (an.Text != "")
+                        omexml.setEllipseText(an.Text, i, series);
                     else
                         omexml.setEllipseText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
@@ -1892,8 +1905,8 @@ namespace BioImage
                     omexml.setLabelTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
                     omexml.setLabelTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
                     omexml.setLabelText(i.ToString(), i, series);
-                    if (an.text != "")
-                        omexml.setLabelText(an.text, i, series);
+                    if (an.Text != "")
+                        omexml.setLabelText(an.Text, i, series);
                     else
                         omexml.setLabelText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
@@ -2090,7 +2103,7 @@ namespace BioImage
                             
                         }
                         
-                        an.text = meta.getPointText(i, sc);
+                        an.Text = meta.getPointText(i, sc);
                         ome.units.quantity.Length fl = meta.getPointFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2135,7 +2148,7 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
-                        an.text = meta.getLineText(i, sc);
+                        an.Text = meta.getLineText(i, sc);
                         ome.units.quantity.Length fl = meta.getLineFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2179,7 +2192,7 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
-                        an.text = meta.getRectangleText(i, sc);
+                        an.Text = meta.getRectangleText(i, sc);
                         ome.units.quantity.Length fl = meta.getRectangleFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2229,7 +2242,7 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
-                        an.text = meta.getEllipseText(i, sc);
+                        an.Text = meta.getEllipseText(i, sc);
                         ome.units.quantity.Length fl = meta.getEllipseFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2276,7 +2289,7 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
-                        an.text = meta.getPolygonText(i, sc);
+                        an.Text = meta.getPolygonText(i, sc);
                         ome.units.quantity.Length fl = meta.getPolygonFontSize(i, sc);
                         if(fl!=null)
                         an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2317,7 +2330,7 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
-                        an.text = meta.getPolylineText(i, sc);
+                        an.Text = meta.getPolylineText(i, sc);
                         ome.units.quantity.Length fl = meta.getPolylineFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2335,7 +2348,7 @@ namespace BioImage
                     if (type == "Label")
                     {
                         an.type = Annotation.Type.Label;
-                        an.text = meta.getLabelText(i, sc);
+                        an.Text = meta.getLabelText(i, sc);
                         an.id = meta.getLabelID(i, sc);
                         an.AddPoint(new PointD(meta.getLabelX(i, sc).doubleValue(),meta.getLabelY(i, sc).doubleValue()));
                         if (imageCount > 1)
@@ -2520,7 +2533,7 @@ namespace BioImage
                             }
                         }
 
-                        an.text = meta.getPointText(i, sc);
+                        an.Text = meta.getPointText(i, sc);
                         ome.units.quantity.Length fl = meta.getPointFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2565,7 +2578,7 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
-                        an.text = meta.getLineText(i, sc);
+                        an.Text = meta.getLineText(i, sc);
                         ome.units.quantity.Length fl = meta.getLineFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2609,7 +2622,7 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
-                        an.text = meta.getRectangleText(i, sc);
+                        an.Text = meta.getRectangleText(i, sc);
                         ome.units.quantity.Length fl = meta.getRectangleFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2659,7 +2672,7 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
-                        an.text = meta.getEllipseText(i, sc);
+                        an.Text = meta.getEllipseText(i, sc);
                         ome.units.quantity.Length fl = meta.getEllipseFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2705,7 +2718,7 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
-                        an.text = meta.getPolygonText(i, sc);
+                        an.Text = meta.getPolygonText(i, sc);
                         ome.units.quantity.Length fl = meta.getPolygonFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2746,7 +2759,7 @@ namespace BioImage
                                 an.coord = co;
                             }
                         }
-                        an.text = meta.getPolylineText(i, sc);
+                        an.Text = meta.getPolylineText(i, sc);
                         ome.units.quantity.Length fl = meta.getPolylineFontSize(i, sc);
                         if (fl != null)
                             an.font = new Font(SystemFonts.DefaultFont.FontFamily, (float)fl.value().doubleValue(), FontStyle.Regular);
@@ -2764,7 +2777,7 @@ namespace BioImage
                     if (type == "Label")
                     {
                         an.type = Annotation.Type.Label;
-                        an.text = meta.getLabelText(i, sc);
+                        an.Text = meta.getLabelText(i, sc);
                         an.id = meta.getLabelID(i, sc);
                         an.AddPoint(new PointD(meta.getLabelX(i, sc).doubleValue(), meta.getLabelY(i, sc).doubleValue()));
                         if (imageCount > 1)
@@ -2830,7 +2843,7 @@ namespace BioImage
                 string bColor = sep.ToString() + an.fillColor.A.ToString() + ',' + an.fillColor.R.ToString() + ',' + an.fillColor.G.ToString() + ',' + an.fillColor.B.ToString() + sep.ToString();
 
                 string line = an.roiID + ',' + an.roiName + ',' + an.type.ToString() + ',' + an.id + ',' + an.shapeIndex.ToString() + ',' +
-                    an.text + ',' + an.coord.S.ToString() + ',' + an.coord.Z.ToString() + ',' + an.coord.C.ToString() + ',' + an.coord.T.ToString() + ',' + an.X.ToString() + ',' + an.Y.ToString() + ',' +
+                    an.Text + ',' + an.coord.S.ToString() + ',' + an.coord.Z.ToString() + ',' + an.coord.C.ToString() + ',' + an.coord.T.ToString() + ',' + an.X.ToString() + ',' + an.Y.ToString() + ',' +
                     an.W.ToString() + ',' + an.H.ToString() + ',' + sep.ToString() + pts + sep.ToString() + ',' + sColor + ',' + an.strokeWidth.ToString() + ',' + bColor + ',' + an.font.Size.ToString() + ',' + Environment.NewLine;
                 con += line;
             }

@@ -29,6 +29,8 @@ namespace BioImage
             tools = new Tools();
             manager = new ROIManager();
             app = this;
+            //string file = "E://TESTIMAGES//text.ome.tif";
+            //SetFile(file, 0, false);
             if (arg.Length == 0)
                 return;
             else
@@ -218,7 +220,7 @@ namespace BioImage
                 string bColor = sep.ToString() + an.fillColor.A.ToString() + ',' + an.fillColor.R.ToString() + ',' + an.fillColor.G.ToString() + ',' + an.fillColor.B.ToString() + sep.ToString();
 
                 string line = an.roiID + ',' + an.roiName + ',' + an.type.ToString() + ',' + an.id + ',' + an.shapeIndex.ToString() + ',' +
-                    an.text + ',' + an.coord.S.ToString() + ',' + an.coord.Z.ToString() + ',' + an.coord.C.ToString() + ',' + an.coord.T.ToString() + ',' + an.X.ToString() + ',' + an.Y.ToString() + ',' +
+                    an.Text + ',' + an.coord.S.ToString() + ',' + an.coord.Z.ToString() + ',' + an.coord.C.ToString() + ',' + an.coord.T.ToString() + ',' + an.X.ToString() + ',' + an.Y.ToString() + ',' +
                     an.W.ToString() + ',' + an.H.ToString() + ',' + sep.ToString() + pts + sep.ToString() + ',' + sColor + ',' + an.strokeWidth.ToString() + ',' + bColor + ',' + an.font.Size.ToString() + ',' + Environment.NewLine;
                 con += line;
             }
@@ -292,7 +294,7 @@ namespace BioImage
                         if (col == 5)
                         {
                             //TEXT/
-                            an.text = val;
+                            an.Text = val;
                         }
                         else
                         if (col == 6)

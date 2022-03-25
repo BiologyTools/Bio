@@ -19,6 +19,7 @@ namespace BioImage
             {
                 typeBox.Items.Add(item);
             }
+            selectBoxSize.Value = (decimal)BioImage.Annotation.selectBoxSize;
         }
 
         public void GetROIsFromImage()
@@ -35,24 +36,24 @@ namespace BioImage
             }
         }
 
-        public void UpdateView()
+        public void UpdateOverlay()
         {
             if(ImageView.viewer != null)
-                ImageView.viewer.UpdateView();
+                ImageView.viewer.UpdateOverlay();
         }
         public void updateROI(int index, BioImage.Annotation an)
         {
             if (ImageView.selectedImage == null)
                 return;
             ImageView.selectedImage.Annotations[index] = an;
-            UpdateView();
+            UpdateOverlay();
         }
         private void xBox_ValueChanged(object sender, EventArgs e)
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
             anno.X = (double)xBox.Value;
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void yBox_ValueChanged(object sender, EventArgs e)
@@ -60,7 +61,7 @@ namespace BioImage
             if (roiView.SelectedItems.Count == 0)
                 return;
             anno.Y = (double)yBox.Value;
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void wBox_ValueChanged(object sender, EventArgs e)
@@ -69,7 +70,7 @@ namespace BioImage
                 return;
             if(anno.type == BioImage.Annotation.Type.Rectangle || anno.type == BioImage.Annotation.Type.Ellipse)
                 anno.W = (double)wBox.Value;
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void hBox_ValueChanged(object sender, EventArgs e)
@@ -78,20 +79,20 @@ namespace BioImage
                 return;
             if (anno.type == BioImage.Annotation.Type.Rectangle || anno.type == BioImage.Annotation.Type.Ellipse)
                 anno.H = (double)hBox.Value;
-            UpdateView();
+            UpdateOverlay();
         }
         private void sBox_ValueChanged(object sender, EventArgs e)
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
-            UpdateView();
+            UpdateOverlay();
         }
         private void zBox_ValueChanged(object sender, EventArgs e)
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
             anno.coord.Z = (int)zBox.Value;
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void cBox_ValueChanged(object sender, EventArgs e)
@@ -99,14 +100,14 @@ namespace BioImage
             if (roiView.SelectedItems.Count == 0)
                 return;
             anno.coord.C = (int)cBox.Value;
-            UpdateView();
+            UpdateOverlay();
         }
         private void tBox_ValueChanged(object sender, EventArgs e)
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
             anno.coord.T = (int)cBox.Value;
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void rBox_ValueChanged(object sender, EventArgs e)
@@ -114,7 +115,7 @@ namespace BioImage
             if (roiView.SelectedItems.Count == 0)
                 return;
             anno.strokeColor = Color.FromArgb((byte)rBox.Value, anno.strokeColor.G, anno.strokeColor.B);
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void gBox_ValueChanged(object sender, EventArgs e)
@@ -122,7 +123,7 @@ namespace BioImage
             if (roiView.SelectedItems.Count == 0)
                 return;
             anno.strokeColor = Color.FromArgb(anno.strokeColor.R, (byte)gBox.Value, anno.strokeColor.B);
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void bBox_ValueChanged(object sender, EventArgs e)
@@ -130,7 +131,7 @@ namespace BioImage
             if (roiView.SelectedItems.Count == 0)
                 return;
             anno.strokeColor = Color.FromArgb(anno.strokeColor.R, anno.strokeColor.G, (byte)bBox.Value);
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void typeBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -138,15 +139,15 @@ namespace BioImage
             if (roiView.SelectedItems.Count == 0)
                 return;
             anno.type = (BioImage.Annotation.Type)typeBox.SelectedItem;
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void textBox_TextChanged(object sender, EventArgs e)
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
-            anno.text = textBox.Text;
-            UpdateView();
+            anno.Text = textBox.Text;
+            UpdateOverlay();
         }
 
         private void idBox_TextChanged(object sender, EventArgs e)
@@ -154,7 +155,7 @@ namespace BioImage
             if (roiView.SelectedItems.Count == 0)
                 return;
             anno.id = idBox.Text;
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void ROIManager_Activated(object sender, EventArgs e)
@@ -215,7 +216,7 @@ namespace BioImage
             bBox.Value = anno.strokeColor.B;
             strokeWBox.Value = (decimal)anno.strokeWidth;
             idBox.Text = anno.id;
-            textBox.Text = anno.text;
+            textBox.Text = anno.Text;
             typeBox.SelectedIndex = (int)anno.type;
             UpdatePointBox();
         }
@@ -227,7 +228,7 @@ namespace BioImage
             if (ImageView.selectedImage == null)
                 return;
             ImageView.selectedImage.Annotations[roiView.SelectedIndices[0]] = anno;
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void addButton_Click(object sender, EventArgs e)
@@ -237,19 +238,19 @@ namespace BioImage
             if (anno == null)
                 return;
             ImageView.selectedImage.Annotations.Add(anno);
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void showBoundsBox_CheckedChanged(object sender, EventArgs e)
         {
             ImageView.showBounds = showBoundsBox.Checked;
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void showTextBox_CheckedChanged(object sender, EventArgs e)
         {
             ImageView.showText = showTextBox.Checked;
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void pointXBox_ValueChanged(object sender, EventArgs e)
@@ -259,7 +260,7 @@ namespace BioImage
             if (anno.type == BioImage.Annotation.Type.Rectangle || anno.type == BioImage.Annotation.Type.Ellipse)
                 return;
             anno.UpdatePoint(new BioImage.PointD((double)pointXBox.Value, (double)pointYBox.Value),(int)pointIndexBox.Value);
-            UpdateView();
+            UpdateOverlay();
         }
 
         private void pointYBox_ValueChanged(object sender, EventArgs e)
@@ -269,7 +270,7 @@ namespace BioImage
             if (anno.type == BioImage.Annotation.Type.Rectangle || anno.type == BioImage.Annotation.Type.Ellipse)
                 return;
             anno.UpdatePoint(new BioImage.PointD((double)pointXBox.Value, (double)pointYBox.Value), (int)pointIndexBox.Value);
-            UpdateView();
+            UpdateOverlay();
         }
 
         public bool autoUpdate = true;
@@ -301,7 +302,12 @@ namespace BioImage
             if (anno == null)
                 return;
             anno.strokeWidth = (int)strokeWBox.Value;
-            UpdateView();
+            UpdateOverlay();
+        }
+
+        private void selectBoxSize_ValueChanged(object sender, EventArgs e)
+        {
+            BioImage.Annotation.selectBoxSize = (float)selectBoxSize.Value;
         }
     }
 }

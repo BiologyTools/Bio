@@ -73,6 +73,8 @@
             this.fontDialog = new System.Windows.Forms.FontDialog();
             this.strokeWBox = new System.Windows.Forms.NumericUpDown();
             this.label13 = new System.Windows.Forms.Label();
+            this.selectBoxSize = new System.Windows.Forms.NumericUpDown();
+            this.label14 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.rBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bBox)).BeginInit();
@@ -89,6 +91,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pointXBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointIndexBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.strokeWBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.selectBoxSize)).BeginInit();
             this.SuspendLayout();
             // 
             // roiView
@@ -102,7 +105,7 @@
             this.roiView.Location = new System.Drawing.Point(-1, 0);
             this.roiView.MultiSelect = false;
             this.roiView.Name = "roiView";
-            this.roiView.Size = new System.Drawing.Size(221, 393);
+            this.roiView.Size = new System.Drawing.Size(221, 405);
             this.roiView.TabIndex = 0;
             this.roiView.UseCompatibleStateImageBehavior = false;
             this.roiView.View = System.Windows.Forms.View.List;
@@ -562,7 +565,7 @@
             // 
             // duplicateBut
             // 
-            this.duplicateBut.Location = new System.Drawing.Point(227, 362);
+            this.duplicateBut.Location = new System.Drawing.Point(226, 374);
             this.duplicateBut.Name = "duplicateBut";
             this.duplicateBut.Size = new System.Drawing.Size(75, 25);
             this.duplicateBut.TabIndex = 29;
@@ -607,12 +610,51 @@
             this.label13.TabIndex = 39;
             this.label13.Text = "Stroke Width";
             // 
+            // selectBoxSize
+            // 
+            this.selectBoxSize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.selectBoxSize.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.selectBoxSize.ForeColor = System.Drawing.Color.White;
+            this.selectBoxSize.Location = new System.Drawing.Point(314, 377);
+            this.selectBoxSize.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.selectBoxSize.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.selectBoxSize.Name = "selectBoxSize";
+            this.selectBoxSize.Size = new System.Drawing.Size(48, 20);
+            this.selectBoxSize.TabIndex = 41;
+            this.selectBoxSize.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.selectBoxSize.ValueChanged += new System.EventHandler(this.selectBoxSize_ValueChanged);
+            // 
+            // label14
+            // 
+            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label14.AutoSize = true;
+            this.label14.ForeColor = System.Drawing.Color.White;
+            this.label14.Location = new System.Drawing.Point(311, 358);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(81, 13);
+            this.label14.TabIndex = 40;
+            this.label14.Text = "Select Box Size";
+            // 
             // ROIManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(397, 394);
+            this.ClientSize = new System.Drawing.Size(397, 406);
+            this.Controls.Add(this.selectBoxSize);
+            this.Controls.Add(this.label14);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.strokeWBox);
             this.Controls.Add(this.fontBut);
@@ -670,6 +712,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pointXBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointIndexBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.strokeWBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.selectBoxSize)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -720,5 +763,7 @@
         private System.Windows.Forms.FontDialog fontDialog;
         private System.Windows.Forms.NumericUpDown strokeWBox;
         private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.NumericUpDown selectBoxSize;
+        private System.Windows.Forms.Label label14;
     }
 }

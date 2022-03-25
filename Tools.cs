@@ -30,6 +30,10 @@ namespace BioImage
         public static PolygonTool polygon;
         public static TextTool text;
         public static DeleteTool delete;
+        public static FreeformTool freeform;
+        public static RectSelTool rectSel;
+        public static PointSelTool pointSel;
+        public static Rectangle selectionRectangle;
 
         public class Tool : Control
         {
@@ -55,6 +59,9 @@ namespace BioImage
                 polygon,
                 text,
                 delete,
+                freeform,
+                rectSel,
+                pointSel,
             }
 
             public BioImage.ColorS Color;
@@ -163,8 +170,49 @@ namespace BioImage
                 type = Type.delete;
             }
         }
+        public class FreeformTool : Tool
+        {
+            public FreeformTool()
+            {
+                toolType = ToolType.annotation;
+                type = Type.freeform;
+            }
+        }
+        public class PointSelTool : Tool
+        {
+            public PointSelTool()
+            {
+                toolType = ToolType.select;
+                type = Type.pointSel;
+            }
+        }
+
+        public class RectSelTool : Tool
+        {
+            private BioImage.RectangleD selection;
+            public BioImage.RectangleD Selection
+            {
+                get
+                {
+                    return selection;
+                }
+                set
+                {
+                    selectionRect = value;
+                    selection = value;
+                }
+        
+            }
+            public RectSelTool()
+            {
+                toolType = ToolType.select;
+                type = Type.pointSel;
+                
+            }
+        }
 
         public static Tool currentTool;
+        public static BioImage.RectangleD selectionRect;
         public Font font;
         private BioImage image;
         public BioImage Image
@@ -197,11 +245,14 @@ namespace BioImage
             polygon = new PolygonTool();
             text = new TextTool();
             delete = new DeleteTool();
+            freeform = new FreeformTool();
+            rectSel = new RectSelTool();
+            pointSel = new PointSelTool();
         }
 
-        public void UpdateView()
+        public void UpdateOverlay()
         {
-            ImageView.viewer.UpdateView();
+            ImageView.viewer.UpdateOverlay();
         }
         public void UpdateSelected()
         {
@@ -228,6 +279,7 @@ namespace BioImage
                     anno = new BioImage.Annotation();
                 }
             }
+            else
             if (currentTool.type == Tool.Type.line)
             {
                 anno.type = BioImage.Annotation.Type.Line;
@@ -243,7 +295,7 @@ namespace BioImage
             else
             if (currentTool.type == Tool.Type.polygon)
             {
-                if (anno.GetPointCount() == 1)
+                if (anno.GetPointCount() == 0)
                 {
                     anno.type = BioImage.Annotation.Type.Polygon;
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
@@ -253,7 +305,7 @@ namespace BioImage
                 else
                 {
                     //If we click on a point 1 we close this polygon
-                    BioImage.RectangleD d = new BioImage.RectangleD(e.X, e.Y, anno.selectBoxSize, anno.selectBoxSize);
+                    BioImage.RectangleD d = new BioImage.RectangleD(e.X, e.Y, BioImage.Annotation.selectBoxSize, BioImage.Annotation.selectBoxSize);
                     if (d.IntersectsWith(anno.Point))
                     {
                         anno.closed = true;
@@ -300,7 +352,26 @@ namespace BioImage
                     }
                 }
             }
-            UpdateView();
+            else
+            if (currentTool.type == Tool.Type.text)
+            {
+                anno.type = BioImage.Annotation.Type.Label;
+                anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                anno.coord = ImageView.Coordinate;
+                TextInput ti = new TextInput(anno);
+                if (ti.ShowDialog() != DialogResult.OK)
+                    return;
+                ImageView.selectedImage.Annotations.Add(anno);
+                
+            }
+            else
+            if (currentTool.type == Tool.Type.pointSel)
+            {
+                anno.type = BioImage.Annotation.Type.Rectangle;
+                anno.Rect = new BioImage.RectangleD(e.X, e.Y, 1, 1);
+                anno.coord = ImageView.Coordinate;
+            }
+            UpdateOverlay();
         }
         
         public void ToolUp(object sender, MouseEventArgs e)
@@ -340,15 +411,70 @@ namespace BioImage
                 ImageView.selectedImage.Annotations.Add(anno);
                 anno = new BioImage.Annotation();
             }
-            UpdateView();
+            else
+            if (currentTool.type == Tool.Type.ellipse && anno.type == BioImage.Annotation.Type.Freeform)
+            {
+                anno.closed = true;
+            }
+            else
+            if (currentTool.type == Tool.Type.rectSel)
+            {
+                foreach (BioImage.Annotation an in image.Annotations)
+                {
+                    if (an.GetSelectBound().IntersectsWith(e.X, e.Y))
+                    {
+                        ImageView.selectedAnnotation = an;
+                        an.selected = true;
+                        PointF p = ImageView.mouseDown;
+                        PointF pp = new PointF(p.X + e.X, p.Y + e.Y);
+                        RectangleF r = new RectangleF(p.X, p.Y, pp.X, pp.Y);
+                        for (int i = 0; i < an.selectBoxs.Count; i++)
+                        {
+                            if (an.selectBoxs[i].IntersectsWith(r))
+                            {
+                                ImageView.selectedPoints.Add(i);
+                            }
+                        }
+                    }
+                    else
+                        an.selected = false;
+                }
+            }
+            UpdateOverlay();
         }
 
         public void ToolMove(object sender, MouseEventArgs e)
         {
-            if (currentTool.type == Tool.Type.move)
+            if (currentTool.type == Tool.Type.freeform && e.Button == MouseButtons.Left)
             {
-
+                if (anno.GetPointCount() == 0)
+                {
+                    anno.type = BioImage.Annotation.Type.Freeform;
+                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                    anno.coord = ImageView.Coordinate;
+                    ImageView.selectedImage.Annotations.Add(anno);
+                }
+                else
+                {
+                    //If we click on a point 1 we close this freeform
+                    BioImage.RectangleD d = new BioImage.RectangleD(e.X, e.Y, BioImage.Annotation.selectBoxSize, BioImage.Annotation.selectBoxSize);
+                    if (d.IntersectsWith(anno.Point))
+                    {
+                        anno.closed = true;
+                        //anno = new BioImage.Annotation();
+                    }
+                    else
+                    {
+                        anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                    }
+                }
             }
+            if (currentTool.type == Tool.Type.rectSel)
+            {
+                BioImage.PointD d = new BioImage.PointD(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
+                rectSel.Selection = new BioImage.RectangleD(ImageView.mouseDown.X, ImageView.mouseDown.Y, d.X, d.Y);
+            }
+            UpdateOverlay();
         }
 
         public void ToolDoubleClick(object sender, MouseEventArgs e)
@@ -441,6 +567,27 @@ namespace BioImage
             currentTool = delete;
             UpdateSelected();
             deletePanel.BackColor = Color.LightGray;
+        }
+
+        private void freeformPanel_Click(object sender, EventArgs e)
+        {
+            currentTool = freeform;
+            UpdateSelected();
+            freeformPanel.BackColor = Color.LightGray;
+        }
+
+        private void rectSelPanel_Click(object sender, EventArgs e)
+        {
+            currentTool = rectSel;
+            UpdateSelected();
+            rectSelPanel.BackColor = Color.LightGray;
+        }
+
+        private void pointSelPanel_Click(object sender, EventArgs e)
+        {
+            currentTool = pointSel;
+            UpdateSelected();
+            pointSelPanel.BackColor = Color.LightGray;
         }
     }
 }
