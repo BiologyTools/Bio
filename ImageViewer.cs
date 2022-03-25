@@ -29,22 +29,22 @@ namespace BioImage
             tools = new Tools();
             manager = new ROIManager();
             app = this;
-            //string file = "E://TESTIMAGES//text.ome.tif";
-            //SetFile(file, 0, false);
+            string file = "E://TESTIMAGES//text.ome.tif";
+            SetFile(file, 0);
             if (arg.Length == 0)
                 return;
             else
             if (arg.Length == 1)
             {
-                SetFile(arg[0], 0, false);
+                SetFile(arg[0], 0);
             }
         }
 
-        public void SetFile(string file, int seri, bool folder)
+        public void SetFile(string file, int seri)
         {
             if (viewer == null)
             {
-                viewer = new ImageView(file, seri, folder);
+                viewer = new ImageView(file, seri);
             }
             viewer.serie = seri;
             viewer.filepath = file;
@@ -85,7 +85,7 @@ namespace BioImage
                     viewer.Show();
                 }
                 else
-                    SetFile(openFilesDialog.FileName,0, false);
+                    SetFile(openFilesDialog.FileName,0);
             }
         }
 
@@ -103,22 +103,6 @@ namespace BioImage
                 return;
             Open(openFilesDialog.FileNames);
             viewer.Size = new System.Drawing.Size(viewer.image.SizeX + 100, viewer.image.SizeY + 100);
-        }
-
-        private void openFolderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (useFolderBrowser)
-            {
-                if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
-                    return;
-                SetFile(openFilesDialog.FileName, Image.serie, true);
-            }
-            else
-            {
-                if (openFilesDialog.ShowDialog() != DialogResult.OK)
-                    return;
-                SetFile(openFilesDialog.FileName, Image.serie, true);
-            }
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)

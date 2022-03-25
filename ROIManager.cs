@@ -19,7 +19,6 @@ namespace BioImage
             {
                 typeBox.Items.Add(item);
             }
-            selectBoxSize.Value = (decimal)BioImage.Annotation.selectBoxSize;
         }
 
         public void GetROIsFromImage()
@@ -307,7 +306,8 @@ namespace BioImage
 
         private void selectBoxSize_ValueChanged(object sender, EventArgs e)
         {
-            BioImage.Annotation.selectBoxSize = (float)selectBoxSize.Value;
+            ImageView.viewer.UpdateSelectBoxSize((float)selectBoxSize.Value);
+            UpdateOverlay();
         }
     }
 }

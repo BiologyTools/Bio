@@ -12,17 +12,16 @@ namespace BioImage
 {
     public partial class TextInput : Form
     {
-        BioImage.Annotation anno = new BioImage.Annotation();
-        public TextInput(BioImage.Annotation an)
+        public string textInput = "";
+        public Font font = DefaultFont;
+        public TextInput()
         {
             InitializeComponent();
-            anno = an;
-            anno.font = DefaultFont;
-            DialogResult = DialogResult.Cancel;
         }
 
         private void okBut_Click(object sender, EventArgs e)
         {
+            textInput = textBox.Text;
             DialogResult = DialogResult.OK;
         }
 
@@ -35,7 +34,7 @@ namespace BioImage
         {
             if (fontDialog.ShowDialog() != DialogResult.OK)
                 return;
-            anno.font = fontDialog.Font;
+            font = fontDialog.Font;
         }
     }
 }
