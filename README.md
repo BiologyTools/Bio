@@ -26,7 +26,7 @@ Best for working with ROI's in OME format & CSV.
 -	[IKVM](http://www.ikvm.net/)
 -	[AForge](http://www.aforgenet.com/)
 
-##License
+## Licenses
 - BioImage [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
 - AForge [LGPL](http://www.aforgenet.com/framework/license.html)
 
