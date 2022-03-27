@@ -33,6 +33,7 @@ namespace BioImage
         public static FreeformTool freeform;
         public static RectSelTool rectSel;
         public static PointSelTool pointSel;
+        public static PanTool pan;
         public static Rectangle selectionRectangle;
 
         public class Tool : Control
@@ -62,6 +63,7 @@ namespace BioImage
                 freeform,
                 rectSel,
                 pointSel,
+                pan
             }
 
             public BioImage.ColorS Color;
@@ -186,7 +188,14 @@ namespace BioImage
                 type = Type.pointSel;
             }
         }
-
+        public class PanTool : Tool
+        {
+            public PanTool()
+            {
+                toolType = ToolType.select;
+                type = Type.pointSel;
+            }
+        }
         public class RectSelTool : Tool
         {
             private BioImage.RectangleD selection;
@@ -236,6 +245,7 @@ namespace BioImage
             freeform = new FreeformTool();
             rectSel = new RectSelTool();
             pointSel = new PointSelTool();
+            pan = new PanTool();
         }
 
         public void UpdateOverlay()
@@ -265,7 +275,7 @@ namespace BioImage
                     anno.type = BioImage.Annotation.Type.Line;
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
-                    anno.coord = ImageView.Coordinate;
+                    anno.coord = ImageView.viewer.Coordinate;
                     ImageView.selectedImage.Annotations.Add(anno);
                 }
             }
@@ -277,7 +287,7 @@ namespace BioImage
                     anno = new BioImage.Annotation();
                     anno.type = BioImage.Annotation.Type.Polygon;
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
-                    anno.coord = ImageView.Coordinate;
+                    anno.coord = ImageView.viewer.Coordinate;
                     ImageView.selectedImage.Annotations.Add(anno);
                 }
                 else
@@ -303,7 +313,7 @@ namespace BioImage
                     anno = new BioImage.Annotation();
                     anno.type = BioImage.Annotation.Type.Freeform;
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
-                    anno.coord = ImageView.Coordinate;
+                    anno.coord = ImageView.viewer.Coordinate;
                     anno.closed = true;
                     ImageView.selectedImage.Annotations.Add(anno);
                 }
@@ -317,7 +327,7 @@ namespace BioImage
             {
                 anno.type = BioImage.Annotation.Type.Rectangle;
                 anno.Rect = new BioImage.RectangleD(e.X, e.Y, 1, 1);
-                anno.coord = ImageView.Coordinate;
+                anno.coord = ImageView.viewer.Coordinate;
                 ImageView.selectedImage.Annotations.Add(anno);
             }
             else
@@ -325,7 +335,7 @@ namespace BioImage
             {
                 anno.type = BioImage.Annotation.Type.Ellipse;
                 anno.Rect = new BioImage.RectangleD(e.X, e.Y, 1, 1);
-                anno.coord = ImageView.Coordinate;
+                anno.coord = ImageView.viewer.Coordinate;
                 ImageView.selectedImage.Annotations.Add(anno);
             }
             else
@@ -358,7 +368,7 @@ namespace BioImage
                 BioImage.Annotation an = new BioImage.Annotation();
                 an.type = BioImage.Annotation.Type.Label;
                 an.AddPoint(new BioImage.PointD(e.X, e.Y));
-                an.coord = ImageView.Coordinate;
+                an.coord = ImageView.viewer.Coordinate;
                 TextInput ti = new TextInput();
                 if (ti.ShowDialog() != DialogResult.OK)
                     return;
@@ -383,7 +393,7 @@ namespace BioImage
                 BioImage.Annotation an = new BioImage.Annotation();
                 an.AddPoint(new BioImage.PointD(e.X, e.Y));
                 an.type = BioImage.Annotation.Type.Point;
-                an.coord = ImageView.Coordinate;
+                an.coord = ImageView.viewer.Coordinate;
                 ImageView.selectedImage.Annotations.Add(an);
             }
             else
@@ -457,7 +467,7 @@ namespace BioImage
                 {
                     anno.type = BioImage.Annotation.Type.Freeform;
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
-                    anno.coord = ImageView.Coordinate;
+                    anno.coord = ImageView.viewer.Coordinate;
                     anno.closed = true;
                     ImageView.selectedImage.Annotations.Add(anno);
                 }
@@ -628,6 +638,13 @@ namespace BioImage
             currentTool = rectSel;
             UpdateSelected();
             rectSelPanel.BackColor = Color.LightGray;
+        }
+
+        private void panPanel_Paint(object sender, PaintEventArgs e)
+        {
+            currentTool = pan;
+            UpdateSelected();
+            panPanel.BackColor = Color.LightGray;
         }
     }
 }

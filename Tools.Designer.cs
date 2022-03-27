@@ -49,6 +49,7 @@
             this.deletePanel = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.rectSelPanel = new System.Windows.Forms.Panel();
+            this.panPanel = new System.Windows.Forms.Panel();
             this.movePanel.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.polyPanel.SuspendLayout();
@@ -110,7 +111,7 @@
             this.freeformPanel.BackColor = System.Drawing.Color.White;
             this.freeformPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("freeformPanel.BackgroundImage")));
             this.freeformPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.freeformPanel.Location = new System.Drawing.Point(30, 120);
+            this.freeformPanel.Location = new System.Drawing.Point(30, 150);
             this.freeformPanel.Name = "freeformPanel";
             this.freeformPanel.Size = new System.Drawing.Size(30, 30);
             this.freeformPanel.TabIndex = 7;
@@ -134,7 +135,7 @@
             this.rectPanel.BackColor = System.Drawing.Color.White;
             this.rectPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("rectPanel.BackgroundImage")));
             this.rectPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.rectPanel.Location = new System.Drawing.Point(30, 30);
+            this.rectPanel.Location = new System.Drawing.Point(30, 60);
             this.rectPanel.Name = "rectPanel";
             this.rectPanel.Size = new System.Drawing.Size(30, 30);
             this.rectPanel.TabIndex = 2;
@@ -156,7 +157,7 @@
             this.linePanel.BackColor = System.Drawing.Color.White;
             this.linePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("linePanel.BackgroundImage")));
             this.linePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.linePanel.Location = new System.Drawing.Point(30, 60);
+            this.linePanel.Location = new System.Drawing.Point(30, 90);
             this.linePanel.Name = "linePanel";
             this.linePanel.Size = new System.Drawing.Size(30, 30);
             this.linePanel.TabIndex = 3;
@@ -210,7 +211,7 @@
             this.deletePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("deletePanel.BackgroundImage")));
             this.deletePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.deletePanel.Controls.Add(this.panel2);
-            this.deletePanel.Location = new System.Drawing.Point(30, 90);
+            this.deletePanel.Location = new System.Drawing.Point(30, 120);
             this.deletePanel.Name = "deletePanel";
             this.deletePanel.Size = new System.Drawing.Size(30, 30);
             this.deletePanel.TabIndex = 5;
@@ -236,6 +237,17 @@
             this.rectSelPanel.TabIndex = 9;
             this.rectSelPanel.Click += new System.EventHandler(this.rectSelPanel_Click);
             // 
+            // panPanel
+            // 
+            this.panPanel.BackColor = System.Drawing.Color.White;
+            this.panPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("panPanel.BackgroundImage")));
+            this.panPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.panPanel.Location = new System.Drawing.Point(30, 30);
+            this.panPanel.Name = "panPanel";
+            this.panPanel.Size = new System.Drawing.Size(30, 30);
+            this.panPanel.TabIndex = 3;
+            this.panPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.panPanel_Paint);
+            // 
             // Tools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -243,6 +255,7 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.ClientSize = new System.Drawing.Size(60, 181);
             this.ContextMenuStrip = this.contextMenuStrip;
+            this.Controls.Add(this.panPanel);
             this.Controls.Add(this.rectPanel);
             this.Controls.Add(this.deletePanel);
             this.Controls.Add(this.rectSelPanel);
@@ -292,5 +305,6 @@
         private System.Windows.Forms.Panel deletePanel;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel rectSelPanel;
+        private System.Windows.Forms.Panel panPanel;
     }
 }

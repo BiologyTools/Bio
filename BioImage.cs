@@ -385,6 +385,45 @@ namespace BioImage
         {
             return Buffers[Coords[coord.S, coord.Z, coord.C, coord.T]];
         }
+
+        public Bitmap GetImageRGB(SZCT coord, IntRange rr, IntRange rg, IntRange rb)
+        {
+            if(bitsPerPixel > 8)
+            {
+                return AForge.Imaging.Image.Convert16bppTo8bpp(GetRGBBitmap16(coord, rr,rg, rb));
+            }
+            else
+            {
+                return GetRGBBitmap8(coord);
+            }
+        }
+        public Bitmap GetImageRGB(SZCT coord)
+        {
+            return GetRGBBitmap8(coord);
+        }
+        public Bitmap GetImageFiltered(SZCT coord, IntRange rr)
+        {
+            if (bitsPerPixel > 8)
+            {
+                return AForge.Imaging.Image.Convert16bppTo8bpp(GetFiltered(coord, rr));
+            }
+            else
+            {
+                return GetBitmap(coord);
+            }
+        }
+        public Bitmap GetImageRaw(SZCT coord)
+        {
+            if (bitsPerPixel > 8)
+            {
+                return AForge.Imaging.Image.Convert16bppTo8bpp(GetBitmap(coord));
+            }
+            else
+            {
+                return GetBitmap(coord);
+            }
+        }
+
         public Bitmap GetBitmap(SZCT coord)
         {
             return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetBitmap();
