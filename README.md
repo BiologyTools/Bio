@@ -7,19 +7,19 @@ Best for working with ROI's in OME format & CSV.
 
 ## Features
 
--Exporting ROI's to CSV files for easy analysis in statistics programs.
+- Exporting ROI's to CSV files for easy analysis in statistics programs.
 
--Great at viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
+- Great at viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
 
--RGB image viewing mode which automatically combines 3 channels into RGB image.
+- RGB image viewing mode which automatically combines 3 channels into RGB image.
 
--Editing & saving ROI's in images to OME format image stacks.
+- Editing & saving ROI's in images to OME format image stacks.
 
--Exporting ROI's from each image in a folder of images to CSV. For further quick & easy analysis of images.
+- Exporting ROI's from each image in a folder of images to CSV. For further quick & easy analysis of images.
 
--Exports bounding boxes of ROI's in CSV format.
+- Exports bounding boxes of ROI's in CSV format.
 
--Select multiple points by holding down left control key for move & delete tools.
+- Select multiple points by holding down left control key for move & delete tools.
 
 ## Dependencies
 -	[BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
