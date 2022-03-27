@@ -253,6 +253,8 @@ namespace BioImage
         BioImage.Annotation anno = new BioImage.Annotation();
         public void ToolDown(object sender, MouseEventArgs e)
         {
+            if (ImageView.viewer == null)
+                return;
             if (currentTool == null)
                 return;
             if (currentTool.type == Tool.Type.line)
@@ -272,6 +274,7 @@ namespace BioImage
             {
                 if (anno.GetPointCount() == 0)
                 {
+                    anno = new BioImage.Annotation();
                     anno.type = BioImage.Annotation.Type.Polygon;
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
                     anno.coord = ImageView.Coordinate;
@@ -326,22 +329,25 @@ namespace BioImage
                 ImageView.selectedImage.Annotations.Add(anno);
             }
             else
-            if(currentTool.type == Tool.Type.delete)
+            if(currentTool.type == Tool.Type.delete || Win32.GetKeyState(Keys.Delete))
             {
-                if(ImageView.selectedAnnotation != null)
+                foreach (BioImage.Annotation an in ImageView.selectedAnnotations)
                 {
-                    if (ImageView.selectedPoints.Count == 0)
+                    if(an != null)
                     {
-                        ImageView.selectedImage.Annotations.Remove(ImageView.selectedAnnotation);
-                    }
-                    else
-                    {
-                        if (ImageView.selectedAnnotation.type == BioImage.Annotation.Type.Polygon ||
-                            ImageView.selectedAnnotation.type == BioImage.Annotation.Type.Polyline ||
-                            ImageView.selectedAnnotation.type == BioImage.Annotation.Type.Freeform)
+                        if (an.selectedPoints.Count == 0)
                         {
-                            ImageView.selectedAnnotation.closed = false;
-                            ImageView.selectedAnnotation.RemovePoints(ImageView.selectedPoints.ToArray());
+                            ImageView.selectedImage.Annotations.Remove(an);
+                        }
+                        else
+                        {
+                            if (an.type == BioImage.Annotation.Type.Polygon ||
+                                an.type == BioImage.Annotation.Type.Polyline ||
+                                an.type == BioImage.Annotation.Type.Freeform)
+                            {
+                                an.closed = false;
+                                an.RemovePoints(an.selectedPoints.ToArray());
+                            }
                         }
                     }
                 }
@@ -356,8 +362,9 @@ namespace BioImage
                 TextInput ti = new TextInput();
                 if (ti.ShowDialog() != DialogResult.OK)
                     return;
-                an.Text = ti.textInput;
                 an.font = ti.font;
+                an.strokeColor = ti.color;
+                an.Text = ti.textInput;
                 ImageView.selectedImage.Annotations.Add(an);
             }
             UpdateOverlay();
@@ -365,6 +372,8 @@ namespace BioImage
         
         public void ToolUp(object sender, MouseEventArgs e)
         {
+            if (ImageView.viewer == null)
+                return;
             if (currentTool == null)
                 return;
             if (anno == null)
@@ -407,19 +416,20 @@ namespace BioImage
             else
             if (currentTool.type == Tool.Type.rectSel)
             {
+                ImageView.selectedAnnotations.Clear();
                 RectangleF r = rectSel.Selection.ToRectangleF();
-                foreach (BioImage.Annotation an in ImageView.viewer.image.Annotations)
+                foreach (BioImage.Annotation an in ImageView.viewer.AnnotationsRGB)
                 {
                     if (an.GetSelectBound().ToRectangleF().IntersectsWith(r))
                     {
-                        ImageView.selectedPoints.Clear();
-                        ImageView.selectedAnnotation = an;
+                        an.selectedPoints.Clear();
+                        ImageView.selectedAnnotations.Add(an);
                         an.selected = true;
                         for (int i = 0; i < an.selectBoxs.Count; i++)
                         {
                             if (an.selectBoxs[i].IntersectsWith(r))
                             {
-                                ImageView.selectedPoints.Add(i);
+                                an.selectedPoints.Add(i);
                             }
                         }
                     }
@@ -428,20 +438,17 @@ namespace BioImage
                 }
                 rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
             }
+
             UpdateOverlay();
         }
 
         public void ToolMove(object sender, MouseEventArgs e)
         {
-            if(currentTool.type == Tool.Type.line && ImageView.down)
+            if (ImageView.viewer == null)
+                return;
+            if (currentTool.type == Tool.Type.line && ImageView.down)
             {
                 anno.UpdatePoint(new BioImage.PointD(e.X, e.Y), 1);
-            }
-            else
-            if ((currentTool.type == Tool.Type.rect || currentTool.type == Tool.Type.ellipse) && ImageView.down)
-            {
-                BioImage.PointD d = new BioImage.PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
-                anno.Rect = new BioImage.RectangleD(ImageView.mouseDown.X, ImageView.mouseDown.Y, d.X, d.Y);
             }
             else
             if (currentTool.type == Tool.Type.freeform && e.Button == MouseButtons.Left && ImageView.down)
@@ -469,14 +476,14 @@ namespace BioImage
                 {
                     if (an.GetSelectBound().ToRectangleF().IntersectsWith(r))
                     {
-                        ImageView.selectedPoints.Clear();
-                        ImageView.selectedAnnotation = an;
+                        an.selectedPoints.Clear();
+                        ImageView.selectedAnnotations.Add(an);
                         an.selected = true;
                         for (int i = 0; i < an.selectBoxs.Count; i++)
                         {
                             if (an.selectBoxs[i].IntersectsWith(r))
                             {
-                                ImageView.selectedPoints.Add(i);
+                                an.selectedPoints.Add(i);
                             }
                         }
                     }
@@ -489,6 +496,31 @@ namespace BioImage
             {
                 rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
             }
+            else
+            if (Win32.GetKeyState(Keys.Delete))
+            {
+                foreach (BioImage.Annotation an in ImageView.selectedAnnotations)
+                {
+                    if (an != null)
+                    {
+                        if (an.selectedPoints.Count == 0)
+                        {
+                            ImageView.selectedImage.Annotations.Remove(an);
+                        }
+                        else
+                        {
+                            if (an.type == BioImage.Annotation.Type.Polygon ||
+                                an.type == BioImage.Annotation.Type.Polyline ||
+                                an.type == BioImage.Annotation.Type.Freeform)
+                            {
+                                an.closed = false;
+                                an.RemovePoints(an.selectedPoints.ToArray());
+                            }
+                        }
+                    }
+                }
+            }
+
             UpdateOverlay();
         }
 
@@ -596,13 +628,6 @@ namespace BioImage
             currentTool = rectSel;
             UpdateSelected();
             rectSelPanel.BackColor = Color.LightGray;
-        }
-
-        private void pointSelPanel_Click(object sender, EventArgs e)
-        {
-            currentTool = pointSel;
-            UpdateSelected();
-            pointSelPanel.BackColor = Color.LightGray;
         }
     }
 }

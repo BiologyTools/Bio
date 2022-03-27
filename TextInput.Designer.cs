@@ -35,6 +35,8 @@
             this.okBut = new System.Windows.Forms.Button();
             this.fontBut = new System.Windows.Forms.Button();
             this.fontDialog = new System.Windows.Forms.FontDialog();
+            this.colorBut = new System.Windows.Forms.Button();
+            this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.SuspendLayout();
             // 
             // textBox
@@ -58,7 +60,7 @@
             // cancelBut
             // 
             this.cancelBut.ForeColor = System.Drawing.Color.Black;
-            this.cancelBut.Location = new System.Drawing.Point(94, 42);
+            this.cancelBut.Location = new System.Drawing.Point(94, 58);
             this.cancelBut.Name = "cancelBut";
             this.cancelBut.Size = new System.Drawing.Size(80, 26);
             this.cancelBut.TabIndex = 2;
@@ -69,7 +71,7 @@
             // okBut
             // 
             this.okBut.ForeColor = System.Drawing.Color.Black;
-            this.okBut.Location = new System.Drawing.Point(187, 43);
+            this.okBut.Location = new System.Drawing.Point(187, 59);
             this.okBut.Name = "okBut";
             this.okBut.Size = new System.Drawing.Size(80, 26);
             this.okBut.TabIndex = 3;
@@ -88,12 +90,24 @@
             this.fontBut.UseVisualStyleBackColor = true;
             this.fontBut.Click += new System.EventHandler(this.fontBut_Click);
             // 
+            // colorBut
+            // 
+            this.colorBut.ForeColor = System.Drawing.Color.Black;
+            this.colorBut.Location = new System.Drawing.Point(187, 32);
+            this.colorBut.Name = "colorBut";
+            this.colorBut.Size = new System.Drawing.Size(80, 20);
+            this.colorBut.TabIndex = 5;
+            this.colorBut.Text = "Set Color";
+            this.colorBut.UseVisualStyleBackColor = true;
+            this.colorBut.Click += new System.EventHandler(this.colorBut_Click);
+            // 
             // TextInput
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(272, 77);
+            this.ClientSize = new System.Drawing.Size(272, 97);
+            this.Controls.Add(this.colorBut);
             this.Controls.Add(this.fontBut);
             this.Controls.Add(this.okBut);
             this.Controls.Add(this.cancelBut);
@@ -118,5 +132,7 @@
         private System.Windows.Forms.Button okBut;
         private System.Windows.Forms.Button fontBut;
         private System.Windows.Forms.FontDialog fontDialog;
+        private System.Windows.Forms.Button colorBut;
+        private System.Windows.Forms.ColorDialog colorDialog;
     }
 }

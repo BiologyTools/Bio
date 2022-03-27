@@ -11,7 +11,6 @@ namespace BioImage
         public static Tools tools;
         public static ROIManager manager = null;
         private ImageView viewer = null;
-        bool useFolderBrowser = false;
 
         public static ImageViewer app = null;
 
@@ -153,30 +152,17 @@ namespace BioImage
             {
                 saveToolStripMenuItem.PerformClick();
             }
+            else
             if (e.KeyCode == Keys.O && e.Control)
             {
                 openToolStripMenuItem.PerformClick();
             }
+           
         }
 
         private void toolboxToolStripMenuItem_Click(object sender, EventArgs e)
         {
             tools.Show();
-        }
-        /*
-        private void newWindowToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (openFileDialog.ShowDialog() != DialogResult.OK)
-                return;
-            Process p = new Process();
-            p.StartInfo.FileName = Application.ExecutablePath;
-            p.StartInfo.Arguments = openFileDialog.FileName;
-            p.Start();
-        }
-        */
-        private void colorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void exportCSVToolStripMenuItem_Click(object sender, EventArgs e)
@@ -408,6 +394,8 @@ namespace BioImage
         {
             app = this;
             ImageView.app = this;
+            if (this.viewer != null)
+                ImageView.viewer = this.viewer;
         }
 
         private void channelsToolToolStripMenuItem_Click(object sender, EventArgs e)
@@ -416,6 +404,132 @@ namespace BioImage
                 return;
             ChannelsTool ch = new ChannelsTool(viewer.image.Channels);
             ch.Show();
+        }
+
+        private void normalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (viewer == null)
+                return;
+            viewer.SetSizeMode(PictureBoxSizeMode.Normal);
+            strechToolStripMenuItem.Checked = false;
+            zoomToolStripMenuItem.Checked = false;
+            autoSizeToolStripMenuItem.Checked = false;
+            centerToolStripMenuItem.Checked = false;
+        }
+
+        private void zoomToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (viewer == null)
+                return;
+            viewer.SetSizeMode(PictureBoxSizeMode.Zoom);
+            normalToolStripMenuItem.Checked = false;
+            strechToolStripMenuItem.Checked = false;
+            autoSizeToolStripMenuItem.Checked = false;
+            centerToolStripMenuItem.Checked = false;
+        }
+
+        private void strechToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (viewer == null)
+                return;
+            viewer.SetSizeMode(PictureBoxSizeMode.StretchImage);
+            normalToolStripMenuItem.Checked = false;
+            zoomToolStripMenuItem.Checked = false;
+            autoSizeToolStripMenuItem.Checked = false;
+            centerToolStripMenuItem.Checked = false;
+        }
+
+        private void autoSizeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (viewer == null)
+                return;
+            viewer.SetSizeMode(PictureBoxSizeMode.AutoSize);
+            normalToolStripMenuItem.Checked = false;
+            zoomToolStripMenuItem.Checked = false;
+            strechToolStripMenuItem.Checked = false;
+            centerToolStripMenuItem.Checked = false;
+        }
+
+        private void centerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (viewer == null)
+                return;
+            viewer.SetSizeMode(PictureBoxSizeMode.CenterImage);
+            normalToolStripMenuItem.Checked = false;
+            zoomToolStripMenuItem.Checked = false;
+            strechToolStripMenuItem.Checked = false;
+            autoSizeToolStripMenuItem.Checked = false;
+        }
+
+        private void rGBToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (viewer == null)
+                return;
+            viewer.Mode = ImageView.ViewMode.RGBImage;
+            filteredToolStripMenuItem.Checked = false;
+            rawToolStripMenuItem.Checked = false;
+            viewer.UpdateView();
+        }
+
+        private void filteredToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (viewer == null)
+                return;
+            viewer.Mode = ImageView.ViewMode.Filtered;
+            rGBToolStripMenuItem.Checked = false;
+            rawToolStripMenuItem.Checked = false;
+            viewer.UpdateView();
+        }
+
+        private void rawToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (viewer == null)
+                return;
+            viewer.Mode = ImageView.ViewMode.Raw;
+            rGBToolStripMenuItem.Checked = false;
+            filteredToolStripMenuItem.Checked = false;
+            viewer.UpdateView();
+        }
+
+        private void autoThresholdToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (viewer == null)
+                return;
+            viewer.image.AutoThreshold();
+        }
+
+        public void UpdateViewMode(ImageView.ViewMode v)
+        {
+            if (v == ImageView.ViewMode.RGBImage)
+                rGBToolStripMenuItem.Checked = true;
+            if (v == ImageView.ViewMode.Filtered)
+                filteredToolStripMenuItem.Checked = true;
+            if(v == ImageView.ViewMode.Raw)
+                rawToolStripMenuItem.Checked = true;
+        }
+
+        public void UpdateSizeMode(PictureBoxSizeMode s)
+        {
+            if (s == PictureBoxSizeMode.Zoom)
+                zoomToolStripMenuItem.Checked = true;
+            else
+                zoomToolStripMenuItem.Checked = false;
+            if (s == PictureBoxSizeMode.Normal)
+                normalToolStripMenuItem.Checked = true;
+            else
+                normalToolStripMenuItem.Checked = false;
+            if (s == PictureBoxSizeMode.StretchImage)
+                strechToolStripMenuItem.Checked = true;
+            else
+                strechToolStripMenuItem.Checked = false;
+            if (s == PictureBoxSizeMode.AutoSize)
+                autoSizeToolStripMenuItem.Checked = true;
+            else
+                autoSizeToolStripMenuItem.Checked = false;
+            if (s == PictureBoxSizeMode.CenterImage)
+                centerToolStripMenuItem.Checked = true;
+            else
+                centerToolStripMenuItem.Checked = false;
         }
     }
 }

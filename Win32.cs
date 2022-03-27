@@ -13,5 +13,13 @@ namespace BioImage
         public static extern short GetAsyncKeyState(System.Windows.Forms.Keys vKey);
         public const int WM_KEYDOWN = 0x100;
         public const int WM_KEYUP = 0x101;
+        public static bool GetKeyState(System.Windows.Forms.Keys vKey)
+        {
+            int si = (int)GetAsyncKeyState(vKey);
+            if (si == 0)
+                return false;
+            else
+                return true;
+        }
     }
 }

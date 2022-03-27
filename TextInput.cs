@@ -14,6 +14,7 @@ namespace BioImage
     {
         public string textInput = "";
         public Font font = DefaultFont;
+        public Color color = Color.Black;
         public TextInput()
         {
             InitializeComponent();
@@ -35,6 +36,13 @@ namespace BioImage
             if (fontDialog.ShowDialog() != DialogResult.OK)
                 return;
             font = fontDialog.Font;
+        }
+
+        private void colorBut_Click(object sender, EventArgs e)
+        {
+            if (colorDialog.ShowDialog() != DialogResult.OK)
+                return;
+            color = colorDialog.Color;
         }
     }
 }

@@ -537,6 +537,11 @@ namespace BioImage
             {
                 return new System.Drawing.Point((int)X, (int)Y);
             }
+
+            public override string ToString()
+            {
+                return X.ToString() + ", " + Y.ToString();
+            }
         }
         public struct RectangleD
         {
@@ -574,6 +579,10 @@ namespace BioImage
             public RectangleF ToRectangleF()
             {
                 return new RectangleF((float)X, (float)Y, (float)W, (float)H);
+            }
+            public override string ToString()
+            {
+                return X.ToString() + ", " + Y.ToString() + ", " + W.ToString() + ", " + H.ToString();
             }
         }
         public List<Annotation> GetAnnotations(SZCT coord)
@@ -635,7 +644,7 @@ namespace BioImage
             {
                 get
                 {
-                    if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform)
+                    if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform || type == Type.Label)
                         return BoundingBox;
                     if (type == Type.Rectangle || type == Type.Ellipse)
                         return new RectangleD(Points[0].X, Points[0].Y, Points[1].X - Points[0].X, Points[2].Y - Points[0].Y);
@@ -644,10 +653,11 @@ namespace BioImage
                 }
                 set
                 {
-                    if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform || type == Type.Label)
+                    if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform)
                     {
                         BoundingBox = value;
                     }
+                    else
                     if (Points.Count < 4 && (type == Type.Rectangle || type == Type.Ellipse))
                     {
                         AddPoint(new PointD(value.X, value.Y));
@@ -730,6 +740,7 @@ namespace BioImage
                 }
             }
             public List<RectangleF> selectBoxs = new List<RectangleF>();
+            public List<int> selectedPoints = new List<int>();
             public RectangleD BoundingBox;
             public Font font = System.Drawing.SystemFonts.DefaultFont;
             public SZCT coord;
@@ -751,36 +762,19 @@ namespace BioImage
                 }
                 set
                 {
+                    text = value;
                     if(type == Type.Label)
                     {
-                        Size s = TextRenderer.MeasureText(value, font);
-                        BoundingBox = new RectangleD(X, Y, s.Width, s.Height);
+                        UpdateBoundingBox();
+                        UpdateSelectBoxs();
                     }
-                    text = value;
                 }
             }
-
-
             public RectangleD GetSelectBound()
             {
                 double f = selectBoxSize / 2;
                 return new RectangleD(BoundingBox.X - f, BoundingBox.Y - f, BoundingBox.W + f, BoundingBox.H + f);
             }
-
-            public RectangleD GetSelectBound(Graphics g)
-            {
-                if (type == Type.Label)
-                {
-                    SizeF f = g.MeasureString(Text, font);
-                    return new RectangleD(Point.X, Point.Y, f.Width, f.Height);
-                }
-                else
-                {
-                    double f = selectBoxSize / 2;
-                    return new RectangleD(BoundingBox.X - f, BoundingBox.Y - f, BoundingBox.W + f, BoundingBox.H + f);
-                }
-            }
-
             public Annotation()
             {
                 coord = new SZCT(0, 0, 0, 0);
@@ -791,10 +785,9 @@ namespace BioImage
 
             public void UpdatePoint(PointD p, int i)
             {
-                if (i > 0 && i < Points.Count)
+                if (i < Points.Count)
                 {
                     Points[i] = p;
-                    selectBoxs[i] = new RectangleF((float)p.X - 2, (float)p.Y - 2, selectBoxSize, selectBoxSize);
                 }
                 UpdateBoundingBox();
                 UpdateSelectBoxs();
@@ -831,7 +824,6 @@ namespace BioImage
                 UpdateSelectBoxs();
                 UpdateBoundingBox();
             }
-
             public void RemovePoints(int[] indexs)
             {
                 //Points.remo
@@ -910,38 +902,50 @@ namespace BioImage
             }
             public void UpdateSelectBoxs()
             {
+                float f = selectBoxSize / 2;
                 selectBoxs.Clear();
+                if(type == Type.Label)
+                {
+                    selectBoxs.Add(new RectangleF((float)Points[0].X - f, (float)Points[0].Y - f, selectBoxSize, selectBoxSize));
+                }
+                else
                 for (int i = 0; i < Points.Count; i++)
                 {
-                    selectBoxs.Add(new RectangleF((float)Points[i].X - 2, (float)Points[i].Y - 2, selectBoxSize, selectBoxSize));
+                    selectBoxs.Add(new RectangleF((float)Points[i].X - f, (float)Points[i].Y - f, selectBoxSize, selectBoxSize));
                 }
             }
             public void UpdateBoundingBox()
             {
-                RectangleD r = new RectangleD(float.MaxValue, float.MaxValue, 0, 0);
-                foreach (PointD p in Points)
+                if (type == Type.Label)
                 {
-                    if (r.X > p.X)
-                        r.X = p.X;
-                    if (r.Y > p.Y)
-                        r.Y = p.Y;
-                    if (r.W < p.X)
-                        r.W = p.X;
-                    if (r.H < p.Y)
-                        r.H = p.Y;
+                    if (text != "")
+                    {
+                        Size s = TextRenderer.MeasureText(text, font);
+                        BoundingBox = new RectangleD(Points[0].X, Points[0].Y, s.Width, s.Height);
+                    }
                 }
-                r.W = r.W - r.X;
-                r.H = r.H - r.Y;
-                if (r.W == 0)
-                    r.W = 1;
-                if (r.H == 0)
-                    r.H = 1;
-                BoundingBox = r;
-            }
-            public void UpdateBoundingBox(Graphics g)
-            {
-                SizeF size = g.MeasureString(Text, font);
-                Rect = new RectangleD(Point.X, Point.Y, size.Width, size.Height);
+                else
+                {
+                    RectangleD r = new RectangleD(float.MaxValue, float.MaxValue, 0, 0);
+                    foreach (PointD p in Points)
+                    {
+                        if (r.X > p.X)
+                            r.X = p.X;
+                        if (r.Y > p.Y)
+                            r.Y = p.Y;
+                        if (r.W < p.X)
+                            r.W = p.X;
+                        if (r.H < p.Y)
+                            r.H = p.Y;
+                    }
+                    r.W = r.W - r.X;
+                    r.H = r.H - r.Y;
+                    if (r.W == 0)
+                        r.W = 1;
+                    if (r.H == 0)
+                        r.H = 1;
+                    BoundingBox = r;
+                }
             }
             public Annotation CreatePolyline(string points)
             {
@@ -962,7 +966,7 @@ namespace BioImage
             }
             public override string ToString()
             {
-                return "(" + Point.X + "." + Point.Y + ") " + coord.ToString() + " " + type.ToString() + " " + roiName;
+                return "(" + Point.X + ", " + Point.Y + ") " + coord.ToString() + " " + type.ToString() + " " + roiName;
             }
         }
         public class Channel
@@ -2344,9 +2348,8 @@ namespace BioImage
                     if (type == "Label")
                     {
                         an.type = Annotation.Type.Label;
-                        
                         an.id = meta.getLabelID(i, sc);
-                        an.AddPoint(new PointD(meta.getLabelX(i, sc).doubleValue(), meta.getLabelY(i, sc).doubleValue()));
+                        
                         if (imageCount > 1)
                         {
                             if (sc > 0)
@@ -2381,7 +2384,9 @@ namespace BioImage
                         if (colf != null)
                             an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                         //We set this last so the text is measured correctly.
+                         an.AddPoint(new PointD(meta.getLabelX(i, sc).doubleValue(), meta.getLabelY(i, sc).doubleValue()));
                         an.Text = meta.getLabelText(i, sc);
+                       
                     }
                     Annotations.Add(an);
                 }
@@ -2860,94 +2865,6 @@ namespace BioImage
                 ExportROIs(path + "//" + ff + "-" + i.ToString() + ".csv", annotations);
                 i++;
             }
-        }
-
-        public List<string> OpenFolder(string path, int ser, out string nameId, char c)
-        {
-            string ext = Path.GetExtension(path);
-            List<string> ims = new List<string>();
-            List<string> ids = new List<string>();
-            string p = Path.GetDirectoryName(path);
-
-
-            foreach (string file in Directory.GetFiles(p))
-            {
-                if (file.EndsWith(ext))
-                {
-                    ims.Add(file);
-                }
-            }
-
-            string folderName = System.IO.Path.GetDirectoryName(ims[0]);
-            nameId = Path.GetFileName(folderName);
-
-            foreach (string file in ims)
-            {
-                imageCount = ims.Count;
-                nameId = Path.GetFileName(file).Split(c)[0];
-                string idn = file + "/s" + ser + "i" + ims;
-                imagesPerSeries = ims.Count;
-                Buffers = new List<Buf>();
-
-                reader.setId(file);
-
-                sizeZ = 0;
-                sizeC = 0;
-                sizeT = 0;
-
-                SizeX = reader.getSizeX();
-                SizeY = reader.getSizeY();
-
-                for (int i = 0; i < ims.Count; i++)
-                {
-                    string[] bre = Path.GetFileNameWithoutExtension(ims[i]).Split(c);
-                    nameId = Path.GetFileName(bre[0]);
-
-                    string ch1 = bre[1][0].ToString();
-                    string ch2 = bre[2][0].ToString();
-                    string ch3 = bre[3][0].ToString();
-
-                    string cs = bre[1].Remove(0, 1);
-                    string cs2 = bre[2].Remove(0, 1);
-                    string cs3 = bre[3].Remove(0, 1);
-
-                    int iz = int.Parse(cs);
-                    int ic = int.Parse(cs2);
-                    int it = int.Parse(cs3);
-
-                    if (iz > SizeZ)
-                    {
-                        sizeZ = iz;
-                    }
-                    if (ic > SizeC)
-                    {
-                        sizeC = ic;
-                    }
-                    if (it > SizeT)
-                    {
-                        sizeT = it;
-                    }
-
-                    //int stride = 0;
-                    int bytesPerPixel = (bitsPerPixel + 7) / 8;
-                    int stride = 4 * ((SizeX * bytesPerPixel + 3) / 4);
-
-                    int len = stride * SizeY;
-                    string fn = Path.GetFileName(ims[i]);
-                    string idstring = CreateID(ims[i], ser, Coords[ser, iz, ic, it]);
-                    ids.Add(idstring);
-                    int planeHash = idstring.GetHashCode();
-                    idString = idstring;
-                    BufferInfo fi = new BufferInfo(idstring, len, ser, SizeX, SizeY, stride, RGBChannelCount, bitsPerPixel, px, it, ic, iz, i, littleEndian, convertedToLittleEndian);
-                    //imageReader.setId(ims[i]);
-
-                    Buf bff = new Buf(fi, ser, i);
-                    Buffers.Add(bff);
-                    bufferTable.Add(planeHash, Buffers[i]);
-                    Table.AddBufferByID(idstring, bff);
-                }
-            }
-            return ids;
         }
 
         private byte[] autoBytes;
