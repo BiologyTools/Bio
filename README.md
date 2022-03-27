@@ -39,8 +39,12 @@ imageview.Dock = DockStyle.Fill;
 mainTabControl.TabPages[3].Controls.Add(imageview);
 
 //Another way of opening just image.
-
 BioImage image = new BioImage("16bitTestStack.ome.tif");
+
+//Get RGB Bitmap of BioImage with coordinates (Series, Z-depth, Channel, Time)
+Bitmap rgb = image.GetImageRGB(0,0,0,0);
+//Get Filtered Bitmap of BioImage with coordinates (Series, Z-depth, Channel, Time)
+Bitmap filt = image.GetImageFiltered(0,0,0,0);
 
 image.SaveSeries("16bitTestSaveStack.ome.tif", 0);
 
