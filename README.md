@@ -7,21 +7,31 @@ Best for working with ROI's in OME format & CSV.
 
 ## Features
 
--Exporting ROI's to CSV files for easy analysis in statistics programs.
+- Exporting ROI's to CSV files for easy analysis in statistics programs.
 
--Great at viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
+- Great at viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
 
--RGB image viewing mode which automatically combines 3 channels into RGB image.
+- RGB image viewing mode which automatically combines 3 channels into RGB image.
 
--Editing & saving ROI's in images to OME format image stacks.
+- Editing & saving ROI's in images to OME format image stacks.
 
--Exporting ROI's from each image in a folder of images to CSV. For further quick & easy analysis of images.
+- Exporting ROI's from each image in a folder of images to CSV. For further quick & easy analysis of images.
 
--Exports bounding boxes of ROI's in CSV format.
+- Exports bounding boxes of ROI's in CSV format.
 
--Select multiple points by holding down left control key for move & delete tools.
+- Select multiple points by holding down left control key for move & delete tools.
 
-Example usage.
+## Dependencies
+-	[BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
+-	[IKVM](http://www.ikvm.net/)
+-	[AForge](http://www.aforgenet.com/)
+
+## License
+- BioImage [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+- AForge [LGPL](http://www.aforgenet.com/framework/license.html)
+- BioFormats.Net [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+## Example usage.
 
 ImageView imageview = new ImageView("16bitTestStack.ome.tif");
 
@@ -32,6 +42,14 @@ mainTabControl.TabPages[3].Controls.Add(imageview);
 //Another way of opening just image.
 
 BioImage image = new BioImage("16bitTestStack.ome.tif");
+
+//Get RGB Bitmap of BioImage with coordinates (Series, Z-depth, Channel, Time)
+
+Bitmap rgb = image.GetImageRGB(0,0,0,0);
+
+//Get Filtered Bitmap of BioImage with coordinates (Series, Z-depth, Channel, Time)
+
+Bitmap filt = image.GetImageFiltered(0,0,0,0);
 
 image.SaveSeries("16bitTestSaveStack.ome.tif", 0);
 

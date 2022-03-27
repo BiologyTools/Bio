@@ -28,8 +28,8 @@ namespace BioImage
             tools = new Tools();
             manager = new ROIManager();
             app = this;
-            string file = "E://TESTIMAGES//text.ome.tif";
-            SetFile(file, 0);
+            //string file = "E://TESTIMAGES//text.ome.tif";
+            //SetFile(file, 0);
             if (arg.Length == 0)
                 return;
             else
