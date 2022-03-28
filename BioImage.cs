@@ -1547,7 +1547,7 @@ namespace BioImage
             public ushort GetValue(int ix, int iy, int index)
             {
                 int i = -1;
-                int stridex = info.SizeX;
+                int stridex = info.SizeX - 1;
                 //For 16bit (2*8bit) images we multiply buffer index by 2
                 int x = ix;
                 int y = iy;
@@ -1597,7 +1597,7 @@ namespace BioImage
             public ushort GetValue(int ix, int iy)
             {
                 int i = 0;
-                int stridex = info.SizeX;
+                int stridex = info.SizeX-1;
                 //For 16bit (2*8bit) images we multiply buffer index by 2
                 int x = ix;
                 int y = iy;
@@ -1645,7 +1645,7 @@ namespace BioImage
             public void SetValue(int ix, int iy, ushort value)
             {
                 byte[] bts = bytes;
-                int stridex = info.SizeX;
+                int stridex = info.SizeX - 1;
                 //For 16bit (2*8bit) images we multiply buffer index by 2
                 int x = ix;
                 int y = iy;
@@ -1694,7 +1694,7 @@ namespace BioImage
                 if (RGBChannel == 2)
                     RGBChannel = 0;
 
-                int stride = info.SizeX;
+                int stride = info.SizeX - 1;
                 //For 16bit (2*8bit) images we multiply buffer index by 2
                 int x = ix;
                 int y = iy;

@@ -46,11 +46,6 @@ namespace BioImage
             this.rGBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filteredToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sizeModeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.normalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.zoomToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.strechToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.centerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoThresholdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
@@ -59,7 +54,6 @@ namespace BioImage
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.autoSizeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -71,7 +65,6 @@ namespace BioImage
             this.rOIToolStripMenuItem,
             this.channelsToolToolStripMenuItem,
             this.sizeModeToolStripMenuItem,
-            this.sizeModeToolStripMenuItem1,
             this.autoThresholdToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
@@ -188,52 +181,6 @@ namespace BioImage
             this.rawToolStripMenuItem.Text = "Raw";
             this.rawToolStripMenuItem.Click += new System.EventHandler(this.rawToolStripMenuItem_Click);
             // 
-            // sizeModeToolStripMenuItem1
-            // 
-            this.sizeModeToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.normalToolStripMenuItem,
-            this.zoomToolStripMenuItem,
-            this.strechToolStripMenuItem,
-            this.autoSizeToolStripMenuItem,
-            this.centerToolStripMenuItem});
-            this.sizeModeToolStripMenuItem1.Name = "sizeModeToolStripMenuItem1";
-            this.sizeModeToolStripMenuItem1.Size = new System.Drawing.Size(73, 20);
-            this.sizeModeToolStripMenuItem1.Text = "Size Mode";
-            // 
-            // normalToolStripMenuItem
-            // 
-            this.normalToolStripMenuItem.CheckOnClick = true;
-            this.normalToolStripMenuItem.Name = "normalToolStripMenuItem";
-            this.normalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.normalToolStripMenuItem.Text = "Normal";
-            this.normalToolStripMenuItem.Click += new System.EventHandler(this.normalToolStripMenuItem_Click);
-            // 
-            // zoomToolStripMenuItem
-            // 
-            this.zoomToolStripMenuItem.Checked = true;
-            this.zoomToolStripMenuItem.CheckOnClick = true;
-            this.zoomToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
-            this.zoomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.zoomToolStripMenuItem.Text = "Zoom";
-            this.zoomToolStripMenuItem.Click += new System.EventHandler(this.zoomToolStripMenuItem_Click);
-            // 
-            // strechToolStripMenuItem
-            // 
-            this.strechToolStripMenuItem.CheckOnClick = true;
-            this.strechToolStripMenuItem.Name = "strechToolStripMenuItem";
-            this.strechToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.strechToolStripMenuItem.Text = "Strech";
-            this.strechToolStripMenuItem.Click += new System.EventHandler(this.strechToolStripMenuItem_Click);
-            // 
-            // centerToolStripMenuItem
-            // 
-            this.centerToolStripMenuItem.CheckOnClick = true;
-            this.centerToolStripMenuItem.Name = "centerToolStripMenuItem";
-            this.centerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.centerToolStripMenuItem.Text = "Center";
-            this.centerToolStripMenuItem.Click += new System.EventHandler(this.centerToolStripMenuItem_Click);
-            // 
             // autoThresholdToolStripMenuItem
             // 
             this.autoThresholdToolStripMenuItem.Name = "autoThresholdToolStripMenuItem";
@@ -280,14 +227,6 @@ namespace BioImage
             this.openCSVFileDialog.DefaultExt = "csv";
             this.openCSVFileDialog.Filter = "\"CSV Files (*.csv)|*.csv|All files (*.*)|*.*\"";
             this.openCSVFileDialog.Title = "Import ROI from CSV";
-            // 
-            // autoSizeToolStripMenuItem
-            // 
-            this.autoSizeToolStripMenuItem.CheckOnClick = true;
-            this.autoSizeToolStripMenuItem.Name = "autoSizeToolStripMenuItem";
-            this.autoSizeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.autoSizeToolStripMenuItem.Text = "Auto Size";
-            this.autoSizeToolStripMenuItem.Click += new System.EventHandler(this.autoSizeToolStripMenuItem_Click);
             // 
             // ImageViewer
             // 
@@ -340,12 +279,6 @@ namespace BioImage
         private System.Windows.Forms.ToolStripMenuItem rGBToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem filteredToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rawToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem sizeModeToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem normalToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem zoomToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem strechToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem centerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem autoThresholdToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem autoSizeToolStripMenuItem;
     }
 }

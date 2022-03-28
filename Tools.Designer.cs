@@ -246,7 +246,7 @@
             this.panPanel.Name = "panPanel";
             this.panPanel.Size = new System.Drawing.Size(30, 30);
             this.panPanel.TabIndex = 3;
-            this.panPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.panPanel_Paint);
+            this.panPanel.Click += new System.EventHandler(this.panPanel_Click);
             // 
             // Tools
             // 

@@ -511,7 +511,6 @@ namespace BioImage
             this.overlayPictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.overlayPictureBox.Name = "overlayPictureBox";
             this.overlayPictureBox.Size = new System.Drawing.Size(425, 270);
-            this.overlayPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.overlayPictureBox.TabIndex = 19;
             this.overlayPictureBox.TabStop = false;
             this.overlayPictureBox.Click += new System.EventHandler(this.pictureBox_Click);
@@ -532,12 +531,10 @@ namespace BioImage
             this.pictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox.Name = "pictureBox";
             this.pictureBox.Size = new System.Drawing.Size(425, 270);
-            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox.TabIndex = 20;
             this.pictureBox.TabStop = false;
             this.pictureBox.SizeModeChanged += new System.EventHandler(this.pictureBox_SizeModeChanged);
-            this.pictureBox.SizeChanged += new System.EventHandler(this.pictureBox_SizeChanged);
-            this.pictureBox.Resize += new System.EventHandler(this.pictureBox_Resize);
+            this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
             // 
             // ImageView
             // 

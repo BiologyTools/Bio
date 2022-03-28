@@ -193,7 +193,7 @@ namespace BioImage
             public PanTool()
             {
                 toolType = ToolType.select;
-                type = Type.pointSel;
+                type = Type.pan;
             }
         }
         public class RectSelTool : Tool
@@ -252,6 +252,10 @@ namespace BioImage
         {
             ImageView.viewer.UpdateOverlay();
         }
+        public void UpdateView()
+        {
+            ImageView.viewer.UpdateView();
+        }
         public void UpdateSelected()
         {
             foreach (Control item in this.Controls)
@@ -261,7 +265,7 @@ namespace BioImage
         }
 
         BioImage.Annotation anno = new BioImage.Annotation();
-        public void ToolDown(object sender, MouseEventArgs e)
+        public void ToolDown(PointF e, MouseButtons buts)
         {
             if (ImageView.viewer == null)
                 return;
@@ -382,7 +386,7 @@ namespace BioImage
             UpdateOverlay();
         }
         
-        public void ToolUp(object sender, MouseEventArgs e)
+        public void ToolUp(PointF e, MouseButtons buts)
         {
             if (ImageView.viewer == null)
                 return;
@@ -455,9 +459,18 @@ namespace BioImage
                 rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
                 UpdateOverlay();
             }
+            else
+            if(currentTool.type == Tool.Type.pan)
+            {
+                PointF p = new PointF(ImageView.mouseUp.X -ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
+                ImageView.viewer.origin.X += p.X;
+                ImageView.viewer.origin.Y += p.Y;
+                UpdateOverlay();
+                UpdateView();
+            }
         }
 
-        public void ToolMove(object sender, MouseEventArgs e)
+        public void ToolMove(PointF e, MouseButtons buts)
         {
             if (ImageView.viewer == null)
                 return;
@@ -467,7 +480,7 @@ namespace BioImage
                 UpdateOverlay();
             }
             else
-            if (currentTool.type == Tool.Type.freeform && e.Button == MouseButtons.Left && ImageView.down)
+            if (currentTool.type == Tool.Type.freeform && buts == MouseButtons.Left && ImageView.down)
             {
                 if (anno.GetPointCount() == 0)
                 {
@@ -484,7 +497,7 @@ namespace BioImage
                 UpdateOverlay();
             }
             else
-            if (currentTool.type == Tool.Type.rectSel && e.Button == MouseButtons.Left && ImageView.down)
+            if (currentTool.type == Tool.Type.rectSel && buts == MouseButtons.Left && ImageView.down)
             {
                 BioImage.PointD d = new BioImage.PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
                 rectSel.Selection = new BioImage.RectangleD(ImageView.mouseDown.X, ImageView.mouseDown.Y, d.X, d.Y);
@@ -650,7 +663,7 @@ namespace BioImage
             rectSelPanel.BackColor = Color.LightGray;
         }
 
-        private void panPanel_Paint(object sender, PaintEventArgs e)
+        private void panPanel_Click(object sender, EventArgs e)
         {
             currentTool = pan;
             UpdateSelected();
