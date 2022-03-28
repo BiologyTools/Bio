@@ -49,10 +49,9 @@ namespace BioImage
             CFps = 1;
             UpdateView();
             viewer = this;
-            // Change parent for overlay PictureBox...
+            // Change parent for overlay PictureBox.
             overlayPictureBox.Parent = pictureBox;
             overlayPictureBox.Location = new Point(0, 0);
-            ImageViewer.app.UpdateSizeMode(pictureBox.SizeMode);
         }
         ~ImageView()
         {
