@@ -275,8 +275,9 @@ namespace BioImage
                     anno.type = BioImage.Annotation.Type.Line;
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
-                    anno.coord = ImageView.viewer.Coordinate;
+                    anno.coord = ImageView.viewer.GetCoordinate();
                     ImageView.selectedImage.Annotations.Add(anno);
+                    UpdateOverlay();
                 }
             }
             else
@@ -287,7 +288,7 @@ namespace BioImage
                     anno = new BioImage.Annotation();
                     anno.type = BioImage.Annotation.Type.Polygon;
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
-                    anno.coord = ImageView.viewer.Coordinate;
+                    anno.coord = ImageView.viewer.GetCoordinate();
                     ImageView.selectedImage.Annotations.Add(anno);
                 }
                 else
@@ -304,6 +305,7 @@ namespace BioImage
                         anno.AddPoint(new BioImage.PointD(e.X, e.Y));
                     }
                 }
+                UpdateOverlay();
             }
             else
             if (currentTool.type == Tool.Type.freeform)
@@ -313,7 +315,7 @@ namespace BioImage
                     anno = new BioImage.Annotation();
                     anno.type = BioImage.Annotation.Type.Freeform;
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
-                    anno.coord = ImageView.viewer.Coordinate;
+                    anno.coord = ImageView.viewer.GetCoordinate();
                     anno.closed = true;
                     ImageView.selectedImage.Annotations.Add(anno);
                 }
@@ -327,7 +329,7 @@ namespace BioImage
             {
                 anno.type = BioImage.Annotation.Type.Rectangle;
                 anno.Rect = new BioImage.RectangleD(e.X, e.Y, 1, 1);
-                anno.coord = ImageView.viewer.Coordinate;
+                anno.coord = ImageView.viewer.GetCoordinate();
                 ImageView.selectedImage.Annotations.Add(anno);
             }
             else
@@ -335,7 +337,7 @@ namespace BioImage
             {
                 anno.type = BioImage.Annotation.Type.Ellipse;
                 anno.Rect = new BioImage.RectangleD(e.X, e.Y, 1, 1);
-                anno.coord = ImageView.viewer.Coordinate;
+                anno.coord = ImageView.viewer.GetCoordinate();
                 ImageView.selectedImage.Annotations.Add(anno);
             }
             else
@@ -368,7 +370,7 @@ namespace BioImage
                 BioImage.Annotation an = new BioImage.Annotation();
                 an.type = BioImage.Annotation.Type.Label;
                 an.AddPoint(new BioImage.PointD(e.X, e.Y));
-                an.coord = ImageView.viewer.Coordinate;
+                an.coord = ImageView.viewer.GetCoordinate();
                 TextInput ti = new TextInput();
                 if (ti.ShowDialog() != DialogResult.OK)
                     return;
@@ -393,8 +395,9 @@ namespace BioImage
                 BioImage.Annotation an = new BioImage.Annotation();
                 an.AddPoint(new BioImage.PointD(e.X, e.Y));
                 an.type = BioImage.Annotation.Type.Point;
-                an.coord = ImageView.viewer.Coordinate;
+                an.coord = ImageView.viewer.GetCoordinate();
                 ImageView.selectedImage.Annotations.Add(an);
+                UpdateOverlay();
             }
             else
             if (currentTool.type == Tool.Type.line && anno.type == BioImage.Annotation.Type.Line)
@@ -403,6 +406,7 @@ namespace BioImage
                 {
                     anno.UpdatePoint(new BioImage.PointD(e.X, e.Y), 1);
                     anno = new BioImage.Annotation();
+                    UpdateOverlay();
                 }
             }
             else
@@ -412,6 +416,7 @@ namespace BioImage
                 {
                     anno.Rect = new BioImage.RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
                     anno = new BioImage.Annotation();
+                    UpdateOverlay();
                 }
             }
             else
@@ -421,6 +426,7 @@ namespace BioImage
                 {
                     anno.Rect = new BioImage.RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
                     anno = new BioImage.Annotation();
+                    UpdateOverlay();
                 }
             }
             else
@@ -447,9 +453,8 @@ namespace BioImage
                         an.selected = false;
                 }
                 rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
+                UpdateOverlay();
             }
-
-            UpdateOverlay();
         }
 
         public void ToolMove(object sender, MouseEventArgs e)
@@ -459,6 +464,7 @@ namespace BioImage
             if (currentTool.type == Tool.Type.line && ImageView.down)
             {
                 anno.UpdatePoint(new BioImage.PointD(e.X, e.Y), 1);
+                UpdateOverlay();
             }
             else
             if (currentTool.type == Tool.Type.freeform && e.Button == MouseButtons.Left && ImageView.down)
@@ -467,7 +473,7 @@ namespace BioImage
                 {
                     anno.type = BioImage.Annotation.Type.Freeform;
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
-                    anno.coord = ImageView.viewer.Coordinate;
+                    anno.coord = ImageView.viewer.GetCoordinate();
                     anno.closed = true;
                     ImageView.selectedImage.Annotations.Add(anno);
                 }
@@ -475,6 +481,7 @@ namespace BioImage
                 {
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
                 }
+                UpdateOverlay();
             }
             else
             if (currentTool.type == Tool.Type.rectSel && e.Button == MouseButtons.Left && ImageView.down)
@@ -500,6 +507,7 @@ namespace BioImage
                     else
                         an.selected = false;
                 }
+                UpdateOverlay();
             }
             else
             if (currentTool.type == Tool.Type.rectSel && ImageView.up)
@@ -516,6 +524,7 @@ namespace BioImage
                         if (an.selectedPoints.Count == 0)
                         {
                             ImageView.selectedImage.Annotations.Remove(an);
+                            UpdateOverlay();
                         }
                         else
                         {
@@ -525,13 +534,14 @@ namespace BioImage
                             {
                                 an.closed = false;
                                 an.RemovePoints(an.selectedPoints.ToArray());
+                                UpdateOverlay();
                             }
                         }
                     }
                 }
             }
 
-            UpdateOverlay();
+            
         }
 
         public void ToolDoubleClick(object sender, MouseEventArgs e)

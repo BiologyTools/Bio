@@ -288,11 +288,11 @@ namespace BioImage
                 ticksLabel.Text = " Ticks: " + image.loadTimeTicks;
                 if (timeEnabled)
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mouseColor;
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mousePoint + ", " + mouseColor;
                 }
                 else
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mouseColor;
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint;
                 }
                 
             }
@@ -300,11 +300,11 @@ namespace BioImage
             {
                 if (timeEnabled)
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mouseColor;
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mousePoint + ", " + mouseColor;
                 }
                 else
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mouseColor;
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint + ", " + mouseColor;
                 }
             }
         }
@@ -313,19 +313,14 @@ namespace BioImage
         {
             if (Mode == ViewMode.Raw)
             {
-                foreach (BioImage.Channel c in image.Channels)
-                {
-                    c.Min = 0;
-                    c.Max = ushort.MaxValue;
-                }
                 SetCoordinate(image.serie, zBar.Value, cBar.Value, timeBar.Value);
-                pictureBox.Image = image.GetBitmap(GetCoordinate());
+                pictureBox.Image = image.GetImageRaw(GetCoordinate());
             }
             else
             if (Mode == ViewMode.Filtered)
             {
                 SetCoordinate(image.serie, zBar.Value, cBar.Value, timeBar.Value);
-                pictureBox.Image = image.GetFiltered(GetCoordinate(), image.Channels[cBar.Value].range);
+                pictureBox.Image = image.GetImageFiltered(GetCoordinate(), image.Channels[cBar.Value].range);
             }
             else
             if (Mode == ViewMode.RGBImage)
@@ -336,30 +331,23 @@ namespace BioImage
                 {
                     if (image.bitsPerPixel > 8)
                     {
-                        AForge.IntRange rr = RChannel.range;
-                        AForge.IntRange gr;
-                        AForge.IntRange br;
                         if (image.SizeC == 1)
                         {
-                            rr = RChannel.range;
-                            pictureBox.Image = image.GetRGBBitmap16(GetCoordinate(), rr);
+                            pictureBox.Image = image.GetImageRGB(GetCoordinate(), RChannel.range, RChannel.range, RChannel.range);
                         }
                         else
                         {
-                            rr = RChannel.range;
-                            gr = GChannel.range;
-                            br = BChannel.range;
-                            pictureBox.Image = image.GetRGBBitmap16(GetCoordinate(), rr, gr, br);
+                            pictureBox.Image = image.GetImageRGB(GetCoordinate(), RChannel.range, GChannel.range, BChannel.range);
                         }
                     }
                     else
                     {
-                        pictureBox.Image = image.GetRGBBitmap8(GetCoordinate());
+                        pictureBox.Image = image.GetImageRGB(GetCoordinate());
                     }
                 }
                 else
                 {
-                    pictureBox.Image = image.GetBitmap(GetCoordinate());
+                    pictureBox.Image = image.GetImageRGB(GetCoordinate());
                 }
             }
 
@@ -495,7 +483,8 @@ namespace BioImage
             cTimer.Stop();
         }
 
-        public string mouseColor = "";
+        private string mousePoint = "";
+        private string mouseColor = "";
        
         private void autoContrastChannelsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -641,18 +630,7 @@ namespace BioImage
         }
         private void CTrackBar_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (Mode != ViewMode.Filtered)
-                return;
-            if (e.Delta > 0)
-            {
-                if (cBar.Value + 1 <= cBar.Maximum)
-                    cBar.Value += 1;
-            }
-            else
-            {
-                if (cBar.Value - 1 >= cBar.Minimum)
-                    cBar.Value -= 1;
-            }
+
         }
 
         private void cTimer_Tick(object sender, EventArgs e)
@@ -1250,7 +1228,7 @@ namespace BioImage
                 }
             }
 
-            if (e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Left)
             if (Mode == ViewMode.RGBImage)
             {
                 int sc = coordinate.S;
@@ -1262,28 +1240,29 @@ namespace BioImage
                     int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y);
                     int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y);
                     int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y);
-                    mouseColor += "," + r + "," + g + "," + b;
+                    mouseColor = ", " + r + "," + g + "," + b;
                 }
                 else
                 {
                     int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y, 0);
                     int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y, 1);
                     int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y, 2);
-                    mouseColor += "," + r + "," + g + "," + b;
+                    mouseColor = ", " + r + "," + g + "," + b;
                 }
             }
             else
             if (Mode == ViewMode.Filtered)
             {
                 int r = Buf.GetValue((int)p.X, (int)p.Y);
-                mouseColor += ", " + r;
+                mouseColor = ", " + r.ToString();
             }
             else
             if (Mode == ViewMode.Raw)
             {
                 int r = Buf.GetValue((int)p.X, (int)p.Y);
-                mouseColor += ", " + r;
+                mouseColor = ", " + r.ToString();
             }
+            UpdateStatus();
             tools.ToolDown(this, arg);
         }
         public static PointF mouseUp;
@@ -1309,7 +1288,7 @@ namespace BioImage
             p = toImagePoint(e.Location.X, e.Location.Y);
             arg = new MouseEventArgs(mouseDownButtons, 1, (int)p.X, (int)p.Y, e.Delta);
             
-            mouseColor = "(" + p.X + ", " + p.Y + ")";
+            mousePoint = "(" + p.X + ", " + p.Y + ")";
             if (Mode != ViewMode.RGBImage)
             {
                 if (e.Button == MouseButtons.XButton1 && !x1State)
@@ -1397,7 +1376,44 @@ namespace BioImage
                         }
                     }
                 }
+                UpdateOverlay();
             }
+            mouseColor = "";
+            if (e.Button == MouseButtons.Left)
+            if (Mode == ViewMode.RGBImage)
+            {
+                int sc = coordinate.S;
+                int zc = coordinate.Z;
+                int cc = coordinate.C;
+                int tc = coordinate.T;
+                if (image.RGBChannelCount == 1)
+                {
+                    int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y);
+                    int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y);
+                    int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y);
+                    mouseColor = ", " + r + "," + g + "," + b;
+                }
+                else
+                {
+                    int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y, 0);
+                    int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y, 1);
+                    int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y, 2);
+                    mouseColor = ", " + r + "," + g + "," + b;
+                }
+            }
+            else
+            if (Mode == ViewMode.Filtered)
+            {
+                int r = Buf.GetValue((int)p.X, (int)p.Y);
+                mouseColor = ", " + r.ToString();
+            }
+            else
+            if (Mode == ViewMode.Raw)
+            {
+                int r = Buf.GetValue((int)p.X, (int)p.Y);
+                mouseColor = ", " + r.ToString();
+            }
+
 
             if (Tools.currentTool != null)
             if(Tools.currentTool.type == Tools.Tool.Type.pencil)
@@ -1450,6 +1466,7 @@ namespace BioImage
                     {
                         image.SetValue(p.X, p.Y, GetCoordinate(), Tools.pencil.Color.R);
                     }
+                    UpdateView();
                 }
             }
             else
@@ -1465,6 +1482,7 @@ namespace BioImage
                     {
                         image.SetValue(p.X, p.Y, GetCoordinate(), ushort.MaxValue);
                     }
+                    UpdateView();
                 }
             }
             tools.ToolMove(this, arg);

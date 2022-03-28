@@ -14,14 +14,6 @@ namespace BioImage
 
         public static ImageViewer app = null;
 
-        public ImageViewer(string arg)
-        {
-            InitializeComponent();
-            manager = new ROIManager();
-            tools = new Tools();
-            app = this;
-        }
-
         public ImageViewer(string[] arg)
         {
             InitializeComponent();
@@ -530,6 +522,11 @@ namespace BioImage
                 centerToolStripMenuItem.Checked = true;
             else
                 centerToolStripMenuItem.Checked = false;
+        }
+
+        private void panel_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
