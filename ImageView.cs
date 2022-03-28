@@ -1156,12 +1156,10 @@ namespace BioImage
             //g.Clip = new Region(new Rectangle(overlayPictureBox.Location.X, overlayPictureBox.Location.Y, overlayPictureBox.Width, overlayPictureBox.Height));
             //g.Clear(Color.FromArgb(0, 0, 0, 0));
             //We use scale transform so that the drawing don't look pixelated when image is rendered larger than it's original size.
-            g.DrawRectangle(Pens.Blue, new Rectangle((int)pp.X, (int)pp.Y, (int)s.X, (int)s.Y));
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
             mat = g.Transform;
             DrawOverlay(g);
-            g.DrawRectangle(Pens.Magenta, new Rectangle((int)pp.X, (int)pp.Y, (int)s.X, (int)s.Y));
             if (Tools.currentTool.type == Tools.Tool.Type.rectSel && down)
             {
                 g.DrawRectangle(Pens.Magenta, Tools.rectSel.Selection.ToRectangleInt());
