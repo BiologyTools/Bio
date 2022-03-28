@@ -398,61 +398,6 @@ namespace BioImage
             ch.Show();
         }
 
-        private void normalToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (viewer == null)
-                return;
-            viewer.SetSizeMode(PictureBoxSizeMode.Normal);
-            strechToolStripMenuItem.Checked = false;
-            zoomToolStripMenuItem.Checked = false;
-            autoSizeToolStripMenuItem.Checked = false;
-            centerToolStripMenuItem.Checked = false;
-        }
-
-        private void zoomToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (viewer == null)
-                return;
-            viewer.SetSizeMode(PictureBoxSizeMode.Zoom);
-            normalToolStripMenuItem.Checked = false;
-            strechToolStripMenuItem.Checked = false;
-            autoSizeToolStripMenuItem.Checked = false;
-            centerToolStripMenuItem.Checked = false;
-        }
-
-        private void strechToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (viewer == null)
-                return;
-            viewer.SetSizeMode(PictureBoxSizeMode.StretchImage);
-            normalToolStripMenuItem.Checked = false;
-            zoomToolStripMenuItem.Checked = false;
-            autoSizeToolStripMenuItem.Checked = false;
-            centerToolStripMenuItem.Checked = false;
-        }
-
-        private void autoSizeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (viewer == null)
-                return;
-            viewer.SetSizeMode(PictureBoxSizeMode.AutoSize);
-            normalToolStripMenuItem.Checked = false;
-            zoomToolStripMenuItem.Checked = false;
-            strechToolStripMenuItem.Checked = false;
-            centerToolStripMenuItem.Checked = false;
-        }
-
-        private void centerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (viewer == null)
-                return;
-            viewer.SetSizeMode(PictureBoxSizeMode.CenterImage);
-            normalToolStripMenuItem.Checked = false;
-            zoomToolStripMenuItem.Checked = false;
-            strechToolStripMenuItem.Checked = false;
-            autoSizeToolStripMenuItem.Checked = false;
-        }
-
         private void rGBToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (viewer == null)
@@ -498,30 +443,6 @@ namespace BioImage
                 filteredToolStripMenuItem.Checked = true;
             if(v == ImageView.ViewMode.Raw)
                 rawToolStripMenuItem.Checked = true;
-        }
-
-        public void UpdateSizeMode(PictureBoxSizeMode s)
-        {
-            if (s == PictureBoxSizeMode.Zoom)
-                zoomToolStripMenuItem.Checked = true;
-            else
-                zoomToolStripMenuItem.Checked = false;
-            if (s == PictureBoxSizeMode.Normal)
-                normalToolStripMenuItem.Checked = true;
-            else
-                normalToolStripMenuItem.Checked = false;
-            if (s == PictureBoxSizeMode.StretchImage)
-                strechToolStripMenuItem.Checked = true;
-            else
-                strechToolStripMenuItem.Checked = false;
-            if (s == PictureBoxSizeMode.AutoSize)
-                autoSizeToolStripMenuItem.Checked = true;
-            else
-                autoSizeToolStripMenuItem.Checked = false;
-            if (s == PictureBoxSizeMode.CenterImage)
-                centerToolStripMenuItem.Checked = true;
-            else
-                centerToolStripMenuItem.Checked = false;
         }
 
         private void panel_Paint(object sender, PaintEventArgs e)
