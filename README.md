@@ -30,6 +30,7 @@ Best for working with ROI's in OME format & CSV.
 - BioImage [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
 - AForge [LGPL](http://www.aforgenet.com/framework/license.html)
 - BioFormats.Net [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+- IKVM [IKVM](https://github.com/gluck/ikvm/blob/master/LICENSE)
 
 ## Example usage.
 
