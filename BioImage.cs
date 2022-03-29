@@ -1973,6 +1973,7 @@ namespace BioImage
             imCount = imageCount;
             bufs = Buffers;
             rgbChans = rGBChannelCount;
+            tfile = Path.GetFileName(path);
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(WriteBytes));
             t.Start();
             return true;
@@ -1981,16 +1982,22 @@ namespace BioImage
         private static int imCount;
         private static List<Buf> bufs = new List<Buf>();
         private static int rgbChans;
+        private static string tfile = "";
         public static float progress = 0;
         public static void WriteBytes()
         {
+            Progress pr = new Progress(tfile);
+            pr.Show();
             progress = 0;
             for (int im = 0; im < imCount; im++)
             {
                 wr.saveBytes(im, bufs[im].GetEndianBytes(rgbChans));
                 Application.DoEvents();
                 progress = im / imCount;
+                pr.UpdateProgress((int)(progress * 100));
             }
+            pr.Close();
+            pr.Dispose();
             wr.close();
         }
         public void OpenSeries(string file, int ser)
