@@ -418,9 +418,7 @@ namespace BioImage
             {
                 if (anno.GetPointCount() == 4)
                 {
-                    anno.Rect = new BioImage.RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
                     anno = new BioImage.Annotation();
-                    UpdateOverlay();
                 }
             }
             else
@@ -428,9 +426,7 @@ namespace BioImage
             {
                 if (anno.GetPointCount() == 4)
                 {
-                    anno.Rect = new BioImage.RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
                     anno = new BioImage.Annotation();
-                    UpdateOverlay();
                 }
             }
             else
@@ -465,6 +461,7 @@ namespace BioImage
                 PointF p = new PointF(ImageView.mouseUp.X -ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
                 float x = ImageView.viewer.Origin.X + p.X;
                 float y = ImageView.viewer.Origin.Y + p.Y;
+                ImageView.viewer.Origin = new PointF(x, y);
                 UpdateOverlay();
                 UpdateView();
             }
@@ -495,6 +492,24 @@ namespace BioImage
                     anno.AddPoint(new BioImage.PointD(e.X, e.Y));
                 }
                 UpdateOverlay();
+            }
+            else
+            if (currentTool.type == Tool.Type.rect && anno.type == BioImage.Annotation.Type.Rectangle)
+            {
+                if (anno.GetPointCount() == 4)
+                {
+                    anno.Rect = new BioImage.RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
+                    UpdateOverlay();
+                }
+            }
+            else
+            if (currentTool.type == Tool.Type.ellipse && anno.type == BioImage.Annotation.Type.Ellipse)
+            {
+                if (anno.GetPointCount() == 4)
+                {
+                    anno.Rect = new BioImage.RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
+                    UpdateOverlay();
+                }
             }
             else
             if (currentTool.type == Tool.Type.rectSel && buts == MouseButtons.Left && ImageView.down)
