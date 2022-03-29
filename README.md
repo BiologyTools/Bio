@@ -11,7 +11,7 @@ Best for working with ROI's in OME format & CSV.
 
 - Great at viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
 
-- RGB image viewing mode which automatically combines 3 channels into RGB image.
+- RGB image viewing mode which automatically combines 3 channels into RGB image & shows ROI from each channel which can be configured in ROI Manager.
 
 - Editing & saving ROI's in images to OME format image stacks.
 
@@ -30,6 +30,7 @@ Best for working with ROI's in OME format & CSV.
 - BioImage [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
 - AForge [LGPL](http://www.aforgenet.com/framework/license.html)
 - BioFormats.Net [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+- [IKVM](https://github.com/gluck/ikvm/blob/master/LICENSE)
 
 ## Example usage.
 
