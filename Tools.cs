@@ -463,8 +463,8 @@ namespace BioImage
             if(currentTool.type == Tool.Type.pan)
             {
                 PointF p = new PointF(ImageView.mouseUp.X -ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
-                ImageView.viewer.origin.X += p.X;
-                ImageView.viewer.origin.Y += p.Y;
+                float x = ImageView.viewer.Origin.X + p.X;
+                float y = ImageView.viewer.Origin.Y + p.Y;
                 UpdateOverlay();
                 UpdateView();
             }
@@ -557,13 +557,12 @@ namespace BioImage
             
         }
 
-        public void ToolDoubleClick(object sender, MouseEventArgs e)
+        public void ToolDoubleClick(PointF e, MouseButtons buts)
         {
             if (currentTool == null)
                 return;
             
         }
-
         
         public static void SetColor(BioImage.ColorS col)
         {

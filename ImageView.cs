@@ -15,7 +15,6 @@ namespace BioImage
     {
         public ImageView(string file, int ser)
         {
-            
             file = file.Replace("\\", "/");
             InitializeComponent();
             serie = ser;
@@ -533,15 +532,6 @@ namespace BioImage
             TimeFps = sp.TimeFps;
             CFps = sp.CFps;
         }
-        private void copyImageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Point s = GetImageSize();
-            Bitmap captureBitmap = (Bitmap)pictureBox.Image;
-            Graphics gr = Graphics.FromImage(captureBitmap);
-            gr.DrawImage(image.overlay,0,0);
-            Clipboard.SetImage(captureBitmap);
-        }
-
         private void ImageView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.C && e.Control)
@@ -1145,17 +1135,19 @@ namespace BioImage
                 }
             }
         }
-        public PointF origin = new PointF(0,0);
+        private PointF origin = new PointF(0,0);
+        public PointF Origin
+        {
+            get { return origin; }
+            set { origin = value; }
+        }
         private System.Drawing.Drawing2D.Matrix mat = new System.Drawing.Drawing2D.Matrix();
 
         private void overlayPictureBox_Paint(object sender, PaintEventArgs e)
         {
             PointF pp = GetImagePoint();
             PointF s = GetImageSize();
-            Graphics g = e.Graphics;//Graphics.FromImage(image.overlay);
-            //g.Clip = new Region(new Rectangle(overlayPictureBox.Location.X, overlayPictureBox.Location.Y, overlayPictureBox.Width, overlayPictureBox.Height));
-            //g.Clear(Color.FromArgb(0, 0, 0, 0));
-            //We use scale transform so that the drawing don't look pixelated when image is rendered larger than it's original size.
+            Graphics g = e.Graphics;
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
             mat = g.Transform;
@@ -1166,19 +1158,14 @@ namespace BioImage
             }
             else
                 Tools.rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
-            //g.Dispose();
-            //e.Graphics.DrawRectangle(Pens.Blue, new Rectangle(overlayPictureBox.Location, overlayPictureBox.Size));
-            //e.Graphics.DrawImage(image.overlay, pp.X, pp.Y, s.X, s.Y);
         }
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
             PointF pp = GetImagePoint();
             Point s = GetImageSize();
-            Graphics g = e.Graphics;//Graphics.FromImage(image.overlay);
+            Graphics g = e.Graphics;
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
-            
-            //g.Clip = new Region(new Rectangle(pictureBox.Location.X, pictureBox.Location.Y, pictureBox.Width, pictureBox.Height));
             g.DrawImage(bitmap,pp.X, pp.Y, s.X, s.Y);
         }
         private void hideStatusBarToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1195,7 +1182,6 @@ namespace BioImage
             }
         }
 
-        //public static BioImage.Annotation selectedAnnotation = null;
         public static List<BioImage.Annotation> selectedAnnotations = new List<BioImage.Annotation>();
         public static BioImage selectedImage = null;
 
@@ -1311,29 +1297,16 @@ namespace BioImage
         private bool x2State = false;
         public static MouseButtons mouseUpButtons;
         public static MouseButtons mouseDownButtons;
-        private MouseEventArgs arg;
-        private PointF p;
         private PointF pd;
-
-        private PointF ToDrawSpace(PointF p)
-        {
-            PointF[] pf = new PointF[1];
-            pf[0] = p;
-            mat.TransformPoints(pf);
-            return pf[0];
-        }
         private void rgbPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             selectedImage = image;
-            //p = toImagePoint(e.Location.X, e.Location.Y);
+            PointF p = toImagePoint(e.Location.X, e.Location.Y);
             p = new PointF(e.X, e.Y);
             p.X -= origin.X;
             p.Y -= origin.Y;
             p.X /= scale.Width;
             p.Y /= scale.Height;
-            
-            //p = ToDrawSpace(p);
-            arg = new MouseEventArgs(mouseDownButtons, 1, (int)p.X, (int)p.Y, e.Delta);
             
             mousePoint = "(" + p.X + ", " + p.Y + ")";
             if (Mode != ViewMode.RGBImage)
@@ -1599,12 +1572,14 @@ namespace BioImage
                 if(item.selected && (item.selectedPoints.Count == 0 || item.selectedPoints.Count == item.GetPointCount()))
                 {
                     image.Annotations.Remove(item);
+                    UpdateOverlay();
                 }
                 else
                 {
                     if(item.type == BioImage.Annotation.Type.Polygon || item.type == BioImage.Annotation.Type.Freeform || item.type == BioImage.Annotation.Type.Polyline)
                     {
                         item.RemovePoints(item.selectedPoints.ToArray());
+                        UpdateOverlay();
                     }
                 }    
             }

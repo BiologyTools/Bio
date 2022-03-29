@@ -2,11 +2,7 @@
 using AForge.Imaging.Filters;
 using loci.common.services;
 using loci.formats;
-using loci.formats.meta;
 using loci.formats.services;
-using ome.xml.meta;
-using ome.xml;
-using ome.xml.model;
 using ome.xml.model.primitives;
 using System;
 using System.Collections;
@@ -257,7 +253,6 @@ namespace BioImage
         public bool isGroup = false;
         public long loadTimeMS = 0;
         public long loadTimeTicks = 0;
-        public Bitmap overlay;
         private int sizeX, sizeY, sizeZ, sizeC, sizeT;
         public int SizeX
         {
@@ -265,10 +260,6 @@ namespace BioImage
             set
             {
                 sizeX = value;
-                if (sizeX > 0 && sizeY > 0)
-                {
-                    overlay = new Bitmap(sizeX, sizeY, PixelFormat.Format32bppArgb);
-                }
             }
         }
         public int SizeY
@@ -277,10 +268,6 @@ namespace BioImage
             set
             {
                 sizeY = value;
-                if (sizeX > 0 && sizeY > 0)
-                {
-                    overlay = new Bitmap(sizeX, sizeY, PixelFormat.Format32bppArgb);
-                }
             }
         }
         public int SizeZ
@@ -768,6 +755,7 @@ namespace BioImage
                 }
             }
 
+
             public string name = "";
             public string id = "";
             private List<PointD> Points = new List<PointD>();
@@ -900,44 +888,17 @@ namespace BioImage
                 }
                 return pts.ToArray();
             }
-            public Annotation CreatePoint(PointD p)
+            public string PointsToString()
             {
-                Annotation an = new Annotation();
-                an.type = Type.Point;
-                an.Rect = new RectangleD(p.X - 2, p.Y - 2, selectBoxSize, selectBoxSize);
-                return an;
-            }
-            public Annotation CreateRectangle(RectangleD re)
-            {
-                Annotation roi = new Annotation();
-                roi.type = Type.Rectangle;
-                roi.Rect = re;
-                return roi;
-            }
-            public Annotation CreateEllipse(RectangleD re)
-            {
-                Annotation an = new Annotation();
-                an.type = Type.Rectangle;
-                an.Rect = re;
-                return an;
-            }
-            public Annotation CreateLine(PointD p1, PointD p2)
-            {
-                Annotation roi = new Annotation();
-                roi.type = Type.Line;
-                roi.Points.Add(p1);
-                roi.Points.Add(p2);
-                UpdateSelectBoxs();
-                return roi;
-            }
-            public Annotation CreatePolygon(string points)
-            {
-                Annotation roi = new Annotation();
-                roi.type = Type.Polygon;
-                roi.AddPoints(stringToPoints(points));
-                UpdateSelectBoxs();
-                UpdateBoundingBox();
-                return roi;
+                string pts = "";
+                for (int j = 0; j < Points.Count; j++)
+                {
+                    if (j == Points.Count - 1)
+                        pts += Points[j].X.ToString() + "," + Points[j].Y.ToString();
+                    else
+                        pts += Points[j].X.ToString() + "," + Points[j].Y.ToString() + " ";
+                }
+                return pts;
             }
             public void UpdateSelectBoxs()
             {
@@ -1775,7 +1736,7 @@ namespace BioImage
                 omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(samples)), series, channel);
                 if (c.Name != "")
                     omexml.setChannelName(c.Name, series, channel);
-                if (c != null)
+                if (c.color != null)
                 {
                     ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(c.color.Value.R, c.color.Value.G, c.color.Value.B, c.color.Value.A);
                     omexml.setChannelColor(col, series, channel);
@@ -1840,11 +1801,37 @@ namespace BioImage
                     else
                         omexml.setPointText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                    meta.setLineFontSize(fl, i, series);
+                    meta.setPointFontSize(fl, i, series);
                     ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setPointStrokeColor(col, i, series);
+                    ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
+                    omexml.setPointStrokeWidth(sw, i, series);
                     ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
                     omexml.setPointFillColor(colf, i, series);
+                }
+                else
+                if (an.type == Annotation.Type.Polygon || an.type == Annotation.Type.Freeform)
+                {
+                    if (an.id == "")
+                        omexml.setPolygonID(an.id, i, series);
+                    else
+                        omexml.setPolygonID("Shape:" + i + ":" + series, i, series);
+                    omexml.setPolygonPoints(an.PointsToString(), i, series);
+                    omexml.setPolygonTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
+                    omexml.setPolygonTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
+                    omexml.setPolygonTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
+                    if (an.Text != "")
+                        omexml.setPolygonText(an.Text, i, series);
+                    else
+                        omexml.setPolygonText(i.ToString(), i, series);
+                    ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
+                    meta.setPolygonFontSize(fl, i, series);
+                    ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
+                    omexml.setPolygonStrokeColor(col, i, series);
+                    ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
+                    omexml.setPolygonStrokeWidth(sw, i, series);
+                    ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
+                    omexml.setPolygonFillColor(colf, i, series);
                 }
                 else
                 if (an.type == Annotation.Type.Rectangle)
@@ -1870,7 +1857,7 @@ namespace BioImage
                     ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setRectangleStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                    omexml.setLineStrokeWidth(sw, i, series);
+                    omexml.setRectangleStrokeWidth(sw, i, series);
                     ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
                     omexml.setRectangleFillColor(colf, i, series);
                 }
@@ -1881,8 +1868,8 @@ namespace BioImage
                         omexml.setLineID(an.id, i, series);
                     else
                         omexml.setLineID("Shape:" + i + ":" + series, i, series);
-                    omexml.setLineX1(java.lang.Double.valueOf(an.X), i, series);
-                    omexml.setLineY1(java.lang.Double.valueOf(an.Y), i, series);
+                    omexml.setLineX1(java.lang.Double.valueOf(an.GetPoint(0).X), i, series);
+                    omexml.setLineY1(java.lang.Double.valueOf(an.GetPoint(0).Y), i, series);
                     omexml.setLineX2(java.lang.Double.valueOf(an.GetPoint(1).X), i, series);
                     omexml.setLineY2(java.lang.Double.valueOf(an.GetPoint(1).Y), i, series);
                     omexml.setLineTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
@@ -1904,17 +1891,21 @@ namespace BioImage
                 else
                 if (an.type == Annotation.Type.Ellipse)
                 {
+                    
                     if (an.id == "")
                         omexml.setEllipseID(an.id, i, series);
                     else
                         omexml.setEllipseID("Shape:" + i + ":" + series, i, series);
                     //We need to change System.Drawing.Rectangle to ellipse radius;
                     double w = (double)an.W / 2;
-                    double h = (double)an.W / 2;
+                    double h = (double)an.H / 2;
                     omexml.setEllipseRadiusX(java.lang.Double.valueOf(w), i, series);
                     omexml.setEllipseRadiusY(java.lang.Double.valueOf(h), i, series);
-                    omexml.setEllipseX(java.lang.Double.valueOf(an.X), i, series);
-                    omexml.setEllipseY(java.lang.Double.valueOf(an.Y), i, series);
+
+                    double x = an.Point.X + w;
+                    double y = an.Point.Y + h;
+                    omexml.setEllipseX(java.lang.Double.valueOf(x), i, series);
+                    omexml.setEllipseY(java.lang.Double.valueOf(y), i, series);
                     omexml.setEllipseTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
                     omexml.setEllipseTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
                     omexml.setEllipseTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
@@ -1969,28 +1960,38 @@ namespace BioImage
             writer.setId(path);
             writer.setSeries(series);
             writer.setWriteSequentially(true);
-            wr = writer;
-            imCount = imageCount;
-
+           
+            /*
             for (int im = 0; im < imageCount; im++)
             {
                 writer.saveBytes(im, Buffers[im].GetEndianBytes(RGBChannelCount));
                 Application.DoEvents();
             }
             writer.close();
+            */
+             wr = writer;
+            imCount = imageCount;
+            bufs = Buffers;
+            rgbChans = rGBChannelCount;
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(WriteBytes));
+            t.Start();
             return true;
         }
         private static ImageWriter wr;
         private static int imCount;
-        private static List<Buf> bufs;
+        private static List<Buf> bufs = new List<Buf>();
         private static int rgbChans;
+        public static float progress = 0;
         public static void WriteBytes()
         {
+            progress = 0;
             for (int im = 0; im < imCount; im++)
             {
                 wr.saveBytes(im, bufs[im].GetEndianBytes(rgbChans));
                 Application.DoEvents();
+                progress = im / imCount;
             }
+            wr.close();
         }
         public void OpenSeries(string file, int ser)
         {
@@ -2112,7 +2113,17 @@ namespace BioImage
                 string roiID = meta.getROIID(i);
                 string roiName = meta.getROIName(i);
                 SZCT co = new SZCT(0, 0, 0, 0);
-                int scount = meta.getShapeCount(i);
+                int scount = 1;
+                try
+                {
+                    scount = meta.getShapeCount(i);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message.ToString());
+                }
+
+                
                 for (int sc = 0; sc < scount; sc++)
                 {
                     string type = meta.getShapeType(i, sc);
