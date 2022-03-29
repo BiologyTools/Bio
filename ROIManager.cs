@@ -315,6 +315,7 @@ namespace BioImage
             if (ImageView.viewer == null)
                 return;
             ImageView.viewer.showRROIs = rChBox.Checked;
+            UpdateOverlay();
         }
 
         private void gChBox_CheckedChanged(object sender, EventArgs e)
@@ -322,6 +323,7 @@ namespace BioImage
             if (ImageView.viewer == null)
                 return;
             ImageView.viewer.showGROIs = gChBox.Checked;
+            UpdateOverlay();
         }
 
         private void bChBox_CheckedChanged(object sender, EventArgs e)
@@ -329,6 +331,7 @@ namespace BioImage
             if (ImageView.viewer == null)
                 return;
             ImageView.viewer.showBROIs = bChBox.Checked;
+            UpdateOverlay();
         }
     }
 }

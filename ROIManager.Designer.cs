@@ -658,9 +658,9 @@
             this.label15.ForeColor = System.Drawing.Color.White;
             this.label15.Location = new System.Drawing.Point(225, 360);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(121, 13);
+            this.label15.Size = new System.Drawing.Size(126, 13);
             this.label15.TabIndex = 42;
-            this.label15.Text = "Show ROI\'s in Channels";
+            this.label15.Text = "Show ROI\'s in RGB View";
             // 
             // rChBox
             // 
@@ -679,8 +679,6 @@
             // gChBox
             // 
             this.gChBox.AutoSize = true;
-            this.gChBox.Checked = true;
-            this.gChBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.gChBox.ForeColor = System.Drawing.Color.White;
             this.gChBox.Location = new System.Drawing.Point(280, 381);
             this.gChBox.Name = "gChBox";
@@ -693,8 +691,6 @@
             // bChBox
             // 
             this.bChBox.AutoSize = true;
-            this.bChBox.Checked = true;
-            this.bChBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.bChBox.ForeColor = System.Drawing.Color.White;
             this.bChBox.Location = new System.Drawing.Point(331, 381);
             this.bChBox.Name = "bChBox";

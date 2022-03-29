@@ -1976,6 +1976,15 @@ namespace BioImage
             tfile = Path.GetFileName(path);
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(WriteBytes));
             t.Start();
+            Progress pr = new Progress(tfile);
+            pr.Show();
+            do
+            {
+                pr.UpdateProgress((int)progress);
+                Application.DoEvents();
+            } while (!done);
+            pr.Close();
+            pr.Dispose();
             return true;
         }
         private static ImageWriter wr;
@@ -1983,21 +1992,18 @@ namespace BioImage
         private static List<Buf> bufs = new List<Buf>();
         private static int rgbChans;
         private static string tfile = "";
+        private static bool done = false;
         public static float progress = 0;
         public static void WriteBytes()
         {
-            Progress pr = new Progress(tfile);
-            pr.Show();
             progress = 0;
+            done = false;
             for (int im = 0; im < imCount; im++)
             {
                 wr.saveBytes(im, bufs[im].GetEndianBytes(rgbChans));
-                Application.DoEvents();
-                progress = im / imCount;
-                pr.UpdateProgress((int)(progress * 100));
+                progress = ((float)im / (float)imCount)*100;
             }
-            pr.Close();
-            pr.Dispose();
+            done = true;
             wr.close();
         }
         public void OpenSeries(string file, int ser)

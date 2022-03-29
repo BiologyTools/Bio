@@ -898,8 +898,8 @@ namespace BioImage
         }
 
         public bool showRROIs = true;
-        public bool showGROIs = true;
-        public bool showBROIs = true;
+        public bool showGROIs = false;
+        public bool showBROIs = false;
 
         private List<BioImage.Annotation> annotationsR = new List<BioImage.Annotation>();
         public List<BioImage.Annotation> AnnotationsR

@@ -20,6 +20,7 @@ namespace BioImage
         public void UpdateProgress(int p)
         {
             progressBar.Value = p;
+
         }
     }
 }
