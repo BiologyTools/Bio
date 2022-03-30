@@ -21,11 +21,9 @@ namespace BioImage
             manager = new ROIManager();
             app = this;
 
-            Script sc = new Script();
-            sc.Show();
-
-            string file = "E://TESTIMAGES//text.ome.tif";
-            SetFile(file, 0);
+            scriptToolStripMenuItem.PerformClick();
+            //string file = "E://TESTIMAGES//text.ome.tif";
+            //SetFile(file, 0);
             if (arg.Length == 0)
                 return;
             else
@@ -454,10 +452,12 @@ namespace BioImage
 
         }
 
-        Script script = new Script();
+        List<Script> scripts = new List<Script>();
         private void scriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            script.Show();
+            Script sc = new Script();
+            scripts.Add(sc);
+            sc.Show();
         }
     }
 }
