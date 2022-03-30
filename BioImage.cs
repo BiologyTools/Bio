@@ -853,15 +853,13 @@ namespace BioImage
             }
             public void RemovePoints(int[] indexs)
             {
-                //Points.remo
-                //List<car> result = GetSomeOtherList().Except(GetTheList()).ToList();
                 List<PointD> inds = new List<PointD>();
                 for (int i = 0; i < Points.Count; i++)
                 {
                     bool found = false;
                     for (int ind = 0; ind < indexs.Length; ind++)
                     {
-                        if (ind == i)
+                        if (indexs[ind] == i)
                             found = true;
                     }
                     if (!found)

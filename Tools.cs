@@ -430,6 +430,11 @@ namespace BioImage
                 }
             }
             else
+            if (currentTool.type == Tool.Type.freeform && anno.type == BioImage.Annotation.Type.Freeform)
+            {
+                anno = new BioImage.Annotation();
+            }
+            else
             if (currentTool.type == Tool.Type.rectSel)
             {
                 ImageView.selectedAnnotations.Clear();
@@ -568,8 +573,6 @@ namespace BioImage
                     }
                 }
             }
-
-            
         }
 
         public void ToolDoubleClick(PointF e, MouseButtons buts)

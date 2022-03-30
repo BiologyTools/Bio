@@ -1147,6 +1147,10 @@ namespace BioImage
         {
             PointF pp = GetImagePoint();
             PointF s = GetImageSize();
+            s.X *= scale.Width;
+            s.Y *= scale.Height;
+            overlayPictureBox.Width = (int)s.X;
+            overlayPictureBox.Height = (int)s.Y;
             Graphics g = e.Graphics;
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
@@ -1162,11 +1166,16 @@ namespace BioImage
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
             PointF pp = GetImagePoint();
-            Point s = GetImageSize();
+            PointF s = GetImageSize();
+            s.X *= scale.Width;
+            s.Y *= scale.Height;
+            pictureBox.Width = (int)s.X;
+            pictureBox.Height = (int)s.Y;
             Graphics g = e.Graphics;
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
-            g.DrawImage(bitmap,pp.X, pp.Y, s.X, s.Y);
+            PointF ss = GetImageSize();
+            g.DrawImage(bitmap,pp.X, pp.Y, ss.X, ss.Y);
         }
         private void hideStatusBarToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1190,99 +1199,7 @@ namespace BioImage
 
         public static PointF mouseDown;
         public static bool down;
-        private void pictureBox_MouseDown(object sender, MouseEventArgs e)
-        {
-            tools.BringToFront();
-            if (!Ctrl)
-            {
-                foreach (BioImage.Annotation item in selectedAnnotations)
-                {
-                    item.selectedPoints.Clear();
-                }
-                selectedAnnotations.Clear();
-            }
-            viewer = this;
-            selectedImage = image;
-            mouseDownButtons = e.Button;
-            mouseUpButtons = MouseButtons.None;
-            PointF p = toImagePoint(e.Location.X, e.Location.Y);
-            p.X -= origin.X;
-            p.Y -= origin.Y;
-            p.X /= scale.Width;
-            p.Y /= scale.Height;
-
-            MouseEventArgs arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
-            mouseDown = p;
-            pd = new Point((int)p.X, (int)p.Y);
-            down = true;
-            up = false;
-            if (e.Button == MouseButtons.Left && Tools.currentTool.type == Tools.Tool.Type.move)
-            {
-                foreach (BioImage.Annotation an in AnnotationsRGB)
-                {
-                    if (an.GetSelectBound().IntersectsWith(p.X,p.Y))
-                    {
-                        selectedAnnotations.Add(an);
-                        an.selected = true;
-                        
-                        RectangleF r = new RectangleF(p.X, p.Y, 1, 1);
-                        for (int i = 0; i < an.selectBoxs.Count; i++)
-                        {
-                            if (an.selectBoxs[i].IntersectsWith(r))
-                            {
-                                an.selectedPoints.Add(i);
-                            }
-                        }
-                    }
-                    else
-                        if(!Ctrl)
-                        an.selected = false;
-                }
-            }
-
-            if (e.Button == MouseButtons.Left)
-            {
-                Point s = GetImageSize();
-                if ((p.X < s.X && p.Y < s.Y) || (p.X >= 0 && p.Y > 0))
-                {
-                    if (Mode == ViewMode.RGBImage)
-                    {
-                        int sc = coordinate.S;
-                        int zc = coordinate.Z;
-                        int cc = coordinate.C;
-                        int tc = coordinate.T;
-                        if (image.RGBChannelCount == 1)
-                        {
-                            int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y);
-                            int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y);
-                            int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y);
-                            mouseColor = ", " + r + "," + g + "," + b;
-                        }
-                        else
-                        {
-                            int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y, 0);
-                            int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y, 1);
-                            int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y, 2);
-                            mouseColor = ", " + r + "," + g + "," + b;
-                        }
-                    }
-                    else
-                    if (Mode == ViewMode.Filtered)
-                    {
-                        int r = Buf.GetValue((int)p.X, (int)p.Y);
-                        mouseColor = ", " + r.ToString();
-                    }
-                    else
-                    if (Mode == ViewMode.Raw)
-                    {
-                        int r = Buf.GetValue((int)p.X, (int)p.Y);
-                        mouseColor = ", " + r.ToString();
-                    }
-                }
-            }
-            UpdateStatus();
-            tools.ToolDown(p,e.Button);
-        }
+        
         public static PointF mouseUp;
         public static bool up;
 
@@ -1302,7 +1219,6 @@ namespace BioImage
         {
             selectedImage = image;
             PointF p = toImagePoint(e.Location.X, e.Location.Y);
-            p = new PointF(e.X, e.Y);
             p.X -= origin.X;
             p.Y -= origin.Y;
             p.X /= scale.Width;
@@ -1441,73 +1357,60 @@ namespace BioImage
             }
 
             if (Tools.currentTool != null)
-            if(Tools.currentTool.type == Tools.Tool.Type.pencil)
+            if(Tools.currentTool.type == Tools.Tool.Type.pencil && e.Button == MouseButtons.Left)
             if (Mode == ViewMode.RGBImage)
             {
-                int sc = coordinate.S;
-                int zc = coordinate.Z;
-                int cc = coordinate.C;
-                int tc = coordinate.T;
-                if (e.Button == MouseButtons.Left && Tools.currentTool.toolType == Tools.Tool.ToolType.color)
+                if (Buf.info.RGBChannelsCount > 1)
                 {
-                    if (Buf.info.RGBChannelsCount > 1)
-                    {
-                        Tools.Tool tool = Tools.currentTool;
-                        if (Tools.rEnabled)
-                            Buf.SetValueRGB((int)p.X, (int)p.Y, 0, tool.Color.R);
-                        if (Tools.gEnabled)
-                            Buf.SetValueRGB((int)p.X, (int)p.Y, 1, tool.Color.G);
-                        if (Tools.bEnabled)
-                            Buf.SetValueRGB((int)p.X, (int)p.Y, 2, tool.Color.B);
-                    }
-                    else
-                    if (Mode == ViewMode.RGBImage)
-                    {
-                        if (Tools.rEnabled)
-                            image.SetValue((int)p.X, (int)p.Y, RChannel.index, Tools.pencil.Color.R);
-                        if (Tools.gEnabled)
-                            image.SetValue((int)p.X, (int)p.Y, GChannel.index, Tools.pencil.Color.G);
-                        if (Tools.bEnabled)
-                            image.SetValue((int)p.X, (int)p.Y, BChannel.index, Tools.pencil.Color.B);
-                    }
-                    else
-                    {
-                        image.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.pencil.Color.R);
-                    }
-                    UpdateView();
+                    Tools.Tool tool = Tools.currentTool;
+                    if (Tools.rEnabled)
+                        Buf.SetValueRGB((int)p.X, (int)p.Y, 0, tool.Color.R);
+                    if (Tools.gEnabled)
+                        Buf.SetValueRGB((int)p.X, (int)p.Y, 1, tool.Color.G);
+                    if (Tools.bEnabled)
+                        Buf.SetValueRGB((int)p.X, (int)p.Y, 2, tool.Color.B);
                 }
+                else
+                if (Mode == ViewMode.RGBImage)
+                {
+                    if (Tools.rEnabled)
+                        image.SetValue((int)p.X, (int)p.Y, RChannel.index, Tools.pencil.Color.R);
+                    if (Tools.gEnabled)
+                        image.SetValue((int)p.X, (int)p.Y, GChannel.index, Tools.pencil.Color.G);
+                    if (Tools.bEnabled)
+                        image.SetValue((int)p.X, (int)p.Y, BChannel.index, Tools.pencil.Color.B);
+                }
+                else
+                {
+                    image.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.pencil.Color.R);
+                }
+                UpdateView();
             }
             else
             if (Mode == ViewMode.Filtered)
             {
-                if (e.Button == MouseButtons.Left)
+                if (image.RGBChannelCount > 1)
                 {
-                    if (image.RGBChannelCount > 1)
-                    {
-                        Buf.SetValueRGB((int)p.X, (int)p.Y, cBar.Value, Tools.pencil.Color.R);
-                    }
-                    else
-                    {
-                        image.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.pencil.Color.R);
-                    }
-                    UpdateView();
+                    Buf.SetValueRGB((int)p.X, (int)p.Y, cBar.Value, Tools.pencil.Color.R);
                 }
+                else
+                {
+                    image.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.pencil.Color.R);
+                }
+                UpdateView();
             }
             else
             if (Mode == ViewMode.Raw)
             {
-                if (e.Button == MouseButtons.Left)
+                if (image.RGBChannelCount > 1)
                 {
-                    if (image.RGBChannelCount > 1)
-                    {
-                        Buf.SetValueRGB((int)p.X, (int)p.Y, cBar.Value, ushort.MaxValue);
-                    }
-                    else
-                    {
-                        image.SetValue((int)p.X, (int)p.Y, GetCoordinate(), ushort.MaxValue);
-                    }
-                    UpdateView();
+                    Buf.SetValueRGB((int)p.X, (int)p.Y, cBar.Value, ushort.MaxValue);
                 }
+                else
+                {
+                    image.SetValue((int)p.X, (int)p.Y, GetCoordinate(), ushort.MaxValue);
+                }
+                UpdateView();
             }
             tools.ToolMove(p, mouseDownButtons);
             UpdateStatus();
@@ -1525,11 +1428,104 @@ namespace BioImage
 
             mouseUpButtons = e.Button;
             mouseDownButtons = MouseButtons.None;
-            MouseEventArgs arg = new MouseEventArgs(e.Button, e.Clicks, (int)p.X, (int)p.Y, e.Delta);
             mouseUp = p;
             down = false;
             up = true;
             tools.ToolUp(p, e.Button);
+        }
+        private void pictureBox_MouseDown(object sender, MouseEventArgs e)
+        {
+            tools.BringToFront();
+            if (!Ctrl)
+            {
+                foreach (BioImage.Annotation item in selectedAnnotations)
+                {
+                    if(item.selected)
+                    item.selectedPoints.Clear();
+                }
+                selectedAnnotations.Clear();
+            }
+            viewer = this;
+            selectedImage = image;
+            mouseDownButtons = e.Button;
+            mouseUpButtons = MouseButtons.None;
+            PointF p = toImagePoint(e.Location.X, e.Location.Y);
+            p.X -= origin.X;
+            p.Y -= origin.Y;
+            p.X /= scale.Width;
+            p.Y /= scale.Height;
+            mouseDown = p;
+            pd = new PointF(p.X, p.Y);
+            down = true;
+            up = false;
+            if (Tools.currentTool.type == Tools.Tool.Type.move)
+            {
+                foreach (BioImage.Annotation an in AnnotationsRGB)
+                {
+                    if (an.GetSelectBound().IntersectsWith(p.X,p.Y))
+                    {
+                        selectedAnnotations.Add(an);
+                        an.selected = true;
+                        
+                        RectangleF r = new RectangleF(p.X, p.Y, 2, 2);
+                        for (int i = 0; i < an.selectBoxs.Count; i++)
+                        {
+                            if (an.selectBoxs[i].IntersectsWith(r))
+                            {
+                                an.selectedPoints.Add(i);
+                            }
+                        }
+                    }
+                    else
+                        if(!Ctrl)
+                        an.selected = false;
+                }
+                UpdateOverlay();
+            }
+
+            if (e.Button == MouseButtons.Left)
+            {
+                Point s = GetImageSize();
+                if ((p.X < s.X && p.Y < s.Y) || (p.X >= 0 && p.Y >= 0))
+                {
+                    if (Mode == ViewMode.RGBImage)
+                    {
+                        int sc = coordinate.S;
+                        int zc = coordinate.Z;
+                        int cc = coordinate.C;
+                        int tc = coordinate.T;
+                        if (image.RGBChannelCount == 1)
+                        {
+                            int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y);
+                            int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y);
+                            int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y);
+                            mouseColor = ", " + r + "," + g + "," + b;
+                        }
+                        else
+                        {
+                            int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y, 0);
+                            int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y, 1);
+                            int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y, 2);
+                            mouseColor = ", " + r + "," + g + "," + b;
+                        }
+                    }
+                    else
+                    if (Mode == ViewMode.Filtered)
+                    {
+                        int r = Buf.GetValue((int)p.X, (int)p.Y);
+                        mouseColor = ", " + r.ToString();
+                    }
+                    else
+                    if (Mode == ViewMode.Raw)
+                    {
+                        int r = Buf.GetValue((int)p.X, (int)p.Y);
+                        mouseColor = ", " + r.ToString();
+                    }
+                }
+            }
+
+            UpdateStatus();
+            tools.ToolDown(p,e.Button);
         }
         private void pictureBox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -1569,22 +1565,22 @@ namespace BioImage
         {
             foreach (BioImage.Annotation item in AnnotationsRGB)
             {
-                if(item.selected && (item.selectedPoints.Count == 0 || item.selectedPoints.Count == item.GetPointCount()))
+                if (item.selected && (item.selectedPoints.Count == 0 || item.selectedPoints.Count == item.GetPointCount()))
                 {
                     image.Annotations.Remove(item);
-                    UpdateOverlay();
                 }
                 else
                 {
-                    if(item.type == BioImage.Annotation.Type.Polygon || item.type == BioImage.Annotation.Type.Freeform || item.type == BioImage.Annotation.Type.Polyline)
+                    if ((item.type == BioImage.Annotation.Type.Polygon || item.type == BioImage.Annotation.Type.Freeform || item.type == BioImage.Annotation.Type.Polyline) && item.selectedPoints.Count > 0)
                     {
                         item.RemovePoints(item.selectedPoints.ToArray());
-                        UpdateOverlay();
+                        
                     }
-                }    
+                    item.selectedPoints.Clear();
+                }
             }
+            UpdateOverlay();
         }
 
-        
     }
 }
