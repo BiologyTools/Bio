@@ -54,3 +54,29 @@ Bitmap filt = image.GetImageFiltered(0,0,0,0);
 
 image.SaveSeries("16bitTestSaveStack.ome.tif", 0);
 
+## Scripting
+-  Save scripts into "StartupPath/Scripts" with ".cs" ending. Open script editor & script runner from menu
+-  Double click on script name in Script runner to run script.
+-  Scripts saved in Scripts folder will be loaded into script runner.
+-  Program installer include sample script "Sample.cs" which gets & sets pixels and saves resulting image.
+## Sample Script
+
+//css_reference BioImage.dll;
+using System;
+using BioImage;
+public class Loader
+{
+	public string Load()
+	{		
+		BioImage.BioImage b = new BioImage.BioImage(0,"E://TESTIMAGES//text.ome.tif");
+		//SetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex, ushort value)
+		b.SetValueRGB(0,0,0,0,0,0,0,15000);
+		//GetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex)
+		ushort val = b.GetValueRGB(0,0,0,0,0,0,1);
+		b.SaveSeries("E://TESTIMAGES//save.ome.tif",0);
+		return val.ToString();
+	}
+}
+
+
+
