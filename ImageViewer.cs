@@ -114,7 +114,7 @@ namespace BioImage
                 return;
             if (saveFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            viewer.image.SaveSeries(saveFileDialog.FileName,0,false);
+            viewer.image.SaveSeries(saveFileDialog.FileName,0);
         }
 
         private void ImageViewer_SizeChanged(object sender, EventArgs e)
@@ -451,12 +451,14 @@ namespace BioImage
         {
 
         }
-
-        List<Script> scripts = new List<Script>();
         private void scriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Script sc = new Script();
-            scripts.Add(sc);
+            sc.Show();
+        }
+        private void scriptRunnerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ScriptRunner sc = new ScriptRunner();
             sc.Show();
         }
     }

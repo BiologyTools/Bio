@@ -24,7 +24,7 @@ namespace BioImage
                 return;
             SetCoordinate(ser, 0, 0, 0);
 
-            image = new BioImage(ser, file);
+            image = new BioImage(file, ser);
             InitGUI(file);
 
             Buf = image.GetBufByCoord(GetCoordinate());
@@ -1335,9 +1335,9 @@ namespace BioImage
                         }
                         else
                         {
-                            int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y, 0);
-                            int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y, 1);
-                            int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y, 2);
+                            int r = image.GetValueRGB(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y, 0);
+                            int g = image.GetValueRGB(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y, 1);
+                            int b = image.GetValueRGB(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y, 2);
                             mouseColor = ", " + r + "," + g + "," + b;
                         }
                     }
@@ -1503,9 +1503,9 @@ namespace BioImage
                         }
                         else
                         {
-                            int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y, 0);
-                            int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y, 1);
-                            int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y, 2);
+                            int r = image.GetValueRGB(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y, 0);
+                            int g = image.GetValueRGB(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y, 1);
+                            int b = image.GetValueRGB(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y, 2);
                             mouseColor = ", " + r + "," + g + "," + b;
                         }
                     }

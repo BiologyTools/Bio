@@ -117,20 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox1.Text" xml:space="preserve">
+  <data name="textBox.Text" xml:space="preserve">
     <value>//css_reference BioImage.dll;
 using System;
 using BioImage;
-        public class Loader
-        {
-            public string Load()
-            {
-                BioImage.BioImage b = new BioImage.BioImage(0,"E://TESTIMAGES//Text.ome.tif");
-		return b.SizeZ.ToString();
-
-            }
-        }
-</value>
+public class Loader
+{
+	public string Load()
+	{		
+		BioImage.BioImage b = new BioImage.BioImage(0,"E://TESTIMAGES//text.ome.tif");
+		//SetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex, ushort value)
+		b.SetValueRGB(0,0,0,0,0,0,0,15000);
+		//GetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex)
+		ushort val = b.GetValueRGB(0,0,0,0,0,0,1);
+		//b.SaveSeries("E://TESTIMAGES//save.ome.tif",0);
+		return val.ToString();
+	}
+}</value>
   </data>
   <metadata name="openFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>

@@ -59,26 +59,44 @@ namespace BioImage
             return buffers[hash].ToString();
         }
 
-        public static void AddBufferByHash(int hashid, BioImage.Buf buf)
+        public static void AddBuffer(int hashid, BioImage.Buf buf)
         {
-            buffers.Add(hashid, buf);
+            try
+            {
+                buffers.Add(hashid, buf);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
+        private static int duplicates = 0;
         public static void AddBufferByID(string id, BioImage.Buf buf)
         {
             int hash = id.GetHashCode();
-            AddBufferByHash(hash, buf);
+            //We check to see if this buffer has already been added.
+            if(buffers.ContainsKey(hash))
+            {
+                id += "-" + duplicates;
+                duplicates++;
+            }
+            AddBuffer(id.GetHashCode(), buf);
         }
-
-        public static void AddBioImageByHash(int hashid, BioImage im)
-        {
-            buffers.Add(hashid, im);
-        }
+        private static int duplicatesB = 0;
         public static void AddBioImageByID(string id, BioImage im)
         {
             int hash = id.GetHashCode();
-            AddBioImageByHash(hash, im);
+            //We check to see if this buffer has already been added.
+            if (buffers.ContainsKey(hash))
+            {
+                id += "-" + duplicatesB;
+                duplicatesB++;
+            }
+            im.idString = id;
+            buffers.Add(id.GetHashCode(), im);
         }
-
     }
 
     public class BioImage
@@ -150,7 +168,7 @@ namespace BioImage
         public bool convertedToLittleEndian = false;
         public string filename;
 
-        public BioImage(int ser, string file)
+        public BioImage(string file,int ser)
         {
             serie = ser;
             rgbChannels[0] = 0;
@@ -341,11 +359,11 @@ namespace BioImage
         {
             return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetValue(x, y);
         }
-        public ushort GetValue(SZCT coord, int x, int y, int RGBindex)
+        public ushort GetValueRGB(SZCT coord, int x, int y, int RGBindex)
         {
             return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetValue(x, y, RGBindex);
         }
-        public ushort GetValue(int s, int z, int c, int t, int x, int y, int RGBindex)
+        public ushort GetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex)
         {
             return GetBufByCoord(s, z, c, t).GetValue(x, y, RGBindex);
         }
@@ -362,6 +380,10 @@ namespace BioImage
         {
             int ind = Coords[coord.S, coord.Z, coord.C, coord.T];
             Buffers[ind].SetValue(ix, iy, value);
+        }
+        public void SetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex, ushort value)
+        {
+            GetBufByCoord(s, z, c, t).SetValueRGB(x, y, RGBindex, value);
         }
 
         public Buf GetBufByCoord(int s, int z, int c, int t)
@@ -1693,16 +1715,14 @@ namespace BioImage
                 }
             }
         }
-        public bool SaveSeries(string path, int series, bool folder)
+        public bool SaveSeries(string path, int series)
         {
             // create OME-XML metadata store
             ServiceFactory factory = new ServiceFactory();
             OMEXMLService service = (OMEXMLService)factory.getInstance(typeof(OMEXMLService));
             loci.formats.meta.IMetadata omexml = service.createOMEXMLMetadata();
-
             omexml.setImageID("Image:0", series);
             omexml.setPixelsID("Pixels:0", series);
-
             if (littleEndian)
                 omexml.setPixelsBinDataBigEndian(java.lang.Boolean.TRUE, 0, 0);
             else
@@ -2481,7 +2501,7 @@ namespace BioImage
                 Buf buf = new Buf(fi, bytes);
                 Buffers.Add(buf);
                 bufferTable.Add(fi.HashID, buf);
-                Table.AddBufferByHash(fi.HashID, buf);
+                Table.AddBufferByID(fi.stringId, buf);
             }
             double stx = 0;
             double sty = 0;

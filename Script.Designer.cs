@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Script));
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox = new System.Windows.Forms.TextBox();
             this.runButton = new System.Windows.Forms.Button();
             this.outputBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -39,32 +39,34 @@
             this.scriptLabel = new System.Windows.Forms.Label();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.timer = new System.Windows.Forms.Timer(this.components);
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.error = new System.Windows.Forms.TabPage();
+            this.tabControl = new System.Windows.Forms.TabControl();
             this.outputTab = new System.Windows.Forms.TabPage();
+            this.error = new System.Windows.Forms.TabPage();
             this.errorBox = new System.Windows.Forms.TextBox();
             this.saveButton = new System.Windows.Forms.Button();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.tabControl1.SuspendLayout();
-            this.error.SuspendLayout();
+            this.tabControl.SuspendLayout();
             this.outputTab.SuspendLayout();
+            this.error.SuspendLayout();
             this.SuspendLayout();
             // 
-            // textBox1
+            // textBox
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.textBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(12, 33);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(374, 205);
-            this.textBox1.TabIndex = 0;
-            this.textBox1.Text = resources.GetString("textBox1.Text");
+            this.textBox.Location = new System.Drawing.Point(12, 33);
+            this.textBox.Multiline = true;
+            this.textBox.Name = "textBox";
+            this.textBox.Size = new System.Drawing.Size(494, 213);
+            this.textBox.TabIndex = 0;
+            this.textBox.Text = resources.GetString("textBox.Text");
+            this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             // 
             // runButton
             // 
-            this.runButton.Location = new System.Drawing.Point(311, 244);
+            this.runButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.runButton.Location = new System.Drawing.Point(431, 252);
             this.runButton.Name = "runButton";
             this.runButton.Size = new System.Drawing.Size(75, 23);
             this.runButton.TabIndex = 1;
@@ -78,14 +80,15 @@
             this.outputBox.Location = new System.Drawing.Point(3, 3);
             this.outputBox.Multiline = true;
             this.outputBox.Name = "outputBox";
-            this.outputBox.Size = new System.Drawing.Size(357, 106);
+            this.outputBox.Size = new System.Drawing.Size(477, 105);
             this.outputBox.TabIndex = 2;
             // 
             // label1
             // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(12, 249);
+            this.label1.Location = new System.Drawing.Point(12, 257);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(90, 13);
             this.label1.TabIndex = 3;
@@ -103,7 +106,8 @@
             // 
             // scriptBut
             // 
-            this.scriptBut.Location = new System.Drawing.Point(229, 4);
+            this.scriptBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.scriptBut.Location = new System.Drawing.Point(349, 4);
             this.scriptBut.Name = "scriptBut";
             this.scriptBut.Size = new System.Drawing.Size(75, 23);
             this.scriptBut.TabIndex = 5;
@@ -122,36 +126,25 @@
             // 
             // openFileDialog
             // 
-            this.openFileDialog.FileName = "openFileDialog1";
+            this.openFileDialog.FileName = "openFileDialog";
+            this.openFileDialog.Filter = "\"C# Files (*.cs)|*.cs|All files (*.*)|*.*\"";
             // 
             // timer
             // 
             this.timer.Interval = 1000;
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
-            // tabControl1
+            // tabControl
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.error);
-            this.tabControl1.Controls.Add(this.outputTab);
-            this.tabControl1.Location = new System.Drawing.Point(15, 265);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(371, 138);
-            this.tabControl1.TabIndex = 7;
-            // 
-            // error
-            // 
-            this.error.Controls.Add(this.errorBox);
-            this.error.Location = new System.Drawing.Point(4, 22);
-            this.error.Name = "error";
-            this.error.Padding = new System.Windows.Forms.Padding(3);
-            this.error.Size = new System.Drawing.Size(363, 112);
-            this.error.TabIndex = 0;
-            this.error.Text = "Error";
-            this.error.UseVisualStyleBackColor = true;
+            this.tabControl.Controls.Add(this.outputTab);
+            this.tabControl.Controls.Add(this.error);
+            this.tabControl.Location = new System.Drawing.Point(15, 274);
+            this.tabControl.Name = "tabControl";
+            this.tabControl.SelectedIndex = 0;
+            this.tabControl.Size = new System.Drawing.Size(491, 137);
+            this.tabControl.TabIndex = 7;
             // 
             // outputTab
             // 
@@ -159,10 +152,21 @@
             this.outputTab.Location = new System.Drawing.Point(4, 22);
             this.outputTab.Name = "outputTab";
             this.outputTab.Padding = new System.Windows.Forms.Padding(3);
-            this.outputTab.Size = new System.Drawing.Size(363, 112);
+            this.outputTab.Size = new System.Drawing.Size(483, 111);
             this.outputTab.TabIndex = 1;
             this.outputTab.Text = "Output";
             this.outputTab.UseVisualStyleBackColor = true;
+            // 
+            // error
+            // 
+            this.error.Controls.Add(this.errorBox);
+            this.error.Location = new System.Drawing.Point(4, 22);
+            this.error.Name = "error";
+            this.error.Padding = new System.Windows.Forms.Padding(3);
+            this.error.Size = new System.Drawing.Size(483, 111);
+            this.error.TabIndex = 0;
+            this.error.Text = "Error";
+            this.error.UseVisualStyleBackColor = true;
             // 
             // errorBox
             // 
@@ -170,12 +174,13 @@
             this.errorBox.Location = new System.Drawing.Point(3, 3);
             this.errorBox.Multiline = true;
             this.errorBox.Name = "errorBox";
-            this.errorBox.Size = new System.Drawing.Size(357, 106);
+            this.errorBox.Size = new System.Drawing.Size(477, 105);
             this.errorBox.TabIndex = 3;
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(311, 4);
+            this.saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.saveButton.Location = new System.Drawing.Point(431, 4);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 8;
@@ -183,28 +188,32 @@
             this.saveButton.UseVisualStyleBackColor = true;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.FileName = "\"C# Files (*.cs)|*.cs|All files (*.*)|*.*\"";
+            // 
             // Script
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(398, 415);
+            this.ClientSize = new System.Drawing.Size(518, 423);
             this.Controls.Add(this.saveButton);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabControl);
             this.Controls.Add(this.scriptLabel);
             this.Controls.Add(this.scriptBut);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.runButton);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.textBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Script";
             this.Text = "Script";
-            this.tabControl1.ResumeLayout(false);
-            this.error.ResumeLayout(false);
-            this.error.PerformLayout();
+            this.tabControl.ResumeLayout(false);
             this.outputTab.ResumeLayout(false);
             this.outputTab.PerformLayout();
+            this.error.ResumeLayout(false);
+            this.error.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -212,7 +221,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.Button runButton;
         private System.Windows.Forms.TextBox outputBox;
         private System.Windows.Forms.Label label1;
@@ -221,7 +230,7 @@
         private System.Windows.Forms.Label scriptLabel;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Timer timer;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage error;
         private System.Windows.Forms.TextBox errorBox;
         private System.Windows.Forms.TabPage outputTab;

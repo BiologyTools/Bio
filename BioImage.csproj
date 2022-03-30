@@ -320,6 +320,12 @@
     <Compile Include="Script.Designer.cs">
       <DependentUpon>Script.cs</DependentUpon>
     </Compile>
+    <Compile Include="ScriptRunner.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ScriptRunner.Designer.cs">
+      <DependentUpon>ScriptRunner.cs</DependentUpon>
+    </Compile>
     <Compile Include="Slider.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -380,6 +386,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Script.resx">
       <DependentUpon>Script.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScriptRunner.resx">
+      <DependentUpon>ScriptRunner.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Slider.resx">
       <DependentUpon>Slider.cs</DependentUpon>
