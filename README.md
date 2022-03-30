@@ -63,20 +63,33 @@ image.SaveSeries("16bitTestSaveStack.ome.tif", 0);
 
 //css_reference BioImage.dll;
 using System;
+
 using BioImage;
+
 public class Loader
 {
+
 	public string Load()
-	{		
+	{	
+	
 		BioImage.BioImage b = new BioImage.BioImage(0,"E://TESTIMAGES//text.ome.tif");
+		
 		//SetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex, ushort value)
+		
 		b.SetValueRGB(0,0,0,0,0,0,0,15000);
+		
 		//GetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex)
+		
 		ushort val = b.GetValueRGB(0,0,0,0,0,0,1);
+		
 		b.SaveSeries("E://TESTIMAGES//save.ome.tif",0);
+		
 		return val.ToString();
+		
 	}
+	
 }
+
 
 
 
