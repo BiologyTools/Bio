@@ -20,6 +20,10 @@ namespace BioImage
             tools = new Tools();
             manager = new ROIManager();
             app = this;
+
+            Script sc = new Script();
+            sc.Show();
+
             string file = "E://TESTIMAGES//text.ome.tif";
             SetFile(file, 0);
             if (arg.Length == 0)
@@ -448,6 +452,12 @@ namespace BioImage
         private void panel_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        Script script = new Script();
+        private void scriptToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            script.Show();
         }
     }
 }

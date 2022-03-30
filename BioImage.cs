@@ -2445,9 +2445,8 @@ namespace BioImage
                         if (colf != null)
                             an.fillColor = System.Drawing.Color.FromArgb(colf.getAlpha(), colf.getRed(), colf.getGreen(), colf.getBlue());
                         //We set this last so the text is measured correctly.
-                         an.AddPoint(new PointD(meta.getLabelX(i, sc).doubleValue(), meta.getLabelY(i, sc).doubleValue()));
+                        an.AddPoint(new PointD(meta.getLabelX(i, sc).doubleValue(), meta.getLabelY(i, sc).doubleValue()));
                         an.Text = meta.getLabelText(i, sc);
-                       
                     }
                     Annotations.Add(an);
                 }
@@ -2493,7 +2492,6 @@ namespace BioImage
 
             try
             {
-
                 if (meta.getPixelsPhysicalSizeX(ser) != null)
                     six = meta.getPixelsPhysicalSizeX(ser).value().doubleValue();
                 if (meta.getPixelsPhysicalSizeY(ser) != null)
@@ -2519,7 +2517,7 @@ namespace BioImage
             }
             catch (Exception)
             {
-                //Volume is used only for stage coordinates if error iss thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
+                //Volume is used only for stage coordinates if error is thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
             }
             Table.AddBioImageByID(idString, this);
 

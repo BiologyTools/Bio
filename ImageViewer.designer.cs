@@ -54,6 +54,7 @@ namespace BioImage
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.scriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,7 +66,8 @@ namespace BioImage
             this.rOIToolStripMenuItem,
             this.channelsToolToolStripMenuItem,
             this.sizeModeToolStripMenuItem,
-            this.autoThresholdToolStripMenuItem});
+            this.autoThresholdToolStripMenuItem,
+            this.scriptToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(543, 24);
@@ -228,6 +230,13 @@ namespace BioImage
             this.openCSVFileDialog.Filter = "\"CSV Files (*.csv)|*.csv|All files (*.*)|*.*\"";
             this.openCSVFileDialog.Title = "Import ROI from CSV";
             // 
+            // scriptToolStripMenuItem
+            // 
+            this.scriptToolStripMenuItem.Name = "scriptToolStripMenuItem";
+            this.scriptToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
+            this.scriptToolStripMenuItem.Text = "Script";
+            this.scriptToolStripMenuItem.Click += new System.EventHandler(this.scriptToolStripMenuItem_Click);
+            // 
             // ImageViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -280,5 +289,6 @@ namespace BioImage
         private System.Windows.Forms.ToolStripMenuItem filteredToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rawToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem autoThresholdToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scriptToolStripMenuItem;
     }
 }
