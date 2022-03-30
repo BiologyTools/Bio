@@ -42,7 +42,7 @@ mainTabControl.TabPages[3].Controls.Add(imageview);
 
 //Another way of opening just image.
 
-BioImage image = new BioImage("16bitTestStack.ome.tif");
+BioImage image = new BioImage(0,"16bitTestStack.ome.tif");
 
 //Get RGB Bitmap of BioImage with coordinates (Series, Z-depth, Channel, Time)
 
