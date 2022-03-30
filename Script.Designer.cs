@@ -43,6 +43,8 @@
             this.error = new System.Windows.Forms.TabPage();
             this.outputTab = new System.Windows.Forms.TabPage();
             this.errorBox = new System.Windows.Forms.TextBox();
+            this.saveButton = new System.Windows.Forms.Button();
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.tabControl1.SuspendLayout();
             this.error.SuspendLayout();
             this.outputTab.SuspendLayout();
@@ -101,7 +103,7 @@
             // 
             // scriptBut
             // 
-            this.scriptBut.Location = new System.Drawing.Point(311, 4);
+            this.scriptBut.Location = new System.Drawing.Point(229, 4);
             this.scriptBut.Name = "scriptBut";
             this.scriptBut.Size = new System.Drawing.Size(75, 23);
             this.scriptBut.TabIndex = 5;
@@ -171,12 +173,23 @@
             this.errorBox.Size = new System.Drawing.Size(357, 106);
             this.errorBox.TabIndex = 3;
             // 
+            // saveButton
+            // 
+            this.saveButton.Location = new System.Drawing.Point(311, 4);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(75, 23);
+            this.saveButton.TabIndex = 8;
+            this.saveButton.Text = "Save Script";
+            this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            // 
             // Script
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.ClientSize = new System.Drawing.Size(398, 415);
+            this.Controls.Add(this.saveButton);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.scriptLabel);
             this.Controls.Add(this.scriptBut);
@@ -212,5 +225,7 @@
         private System.Windows.Forms.TabPage error;
         private System.Windows.Forms.TextBox errorBox;
         private System.Windows.Forms.TabPage outputTab;
+        private System.Windows.Forms.Button saveButton;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog;
     }
 }

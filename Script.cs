@@ -22,8 +22,19 @@ namespace BioImage
         {
             InitializeComponent();
             timer.Start();
+            //We make sure the scripts folder exists and contains BioImage.dll
+            string ex = Path.GetDirectoryName(Application.ExecutablePath);
+            string f = ex + "//Scripts";
+            if (!Directory.Exists(f))
+                Directory.CreateDirectory(f);
+            string bio = f + "//" + "BioImage.dll";
+            if (!File.Exists(bio))
+            {
+                string dllnew = f + "//BioImage.dll";
+                string dll = ex + "//BioImage.dll";
+                File.Copy(dll, bio);
+            }
         }
-
         private void runButton_Click(object sender, EventArgs e)
         {
             Run(textBox1.Text);
@@ -59,10 +70,11 @@ namespace BioImage
 
         private void scriptBut_Click(object sender, EventArgs e)
         {
+            openFileDialog.InitialDirectory = Application.StartupPath + "//Scripts";
             if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
             textBox1.Text = File.ReadAllText(openFileDialog.FileName);
-            Run(textBox1.Text);
+            scriptLabel.Text = openFileDialog.FileName;
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -73,6 +85,14 @@ namespace BioImage
                     errorBox.Text = ex.Message;
                 outputBox.Text = output;
             }
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+            scriptLabel.Text = saveFileDialog.FileName;
+            File.WriteAllText(saveFileDialog.FileName, textBox1.Text);
         }
     }
 }

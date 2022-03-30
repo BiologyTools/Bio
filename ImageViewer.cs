@@ -21,7 +21,7 @@ namespace BioImage
             manager = new ROIManager();
             app = this;
 
-            scriptToolStripMenuItem.PerformClick();
+            //scriptToolStripMenuItem.PerformClick();
             //string file = "E://TESTIMAGES//text.ome.tif";
             //SetFile(file, 0);
             if (arg.Length == 0)
