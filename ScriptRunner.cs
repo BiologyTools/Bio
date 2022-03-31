@@ -49,5 +49,11 @@ namespace BioImage
         {
             Run();
         }
+
+        private void openScriptFolderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string path = Application.StartupPath + "\\Scripts";
+            System.Diagnostics.Process.Start("explorer.exe", path);
+        }
     }
 }

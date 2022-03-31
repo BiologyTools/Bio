@@ -29,7 +29,6 @@ namespace BioImage
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageViewer));
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,7 +49,6 @@ namespace BioImage
             this.scriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.imageMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.panel = new System.Windows.Forms.Panel();
@@ -87,14 +85,14 @@ namespace BioImage
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open Files";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
@@ -165,7 +163,7 @@ namespace BioImage
             // 
             this.rGBToolStripMenuItem.CheckOnClick = true;
             this.rGBToolStripMenuItem.Name = "rGBToolStripMenuItem";
-            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.rGBToolStripMenuItem.Text = "RGB";
             this.rGBToolStripMenuItem.Click += new System.EventHandler(this.rGBToolStripMenuItem_Click);
             // 
@@ -173,7 +171,7 @@ namespace BioImage
             // 
             this.filteredToolStripMenuItem.CheckOnClick = true;
             this.filteredToolStripMenuItem.Name = "filteredToolStripMenuItem";
-            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.filteredToolStripMenuItem.Text = "Filtered";
             this.filteredToolStripMenuItem.Click += new System.EventHandler(this.filteredToolStripMenuItem_Click);
             // 
@@ -181,7 +179,7 @@ namespace BioImage
             // 
             this.rawToolStripMenuItem.CheckOnClick = true;
             this.rawToolStripMenuItem.Name = "rawToolStripMenuItem";
-            this.rawToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.rawToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.rawToolStripMenuItem.Text = "Raw";
             this.rawToolStripMenuItem.Click += new System.EventHandler(this.rawToolStripMenuItem_Click);
             // 
@@ -195,8 +193,8 @@ namespace BioImage
             // scriptToolStripMenuItem
             // 
             this.scriptToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.scriptRunnerToolStripMenuItem,
-            this.scriptEditorToolStripMenuItem});
+            this.scriptEditorToolStripMenuItem,
+            this.scriptRunnerToolStripMenuItem});
             this.scriptToolStripMenuItem.Name = "scriptToolStripMenuItem";
             this.scriptToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.scriptToolStripMenuItem.Text = "Script";
@@ -214,11 +212,6 @@ namespace BioImage
             this.scriptEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.scriptEditorToolStripMenuItem.Text = "Script Editor";
             this.scriptEditorToolStripMenuItem.Click += new System.EventHandler(this.scriptToolStripMenuItem_Click);
-            // 
-            // imageMenuStrip
-            // 
-            this.imageMenuStrip.Name = "contextMenuStrip1";
-            this.imageMenuStrip.Size = new System.Drawing.Size(61, 4);
             // 
             // openFilesDialog
             // 
@@ -288,7 +281,6 @@ namespace BioImage
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ContextMenuStrip imageMenuStrip;
         private System.Windows.Forms.OpenFileDialog openFilesDialog;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;

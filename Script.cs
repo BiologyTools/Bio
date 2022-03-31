@@ -69,12 +69,14 @@ namespace BioImage
         }
         private void runButton_Click(object sender, EventArgs e)
         {
-            Run(textBox.Text);
             errorBox.Text = "";
             outputBox.Text = "";
+            Run(textBox.Text);
         }
         public void Run(string code)
         {
+            errorBox.Text = "";
+            outputBox.Text = "";
             scriptString = textBox.Text;
             Thread t = new Thread(new ThreadStart(RunScript));
             t.Start();
@@ -125,13 +127,11 @@ namespace BioImage
             if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
             textBox.Text = File.ReadAllText(openFileDialog.FileName);
-            scriptLabel.Text = openFileDialog.FileName;
+            scriptLabel.Text = Path.GetFileName(openFileDialog.FileName);
         }
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            outputBox.Text = "";
-            errorBox.Text = "";
             if (ex != null)
                 errorBox.Text = ex.Message;
             outputBox.Text = output;

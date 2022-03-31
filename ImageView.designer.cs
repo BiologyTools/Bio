@@ -535,10 +535,7 @@ namespace BioImage
             this.pictureBox.Size = new System.Drawing.Size(425, 269);
             this.pictureBox.TabIndex = 20;
             this.pictureBox.TabStop = false;
-            this.pictureBox.SizeModeChanged += new System.EventHandler(this.pictureBox_SizeModeChanged);
-            this.pictureBox.SizeChanged += new System.EventHandler(this.pictureBox_SizeChanged);
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
-            this.pictureBox.Resize += new System.EventHandler(this.pictureBox_Resize);
             // 
             // panel
             // 

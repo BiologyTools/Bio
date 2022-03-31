@@ -33,12 +33,14 @@
             this.scriptView = new System.Windows.Forms.ListView();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openScriptFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // scriptView
             // 
             this.scriptView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.scriptView.ContextMenuStrip = this.contextMenuStrip;
             this.scriptView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.scriptView.ForeColor = System.Drawing.Color.White;
             this.scriptView.HideSelection = false;
@@ -55,16 +57,24 @@
             // contextMenuStrip
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.runToolStripMenuItem});
+            this.runToolStripMenuItem,
+            this.openScriptFolderToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(96, 26);
+            this.contextMenuStrip.Size = new System.Drawing.Size(181, 70);
             // 
             // runToolStripMenuItem
             // 
             this.runToolStripMenuItem.Name = "runToolStripMenuItem";
-            this.runToolStripMenuItem.Size = new System.Drawing.Size(95, 22);
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.runToolStripMenuItem.Text = "Run";
             this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
+            // 
+            // openScriptFolderToolStripMenuItem
+            // 
+            this.openScriptFolderToolStripMenuItem.Name = "openScriptFolderToolStripMenuItem";
+            this.openScriptFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openScriptFolderToolStripMenuItem.Text = "Open Script Folder";
+            this.openScriptFolderToolStripMenuItem.Click += new System.EventHandler(this.openScriptFolderToolStripMenuItem_Click);
             // 
             // ScriptRunner
             // 
@@ -86,5 +96,6 @@
         private System.Windows.Forms.ListView scriptView;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openScriptFolderToolStripMenuItem;
     }
 }

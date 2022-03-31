@@ -194,7 +194,9 @@ namespace BioImage
         {
             Buf = image.GetBufByCoord(GetCoordinate());
             if (channelBoxR.SelectedIndex == -1)
-                image.rgbChannels[0] = channelBoxR.SelectedIndex;
+                image.rgbChannels[0] = 0;
+            else
+                image.rgbChannels[1] = channelBoxR.SelectedIndex;
             if (channelBoxG.SelectedIndex == -1)
                 image.rgbChannels[1] = 0;
             else
@@ -348,6 +350,8 @@ namespace BioImage
         Bitmap bitmap;
         public void UpdateView()
         {
+            if(bitmap!=null)
+            bitmap.Dispose();
             if (Mode == ViewMode.Raw)
             {
                 SetCoordinate(image.serie, zBar.Value, cBar.Value, timeBar.Value);
@@ -396,9 +400,6 @@ namespace BioImage
             if (channelBoxR.SelectedIndex == -1)
                 return;
             image.rgbChannels[0] = channelBoxR.SelectedIndex;
-            //image.SetRGBChannelIndex(BioImage.RGB.Blue, ch.Index);
-            //image.rgbimage.BChannel = ch;
-            //UpdateRGBChannels();
             UpdateView();
         }
 
@@ -407,10 +408,6 @@ namespace BioImage
             if (channelBoxG.SelectedIndex == -1)
                 return;
             image.rgbChannels[1] = channelBoxG.SelectedIndex;
-            //image.Channels[image.rgbChannels[1]] = ch;
-            //image.SetRGBChannelIndex(BioImage.RGB.Green, ch.Index);
-            //image.rgbimage.GChannel = ch;
-            //UpdateRGBChannels();
             UpdateView();
         }
 
@@ -419,10 +416,6 @@ namespace BioImage
             if (channelBoxB.SelectedIndex == -1)
                 return;
             image.rgbChannels[2] = channelBoxB.SelectedIndex;
-            //image.Channels[image.rgbChannels[2]] = ch;
-            //image.SetRGBChannelIndex(BioImage.RGB.Blue, ch.Index);
-            //image.rgbimage.BChannel = ch;
-            //UpdateRGBChannels();
             UpdateView();
         }
 

@@ -37,9 +37,9 @@ namespace BioImage
             string file = "E://TESTIMAGES//text.ome.tif";
             //SetFile(file, 0);
             BioImage im = new BioImage(file, 0);
-            BioImage b = new BioImage(im, "subStack.ome.tif", 0, 0, 3, 0, 3, 0, 2);
-
-            SetImage(b);
+            //BioImage b = new BioImage(im, "subStack.ome.tif", 0, 0, 3, 0, 3, 0, 2);
+            im.Dispose();
+            //SetImage(b);
             if (arg.Length == 0)
                 return;
             else

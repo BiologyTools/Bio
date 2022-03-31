@@ -90,7 +90,6 @@ namespace BioImage
             buffers.Add(im.HashID, im);
         }
     }
-
     public class BioImage
     {
         public const char sep = '/';
@@ -143,7 +142,7 @@ namespace BioImage
         }
         int[,,,] Coords;
         public Hashtable fileHashTable = new Hashtable();
-        public Random _random = new Random();
+        public Random random = new Random();
         public ImageReader reader;
         public loci.formats.ImageWriter imageWriter;
         public loci.formats.meta.IMetadata meta;
@@ -196,14 +195,6 @@ namespace BioImage
                     px = PixelFormat.Format24bppRgb;
             }
 
-            int stride;
-            if (bitsPerPixel > 8)
-                stride = SizeX * 2 * rGBChannelCount;
-            else
-                stride = SizeX * rGBChannelCount;
-
-            
-
             fileHashTable.Add(idString, idString.GetHashCode());
             int i = 0;
             for (int zi = zs; zi < SizeZ; zi++)
@@ -219,12 +210,10 @@ namespace BioImage
                         Coords[ser, zi, ci, ti] = i;
                         Buffers.Add(copy);
                         Table.AddBuffer(copy);
-
                         //Lets copy the ROI's from the original image.
                         List<Annotation> anns = orig.GetAnnotations(ser, zi, ci, ti);
                         if(anns.Count > 0)
                         Annotations.AddRange(anns);
-
                         i++;
                     }
                 }
@@ -372,7 +361,6 @@ namespace BioImage
         }
 
         public Stopwatch watch = new Stopwatch();
-
         public int RGBChannelCount
         {
             get
@@ -469,7 +457,7 @@ namespace BioImage
         {
             if(bitsPerPixel > 8)
             {
-                return AForge.Imaging.Image.Convert16bppTo8bpp(GetRGBBitmap16(coord, rr,rg, rb));
+                return AForge.Imaging.Image.Convert16bppTo8bpp(GetRGBBitmap16(coord, rr, rg, rb));
             }
             else
             {
@@ -484,7 +472,10 @@ namespace BioImage
         {
             if (bitsPerPixel > 8)
             {
-                return AForge.Imaging.Image.Convert16bppTo8bpp(GetFiltered(coord, rr));
+                Bitmap b = GetFiltered(coord, rr);
+                Bitmap bb = AForge.Imaging.Image.Convert16bppTo8bpp(b);
+                b.Dispose();
+                return bb;
             }
             else
             {
@@ -511,42 +502,38 @@ namespace BioImage
         {
             return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetFiltered(filt);
         }
-        public Bitmap GetFiltered(SZCT coord, IntRange rr, IntRange rg, IntRange rb)
-        {
-            return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetFiltered(rr, rg, rb);
-        }
 
         private Bitmap rgbBitmap16 = null;
+        private Bitmap rBitmap16 = null;
+        private Bitmap gBitmap16 = null;
+        private Bitmap bBitmap16 = null;
         public Bitmap GetRGBBitmap16(SZCT coord, IntRange rf, IntRange gf, IntRange bf)
         {
             watch.Restart();
             int ri = Coords[serie, coord.Z, coord.C, coord.T];
-            if (RGBChannelCount == 1)
+            if(replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
             {
                 replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri + RChannel.index].GetFiltered(rf, gf, bf));
-                replaceRFilter.ApplyInPlace(rgbBitmap16);
                 replaceGFilter = new ReplaceChannel(AForge.Imaging.RGB.G, Buffers[ri + GChannel.index].GetFiltered(rf, gf, bf));
-                replaceGFilter.ApplyInPlace(rgbBitmap16);
                 replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, Buffers[ri + BChannel.index].GetFiltered(rf, gf, bf));
-                replaceBFilter.ApplyInPlace(rgbBitmap16);
             }
-            else
-            {
-                rgbBitmap16 = Buffers[ri].GetBitmap();
-            }
-            watch.Stop();
-            loadTimeMS = watch.ElapsedMilliseconds;
-            loadTimeTicks = watch.ElapsedTicks;
-            return rgbBitmap16;
-        }
-        public Bitmap GetRGBBitmap16(SZCT coord, IntRange rf)
-        {
-            watch.Restart();
-            int ri = Coords[serie,coord.Z, coord.C, coord.T];
+
             if (RGBChannelCount == 1)
             {
-                replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri].GetFiltered(rf));
+                rBitmap16 = Buffers[ri + RChannel.index].GetFiltered(rf, gf, bf);
+                replaceRFilter.ChannelImage = rBitmap16;
                 replaceRFilter.ApplyInPlace(rgbBitmap16);
+                //replaceRFilter.ChannelImage.Dispose();
+
+                gBitmap16 = Buffers[ri + GChannel.index].GetFiltered(rf, gf, bf);
+                replaceGFilter.ChannelImage = gBitmap16;
+                replaceGFilter.ApplyInPlace(rgbBitmap16);
+                //replaceGFilter.ChannelImage.Dispose();
+
+                bBitmap16 = Buffers[ri + BChannel.index].GetFiltered(rf, gf, bf);
+                replaceBFilter.ChannelImage = bBitmap16;
+                replaceBFilter.ApplyInPlace(rgbBitmap16);
+                //replaceBFilter.ChannelImage.Dispose();
             }
             else
             {
@@ -795,7 +782,6 @@ namespace BioImage
                     UpdateBoundingBox();
                 }
             }
-
             public double X
             {
                 get
@@ -846,8 +832,6 @@ namespace BioImage
                     Rect = new RectangleD(X, Y, W, value);
                 }
             }
-
-
             public string name = "";
             public string id = "";
             private List<PointD> Points = new List<PointD>();
@@ -1037,23 +1021,6 @@ namespace BioImage
                     BoundingBox = r;
                 }
             }
-            public Annotation CreatePolyline(string points)
-            {
-                Annotation roi = new Annotation();
-                roi.type = Type.Polyline;
-                roi.AddPoints(stringToPoints(points));
-                UpdateSelectBoxs();
-                UpdateBoundingBox();
-                return roi;
-            }
-            public Annotation CreateText(Font f, string s, PointD p1)
-            {
-                Annotation roi = new Annotation();
-                roi.type = Type.Label;
-                roi.font = f;
-                roi.Points.Add(p1);
-                return roi;
-            }
             public override string ToString()
             {
                 return "(" + Point.X + ", " + Point.Y + ") " + coord.ToString() + " " + type.ToString() + " " + roiName;
@@ -1165,6 +1132,7 @@ namespace BioImage
             }
             public bool littleEndian;
             public bool ConvertedToLittleEndian;
+            public bool RedGreenFlipped;
             public int length;
             public int SizeX, SizeY;
             public int Zcoord;
@@ -1182,6 +1150,7 @@ namespace BioImage
                 stringId = CreateID(filepath, serie, index);
                 littleEndian = litleEnd;
                 ConvertedToLittleEndian = convertedToLittleEndian;
+                RedGreenFlipped = false;
                 length = len;
                 SizeX = w;
                 SizeY = h;
@@ -1221,7 +1190,6 @@ namespace BioImage
                     SetBytes(value);
                 }
             }
-
             public Buf(BufferInfo inf, byte[] bts)
             {
                 info = inf;
@@ -1232,20 +1200,21 @@ namespace BioImage
                 serie = inf.series;
                 bytes = bts;
 
-                if (info.RGBChannelsCount == 3)
+                if (info.RGBChannelsCount == 3 && info.RedGreenFlipped == false)
                 {
+                    info.RedGreenFlipped = true;
                     //RGB Channels are stored in BGR so we switch them to RGB
                     SetBuffer(switchRedBlue(GetBitmap()));
                     //Then turn the 48bpp buffers to 3 RGB 16bpp buffers
                 }
-                if (!info.littleEndian)
+                if (!info.littleEndian && info.ConvertedToLittleEndian == false)
                 {
+                    info.ConvertedToLittleEndian = true;
                     //We need to convert this buffer to little endian.
                     ToLittleEndian();
                 }
 
             }
-
             public static Buf GetFromID(string bid)
             {
                 return Table.GetBufferByID(bid);
@@ -1261,62 +1230,16 @@ namespace BioImage
             }
             public static Buf Copy(Buf b, string file, int index)
             {
-                Buf bf = new Buf();
-                bf.info.Zcoord = b.info.Zcoord;
-                bf.info.ConvertedToLittleEndian = false;
-                bf.info.stringId = CreateID(file, b.info.series, index);
-                bf.stream = b.stream;
-                bf.read = new BinaryReader(b.stream);
-                bf.writer = new BinaryWriter(b.stream);
-                bf.bytes = b.GetBytes();
-                bf.info.SizeX = b.info.SizeX;
-                bf.info.SizeY = b.info.SizeY;
-                bf.info.length = b.info.length;
-                bf.info.stride = b.info.stride;
-                bf.info.series = b.info.series;
-                bf.info.Tcoord = b.info.Tcoord;
-                bf.info.Ccoord = b.info.Ccoord;
-                bf.info.pixelFormat = b.info.pixelFormat;
-                bf.info.littleEndian = b.info.littleEndian;
-                bf.info.bitsPerPixel = b.info.bitsPerPixel;
-                bf.info.RGBChannelsCount = b.info.RGBChannelsCount;
-                bf.file = b.file;
-                if (!bf.info.littleEndian)
-                {
-                    //We need to convert this buffer to little endian.
-                    bf.ToLittleEndian();
-                }
+                byte[] bts = new byte[b.info.length];
+                Buffer.BlockCopy(b.bytes, 0, bts, 0, b.bytes.Length);
+                BufferInfo bi = b.info;
+                bi.stringId = CreateID(file, b.info.series, index);
+                Buf bf = new Buf(bi, bts);
                 return bf;
             }
-
             public static Buf Copy(Buf b)
             {
-                Buf bf = new Buf();
-                bf.info.Zcoord = b.info.Zcoord;
-                bf.info.ConvertedToLittleEndian = false;
-                bf.info.stringId = b.info.stringId;
-                bf.stream = b.stream;
-                bf.read = new BinaryReader(b.stream);
-                bf.writer = new BinaryWriter(b.stream);
-                bf.bytes = b.bytes;
-                bf.info.SizeX = b.info.SizeX;
-                bf.info.SizeY = b.info.SizeY;
-                bf.info.length = b.info.length;
-                bf.info.stride = b.info.stride;
-                bf.info.series = b.info.series;
-                bf.info.Tcoord = b.info.Tcoord;
-                bf.info.Ccoord = b.info.Ccoord;
-                bf.info.pixelFormat = b.info.pixelFormat;
-                bf.info.littleEndian = b.info.littleEndian;
-                bf.info.bitsPerPixel = b.info.bitsPerPixel;
-                bf.info.RGBChannelsCount = b.info.RGBChannelsCount;
-                bf.file = b.file;
-                if (!bf.info.littleEndian)
-                {
-                    //We need to convert this buffer to little endian.
-                    bf.ToLittleEndian();
-                }
-                return bf;
+                return new Buf(b.info, b.bytes);
             }
 
             public override string ToString()
@@ -1352,13 +1275,6 @@ namespace BioImage
                 writer.Seek(ind, SeekOrigin.Begin);
                 writer.Write(bytes, ind, bytes.Length);
             }
-
-            public void SetShort(ushort val, int ind)
-            {
-                writer.Seek(ind, SeekOrigin.Begin);
-                writer.Write(val);
-            }
-
             public void SetBuffer(Bitmap bitmap)
             {
                 BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, info.SizeX, info.SizeY), ImageLockMode.ReadWrite, bitmap.PixelFormat);
@@ -1488,102 +1404,6 @@ namespace BioImage
                     return filter8.Apply(bitmap);
                 }
             }
-
-            private static Bitmap b;
-            private static Bitmap bi;
-            public unsafe Bitmap GetRGBChannelFiltered(RGB rgb, IntRange range)
-            {
-                if (info.RGBChannelsCount == 1)
-                {
-                    throw new ArgumentException("Plane is not a RGB plane.");
-                }
-
-                //We dispose the previous images for the filters so there's no memory leak.
-                if (b != null)
-                    b.Dispose();
-                if (bi != null)
-                    bi.Dispose();
-
-                Bitmap bitmap = GetBitmap();
-                if (info.bitsPerPixel > 8)
-                {
-                    // set ranges
-                    filter16.InRed = range;
-                    filter16.InGreen = range;
-                    filter16.InBlue = range;
-
-                    if (rgb == RGB.R)
-                    {
-                        b = extractR.Apply(bitmap);
-                        bi = filter16.Apply(b);
-                        b.Dispose();
-                        bitmap.Dispose();
-                        return bi;
-                    }
-                    if (rgb == RGB.G)
-                    {
-                        b = extractG.Apply(bitmap);
-                        bi = filter16.Apply(b);
-                        b.Dispose();
-                        bitmap.Dispose();
-                        return bi;
-                    }
-                    if (rgb == RGB.B)
-                    {
-                        b = extractB.Apply(bitmap);
-                        bi = filter16.Apply(b);
-                        b.Dispose();
-                        bitmap.Dispose();
-                        return bi;
-                    }
-                }
-                else
-                {
-                    // set ranges
-                    filter8.InRed = range;
-                    filter8.InGreen = range;
-                    filter8.InBlue = range;
-                    if (rgb == RGB.R)
-                    {
-                        b = extractR.Apply(bitmap);
-                        bi = filter8.Apply(b);
-                        b.Dispose();
-                        bitmap.Dispose();
-                        return bi;
-                    }
-                    if (rgb == RGB.G)
-                    {
-                        b = extractG.Apply(bitmap);
-                        bi = filter8.Apply(b);
-                        b.Dispose();
-                        bitmap.Dispose();
-                        return bi;
-                    }
-                    if (rgb == RGB.B)
-                    {
-                        b = extractB.Apply(bitmap);
-                        bi = filter8.Apply(b);
-                        b.Dispose();
-                        bitmap.Dispose();
-                        return bi;
-                    }
-                }
-                return null;
-            }
-            public unsafe Bitmap GetRGBChannelRaw(RGB rgb)
-            {
-                Bitmap bitmap = GetBitmap();
-                if (info.RGBChannelsCount == 1)
-                    return null;
-                if (rgb == RGB.R)
-                    return extractR.Apply(bitmap);
-                if (rgb == RGB.G)
-                    return extractG.Apply(bitmap);
-                if (rgb == RGB.B)
-                    return extractB.Apply(bitmap);
-                return null;
-            }
-
             public Bitmap switchRedBlue(Bitmap image)
             {
                 ExtractChannel cr = new ExtractChannel(AForge.Imaging.RGB.R);
@@ -1789,6 +1609,13 @@ namespace BioImage
                         bytes[index] = (byte)value;
                     }
                 }
+            }
+            public void Dispose()
+            {
+                file.Dispose();
+                stream.Dispose();
+                writer.Dispose();
+                read.Dispose();
             }
         }
         public bool SaveSeries(string path, int series)
@@ -2614,7 +2441,6 @@ namespace BioImage
             Table.AddBioImage(this);
 
         }
-
         public int GetSeriesCount(string file)
         {
             // create OME-XML metadata store
@@ -3010,7 +2836,6 @@ namespace BioImage
             }
             File.WriteAllText(filename, con);
         }
-
         public static List<Annotation> ImportROIsCSV(string filename)
         {
             List<Annotation> list = new List<Annotation>();
@@ -3163,7 +2988,6 @@ namespace BioImage
             }
             return list;
         }
-
         public static void ExportROIFolder(string path, string filename)
         {
             string[] fs = Directory.GetFiles(path);
@@ -3240,6 +3064,13 @@ namespace BioImage
                 AutoThresholdChannel(c);
             }
             //RefreshPlane();
+        }
+        public void Dispose()
+        {
+            for (int i = 0; i < Buffers.Count; i++)
+            {
+                Buffers[i].Dispose();
+            }
         }
 
     }
