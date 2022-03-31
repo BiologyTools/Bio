@@ -33,18 +33,7 @@ namespace BioImage
         {
             InitializeComponent();
             timer.Start();
-            //We make sure the scripts folder exists and contains BioImage.dll
-            string ex = Path.GetDirectoryName(Application.ExecutablePath);
-            string f = ex + "//Scripts";
-            if (!Directory.Exists(f))
-                Directory.CreateDirectory(f);
-            string bio = f + "//" + "BioImage.dll";
-            if (!File.Exists(bio))
-            {
-                string dllnew = f + "//BioImage.dll";
-                string dll = ex + "//BioImage.dll";
-                File.Copy(dll, bio);
-            }
+
             name = Path.GetFileName(file);
             textBox.Text = File.ReadAllText(file);
         }
@@ -52,18 +41,7 @@ namespace BioImage
         {
             InitializeComponent();
             timer.Start();
-            //We make sure the scripts folder exists and contains BioImage.dll
-            string ex = Path.GetDirectoryName(Application.ExecutablePath);
-            string f = ex + "\\Scripts";
-            if (!Directory.Exists(f))
-                Directory.CreateDirectory(f);
-            string bio = f + "//" + "BioImage.dll";
-            if (!File.Exists(bio))
-            {
-                string dllnew = f + "//BioImage.dll";
-                string dll = ex + "//BioImage.dll";
-                File.Copy(dll, bio);
-            }
+
             name = "Script" + rand.Next(0,1000).ToString();
             scriptLabel.Text = name;
         }
@@ -123,7 +101,7 @@ namespace BioImage
 
         private void scriptBut_Click(object sender, EventArgs e)
         {
-            openFileDialog.InitialDirectory = Application.StartupPath + "//Scripts";
+            openFileDialog.InitialDirectory = Application.StartupPath + "\\Scripts";
             if (openFileDialog.ShowDialog() != DialogResult.OK)
                 return;
             textBox.Text = File.ReadAllText(openFileDialog.FileName);

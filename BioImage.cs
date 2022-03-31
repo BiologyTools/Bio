@@ -157,6 +157,12 @@ namespace BioImage
         private PixelFormat px;
         public bool convertedToLittleEndian = false;
         public string filename;
+        public double physicalSizeX = -1;
+        public double physicalSizeY = -1;
+        public double physicalSizeZ = -1;
+        public double stageSizeX = -1;
+        public double stageSizeY = -1;
+        public double stageSizeZ = -1;
         public BioImage(BioImage orig, string id, int ser, int zs, int ze, int cs, int ce, int ts, int te)
         {
             serie = ser;
@@ -170,6 +176,19 @@ namespace BioImage
             rgbChannels[1] = 0;
             rgbChannels[2] = 0;
             bitsPerPixel = orig.bitsPerPixel;
+
+            if (orig.physicalSizeX != -1)
+                physicalSizeX = orig.physicalSizeX;
+            if (orig.physicalSizeY != -1)
+                physicalSizeY = orig.physicalSizeY;
+            if (orig.physicalSizeZ != -1)
+                physicalSizeZ = orig.physicalSizeZ;
+            if (orig.stageSizeX != -1)
+                stageSizeX = orig.stageSizeX;
+            if (orig.stageSizeY != -1)
+                stageSizeY = orig.stageSizeY;
+            if (orig.stageSizeX != -1)
+                stageSizeZ = orig.stageSizeZ;
 
             imageCount = SizeZ * SizeC * SizeT;
             littleEndian = orig.littleEndian;
@@ -1645,10 +1664,36 @@ namespace BioImage
             omexml.setPixelsSizeC(new PositiveInteger(java.lang.Integer.valueOf(SizeC * samples)), series);
             omexml.setPixelsSizeT(new PositiveInteger(java.lang.Integer.valueOf(SizeT)), series);
 
-            //We set the image physical size to be same as opened image.
-            omexml.setPixelsPhysicalSizeX(meta.getPixelsPhysicalSizeX(series), series);
-            omexml.setPixelsPhysicalSizeY(meta.getPixelsPhysicalSizeY(series), series);
-            omexml.setPixelsPhysicalSizeZ(meta.getPixelsPhysicalSizeZ(series), series);
+            if (physicalSizeX != -1)
+            {
+                ome.units.quantity.Length p = new ome.units.quantity.Length(java.lang.Double.valueOf(physicalSizeX), ome.units.UNITS.MICROMETER);
+                omexml.setPixelsPhysicalSizeX(p, series);
+            }
+            if (physicalSizeY != -1)
+            {
+                ome.units.quantity.Length p = new ome.units.quantity.Length(java.lang.Double.valueOf(physicalSizeY), ome.units.UNITS.MICROMETER);
+                omexml.setPixelsPhysicalSizeY(p, series);
+            }
+            if (physicalSizeZ != -1)
+            {
+                ome.units.quantity.Length p = new ome.units.quantity.Length(java.lang.Double.valueOf(physicalSizeZ), ome.units.UNITS.MICROMETER);
+                omexml.setPixelsPhysicalSizeZ(p, series);
+            }
+            if (stageSizeX != -1)
+            {
+                ome.units.quantity.Length s = new ome.units.quantity.Length(java.lang.Double.valueOf(stageSizeX), ome.units.UNITS.MICROMETER);
+                omexml.setStageLabelX(s, series);
+            }
+            if (stageSizeY != -1)
+            {
+                ome.units.quantity.Length s = new ome.units.quantity.Length(java.lang.Double.valueOf(stageSizeY), ome.units.UNITS.MICROMETER);
+                omexml.setStageLabelY(s, series);
+            }
+            if (stageSizeX != -1)
+            {
+                ome.units.quantity.Length s = new ome.units.quantity.Length(java.lang.Double.valueOf(stageSizeZ), ome.units.UNITS.MICROMETER);
+                omexml.setStageLabelZ(s, series);
+            }
 
             for (int channel = 0; channel < Channels.Count; channel++)
             {
@@ -1746,7 +1791,7 @@ namespace BioImage
                     else
                         omexml.setPolygonText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                    meta.setPolygonFontSize(fl, i, series);
+                    omexml.setPolygonFontSize(fl, i, series);
                     ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setPolygonStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
@@ -1774,7 +1819,7 @@ namespace BioImage
                     else
                         omexml.setRectangleText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                    meta.setRectangleFontSize(fl, i, series);
+                    omexml.setRectangleFontSize(fl, i, series);
                     ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setRectangleStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
@@ -1801,7 +1846,7 @@ namespace BioImage
                     else
                         omexml.setLineText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                    meta.setLineFontSize(fl, i, series);
+                    omexml.setLineFontSize(fl, i, series);
                     ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setLineStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
@@ -1835,7 +1880,7 @@ namespace BioImage
                     else
                         omexml.setEllipseText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                    meta.setEllipseFontSize(fl, i, series);
+                    omexml.setEllipseFontSize(fl, i, series);
                     ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setEllipseStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
@@ -1861,7 +1906,7 @@ namespace BioImage
                     else
                         omexml.setLabelText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                    meta.setLabelFontSize(fl, i, series);
+                    omexml.setLabelFontSize(fl, i, series);
                     ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setLabelStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
@@ -1881,16 +1926,8 @@ namespace BioImage
             writer.setId(path);
             writer.setSeries(series);
             writer.setWriteSequentially(true);
-           
-            /*
-            for (int im = 0; im < imageCount; im++)
-            {
-                writer.saveBytes(im, Buffers[im].GetEndianBytes(RGBChannelCount));
-                Application.DoEvents();
-            }
-            writer.close();
-            */
-             wr = writer;
+
+            wr = writer;
             imCount = imageCount;
             bufs = Buffers;
             rgbChans = rGBChannelCount;
@@ -2412,19 +2449,19 @@ namespace BioImage
             try
             {
                 if (meta.getPixelsPhysicalSizeX(ser) != null)
-                    six = meta.getPixelsPhysicalSizeX(ser).value().doubleValue();
+                    physicalSizeX = meta.getPixelsPhysicalSizeX(ser).value().doubleValue();
                 if (meta.getPixelsPhysicalSizeY(ser) != null)
-                    siy = meta.getPixelsPhysicalSizeY(ser).value().doubleValue();
+                    physicalSizeY = meta.getPixelsPhysicalSizeY(ser).value().doubleValue();
                 if (meta.getPixelsPhysicalSizeZ(ser) != null)
-                    siz = meta.getPixelsPhysicalSizeZ(ser).value().doubleValue();
+                    physicalSizeZ = meta.getPixelsPhysicalSizeZ(ser).value().doubleValue();
 
                 //Calling these when they are not defined causes an error so we use the try catch block.
                 if (meta.getStageLabelX(ser) != null)
-                    stx = meta.getStageLabelX(ser).value().doubleValue();
+                    stageSizeX = meta.getStageLabelX(ser).value().doubleValue();
                 if (meta.getStageLabelY(ser) != null)
-                    sty = meta.getStageLabelY(ser).value().doubleValue();
+                    stageSizeY = meta.getStageLabelY(ser).value().doubleValue();
                 if (meta.getStageLabelZ(ser) != null)
-                    stz = meta.getStageLabelZ(ser).value().doubleValue();
+                    stageSizeZ = meta.getStageLabelZ(ser).value().doubleValue();
             }
             catch (Exception e)
             {
