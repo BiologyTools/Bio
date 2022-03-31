@@ -70,6 +70,8 @@ namespace BioImage
         private void runButton_Click(object sender, EventArgs e)
         {
             Run(textBox.Text);
+            errorBox.Text = "";
+            outputBox.Text = "";
         }
         public void Run(string code)
         {

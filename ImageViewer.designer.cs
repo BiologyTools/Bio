@@ -48,6 +48,8 @@ namespace BioImage
             this.rawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoThresholdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scriptEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
@@ -55,8 +57,6 @@ namespace BioImage
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scriptEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -201,6 +201,20 @@ namespace BioImage
             this.scriptToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.scriptToolStripMenuItem.Text = "Script";
             // 
+            // scriptRunnerToolStripMenuItem
+            // 
+            this.scriptRunnerToolStripMenuItem.Name = "scriptRunnerToolStripMenuItem";
+            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
+            this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click);
+            // 
+            // scriptEditorToolStripMenuItem
+            // 
+            this.scriptEditorToolStripMenuItem.Name = "scriptEditorToolStripMenuItem";
+            this.scriptEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.scriptEditorToolStripMenuItem.Text = "Script Editor";
+            this.scriptEditorToolStripMenuItem.Click += new System.EventHandler(this.scriptToolStripMenuItem_Click);
+            // 
             // imageMenuStrip
             // 
             this.imageMenuStrip.Name = "contextMenuStrip1";
@@ -241,20 +255,6 @@ namespace BioImage
             this.openCSVFileDialog.Filter = "\"CSV Files (*.csv)|*.csv|All files (*.*)|*.*\"";
             this.openCSVFileDialog.Title = "Import ROI from CSV";
             // 
-            // scriptRunnerToolStripMenuItem
-            // 
-            this.scriptRunnerToolStripMenuItem.Name = "scriptRunnerToolStripMenuItem";
-            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
-            this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click);
-            // 
-            // scriptEditorToolStripMenuItem
-            // 
-            this.scriptEditorToolStripMenuItem.Name = "scriptEditorToolStripMenuItem";
-            this.scriptEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.scriptEditorToolStripMenuItem.Text = "Script Editor";
-            this.scriptEditorToolStripMenuItem.Click += new System.EventHandler(this.scriptToolStripMenuItem_Click);
-            // 
             // ImageViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -271,6 +271,7 @@ namespace BioImage
             this.Text = "BioImage";
             this.Activated += new System.EventHandler(this.ImageViewer_Activated);
             this.Deactivate += new System.EventHandler(this.ImageViewer_Deactivate);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImageViewer_FormClosing);
             this.SizeChanged += new System.EventHandler(this.ImageViewer_SizeChanged);
             this.Click += new System.EventHandler(this.ImageViewer_Click);
             this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.ImageViewer_PreviewKeyDown);

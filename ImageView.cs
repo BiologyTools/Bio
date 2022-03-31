@@ -52,6 +52,43 @@ namespace BioImage
             overlayPictureBox.Parent = pictureBox;
             overlayPictureBox.Location = new Point(0, 0);
         }
+        public ImageView(BioImage im)
+        {
+            string file = im.filename.Replace("\\", "/");
+            InitializeComponent();
+            serie = im.serie;
+            image = im;
+            tools = new Tools();
+            if (file == "" || file == null)
+                return;
+            SetCoordinate(serie, 0, 0, 0);
+            InitGUI(file);
+
+            Buf = image.GetBufByCoord(GetCoordinate());
+            if (image.SizeC > 2)
+            {
+                Mode = ViewMode.RGBImage;
+            }
+            else
+                Mode = ViewMode.Filtered;
+
+            MouseWheel += new System.Windows.Forms.MouseEventHandler(ImageView_MouseWheel);
+            zBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(ZTrackBar_MouseWheel);
+            cBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(CTrackBar_MouseWheel);
+            timeBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(TimeTrackBar_MouseWheel);
+            //We set the trackbar event to handled so that it only scrolls one tick not the default multiple.
+            zBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
+            timeBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
+            cBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
+            TimeFps = 60;
+            ZFps = 60;
+            CFps = 1;
+            UpdateView();
+            viewer = this;
+            // Change parent for overlay PictureBox.
+            overlayPictureBox.Parent = pictureBox;
+            overlayPictureBox.Location = new Point(0, 0);
+        }
         ~ImageView()
         {
 
@@ -223,13 +260,14 @@ namespace BioImage
             cBar.Maximum = image.SizeC - 1;
             if (image.SizeT > 1)
             {
-                timeBar.Maximum = image.reader.getSizeT() - 1;
+                timeBar.Maximum = image.SizeT - 1;
                 timeEnabled = true;
             }
             else
             {
                 timeBar.Enabled = false;
                 timeEnabled = false;
+                timeBar.Maximum = image.SizeT - 1;
             }
             //rgbPictureBox.Image = image.plane.GetBitmap();
             //we clear the channel comboboxes incase we have channels from previous loaded image.
