@@ -58,7 +58,7 @@
             this.textBox.Location = new System.Drawing.Point(12, 33);
             this.textBox.Multiline = true;
             this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(494, 213);
+            this.textBox.Size = new System.Drawing.Size(584, 296);
             this.textBox.TabIndex = 0;
             this.textBox.Text = resources.GetString("textBox.Text");
             this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
@@ -66,7 +66,7 @@
             // runButton
             // 
             this.runButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.runButton.Location = new System.Drawing.Point(431, 252);
+            this.runButton.Location = new System.Drawing.Point(521, 335);
             this.runButton.Name = "runButton";
             this.runButton.Size = new System.Drawing.Size(75, 23);
             this.runButton.TabIndex = 1;
@@ -80,7 +80,7 @@
             this.outputBox.Location = new System.Drawing.Point(3, 3);
             this.outputBox.Multiline = true;
             this.outputBox.Name = "outputBox";
-            this.outputBox.Size = new System.Drawing.Size(477, 105);
+            this.outputBox.Size = new System.Drawing.Size(567, 105);
             this.outputBox.TabIndex = 2;
             // 
             // label1
@@ -88,7 +88,7 @@
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(12, 257);
+            this.label1.Location = new System.Drawing.Point(12, 340);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(90, 13);
             this.label1.TabIndex = 3;
@@ -107,7 +107,7 @@
             // scriptBut
             // 
             this.scriptBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.scriptBut.Location = new System.Drawing.Point(349, 4);
+            this.scriptBut.Location = new System.Drawing.Point(439, 4);
             this.scriptBut.Name = "scriptBut";
             this.scriptBut.Size = new System.Drawing.Size(75, 23);
             this.scriptBut.TabIndex = 5;
@@ -140,10 +140,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.outputTab);
             this.tabControl.Controls.Add(this.error);
-            this.tabControl.Location = new System.Drawing.Point(15, 274);
+            this.tabControl.Location = new System.Drawing.Point(15, 357);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(491, 137);
+            this.tabControl.Size = new System.Drawing.Size(581, 137);
             this.tabControl.TabIndex = 7;
             // 
             // outputTab
@@ -152,7 +152,7 @@
             this.outputTab.Location = new System.Drawing.Point(4, 22);
             this.outputTab.Name = "outputTab";
             this.outputTab.Padding = new System.Windows.Forms.Padding(3);
-            this.outputTab.Size = new System.Drawing.Size(483, 111);
+            this.outputTab.Size = new System.Drawing.Size(573, 111);
             this.outputTab.TabIndex = 1;
             this.outputTab.Text = "Output";
             this.outputTab.UseVisualStyleBackColor = true;
@@ -180,7 +180,7 @@
             // saveButton
             // 
             this.saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveButton.Location = new System.Drawing.Point(431, 4);
+            this.saveButton.Location = new System.Drawing.Point(521, 4);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 8;
@@ -197,7 +197,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(518, 423);
+            this.ClientSize = new System.Drawing.Size(608, 506);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.scriptLabel);
