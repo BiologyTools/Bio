@@ -975,13 +975,15 @@ namespace BioImage
                 return ans;
             }
         }
-        
+
+        List<RectangleF> rects = new List<RectangleF>();
         private void DrawOverlay(Graphics g)
         {
             Pen pen = null;
             Brush b = null;
             bool bounds = showBounds;
             bool labels = showText;
+            rects.Clear();
             if (Mode == ViewMode.RGBImage)
             {
                 foreach (BioImage.Annotation an in AnnotationsRGB)
@@ -1008,14 +1010,21 @@ namespace BioImage
                     else
                     if (an.type == BioImage.Annotation.Type.Rectangle)
                     {
-                        g.DrawRectangle(pen, an.Rect.ToRectangleInt());
+                        RectangleF[] rects = new RectangleF[1];
+                        rects[0] = an.Rect.ToRectangleF();
+                        g.DrawRectangles(pen, rects);
+                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                    }
+                    else
+                    if (an.type == BioImage.Annotation.Type.Ellipse)
+                    {
+                        g.DrawEllipse(pen, an.Rect.ToRectangleF());
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     else
                     if (an.type == BioImage.Annotation.Type.Polygon && an.closed)
                     {
-                        PointF[] points = an.GetPointsF();
-                        g.DrawPolygon(pen, points);
+                        g.DrawPolygon(pen, an.GetPointsF());
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     else
@@ -1036,12 +1045,7 @@ namespace BioImage
                         g.DrawLines(pen, an.GetPointsF());
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
-                    else
-                    if (an.type == BioImage.Annotation.Type.Ellipse)
-                    {
-                        g.DrawEllipse(pen, an.Rect.ToRectangleF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
+                    
                     else
                     if (an.type == BioImage.Annotation.Type.Freeform && an.closed)
                     {
@@ -1076,35 +1080,47 @@ namespace BioImage
                     if (labels)
                         g.DrawString(an.Text, an.font, b, pc);
                     if (bounds)
+                    {
                         g.DrawRectangle(Pens.Green, an.BoundingBox.ToRectangleInt());
-                    if (an.selected)
-                        g.DrawRectangle(Pens.Magenta, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    }
                     if (an.selected)
                     {
+                        RectangleF[] rects = new RectangleF[1];
+                        rects[0] = an.BoundingBox.ToRectangleF();
+                        g.DrawRectangles(Pens.Magenta, rects);
+                    }
+                    if (an.selected)
+                    {
+                        List<RectangleF> rects = new List<RectangleF>();
                         for (int i = 0; i < an.selectedPoints.Count; i++)
                         {
                             if (an.selectedPoints[i] < an.selectBoxs.Count)
                             {
-                                RectangleF r = an.selectBoxs[an.selectedPoints[i]];
-                                g.DrawRectangle(Pens.Blue, new Rectangle((int)r.X, (int)r.Y, (int)r.Width, (int)r.Height));
+                                rects.Add(an.selectBoxs[an.selectedPoints[i]]);
                             }
                         }
+                        if(rects.Count > 0)
+                        g.DrawRectangles(Pens.Blue, rects.ToArray());
                     }
                     pen.Dispose();
                 }
             }
             else
             {
-                foreach (BioImage.Annotation an in image.GetAnnotations(GetCoordinate()))
+                foreach (BioImage.Annotation an in image.GetAnnotations(Coordinate))
                 {
                     pen = new Pen(an.strokeColor, (float)an.strokeWidth);
-                    b = new SolidBrush(an.strokeColor);
+                    if (an.selected)
+                    {
+                        b = new SolidBrush(Color.Magenta);
+                    }
+                    else
+                        b = new SolidBrush(an.strokeColor);
                     PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
                     if (an.type == BioImage.Annotation.Type.Point)
                     {
                         g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-
                     }
                     else
                     if (an.type == BioImage.Annotation.Type.Line)
@@ -1115,7 +1131,15 @@ namespace BioImage
                     else
                     if (an.type == BioImage.Annotation.Type.Rectangle)
                     {
-                        g.DrawRectangle(pen, an.Rect.ToRectangleInt());
+                        RectangleF[] rects = new RectangleF[1];
+                        rects[0] = an.Rect.ToRectangleF();
+                        g.DrawRectangles(pen, rects);
+                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                    }
+                    else
+                    if (an.type == BioImage.Annotation.Type.Ellipse)
+                    {
+                        g.DrawEllipse(pen, an.Rect.ToRectangleF());
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     else
@@ -1136,32 +1160,69 @@ namespace BioImage
                             g.DrawLines(pen, points);
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
-
+                    else
                     if (an.type == BioImage.Annotation.Type.Polyline)
                     {
                         g.DrawLines(pen, an.GetPointsF());
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
+
                     else
-                    if (an.type == BioImage.Annotation.Type.Ellipse)
+                    if (an.type == BioImage.Annotation.Type.Freeform && an.closed)
                     {
-                        g.DrawEllipse(pen, an.Rect.ToRectangleF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                        PointF[] points = an.GetPointsF();
+                        if (points.Length == 1)
+                        {
+                            g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
+                        }
+                        else
+                            g.DrawPolygon(pen, an.GetPointsF());
+                        if (an.selected)
+                            g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     else
-                    if (an.type == BioImage.Annotation.Type.Freeform)
+                    if (an.type == BioImage.Annotation.Type.Freeform && !an.closed)
                     {
-                        g.DrawPolygon(pen, an.GetPointsF());
+                        PointF[] points = an.GetPointsF();
+                        if (points.Length == 1)
+                        {
+                            g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
+                        }
+                        else
+                            g.DrawLines(pen, points);
+                        if (an.selected)
+                            g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
-                    else
                     if (an.type == BioImage.Annotation.Type.Label)
                     {
                         g.DrawString(an.Text, an.font, b, an.Point.ToPointF());
+                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     if (labels)
                         g.DrawString(an.Text, an.font, b, pc);
                     if (bounds)
-                        g.DrawRectangle(Pens.Green, new Rectangle((int)an.BoundingBox.X, (int)an.BoundingBox.Y, (int)an.BoundingBox.W, (int)an.BoundingBox.H));
+                    {
+                        g.DrawRectangle(Pens.Green, an.BoundingBox.ToRectangleInt());
+                    }
+                    if (an.selected)
+                    {
+                        RectangleF[] rects = new RectangleF[1];
+                        rects[0] = an.BoundingBox.ToRectangleF();
+                        g.DrawRectangles(Pens.Magenta, rects);
+                    }
+                    if (an.selected)
+                    {
+                        List<RectangleF> rects = new List<RectangleF>();
+                        for (int i = 0; i < an.selectedPoints.Count; i++)
+                        {
+                            if (an.selectedPoints[i] < an.selectBoxs.Count)
+                            {
+                                rects.Add(an.selectBoxs[an.selectedPoints[i]]);
+                            }
+                        }
+                        if (rects.Count > 0)
+                            g.DrawRectangles(Pens.Blue, rects.ToArray());
+                    }
                     pen.Dispose();
                 }
             }
@@ -1172,24 +1233,20 @@ namespace BioImage
             get { return origin; }
             set { origin = value; }
         }
-        private System.Drawing.Drawing2D.Matrix mat = new System.Drawing.Drawing2D.Matrix();
 
         private void overlayPictureBox_Paint(object sender, PaintEventArgs e)
         {
             PointF pp = GetImagePoint();
             PointF s = GetImageSize();
-            s.X *= scale.Width;
-            s.Y *= scale.Height;
-            overlayPictureBox.Width = (int)s.X;
-            overlayPictureBox.Height = (int)s.Y;
             Graphics g = e.Graphics;
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
-            mat = g.Transform;
             DrawOverlay(g);
             if (Tools.currentTool.type == Tools.Tool.Type.rectSel && down)
             {
-                g.DrawRectangle(Pens.Magenta, Tools.rectSel.Selection.ToRectangleInt());
+                RectangleF[] fs = new RectangleF[1];
+                fs[0] = Tools.rectSel.Selection.ToRectangleF();
+                g.DrawRectangles(Pens.Magenta, fs);
             }
             else
                 Tools.rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
@@ -1197,11 +1254,6 @@ namespace BioImage
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
             PointF pp = GetImagePoint();
-            PointF s = GetImageSize();
-            s.X *= scale.Width;
-            s.Y *= scale.Height;
-            pictureBox.Width = (int)s.X;
-            pictureBox.Height = (int)s.Y;
             Graphics g = e.Graphics;
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
@@ -1230,7 +1282,6 @@ namespace BioImage
 
         public static PointF mouseDown;
         public static bool down;
-        
         public static PointF mouseUp;
         public static bool up;
 
@@ -1249,13 +1300,12 @@ namespace BioImage
         private void rgbPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             selectedImage = image;
-            PointF p = toImagePoint(e.Location.X, e.Location.Y);
+            PointF p = new PointF(e.Location.X, e.Location.Y);
             p.X -= origin.X;
             p.Y -= origin.Y;
             p.X /= scale.Width;
             p.Y /= scale.Height;
-            
-            mousePoint = "(" + p.X + ", " + p.Y + ")";
+            mousePoint = "(" + p.X + ", " + p.Y + ")" + ", (" + e.X + ", " + e.Y + ")";
             if (Mode != ViewMode.RGBImage)
             {
                 if (e.Button == MouseButtons.XButton1 && !x1State)
@@ -1346,6 +1396,7 @@ namespace BioImage
                 UpdateOverlay();
             }
             mouseColor = "";
+
             if (e.Button == MouseButtons.Left)
             { 
                 Point s = GetImageSize();
@@ -1451,17 +1502,24 @@ namespace BioImage
         {
             viewer = this;
             selectedImage = image;
-            PointF p = toImagePoint(e.Location.X, e.Location.Y);
+            PointF p = new PointF(e.Location.X, e.Location.Y);
             p.X -= origin.X;
             p.Y -= origin.Y;
             p.X /= scale.Width;
             p.Y /= scale.Height;
-
             mouseUpButtons = e.Button;
             mouseDownButtons = MouseButtons.None;
             mouseUp = p;
             down = false;
             up = true;
+            if (Tools.currentTool.type == Tools.Tool.Type.pan)
+            {
+                PointF pf = new PointF(mouseUp.X - mouseDown.X, mouseUp.Y - mouseDown.Y);
+                origin.X += pf.X;
+                origin.Y += pf.Y;
+                UpdateOverlay();
+                UpdateView();
+            }
             tools.ToolUp(p, e.Button);
         }
         private void pictureBox_MouseDown(object sender, MouseEventArgs e)
@@ -1480,7 +1538,7 @@ namespace BioImage
             selectedImage = image;
             mouseDownButtons = e.Button;
             mouseUpButtons = MouseButtons.None;
-            PointF p = toImagePoint(e.Location.X, e.Location.Y);
+            PointF p = new PointF(e.Location.X, e.Location.Y);
             p.X -= origin.X;
             p.Y -= origin.Y;
             p.X /= scale.Width;
@@ -1562,7 +1620,7 @@ namespace BioImage
         {
             viewer = this;
             selectedImage = image;
-            PointF p = toImagePoint(e.Location.X, e.Location.Y);
+            PointF p = new PointF(e.Location.X, e.Location.Y);
             p.X -= origin.X;
             p.Y -= origin.Y;
             p.X /= scale.Width;
@@ -1584,14 +1642,6 @@ namespace BioImage
         {
             overlayPictureBox.SizeMode = pictureBox.SizeMode;
         }
-        private void pictureBox_Resize(object sender, EventArgs e)
-        {
-            UpdateView();
-        }
-        private void pictureBox_SizeChanged(object sender, EventArgs e)
-        {
-            UpdateView();
-        }
         private void deleteROIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             foreach (BioImage.Annotation item in AnnotationsRGB)
@@ -1612,6 +1662,5 @@ namespace BioImage
             }
             UpdateOverlay();
         }
-
     }
 }

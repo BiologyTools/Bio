@@ -76,6 +76,7 @@ namespace BioImage
             this.overlayPictureBox = new System.Windows.Forms.PictureBox();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.panel = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.zPlayMenuStrip.SuspendLayout();
@@ -471,6 +472,7 @@ namespace BioImage
             | System.Windows.Forms.AnchorStyles.Right)));
             this.statusPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.statusPanel.ContextMenuStrip = this.statusContextMenuStrip;
+            this.statusPanel.Controls.Add(this.panel1);
             this.statusPanel.Controls.Add(this.ticksLabel);
             this.statusPanel.Controls.Add(this.statusLabel);
             this.statusPanel.Location = new System.Drawing.Point(0, 0);
@@ -504,15 +506,14 @@ namespace BioImage
             // 
             // overlayPictureBox
             // 
-            this.overlayPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.overlayPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.overlayPictureBox.ContextMenuStrip = this.contextMenuStrip;
+            this.overlayPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.overlayPictureBox.Location = new System.Drawing.Point(0, 0);
             this.overlayPictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.overlayPictureBox.Name = "overlayPictureBox";
             this.overlayPictureBox.Size = new System.Drawing.Size(425, 269);
+            this.overlayPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.overlayPictureBox.TabIndex = 19;
             this.overlayPictureBox.TabStop = false;
             this.overlayPictureBox.Click += new System.EventHandler(this.pictureBox_Click);
@@ -524,15 +525,14 @@ namespace BioImage
             // 
             // pictureBox
             // 
-            this.pictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox.BackColor = System.Drawing.Color.Transparent;
             this.pictureBox.ContextMenuStrip = this.contextMenuStrip;
+            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox.Location = new System.Drawing.Point(0, 0);
             this.pictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox.Name = "pictureBox";
             this.pictureBox.Size = new System.Drawing.Size(425, 269);
+            this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox.TabIndex = 20;
             this.pictureBox.TabStop = false;
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
@@ -548,6 +548,13 @@ namespace BioImage
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(425, 269);
             this.panel.TabIndex = 21;
+            // 
+            // panel1
+            // 
+            this.panel1.Location = new System.Drawing.Point(0, 25);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(97, 108);
+            this.panel1.TabIndex = 21;
             // 
             // ImageView
             // 
@@ -579,6 +586,7 @@ namespace BioImage
             ((System.ComponentModel.ISupportInitialize)(this.overlayPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.panel.ResumeLayout(false);
+            this.panel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -630,5 +638,6 @@ namespace BioImage
         private System.Windows.Forms.PictureBox overlayPictureBox;
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.Panel panel;
+        private System.Windows.Forms.Panel panel1;
     }
 }

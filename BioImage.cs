@@ -1511,14 +1511,14 @@ namespace BioImage
                     y = (info.SizeY - 1) - y;
                     if (info.bitsPerPixel > 8)
                     {
-                        int index2 = (y * stridex + x) * 2;
+                        int index2 = (y * stridex + x) * 2 * info.RGBChannelsCount;
                         i = BitConverter.ToUInt16(bytes, index2);
                         return (ushort)i;
                     }
                     else
                     {
                         int index = (y * stridex + x) * info.RGBChannelsCount;
-                        i = bytes[index + (2 * info.RGBChannelsCount)];
+                        i = bytes[index];
                         return (ushort)i;
                     }
                 }
@@ -1527,13 +1527,13 @@ namespace BioImage
                     if (info.bitsPerPixel > 8)
                     {
                         int index2 = (y * stridex + x) * 2 * info.RGBChannelsCount;
-                        i = BitConverter.ToUInt16(bytes, index2 + (2 * info.RGBChannelsCount));
+                        i = BitConverter.ToUInt16(bytes, index2);
                         return (ushort)i;
                     }
                     else
                     {
                         int index = (y * stridex + x) * info.RGBChannelsCount;
-                        i = bytes[index + (2 * info.RGBChannelsCount)];
+                        i = bytes[index];
                         return (ushort)i;
                     }
                 }

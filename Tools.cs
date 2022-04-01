@@ -384,6 +384,13 @@ namespace BioImage
                 an.Text = ti.textInput;
                 ImageView.selectedImage.Annotations.Add(an);
             }
+            if (buts == MouseButtons.Middle || currentTool.type == Tool.Type.pan)
+            {
+                currentTool = pan;
+                UpdateSelected();
+                panPanel.BackColor = Color.LightGray;
+                Cursor.Current = Cursors.Hand;
+            }
             UpdateOverlay();
         }
         
@@ -461,18 +468,7 @@ namespace BioImage
                 rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
                 UpdateOverlay();
             }
-            else
-            if(currentTool.type == Tool.Type.pan)
-            {
-                PointF p = new PointF(ImageView.mouseUp.X -ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
-                float x = ImageView.viewer.Origin.X + p.X;
-                float y = ImageView.viewer.Origin.Y + p.Y;
-                ImageView.viewer.Origin = new PointF(x, y);
-                UpdateOverlay();
-                UpdateView();
-            }
         }
-
         public void ToolMove(PointF e, MouseButtons buts)
         {
             if (ImageView.viewer == null)
@@ -594,6 +590,7 @@ namespace BioImage
             currentTool = pencil;
             UpdateSelected();
             pencilPanel.BackColor = Color.DarkGray;
+            Cursor.Current = Cursors.Arrow;
         }
 
         private void pencilPanel_Click(object sender, EventArgs e)
@@ -601,6 +598,7 @@ namespace BioImage
             currentTool = pencil;
             UpdateSelected();
             pencilPanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
         }
 
         private void movePanel_Click(object sender, EventArgs e)
@@ -608,6 +606,7 @@ namespace BioImage
             currentTool = move;
             UpdateSelected();
             movePanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
         }
 
         private void textPanel_Click(object sender, EventArgs e)
@@ -615,6 +614,7 @@ namespace BioImage
             currentTool = text;
             UpdateSelected();
             textPanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
         }
 
         private void textPanel_DoubleClick(object sender, EventArgs e)
@@ -626,31 +626,35 @@ namespace BioImage
             if (fontDialog.ShowDialog() != DialogResult.OK)
                 return;
             font = fontDialog.Font;
+            Cursor.Current = Cursors.Arrow;
         }
         private void pointPanel_Click(object sender, EventArgs e)
         {
             currentTool = point;
             UpdateSelected();
             pointPanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
         }
         private void linePanel_Click(object sender, EventArgs e)
         {
             currentTool = line;
             UpdateSelected();
             linePanel.BackColor = Color.LightGray;
-            
+            Cursor.Current = Cursors.Arrow;
         }
         private void rectPanel_Click(object sender, EventArgs e)
         {
             currentTool = rect;
             UpdateSelected();
             rectPanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
         }
         private void ellipsePanel_Click(object sender, EventArgs e)
         {
             currentTool = ellipse;
             UpdateSelected();
             ellipsePanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
         }
 
         private void polyPanel_Click(object sender, EventArgs e)
@@ -658,6 +662,7 @@ namespace BioImage
             currentTool = polygon;
             UpdateSelected();
             polyPanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
         }
 
         private void deletePanel_Click(object sender, EventArgs e)
@@ -665,6 +670,7 @@ namespace BioImage
             currentTool = delete;
             UpdateSelected();
             deletePanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
         }
 
         private void freeformPanel_Click(object sender, EventArgs e)
@@ -672,6 +678,7 @@ namespace BioImage
             currentTool = freeform;
             UpdateSelected();
             freeformPanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
         }
 
         private void rectSelPanel_Click(object sender, EventArgs e)
@@ -679,6 +686,7 @@ namespace BioImage
             currentTool = rectSel;
             UpdateSelected();
             rectSelPanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
         }
 
         private void panPanel_Click(object sender, EventArgs e)
@@ -686,6 +694,7 @@ namespace BioImage
             currentTool = pan;
             UpdateSelected();
             panPanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Hand;
         }
     }
 }

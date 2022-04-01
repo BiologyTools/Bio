@@ -13,7 +13,6 @@ namespace BioImage
         public ImageView viewer = null;
 
         public static ImageViewer app = null;
-
         public ImageViewer(BioImage arg)
         {
             InitializeComponent();
@@ -43,8 +42,8 @@ namespace BioImage
             app = this;
 
             //scriptToolStripMenuItem.PerformClick();
-            //string file = "E://TESTIMAGES//text.ome.tif";
-            //SetFile(file, 0);
+            string file = "E://TESTIMAGES//text.ome.tif";
+            SetFile(file, 0);
             //BioImage im = new BioImage(file, 0);
             //BioImage b = new BioImage(im, "subStack.ome.tif", 0, 0, 3, 0, 3, 0, 2);
             //im.Dispose();

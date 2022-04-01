@@ -267,11 +267,12 @@
             this.Controls.Add(this.ellipsePanel);
             this.Controls.Add(this.movePanel);
             this.Controls.Add(this.pencilPanel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Tools";
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Tools";
             this.TopMost = true;
             this.movePanel.ResumeLayout(false);
