@@ -82,6 +82,10 @@ public class Loader
 		b.SetValueRGB(0,0,0,0,0,0,0,15000);
 		//GetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex);
 		ushort val = b.GetValueRGB(0,0,0,0,0,0,1);
+		//ushort[,] GetBlock(int ix, int iy, int iw, int ih)
+		ushort[,] val = b.GetBlock(0, 0, 0, 0, 0, 0, 150, 150);
+		//SetBlock(int ix, int iy, int iw, int ih, ushort[,] sh)
+            	b.SetBlock(0, 0, 0, 0, 150, 150, 150, 150, val);
 		b.SaveSeries("E://TESTIMAGES//save.ome.tif",0);
 		bio.SaveSeries("E://TESTIMAGES//subStack.ome.tif",0);
 		ImageViewer iv = new ImageViewer(bio);
