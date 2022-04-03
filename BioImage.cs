@@ -438,11 +438,11 @@ namespace BioImage
         }
         public ushort GetValueRGB(SZCT coord, int x, int y, int RGBindex)
         {
-            return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetValue(x, y, RGBindex);
+            return GetBufByCoord(coord.S, coord.Z, coord.C, coord.T).GetValueRGB(x, y, RGBindex);
         }
         public ushort GetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex)
         {
-            return GetBufByCoord(s, z, c, t).GetValue(x, y, RGBindex);
+            return GetBufByCoord(s, z, c, t).GetValueRGB(x, y, RGBindex);
         }
 
         public void SetValue(SZCTXY coord, ushort val)
@@ -523,9 +523,6 @@ namespace BioImage
         }
 
         private Bitmap rgbBitmap16 = null;
-        private Bitmap rBitmap16 = null;
-        private Bitmap gBitmap16 = null;
-        private Bitmap bBitmap16 = null;
         public Bitmap GetRGBBitmap16(SZCT coord, IntRange rf, IntRange gf, IntRange bf)
         {
             watch.Restart();
@@ -539,20 +536,17 @@ namespace BioImage
 
             if (RGBChannelCount == 1)
             {
-                rBitmap16 = Buffers[ri + RChannel.index].GetFiltered(rf, gf, bf);
-                replaceRFilter.ChannelImage = rBitmap16;
+                replaceRFilter.ChannelImage.Dispose();
+                replaceRFilter.ChannelImage = Buffers[ri + RChannel.index].GetFiltered(rf, gf, bf);
                 replaceRFilter.ApplyInPlace(rgbBitmap16);
-                //replaceRFilter.ChannelImage.Dispose();
 
-                gBitmap16 = Buffers[ri + GChannel.index].GetFiltered(rf, gf, bf);
-                replaceGFilter.ChannelImage = gBitmap16;
+                replaceGFilter.ChannelImage.Dispose();
+                replaceGFilter.ChannelImage = Buffers[ri + GChannel.index].GetFiltered(rf, gf, bf);
                 replaceGFilter.ApplyInPlace(rgbBitmap16);
-                //replaceGFilter.ChannelImage.Dispose();
 
-                bBitmap16 = Buffers[ri + BChannel.index].GetFiltered(rf, gf, bf);
-                replaceBFilter.ChannelImage = bBitmap16;
+                replaceBFilter.ChannelImage.Dispose();
+                replaceBFilter.ChannelImage = Buffers[ri + BChannel.index].GetFiltered(rf, gf, bf);
                 replaceBFilter.ApplyInPlace(rgbBitmap16);
-                //replaceBFilter.ChannelImage.Dispose();
             }
             else
             {
@@ -1190,7 +1184,7 @@ namespace BioImage
             }
 
         }
-        public struct Buf
+        public class Buf
         {
             public BufferInfo info;
             public MemoryMappedFile file;
@@ -1202,11 +1196,11 @@ namespace BioImage
             {
                 get
                 {
-                    return GetBytes();
+                    return GetAllBytes();
                 }
                 set
                 {
-                    SetBytes(value);
+                    SetAllBytes(value);
                 }
             }
             public Buf(BufferInfo inf, byte[] bts)
@@ -1266,33 +1260,39 @@ namespace BioImage
                 return info.stringId;
             }
 
-            public byte[] GetBytes()
+            public byte[] GetAllBytes()
             {
                 read.BaseStream.Position = 0;
                 return read.ReadBytes(info.length);
             }
-
+            public byte[] GetBytes(int start, int count)
+            {
+                read.BaseStream.Position = start;
+                return read.ReadBytes(count);
+            }
             public void Seek0()
             {
                 read.BaseStream.Position = 0;
             }
-
-            public void SetBytes(byte[] bytes)
+            public void SetAllBytes(byte[] bytes)
             {
                 writer.Seek(0, SeekOrigin.Begin);
                 writer.Write(bytes, 0, info.length);
             }
-
             public void SetByte(byte bt, int ind)
             {
                 writer.Seek(ind, SeekOrigin.Begin);
                 writer.Write(bt);
             }
-
             public void SetBytes(byte[] bytes, int ind)
             {
                 writer.Seek(ind, SeekOrigin.Begin);
                 writer.Write(bytes, ind, bytes.Length);
+            }
+            public void SetShorts(ushort[] shorts, int ind)
+            {
+                byte[] target = new byte[shorts.Length * 2];
+                Buffer.BlockCopy(shorts, 0, target, ind, shorts.Length * 2);
             }
             public void SetBuffer(Bitmap bitmap)
             {
@@ -1302,7 +1302,7 @@ namespace BioImage
                 int length = data.Stride * bitmap.Height;
                 byte[] bytes = new byte[length];
                 Marshal.Copy(ptr, bytes, 0, length);
-                SetBytes(bytes);
+                SetAllBytes(bytes);
                 bitmap.UnlockBits(data);
                 bitmap.Dispose();
             }
@@ -1312,11 +1312,12 @@ namespace BioImage
                 //Here we write any changes made to the 
                 writer.Flush();
             }
-
+            Bitmap bitmap;
             public unsafe Bitmap GetBitmap()
             {
-                Bitmap bitmap;
-                fixed (byte* ptr = GetBytes())
+                if(bitmap!=null)
+                    bitmap.Dispose();
+                fixed (byte* ptr = GetAllBytes())
                 {
                     bitmap = new Bitmap(info.SizeX, info.SizeY, info.stride, info.pixelFormat, new IntPtr(ptr));
                 }
@@ -1325,8 +1326,9 @@ namespace BioImage
 
             public unsafe Bitmap GetBuffer(PixelFormat pixel)
             {
-                Bitmap bitmap;
-                fixed (byte* ptr = GetBytes())
+                if (bitmap != null)
+                    bitmap.Dispose();
+                fixed (byte* ptr = GetAllBytes())
                 {
                     bitmap = new Bitmap(info.SizeX, info.SizeY, info.stride, pixel, new IntPtr(ptr));
                 }
@@ -1336,7 +1338,7 @@ namespace BioImage
             public unsafe void ToLittleEndian()
             {
                 //Here we convert this buffer to little endian.
-                byte[] bts = GetBytes();
+                byte[] bts = GetAllBytes();
                 Bitmap bitmap;
                 Array.Reverse(bts);
                 fixed (byte* ptr = bts)
@@ -1352,7 +1354,7 @@ namespace BioImage
             public unsafe void ToBigEndian()
             {
                 //Here we convert this buffer to big endian.
-                byte[] bytes = GetBytes();
+                byte[] bytes = GetAllBytes();
                 Array.Reverse(bytes);
                 Bitmap bitmap;
                 fixed (byte* ptr = bytes)
@@ -1385,7 +1387,7 @@ namespace BioImage
 
             public unsafe Bitmap GetFiltered(IntRange range)
             {
-                Bitmap bitmap = GetBitmap();
+                bitmap = GetBitmap();
                 if (info.bitsPerPixel > 8)
                 {
                     // set ranges
@@ -1405,7 +1407,7 @@ namespace BioImage
             }
             public unsafe Bitmap GetFiltered(IntRange r, IntRange g, IntRange b)
             {
-                Bitmap bitmap = GetBitmap();
+                bitmap = GetBitmap();
                 if (info.bitsPerPixel > 8)
                 {
                     // set ranges
@@ -1440,21 +1442,74 @@ namespace BioImage
                 bImage.Dispose();
                 return image;
             }
-            public ushort GetValue(int ix, int iy, int index)
+            public int GetIndex(int ix, int iy)
+            {
+                int stridex = info.SizeX;
+                int x = ix;
+                int y = iy;
+                if (!info.littleEndian)
+                {
+                    x = (info.SizeX - 1) - x;
+                    y = (info.SizeY - 1) - y;
+                    if (info.bitsPerPixel > 8)
+                    {
+                        return (y * stridex + x) * 2;
+                    }
+                    else
+                    {
+                        return (y * stridex + x);
+                    }
+                }
+                else
+                {
+                    if (info.bitsPerPixel > 8)
+                    {
+                        return (y * stridex + x) * 2;
+                    }
+                    else
+                    {
+                        return (y * stridex + x);
+                    }
+                }
+            }
+            public int GetIndexRGB(int ix, int iy, int index)
+            {
+                int stridex = info.SizeX;
+                //For 16bit (2*8bit) images we multiply buffer index by 2
+                int x = ix;
+                int y = iy;
+                if (!info.littleEndian)
+                {
+                    x = (info.SizeX - 1) - x;
+                    y = (info.SizeY - 1) - y;
+                    if (info.bitsPerPixel > 8)
+                    {
+                        return (y * stridex + x) * 2 * index;
+                    }
+                    else
+                    {
+                        return (y * stridex + x) * index;
+                    }
+                }
+                else
+                {
+                    if (info.bitsPerPixel > 8)
+                    {
+                        return (y * stridex + x) * 2 * index;
+                    }
+                    else
+                    {
+                        return (y * stridex + x) * index;
+                    }
+                }
+            }
+            public ushort GetValueRGB(int ix, int iy, int index)
             {
                 int i = -1;
                 int stridex = info.SizeX;
                 //For 16bit (2*8bit) images we multiply buffer index by 2
                 int x = ix;
                 int y = iy;
-                if (ix < 0)
-                    x = 0;
-                if (iy < 0)
-                    y = 0;
-                if (ix >= info.SizeX)
-                    x = info.SizeX - 1;
-                if (iy >= info.SizeY)
-                    y = info.SizeY - 1;
                 if (!info.littleEndian)
                 {
                     x = (info.SizeX - 1) - x;
@@ -1554,7 +1609,6 @@ namespace BioImage
                         int index2 = (y * stridex + x) * 2 * info.RGBChannelsCount;
                         byte upper = (byte)(value >> 8);
                         byte lower = (byte)(value & 0xff);
-                        SetBytes(BitConverter.GetBytes(value), index2);
                         SetByte(upper, index2);
                         SetByte(lower, index2 + 1);
                     }
@@ -1589,9 +1643,7 @@ namespace BioImage
                 else
                 if (RGBChannel == 2)
                     RGBChannel = 0;
-
                 int stride = info.SizeX;
-                //For 16bit (2*8bit) images we multiply buffer index by 2
                 int x = ix;
                 int y = iy;
                 if (!info.littleEndian)
@@ -1600,7 +1652,7 @@ namespace BioImage
                     y = (info.SizeY - 1) - y;
                     if (info.bitsPerPixel > 8)
                     {
-                        int index2 = ((y * stride + x) * 2 * info.RGBChannelsCount) + (2 * RGBChannel);
+                        int index2 = ((y * stride + x) * 2 * info.RGBChannelsCount) + (RGBChannel);
                         byte upper = (byte)(value >> 8);
                         byte lower = (byte)(value & 0xff);
                         SetByte(upper, index2);
@@ -1629,6 +1681,65 @@ namespace BioImage
                     }
                 }
             }
+            public ushort[,] GetBlock(int ix, int iy, int iw, int ih)
+            {
+                byte[] bt = new byte[2];
+                ushort[,] sh = new ushort[iw,ih];
+                for (int y = iy; y < iy + ih; y++)
+                {
+                    for (int x = ix; x < ix + iw; x++)
+                    {
+                        int l = GetIndex(x, y);
+                        if (info.bitsPerPixel > 8)
+                        {
+                            sh[x,y] = BitConverter.ToUInt16(bytes, l);
+                        }
+                        else
+                            sh[x,y] = (ushort)bytes[l];
+                    }
+                }
+                return sh;
+            }
+            public void SetBlock(int ix, int iy, int iw, int ih, ushort[,] sh)
+            {
+                int xx = ix;
+                int yy = iy;
+                for (int y = 0; y < ih; y++)
+                {
+                    for (int x = 0; x <iw; x++)
+                    {
+                        if (info.bitsPerPixel > 8)
+                        {
+                            if (info.littleEndian)
+                            {
+                                SetValue(x+ix,y+iy, sh[x,y]);
+                                //SetByte(bt[0],l);
+                                //SetByte(bt[1],l+1);
+                            }
+                            else
+                            {
+                                SetValue(x, y, sh[x, y]);
+                                //SetByte(bt[0], l);
+                                //SetByte(bt[1], l+1);
+                            }
+                        }
+                        else
+                        {
+                            if (info.littleEndian)
+                            {
+                                //SetByte(bt[0], l);
+                            }
+                            else
+                            {
+                                //SetByte(bt[0], l);
+                            }
+                        }
+                       xx++;
+                    }
+                    yy++;
+                } 
+                
+            }
             public void Dispose()
             {
                 file.Dispose();
@@ -1636,6 +1747,14 @@ namespace BioImage
                 writer.Dispose();
                 read.Dispose();
             }
+        }
+        public ushort[,] GetBlock(int s, int z, int c, int t, int x, int y, int w, int h)
+        {
+            return Buffers[Coords[s, z, c, t]].GetBlock(x, y, w, h);
+        }
+        public void SetBlock(int s, int z, int c, int t, int x, int y, int w, int h, ushort[,] sh)
+        {
+            Buffers[Coords[s, z, c, t]].SetBlock(x, y, w, h, sh);
         }
         public bool SaveSeries(string path, int series)
         {
@@ -2476,7 +2595,7 @@ namespace BioImage
                 //Volume is used only for stage coordinates if error is thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
             }
             Table.AddBioImage(this);
-
+            reader.close();
         }
         public int GetSeriesCount(string file)
         {

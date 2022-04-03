@@ -34,6 +34,8 @@
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openScriptFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.timer = new System.Windows.Forms.Timer(this.components);
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,7 +49,7 @@
             this.scriptView.Location = new System.Drawing.Point(0, 0);
             this.scriptView.MultiSelect = false;
             this.scriptView.Name = "scriptView";
-            this.scriptView.Size = new System.Drawing.Size(412, 300);
+            this.scriptView.Size = new System.Drawing.Size(257, 306);
             this.scriptView.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.scriptView.TabIndex = 1;
             this.scriptView.UseCompatibleStateImageBehavior = false;
@@ -58,34 +60,48 @@
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.runToolStripMenuItem,
-            this.openScriptFolderToolStripMenuItem});
+            this.openScriptFolderToolStripMenuItem,
+            this.refreshToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(181, 70);
+            this.contextMenuStrip.Size = new System.Drawing.Size(173, 70);
             // 
             // runToolStripMenuItem
             // 
             this.runToolStripMenuItem.Name = "runToolStripMenuItem";
-            this.runToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.runToolStripMenuItem.Text = "Run";
             this.runToolStripMenuItem.Click += new System.EventHandler(this.runToolStripMenuItem_Click);
             // 
             // openScriptFolderToolStripMenuItem
             // 
             this.openScriptFolderToolStripMenuItem.Name = "openScriptFolderToolStripMenuItem";
-            this.openScriptFolderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openScriptFolderToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.openScriptFolderToolStripMenuItem.Text = "Open Script Folder";
             this.openScriptFolderToolStripMenuItem.Click += new System.EventHandler(this.openScriptFolderToolStripMenuItem_Click);
+            // 
+            // refreshToolStripMenuItem
+            // 
+            this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.refreshToolStripMenuItem.Text = "Refresh";
+            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click);
+            // 
+            // timer
+            // 
+            this.timer.Interval = 500;
+            this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // ScriptRunner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(412, 300);
+            this.ClientSize = new System.Drawing.Size(257, 306);
             this.Controls.Add(this.scriptView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ScriptRunner";
             this.Text = "Script Runner";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScriptRunner_FormClosing);
             this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -97,5 +113,7 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openScriptFolderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
+        private System.Windows.Forms.Timer timer;
     }
 }

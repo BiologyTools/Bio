@@ -1,6 +1,6 @@
 ﻿namespace BioImage
 {
-    partial class Script
+    partial class ScriptEditor
     {
         /// <summary>
         /// Required designer variable.
@@ -29,13 +29,13 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Script));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(global::BioImage.ScriptEditor));
             this.textBox = new System.Windows.Forms.TextBox();
             this.runButton = new System.Windows.Forms.Button();
             this.outputBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.scriptBut = new System.Windows.Forms.Button();
+            this.scriptLoadBut = new System.Windows.Forms.Button();
             this.scriptLabel = new System.Windows.Forms.Label();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.timer = new System.Windows.Forms.Timer(this.components);
@@ -61,7 +61,6 @@
             this.textBox.Size = new System.Drawing.Size(584, 296);
             this.textBox.TabIndex = 0;
             this.textBox.Text = resources.GetString("textBox.Text");
-            this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             // 
             // runButton
             // 
@@ -104,16 +103,16 @@
             this.label2.TabIndex = 4;
             this.label2.Text = "Script";
             // 
-            // scriptBut
+            // scriptLoadBut
             // 
-            this.scriptBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.scriptBut.Location = new System.Drawing.Point(439, 4);
-            this.scriptBut.Name = "scriptBut";
-            this.scriptBut.Size = new System.Drawing.Size(75, 23);
-            this.scriptBut.TabIndex = 5;
-            this.scriptBut.Text = "Load Script";
-            this.scriptBut.UseVisualStyleBackColor = true;
-            this.scriptBut.Click += new System.EventHandler(this.scriptBut_Click);
+            this.scriptLoadBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.scriptLoadBut.Location = new System.Drawing.Point(439, 4);
+            this.scriptLoadBut.Name = "scriptLoadBut";
+            this.scriptLoadBut.Size = new System.Drawing.Size(75, 23);
+            this.scriptLoadBut.TabIndex = 5;
+            this.scriptLoadBut.Text = "Load Script";
+            this.scriptLoadBut.UseVisualStyleBackColor = true;
+            this.scriptLoadBut.Click += new System.EventHandler(this.scriptBut_Click);
             // 
             // scriptLabel
             // 
@@ -163,7 +162,7 @@
             this.error.Location = new System.Drawing.Point(4, 22);
             this.error.Name = "error";
             this.error.Padding = new System.Windows.Forms.Padding(3);
-            this.error.Size = new System.Drawing.Size(483, 111);
+            this.error.Size = new System.Drawing.Size(573, 111);
             this.error.TabIndex = 0;
             this.error.Text = "Error";
             this.error.UseVisualStyleBackColor = true;
@@ -174,7 +173,7 @@
             this.errorBox.Location = new System.Drawing.Point(3, 3);
             this.errorBox.Multiline = true;
             this.errorBox.Name = "errorBox";
-            this.errorBox.Size = new System.Drawing.Size(477, 105);
+            this.errorBox.Size = new System.Drawing.Size(567, 105);
             this.errorBox.TabIndex = 3;
             // 
             // saveButton
@@ -201,7 +200,7 @@
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.scriptLabel);
-            this.Controls.Add(this.scriptBut);
+            this.Controls.Add(this.scriptLoadBut);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.runButton);
@@ -226,7 +225,7 @@
         private System.Windows.Forms.TextBox outputBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button scriptBut;
+        private System.Windows.Forms.Button scriptLoadBut;
         private System.Windows.Forms.Label scriptLabel;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Timer timer;
