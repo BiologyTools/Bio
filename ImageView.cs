@@ -1192,6 +1192,7 @@ namespace BioImage
                             g.DrawLines(pen, points);
                         if (an.selected)
                             g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                        
                     }
                     if (an.type == BioImage.Annotation.Type.Label)
                     {
@@ -1223,8 +1224,10 @@ namespace BioImage
                         if (rects.Count > 0)
                             g.DrawRectangles(Pens.Blue, rects.ToArray());
                     }
-                    pen.Dispose();
+                    
                 }
+                b.Dispose();
+                pen.Dispose();
             }
         }
         private PointF origin = new PointF(0,0);
@@ -1305,7 +1308,7 @@ namespace BioImage
             p.Y -= origin.Y;
             p.X /= scale.Width;
             p.Y /= scale.Height;
-            mousePoint = "(" + p.X + ", " + p.Y + ")" + ", (" + e.X + ", " + e.Y + ")";
+            mousePoint = "(" + p.X + ", " + p.Y + ")";
             if (Mode != ViewMode.RGBImage)
             {
                 if (e.Button == MouseButtons.XButton1 && !x1State)
@@ -1413,14 +1416,14 @@ namespace BioImage
                             int r = image.GetValue(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y);
                             int g = image.GetValue(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y);
                             int b = image.GetValue(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y);
-                            mouseColor = ", " + r + "," + g + "," + b;
+                            mouseColor = ", " + r + ", " + g + ", " + b;
                         }
                         else
                         {
                             int r = image.GetValueRGB(sc, zc, RChannel.index, tc, (int)p.X, (int)p.Y, 0);
                             int g = image.GetValueRGB(sc, zc, GChannel.index, tc, (int)p.X, (int)p.Y, 1);
                             int b = image.GetValueRGB(sc, zc, BChannel.index, tc, (int)p.X, (int)p.Y, 2);
-                            mouseColor = ", " + r + "," + g + "," + b;
+                            mouseColor = ", " + r + ", " + g + ", " + b;
                         }
                     }
                     else

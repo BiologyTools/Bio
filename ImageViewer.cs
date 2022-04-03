@@ -11,6 +11,7 @@ namespace BioImage
         public static Tools tools;
         public static ROIManager manager = null;
         public ImageView viewer = null;
+        public ScriptRunner runner = null;
 
         public static ImageViewer app = null;
         public ImageViewer(BioImage arg)
@@ -18,6 +19,7 @@ namespace BioImage
             InitializeComponent();
             tools = new Tools();
             manager = new ROIManager();
+            runner = new ScriptRunner();
             app = this;
             SetImage(arg);
         }
@@ -26,6 +28,7 @@ namespace BioImage
             InitializeComponent();
             tools = new Tools();
             manager = new ROIManager();
+            runner = new ScriptRunner();
             app = this;
             if (arg.Length == 0)
                 return;
@@ -40,10 +43,14 @@ namespace BioImage
             tools = new Tools();
             manager = new ROIManager();
             app = this;
-
+            runner = new ScriptRunner();
             //scriptToolStripMenuItem.PerformClick();
             string file = "E://TESTIMAGES//text.ome.tif";
             SetFile(file, 0);
+            //ushort[] GetBlock(int ix, int iy, int iw, int ih)
+            ushort[,] val = Image.GetBlock(0, 0, 0, 0, 0, 0, 150, 150);
+            Image.SetBlock(0, 0, 0, 0, 150, 150, 150, 150, val);
+            viewer.UpdateView();
             //BioImage im = new BioImage(file, 0);
             //BioImage b = new BioImage(im, "subStack.ome.tif", 0, 0, 3, 0, 3, 0, 2);
             //im.Dispose();
@@ -80,7 +87,7 @@ namespace BioImage
             viewer.filepath = b.filename;
             viewer.Dock = DockStyle.Fill;
             panel.Controls.Add(viewer);
-            this.Text = b.filename;
+            this.Text = b.idString;
         }
 
         public BioImage Image
@@ -238,10 +245,6 @@ namespace BioImage
 
         private void ImageViewer_Deactivate(object sender, EventArgs e)
         {
-            //tools.TopMost = false;
-            //manager.TopMost = false;
-            tools.SendToBack();
-            manager.SendToBack();
         }
 
         private void ImageViewer_Activated(object sender, EventArgs e)
@@ -313,13 +316,12 @@ namespace BioImage
         }
         private void scriptToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Script sc = new Script();
+            ScriptEditor sc = new ScriptEditor();
             sc.Show();
         }
         private void scriptRunnerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ScriptRunner sc = new ScriptRunner();
-            sc.Show();
+            runner.Show();
         }
         private void ImageViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
