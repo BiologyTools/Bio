@@ -72,11 +72,11 @@ namespace BioImage
             this.statusPanel = new System.Windows.Forms.Panel();
             this.statusContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.hideStatusBarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.ticksLabel = new System.Windows.Forms.Label();
             this.overlayPictureBox = new System.Windows.Forms.PictureBox();
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.panel = new System.Windows.Forms.Panel();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.zPlayMenuStrip.SuspendLayout();
@@ -189,7 +189,7 @@ namespace BioImage
             // playZToolStripMenuItem
             // 
             this.playZToolStripMenuItem.Name = "playZToolStripMenuItem";
-            this.playZToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.playZToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.playZToolStripMenuItem.Text = "Play";
             this.playZToolStripMenuItem.Click += new System.EventHandler(this.playZToolStripMenuItem_Click);
             // 
@@ -198,21 +198,21 @@ namespace BioImage
             this.stopZToolStripMenuItem.Checked = true;
             this.stopZToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.stopZToolStripMenuItem.Name = "stopZToolStripMenuItem";
-            this.stopZToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.stopZToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.stopZToolStripMenuItem.Text = "Stop";
             this.stopZToolStripMenuItem.Click += new System.EventHandler(this.stopZToolStripMenuItem_Click);
             // 
             // playSpeedToolStripMenuItem
             // 
             this.playSpeedToolStripMenuItem.Name = "playSpeedToolStripMenuItem";
-            this.playSpeedToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.playSpeedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.playSpeedToolStripMenuItem.Text = "Play Speed";
             this.playSpeedToolStripMenuItem.Click += new System.EventHandler(this.playSpeedToolStripMenuItem_Click);
             // 
             // setValueRangeToolStripMenuItem
             // 
             this.setValueRangeToolStripMenuItem.Name = "setValueRangeToolStripMenuItem";
-            this.setValueRangeToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.setValueRangeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.setValueRangeToolStripMenuItem.Text = "Set Value Range";
             this.setValueRangeToolStripMenuItem.Click += new System.EventHandler(this.setValueRangeToolStripMenuItem_Click);
             // 
@@ -223,7 +223,7 @@ namespace BioImage
             this.loopZToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.loopZToolStripMenuItem.Name = "loopZToolStripMenuItem";
             this.loopZToolStripMenuItem.ShowShortcutKeys = false;
-            this.loopZToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.loopZToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loopZToolStripMenuItem.Text = "Loop";
             this.loopZToolStripMenuItem.Click += new System.EventHandler(this.loopZToolStripMenuItem_Click);
             // 
@@ -317,7 +317,7 @@ namespace BioImage
             | System.Windows.Forms.AnchorStyles.Right)));
             this.timeBar.AutoSize = false;
             this.timeBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.timeBar.ContextMenuStrip = this.cPlayMenuStrip;
+            this.timeBar.ContextMenuStrip = this.timePlayMenuStrip;
             this.timeBar.LargeChange = 1;
             this.timeBar.Location = new System.Drawing.Point(15, 25);
             this.timeBar.Margin = new System.Windows.Forms.Padding(0);
@@ -446,7 +446,7 @@ namespace BioImage
             // 
             // cTimer
             // 
-            this.cTimer.Interval = 1000;
+            this.cTimer.Interval = 32;
             this.cTimer.Tick += new System.EventHandler(this.cTimer_Tick);
             // 
             // trackBarPanel
@@ -454,13 +454,13 @@ namespace BioImage
             this.trackBarPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.trackBarPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.trackBarPanel.Controls.Add(this.rgbBoxsPanel);
+            this.trackBarPanel.Controls.Add(this.cBar);
             this.trackBarPanel.Controls.Add(this.zBar);
             this.trackBarPanel.Controls.Add(this.timeBar);
             this.trackBarPanel.Controls.Add(this.tLabel);
             this.trackBarPanel.Controls.Add(this.zLabel);
             this.trackBarPanel.Controls.Add(this.cLabel);
-            this.trackBarPanel.Controls.Add(this.cBar);
+            this.trackBarPanel.Controls.Add(this.rgbBoxsPanel);
             this.trackBarPanel.Location = new System.Drawing.Point(0, 293);
             this.trackBarPanel.Name = "trackBarPanel";
             this.trackBarPanel.Size = new System.Drawing.Size(425, 75);
@@ -493,6 +493,13 @@ namespace BioImage
             this.hideStatusBarToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.hideStatusBarToolStripMenuItem.Text = "Hide Status Bar";
             this.hideStatusBarToolStripMenuItem.Click += new System.EventHandler(this.hideStatusBarToolStripMenuItem_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Location = new System.Drawing.Point(0, 25);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(97, 108);
+            this.panel1.TabIndex = 21;
             // 
             // ticksLabel
             // 
@@ -548,13 +555,6 @@ namespace BioImage
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(425, 269);
             this.panel.TabIndex = 21;
-            // 
-            // panel1
-            // 
-            this.panel1.Location = new System.Drawing.Point(0, 25);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(97, 108);
-            this.panel1.TabIndex = 21;
             // 
             // ImageView
             // 

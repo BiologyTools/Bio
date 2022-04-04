@@ -332,6 +332,12 @@
     <Compile Include="Slider.Designer.cs">
       <DependentUpon>Slider.cs</DependentUpon>
     </Compile>
+    <Compile Include="StackTools.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StackTools.Designer.cs">
+      <DependentUpon>StackTools.cs</DependentUpon>
+    </Compile>
     <Compile Include="TextInput.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -392,6 +398,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Slider.resx">
       <DependentUpon>Slider.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StackTools.resx">
+      <DependentUpon>StackTools.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TextInput.resx">
       <DependentUpon>TextInput.cs</DependentUpon>

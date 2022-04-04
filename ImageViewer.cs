@@ -12,6 +12,7 @@ namespace BioImage
         public static ROIManager manager = null;
         public ImageView viewer = null;
         public ScriptRunner runner = null;
+        public StackTools stackTools = null;
 
         public static ImageViewer app = null;
         public ImageViewer(BioImage arg)
@@ -20,6 +21,7 @@ namespace BioImage
             tools = new Tools();
             manager = new ROIManager();
             runner = new ScriptRunner();
+            stackTools = new StackTools();
             app = this;
             SetImage(arg);
         }
@@ -30,6 +32,7 @@ namespace BioImage
             manager = new ROIManager();
             runner = new ScriptRunner();
             app = this;
+            stackTools = new StackTools();
             if (arg.Length == 0)
                 return;
             else
@@ -44,13 +47,19 @@ namespace BioImage
             manager = new ROIManager();
             app = this;
             runner = new ScriptRunner();
+            stackTools = new StackTools();
             //scriptToolStripMenuItem.PerformClick();
-            string file = "E://TESTIMAGES//text.ome.tif";
+            string file = "E://TESTIMAGES//2ch.ome.tif";
             SetFile(file, 0);
+            //Image.SplitChannnels();
+            //List<BioImage> bs = BioImage.SplitChannnelsToList(Image);
+            //BioImage merge = BioImage.MergeChannels(bs[0], bs[1]);
+            //ImageViewer iv = new ImageViewer(merge);
+            //iv.Show();
             //ushort[] GetBlock(int ix, int iy, int iw, int ih)
-            ushort[,] val = Image.GetBlock(0, 0, 0, 0, 0, 0, 150, 150);
-            Image.SetBlock(0, 0, 0, 0, 150, 150, 150, 150, val);
-            viewer.UpdateView();
+            //ushort[,] val = Image.GetBlock(0, 0, 0, 0, 0, 0, 150, 150);
+            //Image.SetBlock(0, 0, 0, 0, 150, 150, 150, 150, val);
+            //viewer.UpdateView();
             //BioImage im = new BioImage(file, 0);
             //BioImage b = new BioImage(im, "subStack.ome.tif", 0, 0, 3, 0, 3, 0, 2);
             //im.Dispose();
@@ -70,6 +79,7 @@ namespace BioImage
             {
                 viewer = new ImageView(file, seri);
             }
+            
             viewer.serie = seri;
             viewer.filepath = file;
             viewer.Dock = DockStyle.Fill;
@@ -84,10 +94,10 @@ namespace BioImage
                 viewer = new ImageView(b);
             }
             viewer.serie = b.serie;
-            viewer.filepath = b.filename;
+            viewer.filepath = b.Filename;
             viewer.Dock = DockStyle.Fill;
             panel.Controls.Add(viewer);
-            this.Text = b.idString;
+            this.Text = b.IdString;
         }
 
         public BioImage Image
@@ -326,6 +336,11 @@ namespace BioImage
         private void ImageViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.DialogResult = DialogResult.OK;
+        }
+
+        private void stackToolsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            stackTools.Show();
         }
     }
 }

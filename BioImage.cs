@@ -19,9 +19,9 @@ namespace BioImage
 {
     public static class Table
     {
-        private static Hashtable hashID = new Hashtable();
-        private static Hashtable buffers = new Hashtable();
-        private static Hashtable bioimages = new Hashtable();
+        public static Hashtable hashID = new Hashtable();
+        public static Hashtable buffers = new Hashtable();
+        public static Hashtable bioimages = new Hashtable();
         public static object GetObj(int hashid)
         {
             return buffers[hashid];
@@ -84,10 +84,13 @@ namespace BioImage
             //We check to see if this buffer has already been added.
             if (buffers.ContainsKey(hash))
             {
-                im.idString += "-" + duplicatesB;
+                im.Filename += "-" + duplicatesB;
                 duplicatesB++;
             }
-            buffers.Add(im.HashID, im);
+            if (!bioimages.ContainsKey(im.HashID))
+            {
+                bioimages.Add(im.HashID, im);
+            }
         }
     }
     public class BioImage
@@ -95,11 +98,11 @@ namespace BioImage
         public const char sep = '/';
         public int GetHash(int s, int z, int c, int t)
         {
-            return CreateHash(idString, s, Coords[s, z, c, t]);
+            return CreateHash(filename, s, Coords[s, z, c, t]);
         }
         public int GetHash(SZCT coord)
         {
-            int h = CreateHash(idString, coord.S, Coords[coord.S, coord.Z, coord.C, coord.T]);
+            int h = CreateHash(filename, coord.S, Coords[coord.S, coord.Z, coord.C, coord.T]);
             return h;
         }
 
@@ -137,7 +140,7 @@ namespace BioImage
         {
             get
             {
-                return idString.GetHashCode();
+                return filename.GetHashCode();
             }
         }
         int[,,,] Coords;
@@ -150,21 +153,45 @@ namespace BioImage
         public List<Channel> Channels = new List<Channel>();
         public List<VolumeD> Volumes = new List<VolumeD>();
         public List<Annotation> Annotations = new List<Annotation>();
-        public string idString;
+        public string IdString
+        {
+            get { return Path.GetFileName(filename); }
+            set { filename = value; }
+        }
         public int[] rgbChannels = new int[3];
         public int rGBChannelCount = 1;
         public int bitsPerPixel;
         private PixelFormat px;
         public bool convertedToLittleEndian = false;
-        public string filename;
+        private string filename;
+        public string Filename
+        {
+            get { return filename; }
+            set 
+            { 
+                filename = value; 
+                IdString = Path.GetFileName(Filename);
+            }
+        }
         public double physicalSizeX = -1;
         public double physicalSizeY = -1;
         public double physicalSizeZ = -1;
         public double stageSizeX = -1;
         public double stageSizeY = -1;
         public double stageSizeZ = -1;
-        public BioImage(BioImage orig, string id, int ser, int zs, int ze, int cs, int ce, int ts, int te)
+
+        public BioImage(string file, int SizeX, int SizeY)
         {
+            Filename = file;
+            rgbChannels[0] = 0;
+            rgbChannels[1] = 0;
+            rgbChannels[2] = 0;
+            rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
+            rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
+        }
+        public BioImage(BioImage orig, string file, int ser, int zs, int ze, int cs, int ce, int ts, int te)
+        {
+            Filename = file;
             serie = ser;
             sizeZ = (int)ze-zs;
             sizeC = (int)ce-cs;
@@ -196,9 +223,7 @@ namespace BioImage
 
             imagesPerSeries = imageCount / seriesCount;
             Coords = new int[seriesCount, SizeZ, SizeC, SizeT];
-            filename = id;
-            idString = id;
-
+            Filename = file;
             if (RGBChannelCount == 1)
             {
                 if (bitsPerPixel > 8)
@@ -214,15 +239,15 @@ namespace BioImage
                     px = PixelFormat.Format24bppRgb;
             }
 
-            fileHashTable.Add(idString, idString.GetHashCode());
+            fileHashTable.Add(IdString, IdString.GetHashCode());
             int i = 0;
-            for (int zi = zs; zi < SizeZ; zi++)
+            for (int ci = 0; ci < SizeC; ci++)
             {
-                for (int ci = cs; ci < SizeC; ci++)
+                for (int zi = 0; zi < SizeZ; zi++)
                 {
-                    for (int ti = ts; ti < SizeT; ti++)
+                    for (int ti = 0; ti < SizeT; ti++)
                     {
-                        Buf copy = Buf.Copy(orig.GetBufByCoord(ser, zi, ci, ti),idString, i);
+                        Buf copy = Buf.Copy(orig.GetBufByCoord(ser, zs + zi, cs + ci, ts + ti),IdString, i);
                         copy.info.Zcoord = zi;
                         copy.info.Ccoord = ci;
                         copy.info.Tcoord = ti;
@@ -230,16 +255,13 @@ namespace BioImage
                         Buffers.Add(copy);
                         Table.AddBuffer(copy);
                         //Lets copy the ROI's from the original image.
-                        List<Annotation> anns = orig.GetAnnotations(ser, zi, ci, ti);
+                        List<Annotation> anns = orig.GetAnnotations(ser, zs + zi, cs + ci, ts + ti);
                         if(anns.Count > 0)
                         Annotations.AddRange(anns);
                         i++;
                     }
                 }
-            }
-            for (int ci = cs; ci < SizeC; ci++)
-            {
-                Channels.Add(orig.Channels[ci]);
+                Channels.Add(orig.Channels[ci].Copy());
             }
             Table.AddBioImage(this);
             rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
@@ -247,14 +269,127 @@ namespace BioImage
         }
         public BioImage(string file,int ser)
         {
+            Filename = file;
             serie = ser;
+            OpenSeries(file, ser);
             rgbChannels[0] = 0;
             rgbChannels[1] = 0;
             rgbChannels[2] = 0;
-            OpenSeries(file, ser);
             rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
             rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
+            Table.AddBioImage(this);
+        }
+        public static BioImage MergeChannels(BioImage b, BioImage b2)
+        {
+            BioImage res = new BioImage(b2.Filename, b2.SizeX, b2.SizeY);
+            res.serie = b2.serie;
+            res.sizeZ = b2.SizeZ;
+            int cOrig = b2.SizeC;
+            res.sizeC = b2.SizeC + b.SizeC;
+            res.sizeT = b2.SizeT;
+            res.sizeX = b2.SizeX;
+            res.sizeY = b2.SizeY;
+            res.rGBChannelCount = b2.rGBChannelCount;
+            res.bitsPerPixel = b2.bitsPerPixel;
 
+            if (b.physicalSizeX != -1)
+                res.physicalSizeX = b2.physicalSizeX;
+            if (b.physicalSizeY != -1)
+                res.physicalSizeY = b2.physicalSizeY;
+            if (b.physicalSizeZ != -1)
+                res.physicalSizeZ = b2.physicalSizeZ;
+            if (b.stageSizeX != -1)
+                res.stageSizeX = b2.stageSizeX;
+            if (b.stageSizeY != -1)
+                res.stageSizeY = b2.stageSizeY;
+            if (b.stageSizeX != -1)
+                res.stageSizeZ = b2.stageSizeZ;
+
+            res.imageCount = res.SizeZ * res.SizeC * res.SizeT;
+            res.littleEndian = b2.littleEndian;
+            res.seriesCount = b2.seriesCount;
+
+            res.imagesPerSeries = res.imageCount / res.seriesCount;
+            res.Coords = new int[res.seriesCount, res.SizeZ, res.SizeC, res.SizeT];
+            res.IdString = Path.GetFileName(b2.filename) + "-1";
+
+            res.px = b2.px;
+
+            res.fileHashTable.Add(res.IdString, res.IdString.GetHashCode());
+            int i = 0;
+            int cc = 0;
+            for (int ci = 0; ci < res.SizeC; ci++)
+            {
+                for (int zi = 0; zi < res.SizeZ; zi++)
+                {
+                    for (int ti = 0; ti < res.SizeT; ti++)
+                    {
+                        if (ci < cOrig)
+                        {
+                            //If this channel is part of the image b1 we add planes from it.
+                            Buf copy = Buf.Copy(b2.GetBufByCoord(res.serie, zi, ci, ti), res.IdString, i);
+                            copy.info.Zcoord = zi;
+                            copy.info.Ccoord = ci;
+                            copy.info.Tcoord = ti;
+                            res.Coords[b2.serie, zi, ci, ti] = i;
+                            res.Buffers.Add(copy);
+                            Table.AddBuffer(copy);
+                            //Lets copy the ROI's from the original image.
+                            List<Annotation> anns = b2.GetAnnotations(res.serie, zi, ci, ti);
+                            if (anns.Count > 0)
+                                res.Annotations.AddRange(anns);
+                        }
+                        else
+                        {
+                            //This plane is not part of b1 so we add the planes from b2 channels.
+                            Buf copy = Buf.Copy(b.GetBufByCoord(res.serie, zi, cc, ti), res.IdString, i);
+                            copy.info.Zcoord = zi;
+                            copy.info.Ccoord = cc;
+                            copy.info.Tcoord = ti;
+                            res.Coords[b2.serie, zi, cc, ti] = i;
+                            res.Buffers.Add(copy);
+                            Table.AddBuffer(copy);
+                            //Lets copy the ROI's from the original image.
+                            List<Annotation> anns = b.GetAnnotations(res.serie, zi, cc, ti);
+                            if (anns.Count > 0)
+                                res.Annotations.AddRange(anns);
+                        }
+                        i++;
+                    }
+                }
+                if (ci < cOrig)
+                {
+                    res.Channels.Add(b2.Channels[ci].Copy());
+                }
+                else
+                {
+                    res.Channels.Add(b2.Channels[cc].Copy());
+                    res.Channels[cc+1].Index = ci;
+                    cc++;
+                }
+            }
+            return res;
+        }
+        public void SplitChannnels()
+        {
+            for (int c = 0; c < SizeC; c++)
+            {
+                string id = this.IdString + "-" + (c + 1).ToString();
+                BioImage b = new BioImage(this, id, 0, 0, SizeZ, c, c+1, 0, SizeT);
+                ImageViewer iv = new ImageViewer(b);
+                iv.Show();
+            }
+        }
+        public static List<BioImage> SplitChannnelsToList(BioImage b)
+        {
+            List<BioImage> list = new List<BioImage>();
+            for (int c = 0; c < b.SizeC; c++)
+            {
+                string id = b.IdString + "-" + (c + 1).ToString();
+                BioImage bb = new BioImage(b, id, 0, 0, b.SizeZ, c, c + 1, 0, b.SizeT);
+                list.Add(bb);
+            }
+            return list;
         }
 
         public Channel RChannel
@@ -529,23 +664,23 @@ namespace BioImage
             int ri = Coords[serie, coord.Z, coord.C, coord.T];
             if(replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
             {
-                replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri + RChannel.index].GetFiltered(rf, gf, bf));
-                replaceGFilter = new ReplaceChannel(AForge.Imaging.RGB.G, Buffers[ri + GChannel.index].GetFiltered(rf, gf, bf));
-                replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, Buffers[ri + BChannel.index].GetFiltered(rf, gf, bf));
+                replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri + RChannel.Index].GetFiltered(rf, gf, bf));
+                replaceGFilter = new ReplaceChannel(AForge.Imaging.RGB.G, Buffers[ri + GChannel.Index].GetFiltered(rf, gf, bf));
+                replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, Buffers[ri + BChannel.Index].GetFiltered(rf, gf, bf));
             }
 
             if (RGBChannelCount == 1)
             {
                 replaceRFilter.ChannelImage.Dispose();
-                replaceRFilter.ChannelImage = Buffers[ri + RChannel.index].GetFiltered(rf, gf, bf);
+                replaceRFilter.ChannelImage = Buffers[ri + RChannel.Index].GetFiltered(rf, gf, bf);
                 replaceRFilter.ApplyInPlace(rgbBitmap16);
 
                 replaceGFilter.ChannelImage.Dispose();
-                replaceGFilter.ChannelImage = Buffers[ri + GChannel.index].GetFiltered(rf, gf, bf);
+                replaceGFilter.ChannelImage = Buffers[ri + GChannel.Index].GetFiltered(rf, gf, bf);
                 replaceGFilter.ApplyInPlace(rgbBitmap16);
 
                 replaceBFilter.ChannelImage.Dispose();
-                replaceBFilter.ChannelImage = Buffers[ri + BChannel.index].GetFiltered(rf, gf, bf);
+                replaceBFilter.ChannelImage = Buffers[ri + BChannel.Index].GetFiltered(rf, gf, bf);
                 replaceBFilter.ApplyInPlace(rgbBitmap16);
             }
             else
@@ -845,8 +980,7 @@ namespace BioImage
                     Rect = new RectangleD(X, Y, W, value);
                 }
             }
-            public string name = "";
-            public string id = "";
+
             private List<PointD> Points = new List<PointD>();
             public List<PointD> PointsD
             {
@@ -863,13 +997,10 @@ namespace BioImage
             public System.Drawing.Color strokeColor;
             public System.Drawing.Color fillColor;
             public bool isFilled = false;
+            public string id = "";
             public string roiID = "";
             public string roiName = "";
             private string text = "";
-            public double strokeWidth = 1;
-            public int shapeIndex = 0;
-            public bool closed = false;
-            public bool selected = false;
             public string Text
             {
                 get
@@ -886,6 +1017,11 @@ namespace BioImage
                     }
                 }
             }
+            public double strokeWidth = 1;
+            public int shapeIndex = 0;
+            public bool closed = false;
+            public bool selected = false;
+            
             public RectangleD GetSelectBound()
             {
                 double f = selectBoxSize / 2;
@@ -899,6 +1035,58 @@ namespace BioImage
                 BoundingBox = new RectangleD(0, 0, 1, 1);
             }
 
+            public static Annotation CreatePoint(SZCT coord, double x, double y)
+            {
+                Annotation an = new Annotation();
+                an.coord = coord;
+                an.AddPoint(new PointD(x, y));
+                an.type = Type.Point;
+                return an;
+            }
+            public static Annotation CreateLine(SZCT coord, PointD x1, PointD x2)
+            {
+                Annotation an = new Annotation();
+                an.coord = coord;
+                an.type = Type.Line;
+                an.AddPoint(x1);
+                an.AddPoint(x2);
+                return an;
+            }
+            public static Annotation CreateRectangle(SZCT coord, double x, double y, double w, double h)
+            {
+                Annotation an = new Annotation();
+                an.coord = coord;
+                an.type = Type.Rectangle;
+                an.Rect = new RectangleD(x,y, w, h);
+                return an;
+            }
+            public static Annotation CreateEllipse(SZCT coord, double x, double y, double w, double h)
+            {
+                Annotation an = new Annotation();
+                an.coord = coord;
+                an.type = Type.Ellipse;
+                an.Rect = new RectangleD(x, y, w, h);
+                return an;
+            }
+            public static Annotation CreatePolygon(SZCT coord, PointD[] pts)
+            {
+                Annotation an = new Annotation();
+                an.coord = coord;
+                an.type = Type.Polygon;
+                an.AddPoints(pts);
+                an.closed = true;
+                return an;
+            }
+            public static Annotation CreateFreeform(SZCT coord, PointD[] pts)
+            {
+                Annotation an = new Annotation();
+                an.coord = coord;
+                an.type = Type.Freeform;
+                an.AddPoints(pts);
+                an.closed = true;
+                return an;
+            }
+
             public void UpdatePoint(PointD p, int i)
             {
                 if (i < Points.Count)
@@ -908,12 +1096,10 @@ namespace BioImage
                 UpdateBoundingBox();
                 UpdateSelectBoxs();
             }
-
             public PointD GetPoint(int i)
             {
                 return Points[i];
             }
-
             public PointD[] GetPoints()
             {
                 return Points.ToArray();
@@ -987,6 +1173,18 @@ namespace BioImage
                 }
                 return pts;
             }
+            public string PointsToString(PointD[] Points)
+            {
+                string pts = "";
+                for (int j = 0; j < Points.Length; j++)
+                {
+                    if (j == Points.Length - 1)
+                        pts += Points[j].X.ToString() + "," + Points[j].Y.ToString();
+                    else
+                        pts += Points[j].X.ToString() + "," + Points[j].Y.ToString() + " ";
+                }
+                return pts;
+            }
             public void UpdateSelectBoxs()
             {
                 float f = selectBoxSize / 2;
@@ -1043,7 +1241,7 @@ namespace BioImage
         {
             public string Name = "";
             public string ID = "";
-            public int index;
+            private int index = 0;
             public string Fluor = "";
             public int SamplesPerPixel;
             public System.Drawing.Color? color;
@@ -1064,6 +1262,11 @@ namespace BioImage
                 {
                     return index;
                 }
+                set
+                {
+                    index = value;
+                }
+
             }
             public int Max
             {
@@ -1756,6 +1959,14 @@ namespace BioImage
         {
             Buffers[Coords[s, z, c, t]].SetBlock(x, y, w, h, sh);
         }
+        public ushort[,] GetBlock(SZCT coord, int x, int y, int w, int h)
+        {
+            return Buffers[Coords[coord.S, coord.Z, coord.C, coord.T]].GetBlock(x, y, w, h);
+        }
+        public void SetBlock(SZCT coord, int x, int y, int w, int h, ushort[,] sh)
+        {
+            Buffers[Coords[coord.S, coord.Z, coord.C, coord.T]].SetBlock(x, y, w, h, sh);
+        }
         public bool SaveSeries(string path, int series)
         {
             // create OME-XML metadata store
@@ -2064,6 +2275,7 @@ namespace BioImage
             pr.Dispose();
             return true;
         }
+
         private static ImageWriter wr;
         private static int imCount;
         private static List<Buf> bufs = new List<Buf>();
@@ -2108,7 +2320,6 @@ namespace BioImage
             seriesCount = reader.getSeriesCount();
             imagesPerSeries = imageCount / seriesCount;
             Coords = new int[seriesCount, SizeZ, SizeC, SizeT];
-            idString = file;
 
             if (RGBChannelCount == 1)
             {
@@ -3158,7 +3369,7 @@ namespace BioImage
         }
 
         private byte[] autoBytes;
-        public unsafe bool AutoThresholdChannel(Channel c1)
+        public bool AutoThresholdChannel(Channel c1)
         {
             if (bitsPerPixel > 8)
                 for (int time = 0; time < SizeT; time++)
@@ -3227,6 +3438,11 @@ namespace BioImage
             {
                 Buffers[i].Dispose();
             }
+        }
+
+        public override string ToString()
+        {
+            return IdString.ToString();
         }
 
     }

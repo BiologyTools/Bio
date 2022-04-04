@@ -161,7 +161,7 @@ namespace BioImage
         {
             if (ImageView.selectedImage == null)
                 return;
-            string n = System.IO.Path.GetFileName(ImageView.selectedImage.filename);
+            string n = System.IO.Path.GetFileName(ImageView.selectedImage.Filename);
             if (imageNameLabel.Text != n)
                 imageNameLabel.Text = n;
             GetROIsFromImage();

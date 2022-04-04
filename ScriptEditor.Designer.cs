@@ -29,8 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(global::BioImage.ScriptEditor));
-            this.textBox = new System.Windows.Forms.TextBox();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScriptEditor));
             this.runButton = new System.Windows.Forms.Button();
             this.outputBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -45,22 +44,11 @@
             this.errorBox = new System.Windows.Forms.TextBox();
             this.saveButton = new System.Windows.Forms.Button();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.textBox = new System.Windows.Forms.RichTextBox();
             this.tabControl.SuspendLayout();
             this.outputTab.SuspendLayout();
             this.error.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // textBox
-            // 
-            this.textBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox.Location = new System.Drawing.Point(12, 33);
-            this.textBox.Multiline = true;
-            this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(584, 296);
-            this.textBox.TabIndex = 0;
-            this.textBox.Text = resources.GetString("textBox.Text");
             // 
             // runButton
             // 
@@ -69,6 +57,7 @@
             this.runButton.Name = "runButton";
             this.runButton.Size = new System.Drawing.Size(75, 23);
             this.runButton.TabIndex = 1;
+            this.runButton.TabStop = false;
             this.runButton.Text = "Run";
             this.runButton.UseVisualStyleBackColor = true;
             this.runButton.Click += new System.EventHandler(this.runButton_Click);
@@ -81,6 +70,7 @@
             this.outputBox.Name = "outputBox";
             this.outputBox.Size = new System.Drawing.Size(567, 105);
             this.outputBox.TabIndex = 2;
+            this.outputBox.TabStop = false;
             // 
             // label1
             // 
@@ -110,6 +100,7 @@
             this.scriptLoadBut.Name = "scriptLoadBut";
             this.scriptLoadBut.Size = new System.Drawing.Size(75, 23);
             this.scriptLoadBut.TabIndex = 5;
+            this.scriptLoadBut.TabStop = false;
             this.scriptLoadBut.Text = "Load Script";
             this.scriptLoadBut.UseVisualStyleBackColor = true;
             this.scriptLoadBut.Click += new System.EventHandler(this.scriptBut_Click);
@@ -144,6 +135,7 @@
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(581, 137);
             this.tabControl.TabIndex = 7;
+            this.tabControl.TabStop = false;
             // 
             // outputTab
             // 
@@ -175,6 +167,7 @@
             this.errorBox.Name = "errorBox";
             this.errorBox.Size = new System.Drawing.Size(567, 105);
             this.errorBox.TabIndex = 3;
+            this.errorBox.TabStop = false;
             // 
             // saveButton
             // 
@@ -183,6 +176,7 @@
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 8;
+            this.saveButton.TabStop = false;
             this.saveButton.Text = "Save Script";
             this.saveButton.UseVisualStyleBackColor = true;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
@@ -191,12 +185,22 @@
             // 
             this.saveFileDialog.FileName = "\"C# Files (*.cs)|*.cs|All files (*.*)|*.*\"";
             // 
-            // Script
+            // textBox
+            // 
+            this.textBox.Location = new System.Drawing.Point(15, 33);
+            this.textBox.Name = "textBox";
+            this.textBox.Size = new System.Drawing.Size(581, 296);
+            this.textBox.TabIndex = 1;
+            this.textBox.TabStop = false;
+            this.textBox.Text = resources.GetString("textBox.Text");
+            // 
+            // ScriptEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.ClientSize = new System.Drawing.Size(608, 506);
+            this.Controls.Add(this.textBox);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.scriptLabel);
@@ -204,9 +208,8 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.runButton);
-            this.Controls.Add(this.textBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Script";
+            this.Name = "ScriptEditor";
             this.Text = "Script";
             this.tabControl.ResumeLayout(false);
             this.outputTab.ResumeLayout(false);
@@ -219,8 +222,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.Button runButton;
         private System.Windows.Forms.TextBox outputBox;
         private System.Windows.Forms.Label label1;
@@ -235,5 +236,6 @@
         private System.Windows.Forms.TabPage outputTab;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.RichTextBox textBox;
     }
 }
