@@ -92,6 +92,10 @@ namespace BioImage
                 bioimages.Add(im.HashID, im);
             }
         }
+        public static void RemoveImage(BioImage im)
+        {
+            bioimages.Remove(im);
+        }
     }
     public class BioImage
     {
@@ -3438,6 +3442,7 @@ namespace BioImage
             {
                 Buffers[i].Dispose();
             }
+            Table.RemoveImage(this);
         }
 
         public override string ToString()
