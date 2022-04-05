@@ -15,9 +15,9 @@ using CSScriptLib;
 
 namespace BioImage
 {
-    public partial class ScriptRunner : Form
+    public partial class Scripting : Form
     {
-        public static ScriptRunner runner;
+        public static Scripting runner;
 
         public static Dictionary<string, Script> Scripts = new Dictionary<string, Script>();
         public class Script
@@ -35,6 +35,12 @@ namespace BioImage
             {
                 name = Path.GetFileName(file);
                 scriptString = scriptStr;
+            }
+            public Script(string file)
+            {
+                name = Path.GetFileName(file);
+                scriptString = File.ReadAllText(file);
+                this.file = file;
             }
             public static void Run(Script rn)
             {
@@ -63,6 +69,8 @@ namespace BioImage
             }
             public void Run()
             {
+                if (!Scripts.ContainsKey(name))
+                    Scripts.Add(name, this);
                 scriptName = this.name;
                 thread = new Thread(new ThreadStart(RunScript));
                 thread.Start();
@@ -86,7 +94,6 @@ namespace BioImage
                 return name.ToString();
             }
         }
-
         public void RefreshItems()
         {
             string dir = Application.StartupPath + "//" + "Scripts";
@@ -111,23 +118,33 @@ namespace BioImage
         {
             foreach (ListViewItem item in scriptView.Items)
             {
-                item.Text = ((Script)item.Tag).ToString();
+                Script sc = ((Script)item.Tag);
+                item.Text = sc.ToString();
+            }
+            foreach (ListViewItem item in scriptView.SelectedItems)
+            {
+                Script s = (Script)item.Tag;
+                outputBox.Text = s.output;
+                if(s.ex!=null)
+                errorBox.Text = s.ex.Message.ToString();
             }
         }
-        public ScriptRunner()
+        public Scripting()
         {
             InitializeComponent();
-            scriptView.MultiSelect = true;
+            scriptView.MultiSelect = false;
             runner = this;
             RefreshItems();
             timer.Start();
         }
 
-        public static void RunScriptByName(string name)
+        public void RunScriptFile(string file)
         {
-            Scripts[name].Run();
+            Script sc = new Script(file);
+            Scripts.Add(sc.name,sc);
+            RefreshItems();
+            RunByName(sc.name);
         }
-
         public void Run()
         {
             if (scriptView.SelectedItems.Count == 0)
@@ -177,6 +194,44 @@ namespace BioImage
         {
             e.Cancel = true;
             this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void scriptView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (scriptView.SelectedItems.Count == 0)
+                return;
+            ListViewItem item = scriptView.SelectedItems[0];
+            Script s = (Script)item.Tag;
+            textBox.Text = s.scriptString;
+            scriptLabel.Text = s.name;
+        }
+
+        private void runButton_Click(object sender, EventArgs e)
+        {
+            Run();
+        }
+
+        private void scriptLoadBut_Click(object sender, EventArgs e)
+        {
+            openFileDialog.InitialDirectory = Application.StartupPath + "\\Scripts";
+            if (openFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+            Script script = new Script(openFileDialog.FileName, File.ReadAllText(openFileDialog.FileName));
+            script.name = Path.GetFileName(openFileDialog.FileName);
+            textBox.Text = script.scriptString;
+            scriptLabel.Text = Path.GetFileName(openFileDialog.FileName);
+            ListViewItem item = new ListViewItem();
+            item.Tag = script;
+            item.Text = script.name;
+            scriptView.Items.Add(item);
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+            scriptLabel.Text = Path.GetFileName(saveFileDialog.FileName);
+            File.WriteAllText(saveFileDialog.FileName, textBox.Text);
         }
     }
 }

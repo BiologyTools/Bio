@@ -97,11 +97,7 @@ namespace BioImage
         {
             if (stackABox.SelectedIndex == -1)
                 return;
-            foreach (BioImage im in BioImage.SplitChannnelsToList(ImageA))
-            {
-                ImageViewer iv = new ImageViewer(im);
-                iv.Show();
-            }
+            ImageA.SplitChannels();
             UpdateStacks();
         }
 
@@ -123,6 +119,12 @@ namespace BioImage
         private void setMaxTToolStripMenuItem_Click(object sender, EventArgs e)
         {
             tEndBox.Value = ImageA.SizeT;
+        }
+
+        private void StackTools_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            this.WindowState = FormWindowState.Minimized;
         }
     }
 }

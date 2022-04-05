@@ -47,15 +47,15 @@ namespace BioImage
             this.rawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoThresholdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scriptEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stackToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.panel = new System.Windows.Forms.Panel();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.stackToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -195,18 +195,11 @@ namespace BioImage
             // scriptToolStripMenuItem
             // 
             this.scriptToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.scriptEditorToolStripMenuItem,
-            this.scriptRunnerToolStripMenuItem});
+            this.scriptRunnerToolStripMenuItem,
+            this.scriptRecorderToolStripMenuItem});
             this.scriptToolStripMenuItem.Name = "scriptToolStripMenuItem";
             this.scriptToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.scriptToolStripMenuItem.Text = "Script";
-            // 
-            // scriptEditorToolStripMenuItem
-            // 
-            this.scriptEditorToolStripMenuItem.Name = "scriptEditorToolStripMenuItem";
-            this.scriptEditorToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.scriptEditorToolStripMenuItem.Text = "Script Editor";
-            this.scriptEditorToolStripMenuItem.Click += new System.EventHandler(this.scriptToolStripMenuItem_Click);
             // 
             // scriptRunnerToolStripMenuItem
             // 
@@ -214,6 +207,20 @@ namespace BioImage
             this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
             this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click);
+            // 
+            // scriptRecorderToolStripMenuItem
+            // 
+            this.scriptRecorderToolStripMenuItem.Name = "scriptRecorderToolStripMenuItem";
+            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.scriptRecorderToolStripMenuItem.Text = "Script Recorder";
+            this.scriptRecorderToolStripMenuItem.Click += new System.EventHandler(this.scriptRecorderToolStripMenuItem_Click);
+            // 
+            // stackToolsToolStripMenuItem
+            // 
+            this.stackToolsToolStripMenuItem.Name = "stackToolsToolStripMenuItem";
+            this.stackToolsToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.stackToolsToolStripMenuItem.Text = "Stacks";
+            this.stackToolsToolStripMenuItem.Click += new System.EventHandler(this.stackToolsToolStripMenuItem_Click);
             // 
             // openFilesDialog
             // 
@@ -249,13 +256,6 @@ namespace BioImage
             this.openCSVFileDialog.DefaultExt = "csv";
             this.openCSVFileDialog.Filter = "\"CSV Files (*.csv)|*.csv|All files (*.*)|*.*\"";
             this.openCSVFileDialog.Title = "Import ROI from CSV";
-            // 
-            // stackToolsToolStripMenuItem
-            // 
-            this.stackToolsToolStripMenuItem.Name = "stackToolsToolStripMenuItem";
-            this.stackToolsToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.stackToolsToolStripMenuItem.Text = "Stacks";
-            this.stackToolsToolStripMenuItem.Click += new System.EventHandler(this.stackToolsToolStripMenuItem_Click);
             // 
             // ImageViewer
             // 
@@ -311,7 +311,7 @@ namespace BioImage
         private System.Windows.Forms.ToolStripMenuItem autoThresholdToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scriptToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scriptRunnerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem scriptEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stackToolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scriptRecorderToolStripMenuItem;
     }
 }

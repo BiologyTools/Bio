@@ -360,6 +360,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Stack Tools";
             this.Activated += new System.EventHandler(this.StackTools_Activated);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.StackTools_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.zEndBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.zStartBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cEndBox)).EndInit();

@@ -278,12 +278,6 @@
     <Compile Include="ImageViewer.designer.cs">
       <DependentUpon>ImageViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Nodes.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Nodes.Designer.cs">
-      <DependentUpon>Nodes.cs</DependentUpon>
-    </Compile>
     <Compile Include="PlaySpeed.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -308,23 +302,23 @@
     <Compile Include="RangeTool.designer.cs">
       <DependentUpon>RangeTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="Recorder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Recorder.Designer.cs">
+      <DependentUpon>Recorder.cs</DependentUpon>
+    </Compile>
     <Compile Include="ROIManager.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="ROIManager.Designer.cs">
       <DependentUpon>ROIManager.cs</DependentUpon>
     </Compile>
-    <Compile Include="ScriptEditor.cs">
+    <Compile Include="Scripting.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ScriptEditor.Designer.cs">
-      <DependentUpon>ScriptEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ScriptRunner.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ScriptRunner.Designer.cs">
-      <DependentUpon>ScriptRunner.cs</DependentUpon>
+    <Compile Include="Scripting.Designer.cs">
+      <DependentUpon>Scripting.cs</DependentUpon>
     </Compile>
     <Compile Include="Slider.cs">
       <SubType>UserControl</SubType>
@@ -368,9 +362,6 @@
     <EmbeddedResource Include="ImageViewer.resx">
       <DependentUpon>ImageViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Nodes.resx">
-      <DependentUpon>Nodes.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="PlaySpeed.resx">
       <DependentUpon>PlaySpeed.cs</DependentUpon>
     </EmbeddedResource>
@@ -387,14 +378,14 @@
     <EmbeddedResource Include="RangeTool.resx">
       <DependentUpon>RangeTool.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Recorder.resx">
+      <DependentUpon>Recorder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ROIManager.resx">
       <DependentUpon>ROIManager.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ScriptEditor.resx">
-      <DependentUpon>ScriptEditor.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ScriptRunner.resx">
-      <DependentUpon>ScriptRunner.cs</DependentUpon>
+    <EmbeddedResource Include="Scripting.resx">
+      <DependentUpon>Scripting.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Slider.resx">
       <DependentUpon>Slider.cs</DependentUpon>

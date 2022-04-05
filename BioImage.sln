@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioImage", "BioImage.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioImageViewer", "..\BioImageViewer\BioImageViewer.csproj", "{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "BioImage-Setup", "..\BioImage-Setup\BioImage-Setup.vdproj", "{DA36849B-5DA6-4FEA-A9D9-F4C8097A4817}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "BioImage-Setup", "..\BioImage-Setup\BioImage-Setup.vdproj", "{75E2F49D-DF91-470E-8A7F-113F3C3CBF53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,12 +43,12 @@ Global
 		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|x64.Build.0 = Release|x64
 		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|x86.ActiveCfg = Release|x86
 		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|x86.Build.0 = Release|x86
-		{DA36849B-5DA6-4FEA-A9D9-F4C8097A4817}.Debug|Any CPU.ActiveCfg = Debug
-		{DA36849B-5DA6-4FEA-A9D9-F4C8097A4817}.Debug|x64.ActiveCfg = Debug
-		{DA36849B-5DA6-4FEA-A9D9-F4C8097A4817}.Debug|x86.ActiveCfg = Debug
-		{DA36849B-5DA6-4FEA-A9D9-F4C8097A4817}.Release|Any CPU.ActiveCfg = Release
-		{DA36849B-5DA6-4FEA-A9D9-F4C8097A4817}.Release|x64.ActiveCfg = Release
-		{DA36849B-5DA6-4FEA-A9D9-F4C8097A4817}.Release|x86.ActiveCfg = Release
+		{75E2F49D-DF91-470E-8A7F-113F3C3CBF53}.Debug|Any CPU.ActiveCfg = Debug
+		{75E2F49D-DF91-470E-8A7F-113F3C3CBF53}.Debug|x64.ActiveCfg = Debug
+		{75E2F49D-DF91-470E-8A7F-113F3C3CBF53}.Debug|x86.ActiveCfg = Debug
+		{75E2F49D-DF91-470E-8A7F-113F3C3CBF53}.Release|Any CPU.ActiveCfg = Release
+		{75E2F49D-DF91-470E-8A7F-113F3C3CBF53}.Release|x64.ActiveCfg = Release
+		{75E2F49D-DF91-470E-8A7F-113F3C3CBF53}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -22,11 +22,12 @@ namespace BioImage
         public static Hashtable hashID = new Hashtable();
         public static Hashtable buffers = new Hashtable();
         public static Hashtable bioimages = new Hashtable();
+        public static Hashtable viewers  = new Hashtable();
         public static object GetObj(int hashid)
         {
             return buffers[hashid];
         }
-        public static BioImage GetImageByID(string ids)
+        public static BioImage GetImage(string ids)
         {
             int hash = ids.GetHashCode();
             return (BioImage)bioimages[hash];
@@ -39,7 +40,7 @@ namespace BioImage
         {
             return (BioImage.Buf)buffers[hashid];
         }
-        public static BioImage.Buf GetBufferByID(string id)
+        public static BioImage.Buf GetBuffer(string id)
         {
             int hash = id.GetHashCode();
             return (BioImage.Buf)buffers[hash];
@@ -78,7 +79,7 @@ namespace BioImage
             AddBuf(buf.info.HashID, buf);
         }
         private static int duplicatesB = 0;
-        public static void AddBioImage(BioImage im)
+        public static void AddImage(BioImage im)
         {
             int hash = im.HashID;
             //We check to see if this buffer has already been added.
@@ -94,7 +95,47 @@ namespace BioImage
         }
         public static void RemoveImage(BioImage im)
         {
+            foreach (BioImage.Buf item in im.Buffers)
+            {
+                if(buffers.Contains(item))
+                buffers.Remove(item);
+            }
+            if(bioimages.Contains(im))
             bioimages.Remove(im);
+        }
+        public static void RemoveImage(string id)
+        {
+            if (bioimages.Contains(id))
+            {
+                bioimages.Remove(id);
+                BioImage im = (BioImage)bioimages[id];
+                foreach (BioImage.Buf item in im.Buffers)
+                {
+                    if (buffers.Contains(item))
+                        buffers.Remove(item);
+                }
+            }
+        }
+        public static void AddViewer(ImageViewer v)
+        {
+            if(!viewers.ContainsKey(v.Text))
+            viewers.Add(v.Text, v);
+        }
+        public static void RemoveViewer(ImageViewer v)
+        {
+            viewers.Remove(v.Text);
+        }
+        public static void RemoveViewer(string name)
+        {
+            viewers.Remove(name);
+        }
+        public static void CloseViewer(string name)
+        {
+            ((ImageViewer)viewers[name]).Close();
+        }
+        public static ImageViewer GetViewer(string s)
+        {
+            return (ImageViewer)viewers[s];
         }
     }
     public class BioImage
@@ -267,7 +308,7 @@ namespace BioImage
                 }
                 Channels.Add(orig.Channels[ci].Copy());
             }
-            Table.AddBioImage(this);
+            Table.AddImage(this);
             rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
             rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
         }
@@ -281,10 +322,11 @@ namespace BioImage
             rgbChannels[2] = 0;
             rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
             rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
-            Table.AddBioImage(this);
+            Table.AddImage(this);
         }
         public static BioImage MergeChannels(BioImage b, BioImage b2)
         {
+            Recorder.AddLine("BioImage.MergeChannels(" + '"' + b.IdString + '"' + "," + '"' + b2.IdString + '"' + ");");
             BioImage res = new BioImage(b2.Filename, b2.SizeX, b2.SizeY);
             res.serie = b2.serie;
             res.sizeZ = b2.SizeZ;
@@ -372,10 +414,19 @@ namespace BioImage
                     cc++;
                 }
             }
+            Table.AddImage(res);
             return res;
         }
-        public void SplitChannnels()
+        public static BioImage MergeChannels(string bname, string b2name)
         {
+            BioImage b = Table.GetImage(bname);
+            BioImage b2 = Table.GetImage(b2name);
+            Recorder.AddLine("BioImage.MergeChannels(" + '"' + bname + '"' + "," + '"' + b2name + '"' + ");");
+            return MergeChannels(b, b2);
+        }
+        public void SplitChannels()
+        {
+            Recorder.AddLine("BioImage.SplitChannels(" + '"' + IdString + '"' + ");");
             for (int c = 0; c < SizeC; c++)
             {
                 string id = this.IdString + "-" + (c + 1).ToString();
@@ -384,18 +435,22 @@ namespace BioImage
                 iv.Show();
             }
         }
-        public static List<BioImage> SplitChannnelsToList(BioImage b)
+        public static void SplitChannels(BioImage bb)
         {
-            List<BioImage> list = new List<BioImage>();
-            for (int c = 0; c < b.SizeC; c++)
+            Recorder.AddLine("BioImage.SplitChannels(" + '"' + bb.IdString + '"' + ");");
+            for (int c = 0; c < bb.SizeC; c++)
             {
-                string id = b.IdString + "-" + (c + 1).ToString();
-                BioImage bb = new BioImage(b, id, 0, 0, b.SizeZ, c, c + 1, 0, b.SizeT);
-                list.Add(bb);
+                string id = bb.IdString + "-" + (c + 1).ToString();
+                BioImage b = new BioImage(bb, id, 0, 0, bb.SizeZ, c, c + 1, 0, bb.SizeT);
+                ImageViewer iv = new ImageViewer(b);
+                iv.Show();
             }
-            return list;
         }
-
+        public static void SplitChannels(string name)
+        {
+            Recorder.AddLine("BioImage.SplitChannels(" + '"' + name + '"' + ");");
+            SplitChannels(Table.GetImage(name));
+        }
         public Channel RChannel
         {
             get
@@ -1437,7 +1492,7 @@ namespace BioImage
             }
             public static Buf GetFromID(string bid)
             {
-                return Table.GetBufferByID(bid);
+                return Table.GetBuffer(bid);
             }
             public Buf BufFromHash(int hash)
             {
@@ -1971,7 +2026,17 @@ namespace BioImage
         {
             Buffers[Coords[coord.S, coord.Z, coord.C, coord.T]].SetBlock(x, y, w, h, sh);
         }
-        public bool SaveSeries(string path, int series)
+
+        public static void Save(BioImage im, string file, int ser)
+        {
+            im.SaveSeries(file, ser);
+        }
+        public static void Save(string id, string file, int ser)
+        {
+            BioImage b = Table.GetImage(id);
+            b.SaveSeries(file, ser);
+        }
+        public bool SaveSeries(string file, int series)
         {
             // create OME-XML metadata store
             ServiceFactory factory = new ServiceFactory();
@@ -2255,9 +2320,9 @@ namespace BioImage
             loci.formats.ImageWriter writer = new loci.formats.ImageWriter();
             writer.setMetadataRetrieve(omexml);
             //We delete the file so we don't just add more images to an existing file;
-            if (File.Exists(path))
-                File.Delete(path);
-            writer.setId(path);
+            if (File.Exists(file))
+                File.Delete(file);
+            writer.setId(file);
             writer.setSeries(series);
             writer.setWriteSequentially(true);
 
@@ -2265,7 +2330,7 @@ namespace BioImage
             imCount = imageCount;
             bufs = Buffers;
             rgbChans = rGBChannelCount;
-            tfile = Path.GetFileName(path);
+            tfile = Path.GetFileName(file);
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(WriteBytes));
             t.Start();
             Progress pr = new Progress(tfile);
@@ -2277,6 +2342,7 @@ namespace BioImage
             } while (!done);
             pr.Close();
             pr.Dispose();
+            Recorder.AddLine("BioImage.Save(" + '"' + IdString + '"'+ "," + '"' + file + '"' + "," + series + ");");
             return true;
         }
 
@@ -2298,6 +2364,12 @@ namespace BioImage
             }
             done = true;
             wr.close();
+        }
+
+        public static BioImage Open(string file, int ser)
+        {
+            BioImage res = new BioImage(file, ser);
+            return res;
         }
         public void OpenSeries(string file, int ser)
         {
@@ -2809,8 +2881,9 @@ namespace BioImage
             {
                 //Volume is used only for stage coordinates if error is thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
             }
-            Table.AddBioImage(this);
+            Table.AddImage(this);
             reader.close();
+            Recorder.AddLine("BioImage.Open(" + '"' + file + '"' + "," + ser + ");");
         }
         public int GetSeriesCount(string file)
         {
@@ -3438,11 +3511,11 @@ namespace BioImage
         }
         public void Dispose()
         {
+            Table.RemoveImage(this);
             for (int i = 0; i < Buffers.Count; i++)
             {
                 Buffers[i].Dispose();
             }
-            Table.RemoveImage(this);
         }
 
         public override string ToString()
