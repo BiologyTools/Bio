@@ -52,15 +52,19 @@ namespace BioImage
             // label1
             // 
             resources.ApplyResources(this.label1, "label1");
+            this.label1.ForeColor = System.Drawing.Color.White;
             this.label1.Name = "label1";
             // 
             // label2
             // 
             resources.ApplyResources(this.label2, "label2");
+            this.label2.ForeColor = System.Drawing.Color.White;
             this.label2.Name = "label2";
             // 
             // timeMinBox
             // 
+            this.timeMinBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.timeMinBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.timeMinBox, "timeMinBox");
             this.timeMinBox.Maximum = new decimal(new int[] {
             10000,
@@ -71,6 +75,8 @@ namespace BioImage
             // 
             // zMinBox
             // 
+            this.zMinBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.zMinBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.zMinBox, "zMinBox");
             this.zMinBox.Maximum = new decimal(new int[] {
             10000,
@@ -81,6 +87,8 @@ namespace BioImage
             // 
             // zMaxBox
             // 
+            this.zMaxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.zMaxBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.zMaxBox, "zMaxBox");
             this.zMaxBox.Maximum = new decimal(new int[] {
             10000,
@@ -91,6 +99,8 @@ namespace BioImage
             // 
             // timeMaxBox
             // 
+            this.timeMaxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.timeMaxBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.timeMaxBox, "timeMaxBox");
             this.timeMaxBox.Maximum = new decimal(new int[] {
             10000,
@@ -102,15 +112,19 @@ namespace BioImage
             // label3
             // 
             resources.ApplyResources(this.label3, "label3");
+            this.label3.ForeColor = System.Drawing.Color.White;
             this.label3.Name = "label3";
             // 
             // label4
             // 
             resources.ApplyResources(this.label4, "label4");
+            this.label4.ForeColor = System.Drawing.Color.White;
             this.label4.Name = "label4";
             // 
             // cMaxBox
             // 
+            this.cMaxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.cMaxBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.cMaxBox, "cMaxBox");
             this.cMaxBox.Maximum = new decimal(new int[] {
             10000,
@@ -121,6 +135,8 @@ namespace BioImage
             // 
             // cMinBox
             // 
+            this.cMinBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.cMinBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.cMinBox, "cMinBox");
             this.cMinBox.Maximum = new decimal(new int[] {
             10000,
@@ -132,13 +148,14 @@ namespace BioImage
             // label5
             // 
             resources.ApplyResources(this.label5, "label5");
+            this.label5.ForeColor = System.Drawing.Color.White;
             this.label5.Name = "label5";
             // 
             // RangeTool
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.Controls.Add(this.cMaxBox);
             this.Controls.Add(this.cMinBox);
             this.Controls.Add(this.label5);
@@ -150,6 +167,7 @@ namespace BioImage
             this.Controls.Add(this.timeMinBox);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.ForeColor = System.Drawing.Color.White;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "RangeTool";
             this.ShowInTaskbar = false;

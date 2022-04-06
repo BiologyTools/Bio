@@ -375,9 +375,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="RangeTool.aa-DJ.resx">
-      <DependentUpon>RangeTool.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="RangeTool.resx">
       <DependentUpon>RangeTool.cs</DependentUpon>
     </EmbeddedResource>

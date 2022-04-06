@@ -544,9 +544,9 @@ namespace BioImage
                 sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (sp.ShowDialog() != DialogResult.OK)
                 return;
-            ZFps = sp.ZFps;
-            TimeFps = sp.TimeFps;
-            CFps = sp.CFps;
+            zTimer.Interval = sp.TimePlayspeed;
+            cTimer.Interval = sp.CPlayspeed;
+            timelineTimer.Interval = sp.TimePlayspeed;
         }
         private void playSpeedToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -557,9 +557,9 @@ namespace BioImage
                 sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (sp.ShowDialog() != DialogResult.OK)
                 return;
-            ZFps = sp.ZFps;
-            TimeFps = sp.TimeFps;
-            CFps = sp.CFps;
+            zTimer.Interval = sp.TimePlayspeed;
+            cTimer.Interval = sp.CPlayspeed;
+            timelineTimer.Interval = sp.TimePlayspeed;
         }
         private void CPlaySpeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -570,9 +570,9 @@ namespace BioImage
                 sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (sp.ShowDialog() != DialogResult.OK)
                 return;
-            ZFps = sp.ZFps;
-            TimeFps = sp.TimeFps;
-            CFps = sp.CFps;
+            zTimer.Interval = sp.TimePlayspeed;
+            cTimer.Interval = sp.CPlayspeed;
+            timelineTimer.Interval = sp.TimePlayspeed;
         }
         private void ImageView_KeyDown(object sender, KeyEventArgs e)
         {

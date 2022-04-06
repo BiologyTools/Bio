@@ -560,19 +560,19 @@ namespace BioImage
             public string Get()
             {
                 string s = "";
-                s+= "ImageJ=" + ImageJ + "/n";
-                s += "images=" + images + "/n";
-                s += "channels=" + channels.ToString() + "/n";
-                s += "slices=" + slices.ToString() + "/n";
-                s += "frames=" + frames.ToString() + "/n";
-                s += "hyperstack=" + hyperstack.ToString() + "/n";
-                s += "mode=" + mode.ToString() + "/n";
-                s += "unit=" + unit.ToString() + "/n";
-                s += "finterval=" + finterval.ToString() + "/n";
-                s += "spacing=" + spacing.ToString() + "/n";
-                s += "loop=" + loop.ToString() + "/n";
-                s += "min=" + min.ToString() + "/n";
-                s += "max=" + max.ToString() + "/n";
+                s+= "ImageJ=" + ImageJ + "\n";
+                s += "images=" + images + "\n";
+                s += "channels=" + channels.ToString() + "\n";
+                s += "slices=" + slices.ToString() + "\n";
+                s += "frames=" + frames.ToString() + "\n";
+                s += "hyperstack=" + hyperstack.ToString() + "\n";
+                s += "mode=" + mode.ToString() + "\n";
+                s += "unit=" + unit.ToString() + "\n";
+                s += "finterval=" + finterval.ToString() + "\n";
+                s += "spacing=" + spacing.ToString() + "\n";
+                s += "loop=" + loop.ToString() + "\n";
+                s += "min=" + min.ToString() + "\n";
+                s += "max=" + max.ToString() + "\n";
                 return s;
             }
             public void Set(string desc)
@@ -613,7 +613,6 @@ namespace BioImage
 
         public ImageJDesc imDesc;
         public int serie = 0;
-        private int imageCou = 0;
         public int ImageCount
         {
             get
@@ -2478,7 +2477,6 @@ namespace BioImage
                 ExportROIsCSV(f, b.Annotations);
             }
 
-
             b.imDesc.finterval = b.frameInterval;
             b.imDesc.slices = b.SizeZ;
             b.imDesc.channels = b.SizeC;
@@ -2488,33 +2486,55 @@ namespace BioImage
             using (Tiff image = Tiff.Open(file, "w"))
             {
                 int stride = b.Buffers[0].info.stride;
-                for (int c = 0; c < b.Buffers.Count; c++)
+                int im = 0;
+
+                for (int c = 0; c < b.SizeC; c++)
                 {
-                    image.SetField(TiffTag.IMAGEWIDTH, b.SizeX);
-                    image.SetField(TiffTag.IMAGEDESCRIPTION, desc);
-                    image.SetField(TiffTag.IMAGELENGTH, b.SizeY);
-                    image.SetField(TiffTag.BITSPERSAMPLE, b.bitsPerPixel);
-                    image.SetField(TiffTag.SAMPLESPERPIXEL, b.rGBChannelCount);
-                    image.SetField(TiffTag.ROWSPERSTRIP, b.SizeY);
-                    if (b.physicalSizeX !=-1 && b.physicalSizeY != -1 && b.physicalSizeZ == 1)
+                    for (int z = 0; z < b.SizeZ; z++)
                     {
-                        image.SetField(TiffTag.XRESOLUTION, b.physicalSizeX * 1000);
-                        image.SetField(TiffTag.YRESOLUTION, b.physicalSizeY * 1000);
-                        image.SetField(TiffTag.RESOLUTIONUNIT, ResUnit.CENTIMETER);
+                        for (int t = 0; t < b.SizeT; t++)
+                        {
+                            image.SetDirectory((short)im);
+                            image.SetField(TiffTag.IMAGEWIDTH, b.SizeX);
+                            image.SetField(TiffTag.IMAGEDESCRIPTION, desc);
+                            image.SetField(TiffTag.IMAGELENGTH, b.SizeY);
+                            image.SetField(TiffTag.BITSPERSAMPLE, b.bitsPerPixel);
+                            image.SetField(TiffTag.SAMPLESPERPIXEL, b.rGBChannelCount);
+                            image.SetField(TiffTag.ROWSPERSTRIP, b.SizeY);
+                            if (im % 2 == 0)
+                                image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISBLACK);
+                            else
+                                image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISWHITE);
+                            image.SetField(TiffTag.ORIENTATION, BitMiracle.LibTiff.Classic.Orientation.TOPLEFT);
+                            image.SetField(TiffTag.PLANARCONFIG, PlanarConfig.CONTIG);
+                            image.SetField(TiffTag.ROWSPERSTRIP, image.DefaultStripSize(0));
+                            if (b.physicalSizeX !=-1 && b.physicalSizeY != -1)
+                            {
+                                image.SetField(TiffTag.XRESOLUTION, b.physicalSizeX * 1000);
+                                image.SetField(TiffTag.YRESOLUTION, b.physicalSizeY * 1000);
+                                image.SetField(TiffTag.RESOLUTIONUNIT, ResUnit.CENTIMETER);
+                            }
+                            else
+                            {
+                                image.SetField(TiffTag.XRESOLUTION, 100.0);
+                                image.SetField(TiffTag.YRESOLUTION, 100.0);
+                                image.SetField(TiffTag.RESOLUTIONUNIT, ResUnit.INCH);
+                            }
+                            // specify that it's a page within the multipage file
+                            image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
+                            // specify the page number
+                            byte[] buffer = b.Buffers[im].GetAllBytes();
+                            image.SetField(TiffTag.PAGENUMBER, c, b.Buffers.Count);
+                            for (int i = 0, offset = 0; i < b.SizeY; i++)
+                            {
+                                image.WriteScanline(buffer, offset, i, 0);
+                                offset += stride;
+                            }
+                            image.WriteDirectory();
+                            threadProgress = ((float)im / (float)b.ImageCount) * 100;
+                            im++;
+                        }
                     }
-                    // specify that it's a page within the multipage file
-                    image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
-                    // specify the page number
-                    byte[] buffer = b.Buffers[c].GetAllBytes();
-                    image.SetDirectory((short)c);
-                    image.SetField(TiffTag.PAGENUMBER, c, b.Buffers.Count);
-                    for (int i = 0, offset = 0; i < b.SizeY; i++)
-                    {
-                        image.WriteScanline(buffer, offset, i, 0);
-                        offset += stride;
-                    }
-                    image.WriteDirectory();
-                    threadProgress = ((float)c / (float)b.Buffers.Count) * 100;
                 }
             }
             done = true;
@@ -2557,20 +2577,34 @@ namespace BioImage
                     throw new InvalidDataException("This tiff file is of unknown format. BioImage supports OME.TIF & ImageJ tiff files.");
                 }
                 b.Coords = new int[1, b.SizeZ, b.SizeC, b.SizeT];
+                try
+                {
+                    string unit = (string)image.GetField(TiffTag.RESOLUTIONUNIT)[0].ToString();
+                    if(unit == "CENTIMETER")
+                    {
+                        b.physicalSizeX = image.GetField(TiffTag.XRESOLUTION)[0].ToDouble() / 1000;
+                        b.physicalSizeX = image.GetField(TiffTag.YRESOLUTION)[0].ToDouble() / 1000;
+                    }
+                    else
+                    if (unit == "INCH")
+                    {
+                        //inch to centimeter
+                        b.physicalSizeX = (2.54 / image.GetField(TiffTag.XRESOLUTION)[0].ToDouble()) /1000;
+                        b.physicalSizeY = (2.54 / image.GetField(TiffTag.YRESOLUTION)[0].ToDouble()) /1000;
+                    }
+                    else
+                    if (unit == "NONE")
+                    {
+                        //inch to centimeter
+                        b.physicalSizeX = image.GetField(TiffTag.XRESOLUTION)[0].ToDouble();
+                        b.physicalSizeY = image.GetField(TiffTag.YRESOLUTION)[0].ToDouble();
+                    }
+                }
+                catch (Exception)
+                {
 
-                string unit = (string)image.GetField(TiffTag.RESOLUTIONUNIT)[0].ToString();
-                if(unit == "CENTIMETER")
-                {
-                    b.physicalSizeX = image.GetField(TiffTag.XRESOLUTION)[0].ToDouble() / 1000;
-                    b.physicalSizeX = image.GetField(TiffTag.YRESOLUTION)[0].ToDouble() / 1000;
                 }
-                else
-                if (unit == "INCH")
-                {
-                    //inch to centimeter
-                    b.physicalSizeX = (2.54 / image.GetField(TiffTag.XRESOLUTION)[0].ToDouble()) /1000;
-                    b.physicalSizeY = (2.54 / image.GetField(TiffTag.YRESOLUTION)[0].ToDouble()) /1000;
-                }
+                
                 
                 int stride = 0;
                 if (b.bitsPerPixel > 8)
@@ -2595,23 +2629,30 @@ namespace BioImage
                     else
                         b.px = PixelFormat.Format24bppRgb;
                 }
-                int z = 0;
-                int c = -1;
-                int t = 0;
 
                 for (int i = 0; i < b.SizeC; i++)
                 {
                     Channel ch = new Channel(i,b.bitsPerPixel);
                     b.Channels.Add(ch);
                 }
-
+                int z = 0;
+                int c = 0;
+                int t = 0;
                 for (int im = 0; im < b.ImageCount; im++)
                 {
                     image.SetDirectory((short)im);
-                    if (c < b.SizeC - 1)
+                    b.Coords[0, z, c, t] = im;
+                    byte[] buffer = new byte[stride * b.SizeY];
+                    for (int i = 0, offset = 0; i < b.SizeY; i++)
                     {
-                        c++;
+                        image.ReadScanline(buffer, offset, i, 0);
+                        offset += stride;
                     }
+                    BufferInfo info = new BufferInfo(file,buffer.Length,0,b.SizeX,b.SizeY,stride,b.RGBChannelCount, b.bitsPerPixel, b.px,t,c,z,im,true,false);
+                    Buf bf = new Buf(info, buffer);
+                    b.Buffers.Add(bf);
+                    if (c < b.SizeC - 1)
+                        c++;
                     else
                     {
                         c = 0;
@@ -2626,16 +2667,6 @@ namespace BioImage
                                 t = 0;
                         }
                     }
-                    b.Coords[0, z, c, t] = im;
-                    byte[] buffer = new byte[stride * b.SizeY];
-                    for (int i = 0, offset = 0; i < b.SizeY; i++)
-                    {
-                        image.ReadScanline(buffer, offset, i, 0);
-                        offset += stride;
-                    }
-                    BufferInfo info = new BufferInfo(file,buffer.Length,0,b.SizeX,b.SizeY,stride,b.RGBChannelCount, b.bitsPerPixel, b.px,t,c,z,im,true,false);
-                    Buf bf = new Buf(info, buffer);
-                    b.Buffers.Add(bf);
                     threadProgress = ((float)im / (float)b.ImageCount) * 100;
                 }
             }
