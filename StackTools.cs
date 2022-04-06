@@ -97,7 +97,7 @@ namespace BioImage
         {
             if (stackABox.SelectedIndex == -1)
                 return;
-            ImageA.SplitChannels();
+            ImageA.SplitChannels(false);
             UpdateStacks();
         }
 

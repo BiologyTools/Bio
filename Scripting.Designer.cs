@@ -57,6 +57,8 @@
             // 
             // scriptView
             // 
+            this.scriptView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.scriptView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.scriptView.ContextMenuStrip = this.contextMenuStrip;
             this.scriptView.ForeColor = System.Drawing.Color.White;
@@ -67,6 +69,7 @@
             this.scriptView.Size = new System.Drawing.Size(179, 429);
             this.scriptView.Sorting = System.Windows.Forms.SortOrder.Ascending;
             this.scriptView.TabIndex = 1;
+            this.scriptView.TabStop = false;
             this.scriptView.UseCompatibleStateImageBehavior = false;
             this.scriptView.View = System.Windows.Forms.View.List;
             this.scriptView.SelectedIndexChanged += new System.EventHandler(this.scriptView_SelectedIndexChanged);
@@ -114,7 +117,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBox.Location = new System.Drawing.Point(185, 27);
             this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(305, 226);
+            this.textBox.Size = new System.Drawing.Size(361, 226);
             this.textBox.TabIndex = 2;
             this.textBox.TabStop = false;
             this.textBox.Text = "";
@@ -128,7 +131,7 @@
             this.tabControl.Location = new System.Drawing.Point(185, 259);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(305, 133);
+            this.tabControl.Size = new System.Drawing.Size(361, 133);
             this.tabControl.TabIndex = 8;
             this.tabControl.TabStop = false;
             // 
@@ -138,7 +141,7 @@
             this.outputTab.Location = new System.Drawing.Point(4, 22);
             this.outputTab.Name = "outputTab";
             this.outputTab.Padding = new System.Windows.Forms.Padding(3);
-            this.outputTab.Size = new System.Drawing.Size(297, 107);
+            this.outputTab.Size = new System.Drawing.Size(353, 107);
             this.outputTab.TabIndex = 1;
             this.outputTab.Text = "Output";
             this.outputTab.UseVisualStyleBackColor = true;
@@ -149,7 +152,7 @@
             this.outputBox.Location = new System.Drawing.Point(3, 3);
             this.outputBox.Multiline = true;
             this.outputBox.Name = "outputBox";
-            this.outputBox.Size = new System.Drawing.Size(291, 101);
+            this.outputBox.Size = new System.Drawing.Size(347, 101);
             this.outputBox.TabIndex = 2;
             this.outputBox.TabStop = false;
             // 
@@ -196,10 +199,11 @@
             // runButton
             // 
             this.runButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.runButton.Location = new System.Drawing.Point(415, 398);
+            this.runButton.Location = new System.Drawing.Point(471, 398);
             this.runButton.Name = "runButton";
             this.runButton.Size = new System.Drawing.Size(75, 23);
             this.runButton.TabIndex = 11;
+            this.runButton.TabStop = false;
             this.runButton.Text = "Run";
             this.runButton.UseVisualStyleBackColor = true;
             this.runButton.Click += new System.EventHandler(this.runButton_Click);
@@ -207,7 +211,7 @@
             // saveButton
             // 
             this.saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveButton.Location = new System.Drawing.Point(334, 398);
+            this.saveButton.Location = new System.Drawing.Point(390, 398);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 13;
@@ -219,7 +223,7 @@
             // scriptLoadBut
             // 
             this.scriptLoadBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.scriptLoadBut.Location = new System.Drawing.Point(252, 398);
+            this.scriptLoadBut.Location = new System.Drawing.Point(308, 398);
             this.scriptLoadBut.Name = "scriptLoadBut";
             this.scriptLoadBut.Size = new System.Drawing.Size(75, 23);
             this.scriptLoadBut.TabIndex = 12;
@@ -237,12 +241,12 @@
             // 
             this.saveFileDialog.Filter = "\"C# Files (*.cs)|*.cs|All files (*.*)|*.*\"";
             // 
-            // ScriptRunner
+            // Scripting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(496, 428);
+            this.ClientSize = new System.Drawing.Size(552, 428);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.scriptLoadBut);
             this.Controls.Add(this.runButton);
@@ -252,7 +256,7 @@
             this.Controls.Add(this.textBox);
             this.Controls.Add(this.scriptView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "ScriptRunner";
+            this.Name = "Scripting";
             this.Text = "Scripting";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScriptRunner_FormClosing);
             this.contextMenuStrip.ResumeLayout(false);

@@ -230,7 +230,8 @@ namespace BioImage
             // saveFileDialog
             // 
             this.saveFileDialog.DefaultExt = "ome.tif";
-            this.saveFileDialog.Filter = "\"OME TIFF Files (*.ome.tif)|*.ome.tif|All files (*.*)|*.*\"";
+            this.saveFileDialog.Filter = "\"OME TIFF Files (*.ome.tif)|*.ome.tif | TIFF Files (*.tif)|*.tif |All files (*.*)" +
+    "|*.*\"";
             this.saveFileDialog.SupportMultiDottedExtensions = true;
             this.saveFileDialog.Title = "Save Image";
             // 

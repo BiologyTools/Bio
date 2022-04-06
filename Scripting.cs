@@ -58,6 +58,8 @@ namespace BioImage
                 {
                     rn.done = false;
                     rn.script = CSScript.Evaluator.LoadCode(rn.scriptString);
+                    //rn.script = CSScript.CodeDomEvaluator.LoadCode(rn.scriptString, null);
+                    //rn.script = CSScript.RoslynEvaluator.LoadCode(rn.scriptString);
                     rn.obj = rn.script.Load();
                     rn.output = rn.obj.ToString();
                     rn.done = true;
@@ -147,12 +149,15 @@ namespace BioImage
         }
         public void Run()
         {
+            outputBox.Text = "";
+            errorBox.Text = "";
             if (scriptView.SelectedItems.Count == 0)
                     return;
             foreach (ListViewItem item in scriptView.SelectedItems)
             {
                 //We run this script
                 Script sc = (Script)item.Tag;
+                sc.scriptString = textBox.Text;
                 sc.Run();
             }
         }
@@ -228,6 +233,8 @@ namespace BioImage
 
         private void saveButton_Click(object sender, EventArgs e)
         {
+            saveFileDialog.InitialDirectory = Application.StartupPath + "\\Scripts";
+            saveFileDialog.FileName = scriptLabel.Text;
             if (saveFileDialog.ShowDialog() != DialogResult.OK)
                 return;
             scriptLabel.Text = Path.GetFileName(saveFileDialog.FileName);

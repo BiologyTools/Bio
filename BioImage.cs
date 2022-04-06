@@ -14,6 +14,7 @@ using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using BitMiracle.LibTiff.Classic;
 
 namespace BioImage
 {
@@ -316,7 +317,17 @@ namespace BioImage
         {
             Filename = file;
             serie = ser;
-            OpenSeries(file, ser);
+            if (file.EndsWith("ome.tif"))
+                OpenSeries(file, ser);
+            else
+            if (file.EndsWith("tif"))
+            {
+                Open(file);
+            }
+            else
+            {
+                OpenSeries(file, ser);
+            }
             rgbChannels[0] = 0;
             rgbChannels[1] = 0;
             rgbChannels[2] = 0;
@@ -424,32 +435,29 @@ namespace BioImage
             Recorder.AddLine("BioImage.MergeChannels(" + '"' + bname + '"' + "," + '"' + b2name + '"' + ");");
             return MergeChannels(b, b2);
         }
-        public void SplitChannels()
+        public void SplitChannels(bool showDialog)
         {
-            Recorder.AddLine("BioImage.SplitChannels(" + '"' + IdString + '"' + ");");
+            Recorder.AddLine("BioImage.SplitChannels(" + '"' + IdString + '"' + "," + showDialog + ");");
             for (int c = 0; c < SizeC; c++)
             {
-                string id = this.IdString + "-" + (c + 1).ToString();
+                string id = IdString + "-" + (c + 1).ToString();
                 BioImage b = new BioImage(this, id, 0, 0, SizeZ, c, c+1, 0, SizeT);
                 ImageViewer iv = new ImageViewer(b);
-                iv.Show();
+                if (showDialog)
+                    iv.ShowDialog();
+                else
+                    iv.Show();
             }
         }
-        public static void SplitChannels(BioImage bb)
+        public static void SplitChannels(BioImage bb, bool showDialog)
         {
-            Recorder.AddLine("BioImage.SplitChannels(" + '"' + bb.IdString + '"' + ");");
-            for (int c = 0; c < bb.SizeC; c++)
-            {
-                string id = bb.IdString + "-" + (c + 1).ToString();
-                BioImage b = new BioImage(bb, id, 0, 0, bb.SizeZ, c, c + 1, 0, bb.SizeT);
-                ImageViewer iv = new ImageViewer(b);
-                iv.Show();
-            }
+            Recorder.AddLine("BioImage.SplitChannels(" + '"' + bb.IdString + '"' + "," + showDialog + ");");
+            bb.SplitChannels(showDialog);
         }
-        public static void SplitChannels(string name)
+        public static void SplitChannels(string name, bool showDialog)
         {
-            Recorder.AddLine("BioImage.SplitChannels(" + '"' + name + '"' + ");");
-            SplitChannels(Table.GetImage(name));
+            Recorder.AddLine("BioImage.SplitChannels(" + '"' + name + '"' + "," + showDialog + ");");
+            SplitChannels(Table.GetImage(name), showDialog);
         }
         public Channel RChannel
         {
@@ -535,10 +543,81 @@ namespace BioImage
             }
         }
 
+        public class ImageJDesc
+        {
+            public string ImageJ;
+            public int images = 0;
+            public int channels = 0;
+            public int slices = 0;
+            public int frames = 0;
+            public bool hyperstack;
+            public string mode;
+            public string unit;
+            public double finterval = 0;
+            public double spacing = 0;
+            public bool loop;
+            public double min = 0;
+            public double max = 0;
+            public string Get()
+            {
+                string s = "";
+                s+= "ImageJ=" + ImageJ + "/n";
+                s += "images=" + images + "/n";
+                s += "channels=" + channels.ToString() + "/n";
+                s += "slices=" + slices.ToString() + "/n";
+                s += "frames=" + frames.ToString() + "/n";
+                s += "hyperstack=" + hyperstack.ToString() + "/n";
+                s += "mode=" + mode.ToString() + "/n";
+                s += "unit=" + unit.ToString() + "/n";
+                s += "finterval=" + finterval.ToString() + "/n";
+                s += "spacing=" + spacing.ToString() + "/n";
+                s += "loop=" + loop.ToString() + "/n";
+                s += "min=" + min.ToString() + "/n";
+                s += "max=" + max.ToString() + "/n";
+                return s;
+            }
+            public void Set(string desc)
+            {
+                string[] lines = desc.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string[] sp = lines[i].Split('=');
+                    if (sp[0] == "ImageJ")
+                        ImageJ = sp[1];
+                    if (sp[0] == "images")
+                        images = int.Parse(sp[1]);
+                    if (sp[0] == "channels")
+                        channels = int.Parse(sp[1]);
+                    if (sp[0] == "slices")
+                        slices = int.Parse(sp[1]);
+                    if (sp[0] == "frames")
+                        frames = int.Parse(sp[1]);
+                    if (sp[0] == "hyperstack")
+                        hyperstack = bool.Parse(sp[1]);
+                    if (sp[0] == "mode")
+                        mode = sp[1];
+                    if (sp[0] == "unit")
+                        unit = sp[1];
+                    if (sp[0] == "finterval")
+                        finterval = double.Parse(sp[1]);
+                    if (sp[0] == "spacing")
+                        spacing = double.Parse(sp[1]);
+                    if (sp[0] == "loop")
+                        loop = bool.Parse(sp[1]);
+                    if (sp[0] == "min")
+                        min = double.Parse(sp[1]);
+                    if (sp[0] == "max")
+                        max = double.Parse(sp[1]);
+                }
+            }
+        }
+
+        public ImageJDesc imDesc;
         public int serie = 0;
         public int imageCount = 0;
         public int imagesPerSeries = 0;
         public int seriesCount = 0;
+        public double frameInterval = 0;
         public bool littleEndian = false;
         public bool isGroup = false;
         public long loadTimeMS = 0;
@@ -1628,10 +1707,10 @@ namespace BioImage
                 bitmap.Dispose();
             }
 
-            public byte[] GetEndianBytes(int RGBChannelsCount)
+            public byte[] GetSaveBytes()
             {
                 Bitmap bitmap;
-                if (RGBChannelsCount == 1)
+                if (info.RGBChannelsCount == 1)
                     bitmap = GetBitmap();
                 else
                     bitmap = switchRedBlue(GetBitmap());
@@ -2329,15 +2408,14 @@ namespace BioImage
             wr = writer;
             imCount = imageCount;
             bufs = Buffers;
-            rgbChans = rGBChannelCount;
-            tfile = Path.GetFileName(file);
+            threadFile = Path.GetFileName(file);
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(WriteBytes));
             t.Start();
-            Progress pr = new Progress(tfile);
+            Progress pr = new Progress(threadFile, "Saving");
             pr.Show();
             do
             {
-                pr.UpdateProgress((int)progress);
+                pr.UpdateProgress((int)threadProgress);
                 Application.DoEvents();
             } while (!done);
             pr.Close();
@@ -2346,21 +2424,233 @@ namespace BioImage
             return true;
         }
 
+        private static BioImage threadImage = null;
+        public void Save(string file)
+        {
+            //This is the default saving mode we save the roi's in CSV and save tiff fast with BitMiracle.
+            threadImage = this;
+            threadFile = file;
+            threadProgress = 0;
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Save));
+            t.Start();
+            Progress pr = new Progress(threadFile, "Saving");
+            pr.Show();
+            do
+            {
+                pr.UpdateProgress((int)threadProgress);
+                Application.DoEvents();
+            } while (!done);
+            pr.Close();
+        }
+        public void Open(string file)
+        {
+            //This is the default opening mode we load the roi's in CSV and open tiff fast with BitMiracle.
+            threadImage = this;
+            threadFile = file;
+            threadProgress = 0;
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Open));
+            t.Start();
+            Progress pr = new Progress(threadFile, "Opening");
+            pr.Show();
+            do
+            {
+                pr.UpdateProgress((int)threadProgress);
+                Application.DoEvents();
+            } while (!done);
+            pr.Close();
+        }
+
+        private static void Save()
+        {
+            string file = threadFile;
+            BioImage b = threadImage;
+            done = false;
+            string fn = Path.GetFileNameWithoutExtension(file);
+            string dir = Path.GetDirectoryName(file);
+            if(b.Annotations.Count >0)
+            {
+                string f = fn + ".csv";
+                ExportROIsCSV(f, b.Annotations);
+            }
+
+
+            b.imDesc.finterval = b.frameInterval;
+            b.imDesc.slices = b.SizeZ;
+            b.imDesc.channels = b.SizeC;
+            b.imDesc.frames = b.SizeT;
+            b.imDesc.images = b.imageCount;
+            string desc = b.imDesc.Get();
+            using (Tiff image = Tiff.Open(file, "w"))
+            {
+                int stride = b.Buffers[0].info.stride;
+                for (int c = 0; c < b.Buffers.Count; c++)
+                {
+                    image.SetField(TiffTag.IMAGEWIDTH, b.SizeX);
+                    image.SetField(TiffTag.IMAGEDESCRIPTION, desc);
+                    image.SetField(TiffTag.IMAGELENGTH, b.SizeY);
+                    image.SetField(TiffTag.BITSPERSAMPLE, b.bitsPerPixel);
+                    image.SetField(TiffTag.SAMPLESPERPIXEL, b.rGBChannelCount);
+                    image.SetField(TiffTag.ROWSPERSTRIP, b.SizeY);
+                    if (b.physicalSizeX !=-1 && b.physicalSizeY != -1 && b.physicalSizeZ == 1)
+                    {
+                        image.SetField(TiffTag.XRESOLUTION, b.physicalSizeX * 1000);
+                        image.SetField(TiffTag.YRESOLUTION, b.physicalSizeY * 1000);
+                        image.SetField(TiffTag.RESOLUTIONUNIT, ResUnit.CENTIMETER);
+                    }
+                    // specify that it's a page within the multipage file
+                    image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
+                    // specify the page number
+                    byte[] buffer = b.Buffers[c].GetAllBytes();
+                    image.SetDirectory((short)c);
+                    image.SetField(TiffTag.PAGENUMBER, c, b.Buffers.Count);
+                    for (int i = 0, offset = 0; i < b.SizeY; i++)
+                    {
+                        image.WriteScanline(buffer, offset, i, 0);
+                        offset += stride;
+                    }
+                    image.WriteDirectory();
+                    threadProgress = ((float)c / (float)b.Buffers.Count) * 100;
+                }
+            }
+            done = true;
+        }
+
+        private static void Open()
+        {
+            string file = threadFile;
+            BioImage b = threadImage;
+            done = false;
+            string fn = Path.GetFileNameWithoutExtension(file);
+            string dir = Path.GetDirectoryName(file);
+            if (b.Annotations.Count > 0)
+            {
+                string f = fn + ".csv";
+                ExportROIsCSV(f, b.Annotations);
+            }
+            using (Tiff image = Tiff.Open(file, "r"))
+            {
+                b.imageCount = image.NumberOfDirectories();
+                b.SizeX = image.GetField(TiffTag.IMAGEWIDTH)[0].ToInt();
+                b.SizeY = image.GetField(TiffTag.IMAGELENGTH)[0].ToInt();
+                b.bitsPerPixel = image.GetField(TiffTag.BITSPERSAMPLE)[0].ToInt();
+                b.rGBChannelCount = image.GetField(TiffTag.SAMPLESPERPIXEL)[0].ToInt();
+
+                string desc = image.GetField(TiffTag.IMAGEDESCRIPTION)[0].ToString();
+                if (desc.StartsWith("ImageJ"))
+                {
+                    b.imDesc = new ImageJDesc();
+                    b.imDesc.Set(desc);
+                    b.sizeC = b.imDesc.channels;
+                    b.sizeZ = b.imDesc.slices;
+                    b.sizeT = b.imDesc.frames;
+                    b.frameInterval = b.imDesc.finterval;
+                    b.physicalSizeZ = b.imDesc.spacing;
+                    b.imageCount = b.imDesc.images;
+                }
+                else
+                {
+                    throw new InvalidDataException("This tiff file is of unknown format. BioImage supports OME.TIF & ImageJ tiff files.");
+                }
+                b.Coords = new int[1, b.SizeZ, b.SizeC, b.SizeT];
+
+                string unit = (string)image.GetField(TiffTag.RESOLUTIONUNIT)[0].ToString();
+                if(unit == "CENTIMETER")
+                {
+                    b.physicalSizeX = image.GetField(TiffTag.XRESOLUTION)[0].ToDouble() / 1000;
+                    b.physicalSizeX = image.GetField(TiffTag.YRESOLUTION)[0].ToDouble() / 1000;
+                }
+                else
+                if (unit == "INCH")
+                {
+                    //inch to centimeter
+                    b.physicalSizeX = (2.54 / image.GetField(TiffTag.XRESOLUTION)[0].ToDouble()) /1000;
+                    b.physicalSizeY = (2.54 / image.GetField(TiffTag.YRESOLUTION)[0].ToDouble()) /1000;
+                }
+                
+                int stride = 0;
+                if (b.bitsPerPixel > 8)
+                {
+                    stride = b.SizeX * 2;
+                }
+                if (b.RGBChannelCount == 1)
+                {
+                    if (b.bitsPerPixel > 8)
+                    {
+                        b.px = PixelFormat.Format16bppGrayScale;
+                    }
+                    else
+                    {
+                        b.px = PixelFormat.Format8bppIndexed;
+                    }
+                }
+                else
+                {
+                    if (b.bitsPerPixel > 8)
+                        b.px = PixelFormat.Format48bppRgb;
+                    else
+                        b.px = PixelFormat.Format24bppRgb;
+                }
+                int z = 0;
+                int c = -1;
+                int t = 0;
+
+                for (int i = 0; i < b.SizeC; i++)
+                {
+                    Channel ch = new Channel(i,b.bitsPerPixel);
+                    b.Channels.Add(ch);
+                }
+
+                for (int im = 0; im < b.imageCount; im++)
+                {
+                    image.SetDirectory((short)im);
+                    if (c < b.SizeC - 1)
+                    {
+                        c++;
+                    }
+                    else
+                    {
+                        c = 0;
+                        if (z < b.SizeZ - 1)
+                            z++;
+                        else
+                        {
+                            z = 0;
+                            if (t < b.SizeT -1)
+                                t++;
+                            else
+                                t = 0;
+                        }
+                    }
+                    b.Coords[0, z, c, t] = im;
+                    byte[] buffer = new byte[stride * b.SizeY];
+                    for (int i = 0, offset = 0; i < b.SizeY; i++)
+                    {
+                        image.ReadScanline(buffer, offset, i, 0);
+                        offset += stride;
+                    }
+                    BufferInfo info = new BufferInfo(file,buffer.Length,0,b.SizeX,b.SizeY,stride,b.RGBChannelCount, b.bitsPerPixel, b.px,t,c,z,im,true,false);
+                    Buf bf = new Buf(info, buffer);
+                    b.Buffers.Add(bf);
+                    threadProgress = ((float)im / (float)b.imageCount) * 100;
+                }
+            }
+            done = true;
+        }
+
         private static ImageWriter wr;
         private static int imCount;
         private static List<Buf> bufs = new List<Buf>();
-        private static int rgbChans;
-        private static string tfile = "";
+        private static string threadFile = "";
         private static bool done = false;
-        public static float progress = 0;
+        public static float threadProgress = 0;
         public static void WriteBytes()
         {
-            progress = 0;
+            threadProgress = 0;
             done = false;
             for (int im = 0; im < imCount; im++)
             {
-                wr.saveBytes(im, bufs[im].GetEndianBytes(rgbChans));
-                progress = ((float)im / (float)imCount)*100;
+                wr.saveBytes(im, bufs[im].GetSaveBytes());
+                threadProgress = ((float)im / (float)imCount)*100;
             }
             done = true;
             wr.close();

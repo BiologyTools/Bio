@@ -12,15 +12,15 @@ namespace BioImage
 {
     public partial class Progress : Form
     {
-        public Progress(string file)
+        public Progress(string file, string status)
         {
             InitializeComponent();
+            statusLabel.Text = status;
             fileLabel.Text = file;
         }
         public void UpdateProgress(int p)
         {
             progressBar.Value = p;
-
         }
     }
 }

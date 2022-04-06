@@ -19,6 +19,7 @@ namespace BioImage
         public ImageViewer(BioImage arg)
         {
             InitializeComponent();
+            DialogResult = DialogResult.None;
             Init();
             tools = new Tools();
             runner = new Scripting();
@@ -29,6 +30,7 @@ namespace BioImage
         public ImageViewer(string arg)
         {
             InitializeComponent();
+            DialogResult = DialogResult.None;
             Init();
             tools = new Tools();
             manager = new ROIManager();
@@ -42,9 +44,30 @@ namespace BioImage
                 SetFile(arg, 0);
             }
         }
+        public static ImageViewer FromID(string id)
+        {
+            if(Table.bioimages.ContainsKey(id))
+            return new ImageViewer(Table.GetImage(id));
+            else
+            {
+                MessageBox.Show("No image by " + id + " found for viewer.");
+                return null;
+            }
+        }
+        public static ImageViewer GetByID(string id)
+        {
+            if (Table.viewers.ContainsKey(id))
+                return new ImageViewer(Table.GetImage(id));
+            else
+            {
+                MessageBox.Show("No viewer by " + id + " found.");
+                return null;
+            }
+        }
         public ImageViewer(string[] arg)
         {
             InitializeComponent();
+            DialogResult = DialogResult.None;
             Init();
             tools = new Tools();
             manager = new ROIManager();
@@ -168,7 +191,17 @@ namespace BioImage
                 return;
             if (saveFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            viewer.image.SaveSeries(saveFileDialog.FileName,0);
+            if (saveFileDialog.FileName.EndsWith("ome.tif"))
+                viewer.image.SaveSeries(saveFileDialog.FileName, 0);
+            else
+            if (saveFileDialog.FileName.EndsWith("tif"))
+            {
+                //We save the tiff fast with multithreading otherwise we have to use BioFormats.
+                //We export the ROI's to CSV to preserve ROI information without Bioformats.
+                Image.Save(saveFileDialog.FileName);
+            }
+            else
+                viewer.image.SaveSeries(saveFileDialog.FileName, 0);
         }
 
         private void ImageViewer_SizeChanged(object sender, EventArgs e)
@@ -338,14 +371,21 @@ namespace BioImage
         }
         private void ImageViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.DialogResult = DialogResult.OK;
-            Table.RemoveViewer(this);
             if (!Modal)
             {
                 Table.RemoveImage(this.Image.IdString);
                 this.Image.Dispose();
                 //Recorder.AddLine("Table.RemoveImage(" + '"' + this.Image.IdString + '"' + ");");
             }
+            else
+            {
+                if (this.DialogResult == DialogResult.None)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+            Table.RemoveViewer(this);
             Recorder.AddLine("Table.CloseViewer(" + '"' + this.Text + '"' + ");");
         }
 

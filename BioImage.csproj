@@ -99,6 +99,9 @@
     <Reference Include="BioFormats.Net, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\SliceImager\packages\BioFormats.Net.6.5.1\lib\BioFormats.Net.dll</HintPath>
     </Reference>
+    <Reference Include="BitMiracle.LibTiff.NET, Version=2.4.649.0, Culture=neutral, PublicKeyToken=53879b3e20e7a7d6, processorArchitecture=MSIL">
+      <HintPath>packages\BitMiracle.LibTiff.NET.2.4.649\lib\net40\BitMiracle.LibTiff.NET.dll</HintPath>
+    </Reference>
     <Reference Include="CSScriptLib, Version=4.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\CS-Script.4.4.1\lib\netstandard2.0\CSScriptLib.dll</HintPath>
     </Reference>
