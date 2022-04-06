@@ -265,7 +265,7 @@ namespace BioImage
 
             littleEndian = orig.littleEndian;
             seriesCount = orig.seriesCount;
-
+            imDesc = orig.imDesc;
             imagesPerSeries = ImageCount / seriesCount;
             Coords = new int[seriesCount, SizeZ, SizeC, SizeT];
             Filename = file;
@@ -347,7 +347,7 @@ namespace BioImage
             res.sizeY = b2.SizeY;
             res.rGBChannelCount = b2.rGBChannelCount;
             res.bitsPerPixel = b2.bitsPerPixel;
-
+            res.imDesc = b2.imDesc;
             if (b.physicalSizeX != -1)
                 res.physicalSizeX = b2.physicalSizeX;
             if (b.physicalSizeY != -1)
@@ -557,7 +557,38 @@ namespace BioImage
             public bool loop;
             public double min = 0;
             public double max = 0;
-            public string Get()
+
+            public ImageJDesc FromImage(BioImage b)
+            {
+                ImageJ = "";
+                images = b.ImageCount;
+                channels = b.SizeC;
+                slices = b.SizeZ;
+                frames = b.SizeT;
+                hyperstack = true;
+                mode = "grayscale";
+                unit = "micron";
+                finterval = b.frameInterval;
+                spacing = b.physicalSizeZ;
+                loop = false;
+                /*
+                double dmax = double.MinValue;
+                double dmin = double.MaxValue;
+                foreach (Channel c in b.Channels)
+                {
+                    if(dmax < c.Max)
+                        dmax = c.Max;
+                    if(dmin > c.Min)
+                        dmin = c.Min;
+                }
+                min = dmin;
+                max = dmax;
+                */
+                min = b.Channels[0].Min;
+                max = b.Channels[0].Max;
+                return this;
+            }
+            public string GetString()
             {
                 string s = "";
                 s+= "ImageJ=" + ImageJ + "\n";
@@ -575,7 +606,7 @@ namespace BioImage
                 s += "max=" + max.ToString() + "\n";
                 return s;
             }
-            public void Set(string desc)
+            public void SetString(string desc)
             {
                 string[] lines = desc.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
                 for (int i = 0; i < lines.Length; i++)
@@ -621,7 +652,7 @@ namespace BioImage
             }
         }
         public int imagesPerSeries = 0;
-        public int seriesCount = 0;
+        public int seriesCount = 1;
         public double frameInterval = 0;
         public bool littleEndian = false;
         public bool isGroup = false;
@@ -2476,13 +2507,9 @@ namespace BioImage
                 string f = fn + ".csv";
                 ExportROIsCSV(f, b.Annotations);
             }
-
-            b.imDesc.finterval = b.frameInterval;
-            b.imDesc.slices = b.SizeZ;
-            b.imDesc.channels = b.SizeC;
-            b.imDesc.frames = b.SizeT;
-            b.imDesc.images = b.ImageCount;
-            string desc = b.imDesc.Get();
+            ImageJDesc j = new ImageJDesc();
+            j.FromImage(b);
+            string desc = j.GetString();
             using (Tiff image = Tiff.Open(file, "w"))
             {
                 int stride = b.Buffers[0].info.stride;
@@ -2565,7 +2592,7 @@ namespace BioImage
                 if (desc.StartsWith("ImageJ"))
                 {
                     b.imDesc = new ImageJDesc();
-                    b.imDesc.Set(desc);
+                    b.imDesc.SetString(desc);
                     b.sizeC = b.imDesc.channels;
                     b.sizeZ = b.imDesc.slices;
                     b.sizeT = b.imDesc.frames;
