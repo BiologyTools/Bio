@@ -263,11 +263,10 @@ namespace BioImage
             if (orig.stageSizeX != -1)
                 stageSizeZ = orig.stageSizeZ;
 
-            imageCount = SizeZ * SizeC * SizeT;
             littleEndian = orig.littleEndian;
             seriesCount = orig.seriesCount;
 
-            imagesPerSeries = imageCount / seriesCount;
+            imagesPerSeries = ImageCount / seriesCount;
             Coords = new int[seriesCount, SizeZ, SizeC, SizeT];
             Filename = file;
             if (RGBChannelCount == 1)
@@ -362,11 +361,11 @@ namespace BioImage
             if (b.stageSizeX != -1)
                 res.stageSizeZ = b2.stageSizeZ;
 
-            res.imageCount = res.SizeZ * res.SizeC * res.SizeT;
+            //res.imageCount = res.SizeZ * res.SizeC * res.SizeT;
             res.littleEndian = b2.littleEndian;
             res.seriesCount = b2.seriesCount;
 
-            res.imagesPerSeries = res.imageCount / res.seriesCount;
+            res.imagesPerSeries = res.ImageCount / res.seriesCount;
             res.Coords = new int[res.seriesCount, res.SizeZ, res.SizeC, res.SizeT];
             res.IdString = Path.GetFileName(b2.filename) + "-1";
 
@@ -614,7 +613,14 @@ namespace BioImage
 
         public ImageJDesc imDesc;
         public int serie = 0;
-        public int imageCount = 0;
+        private int imageCou = 0;
+        public int ImageCount
+        {
+            get
+            {
+                return SizeZ * SizeC * SizeT;
+            }
+        }
         public int imagesPerSeries = 0;
         public int seriesCount = 0;
         public double frameInterval = 0;
@@ -2406,11 +2412,10 @@ namespace BioImage
             writer.setWriteSequentially(true);
 
             wr = writer;
-            imCount = imageCount;
-            bufs = Buffers;
             threadFile = Path.GetFileName(file);
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(WriteBytes));
             t.Start();
+            threadImage = this;
             Progress pr = new Progress(threadFile, "Saving");
             pr.Show();
             do
@@ -2478,7 +2483,7 @@ namespace BioImage
             b.imDesc.slices = b.SizeZ;
             b.imDesc.channels = b.SizeC;
             b.imDesc.frames = b.SizeT;
-            b.imDesc.images = b.imageCount;
+            b.imDesc.images = b.ImageCount;
             string desc = b.imDesc.Get();
             using (Tiff image = Tiff.Open(file, "w"))
             {
@@ -2522,14 +2527,15 @@ namespace BioImage
             done = false;
             string fn = Path.GetFileNameWithoutExtension(file);
             string dir = Path.GetDirectoryName(file);
-            if (b.Annotations.Count > 0)
+
+            if (File.Exists(fn + ".csv"))
             {
                 string f = fn + ".csv";
-                ExportROIsCSV(f, b.Annotations);
+                b.Annotations = BioImage.ImportROIsCSV(f);
             }
+
             using (Tiff image = Tiff.Open(file, "r"))
             {
-                b.imageCount = image.NumberOfDirectories();
                 b.SizeX = image.GetField(TiffTag.IMAGEWIDTH)[0].ToInt();
                 b.SizeY = image.GetField(TiffTag.IMAGELENGTH)[0].ToInt();
                 b.bitsPerPixel = image.GetField(TiffTag.BITSPERSAMPLE)[0].ToInt();
@@ -2545,7 +2551,6 @@ namespace BioImage
                     b.sizeT = b.imDesc.frames;
                     b.frameInterval = b.imDesc.finterval;
                     b.physicalSizeZ = b.imDesc.spacing;
-                    b.imageCount = b.imDesc.images;
                 }
                 else
                 {
@@ -2600,7 +2605,7 @@ namespace BioImage
                     b.Channels.Add(ch);
                 }
 
-                for (int im = 0; im < b.imageCount; im++)
+                for (int im = 0; im < b.ImageCount; im++)
                 {
                     image.SetDirectory((short)im);
                     if (c < b.SizeC - 1)
@@ -2631,15 +2636,13 @@ namespace BioImage
                     BufferInfo info = new BufferInfo(file,buffer.Length,0,b.SizeX,b.SizeY,stride,b.RGBChannelCount, b.bitsPerPixel, b.px,t,c,z,im,true,false);
                     Buf bf = new Buf(info, buffer);
                     b.Buffers.Add(bf);
-                    threadProgress = ((float)im / (float)b.imageCount) * 100;
+                    threadProgress = ((float)im / (float)b.ImageCount) * 100;
                 }
             }
             done = true;
         }
 
         private static ImageWriter wr;
-        private static int imCount;
-        private static List<Buf> bufs = new List<Buf>();
         private static string threadFile = "";
         private static bool done = false;
         public static float threadProgress = 0;
@@ -2647,10 +2650,10 @@ namespace BioImage
         {
             threadProgress = 0;
             done = false;
-            for (int im = 0; im < imCount; im++)
+            for (int im = 0; im < threadImage.ImageCount; im++)
             {
-                wr.saveBytes(im, bufs[im].GetSaveBytes());
-                threadProgress = ((float)im / (float)imCount)*100;
+                wr.saveBytes(im, threadImage.Buffers[im].GetSaveBytes());
+                threadProgress = ((float)im / (float)threadImage.ImageCount) *100;
             }
             done = true;
             wr.close();
@@ -2681,10 +2684,9 @@ namespace BioImage
             sizeC = reader.getSizeC();
             sizeZ = reader.getSizeZ();
             sizeT = reader.getSizeT();
-            imageCount = reader.getImageCount();
             littleEndian = reader.isLittleEndian();
             seriesCount = reader.getSeriesCount();
-            imagesPerSeries = imageCount / seriesCount;
+            imagesPerSeries = ImageCount / seriesCount;
             Coords = new int[seriesCount, SizeZ, SizeC, SizeT];
 
             if (RGBChannelCount == 1)
@@ -2805,7 +2807,7 @@ namespace BioImage
                         double dx = meta.getPointX(i, sc).doubleValue();
                         double dy = meta.getPointY(i, sc).doubleValue();
                         an.AddPoint(new PointD(dx, dy));
-                        if (imageCount > 1)
+                        if (ImageCount > 1)
                         {
                             ome.xml.model.primitives.NonNegativeInteger nz = meta.getPointTheZ(i, sc);
                             if (nz != null)
@@ -2845,7 +2847,7 @@ namespace BioImage
                         double py2 = meta.getLineY2(i, sc).doubleValue();
                         an.AddPoint(new PointD(px1, py1));
                         an.AddPoint(new PointD(px2, py2));
-                        if (imageCount > 1)
+                        if( ImageCount > 1)
                         {
                             if (sc > 0)
                             {
@@ -2889,7 +2891,7 @@ namespace BioImage
                         double pw = meta.getRectangleWidth(i, sc).doubleValue();
                         double ph = meta.getRectangleHeight(i, sc).doubleValue();
                         an.Rect = new RectangleD(px, py, pw, ph);
-                        if (imageCount > 1)
+                        if (ImageCount > 1)
                         {
                             if (sc > 0)
                             {
@@ -2939,7 +2941,7 @@ namespace BioImage
                         double x = px - ew;
                         double y = py - eh;
                         an.Rect = new RectangleD(x, y, w, h);
-                        if (imageCount > 1)
+                        if (ImageCount > 1)
                         {
                             if (sc > 0)
                             {
@@ -2986,7 +2988,7 @@ namespace BioImage
                             an.type = Annotation.Type.Freeform;
                         }
                         an.AddPoints(pts);
-                        if (imageCount > 1)
+                        if (ImageCount > 1)
                         {
                             if (sc > 0)
                             {
@@ -3027,7 +3029,7 @@ namespace BioImage
                         an.id = meta.getPolylineID(i, sc);
                         string pxs = meta.getPolylinePoints(i, sc);
                         an.AddPoints(an.stringToPoints(pxs));
-                        if (imageCount > 1)
+                        if (ImageCount > 1)
                         {
                             if (sc > 0)
                             {
@@ -3067,7 +3069,7 @@ namespace BioImage
                         an.type = Annotation.Type.Label;
                         an.id = meta.getLabelID(i, sc);
                         
-                        if (imageCount > 1)
+                        if (ImageCount > 1)
                         {
                             if (sc > 0)
                             {
