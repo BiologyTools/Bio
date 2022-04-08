@@ -22,15 +22,19 @@ Best for working with ROI's in OME format & CSV.
 - Select multiple points by holding down left control key for move & delete tools.
 
 ## Dependencies
--	[BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
--	[IKVM](http://www.ikvm.net/)
--	[AForge](http://www.aforgenet.com/)
+- [BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
+- [IKVM](http://www.ikvm.net/)
+- [AForge](http://www.aforgenet.com/)
+- [LibTiff.Net](https://bitmiracle.com/libtiff/)
+- [Cs-script](https://github.com/oleg-shilo/cs-script/blob/master/LICENSE)
 
 ## License
 - BioImage [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
 - AForge [LGPL](http://www.aforgenet.com/framework/license.html)
 - BioFormats.Net [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
 - [IKVM](https://github.com/gluck/ikvm/blob/master/LICENSE)
+- LibTiff.Net[BSD](https://bitmiracle.com/libtiff/)
+- Cs-script [MIT](https://github.com/oleg-shilo/cs-script/blob/master/LICENSE)
 
 ## Example usage.
 
