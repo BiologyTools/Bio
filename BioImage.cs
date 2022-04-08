@@ -207,7 +207,7 @@ namespace BioImage
         public int[] rgbChannels = new int[3];
         public int rGBChannelCount = 1;
         public int bitsPerPixel;
-        private PixelFormat px;
+        private PixelFormat pixelFormat;
         public bool convertedToLittleEndian = false;
         private string filename;
         public string Filename
@@ -219,6 +219,7 @@ namespace BioImage
                 IdString = Path.GetFileName(Filename);
             }
         }
+
         public double physicalSizeX = -1;
         public double physicalSizeY = -1;
         public double physicalSizeZ = -1;
@@ -265,23 +266,22 @@ namespace BioImage
 
             littleEndian = orig.littleEndian;
             seriesCount = orig.seriesCount;
-            imDesc = orig.imDesc;
             imagesPerSeries = ImageCount / seriesCount;
             Coords = new int[seriesCount, SizeZ, SizeC, SizeT];
             Filename = file;
             if (RGBChannelCount == 1)
             {
                 if (bitsPerPixel > 8)
-                    px = PixelFormat.Format16bppGrayScale;
+                    pixelFormat = PixelFormat.Format16bppGrayScale;
                 else
-                    px = PixelFormat.Format8bppIndexed;
+                    pixelFormat = PixelFormat.Format8bppIndexed;
             }
             else
             {
                 if (bitsPerPixel > 8)
-                    px = PixelFormat.Format48bppRgb;
+                    pixelFormat = PixelFormat.Format48bppRgb;
                 else
-                    px = PixelFormat.Format24bppRgb;
+                    pixelFormat = PixelFormat.Format24bppRgb;
             }
 
             fileHashTable.Add(IdString, IdString.GetHashCode());
@@ -347,7 +347,6 @@ namespace BioImage
             res.sizeY = b2.SizeY;
             res.rGBChannelCount = b2.rGBChannelCount;
             res.bitsPerPixel = b2.bitsPerPixel;
-            res.imDesc = b2.imDesc;
             if (b.physicalSizeX != -1)
                 res.physicalSizeX = b2.physicalSizeX;
             if (b.physicalSizeY != -1)
@@ -369,7 +368,7 @@ namespace BioImage
             res.Coords = new int[res.seriesCount, res.SizeZ, res.SizeC, res.SizeT];
             res.IdString = Path.GetFileName(b2.filename) + "-1";
 
-            res.px = b2.px;
+            res.pixelFormat = b2.pixelFormat;
 
             res.fileHashTable.Add(res.IdString, res.IdString.GetHashCode());
             int i = 0;
@@ -528,7 +527,7 @@ namespace BioImage
 
             public static bool operator ==(SZCTXY c1, SZCTXY c2)
             {
-                if (c1.S == c2.S && c1.Z == c2.Z && c1.C == c2.C && c1.T == c2.T && c1.X == c2.X && c2.Y == c2.Y)
+                if (c1.S == c2.S && c1.Z == c2.Z && c1.C == c2.C && c1.T == c2.T && c1.X == c2.X && c1.Y == c2.Y)
                     return true;
                 else
                     return false;
@@ -642,13 +641,12 @@ namespace BioImage
             }
         }
 
-        public ImageJDesc imDesc;
         public int serie = 0;
         public int ImageCount
         {
             get
             {
-                return SizeZ * SizeC * SizeT;
+                return SizeZ * (int)((float)SizeC / (float)rGBChannelCount) * SizeT;
             }
         }
         public int imagesPerSeries = 0;
@@ -700,7 +698,7 @@ namespace BioImage
         {
             get
             {
-                return px;
+                return pixelFormat;
             }
         }
         public bool isRGB
@@ -960,7 +958,7 @@ namespace BioImage
             {
                 return new PointF((float)X, (float)Y);
             }
-            public PointF ToPointInt()
+            public System.Drawing.Point ToPointInt()
             {
                 return new System.Drawing.Point((int)X, (int)Y);
             }
@@ -2589,15 +2587,15 @@ namespace BioImage
                 b.rGBChannelCount = image.GetField(TiffTag.SAMPLESPERPIXEL)[0].ToInt();
 
                 string desc = image.GetField(TiffTag.IMAGEDESCRIPTION)[0].ToString();
+                ImageJDesc imDesc = new ImageJDesc();
                 if (desc.StartsWith("ImageJ"))
                 {
-                    b.imDesc = new ImageJDesc();
-                    b.imDesc.SetString(desc);
-                    b.sizeC = b.imDesc.channels;
-                    b.sizeZ = b.imDesc.slices;
-                    b.sizeT = b.imDesc.frames;
-                    b.frameInterval = b.imDesc.finterval;
-                    b.physicalSizeZ = b.imDesc.spacing;
+                    imDesc.SetString(desc);
+                    b.sizeC = imDesc.channels;
+                    b.sizeZ = imDesc.slices;
+                    b.sizeT = imDesc.frames;
+                    b.frameInterval = imDesc.finterval;
+                    b.physicalSizeZ = imDesc.spacing;
                 }
                 else
                 {
@@ -2622,9 +2620,16 @@ namespace BioImage
                     else
                     if (unit == "NONE")
                     {
-                        //inch to centimeter
-                        b.physicalSizeX = image.GetField(TiffTag.XRESOLUTION)[0].ToDouble();
-                        b.physicalSizeY = image.GetField(TiffTag.YRESOLUTION)[0].ToDouble();
+                        if (imDesc.unit == "micron")
+                        {
+                            //size micron
+                            b.physicalSizeX = image.GetField(TiffTag.XRESOLUTION)[0].ToDouble();
+                            b.physicalSizeY = image.GetField(TiffTag.YRESOLUTION)[0].ToDouble();
+                        }
+                        else
+                        {
+                            throw new InvalidDataException("Image has unknown size unit.");
+                        }
                     }
                 }
                 catch (Exception)
@@ -2642,19 +2647,19 @@ namespace BioImage
                 {
                     if (b.bitsPerPixel > 8)
                     {
-                        b.px = PixelFormat.Format16bppGrayScale;
+                        b.pixelFormat = PixelFormat.Format16bppGrayScale;
                     }
                     else
                     {
-                        b.px = PixelFormat.Format8bppIndexed;
+                        b.pixelFormat = PixelFormat.Format8bppIndexed;
                     }
                 }
                 else
                 {
                     if (b.bitsPerPixel > 8)
-                        b.px = PixelFormat.Format48bppRgb;
+                        b.pixelFormat = PixelFormat.Format48bppRgb;
                     else
-                        b.px = PixelFormat.Format24bppRgb;
+                        b.pixelFormat = PixelFormat.Format24bppRgb;
                 }
 
                 for (int i = 0; i < b.SizeC; i++)
@@ -2675,7 +2680,7 @@ namespace BioImage
                         image.ReadScanline(buffer, offset, i, 0);
                         offset += stride;
                     }
-                    BufferInfo info = new BufferInfo(file,buffer.Length,0,b.SizeX,b.SizeY,stride,b.RGBChannelCount, b.bitsPerPixel, b.px,t,c,z,im,true,false);
+                    BufferInfo info = new BufferInfo(file,buffer.Length,0,b.SizeX,b.SizeY,stride,b.RGBChannelCount, b.bitsPerPixel, b.pixelFormat,t,c,z,im,true,false);
                     Buf bf = new Buf(info, buffer);
                     b.Buffers.Add(bf);
                     if (c < b.SizeC - 1)
@@ -2751,24 +2756,23 @@ namespace BioImage
             {
                 if (bitsPerPixel > 8)
                 {
-                    px = PixelFormat.Format16bppGrayScale;
+                    pixelFormat = PixelFormat.Format16bppGrayScale;
                 }
                 else
                 {
-                    px = PixelFormat.Format8bppIndexed;
+                    pixelFormat = PixelFormat.Format8bppIndexed;
                 }
             }
             else
             {
                 if (bitsPerPixel > 8)
-                    px = PixelFormat.Format48bppRgb;
+                    pixelFormat = PixelFormat.Format48bppRgb;
                 else
-                    px = PixelFormat.Format24bppRgb;
+                    pixelFormat = PixelFormat.Format24bppRgb;
             }
 
-            int ccount = SizeC / rGBChannelCount;
             //Lets get the channels amd initialize them.
-            for (int i = 0; i < ccount; i++)
+            for (int i = 0; i < SizeC; i++)
             {
                 Channel ch = new Channel(i, reader.getBitsPerPixel());
                 try
@@ -3190,7 +3194,7 @@ namespace BioImage
                 int lenbuf = bytes.Length;
                 Coords[ser, z, channel, time] = i;
                 //Here we generate an id for the buffer which we wish to create
-                BufferInfo fi = new BufferInfo(file, lenbuf, ser, SizeX, SizeY, stride, RGBChannelCount, bitsPerPixel, px, time, channel, z, i, littleEndian, convertedToLittleEndian);
+                BufferInfo fi = new BufferInfo(file, lenbuf, ser, SizeX, SizeY, stride, RGBChannelCount, bitsPerPixel, pixelFormat, time, channel, z, i, littleEndian, convertedToLittleEndian);
                 Buf buf = new Buf(fi, bytes);
                 Buffers.Add(buf);
                 Table.AddBuffer(buf);

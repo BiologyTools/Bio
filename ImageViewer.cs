@@ -113,6 +113,17 @@ namespace BioImage
             string name = Path.GetFileName(file);
             Table.AddViewer(this);
             this.Text = name;
+
+            viewer.UpdateView();
+            System.Drawing.Size s = new System.Drawing.Size(viewer.image.SizeX + 20, viewer.image.SizeY + 165);
+            if (s.Width > Screen.PrimaryScreen.Bounds.Width || s.Height > Screen.PrimaryScreen.Bounds.Height)
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                Size = s;
+            }
         }
         public void SetImage(BioImage b)
         {
@@ -125,6 +136,17 @@ namespace BioImage
             viewer.Dock = DockStyle.Fill;
             panel.Controls.Add(viewer);
             this.Text = b.IdString;
+
+            viewer.UpdateView();
+            System.Drawing.Size s = new System.Drawing.Size(viewer.image.SizeX + 20, viewer.image.SizeY + 165);
+            if (s.Width > Screen.PrimaryScreen.Bounds.Width || s.Height > Screen.PrimaryScreen.Bounds.Height)
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                Size = s;
+            }
         }
 
         public BioImage Image
@@ -172,7 +194,6 @@ namespace BioImage
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
             Open(openFilesDialog.FileNames);
-            this.Size = new System.Drawing.Size(viewer.image.SizeX + 120, viewer.image.SizeY);
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -181,8 +202,8 @@ namespace BioImage
             {
                 //viewer.image.Dispose();
                 this.viewer.Dispose();
+                this.viewer = null;
             }
-            this.viewer = null;
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -196,35 +217,12 @@ namespace BioImage
             else
             if (saveFileDialog.FileName.EndsWith("tif"))
             {
-                //We save the tiff fast with multithreading otherwise we have to use BioFormats.
+                //We save the tiff fast Libtiff otherwise we have to use BioFormats.
                 //We export the ROI's to CSV to preserve ROI information without Bioformats.
                 Image.Save(saveFileDialog.FileName);
             }
             else
                 viewer.image.SaveSeries(saveFileDialog.FileName, 0);
-        }
-
-        private void ImageViewer_SizeChanged(object sender, EventArgs e)
-        {
-            if (this.Width <= MinimumSize.Width)
-            {
-                this.Width = MinimumSize.Width;
-            }
-            if (this.Height <= MinimumSize.Height)
-            {
-                this.Height = MinimumSize.Height;
-            }
-        }
-        private void ImageViewer_Resize(object sender, EventArgs e)
-        {
-            if (this.Width <= MinimumSize.Width)
-            {
-                this.Width = MinimumSize.Width;
-            }
-            if (this.Height <= MinimumSize.Height)
-            {
-                this.Height = MinimumSize.Height;
-            }
         }
 
         private void ImageViewer_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)

@@ -28,12 +28,6 @@ namespace BioImage
             InitGUI(file);
 
             Buf = image.GetBufByCoord(GetCoordinate());
-            if (image.SizeC > 2)
-            {
-                Mode = ViewMode.RGBImage;
-            }
-            else
-                Mode = ViewMode.Filtered;
             
             MouseWheel += new System.Windows.Forms.MouseEventHandler(ImageView_MouseWheel);
             zBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(ZTrackBar_MouseWheel);
@@ -65,12 +59,6 @@ namespace BioImage
             InitGUI(file);
 
             Buf = image.GetBufByCoord(GetCoordinate());
-            if (image.SizeC > 2)
-            {
-                Mode = ViewMode.RGBImage;
-            }
-            else
-                Mode = ViewMode.Filtered;
 
             MouseWheel += new System.Windows.Forms.MouseEventHandler(ImageView_MouseWheel);
             zBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(ZTrackBar_MouseWheel);
@@ -282,6 +270,7 @@ namespace BioImage
                 channelBoxG.Items.Add(ch);
                 channelBoxB.Items.Add(ch);
             }
+            if(image.RGBChannelCount == 1)
             if (image.Channels.Count > 2)
             {
                 channelBoxR.SelectedIndex = 0;
@@ -301,7 +290,7 @@ namespace BioImage
             UpdateRGBChannels();
             //We threshold the image so that the max threshold value is the max pixel value in image. 
             image.AutoThreshold();
-
+            
         }
 
         public void UpdateSelectBoxSize(float size)
@@ -538,9 +527,7 @@ namespace BioImage
             PlaySpeed sp = null;
             if (Mode == ViewMode.RGBImage)
                 sp = new PlaySpeed(timeEnabled, false, ZFps, TimeFps, CFps);
-            if (Mode == ViewMode.Filtered)
-                sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
-            if (Mode == ViewMode.Raw)
+            else
                 sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (sp.ShowDialog() != DialogResult.OK)
                 return;
@@ -553,7 +540,7 @@ namespace BioImage
             PlaySpeed sp = null;
             if (Mode == ViewMode.RGBImage)
                 sp = new PlaySpeed(timeEnabled, false, ZFps, TimeFps, CFps);
-            if (Mode == ViewMode.Filtered)
+            else
                 sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (sp.ShowDialog() != DialogResult.OK)
                 return;
@@ -566,7 +553,7 @@ namespace BioImage
             PlaySpeed sp = null;
             if (Mode == ViewMode.RGBImage)
                 sp = new PlaySpeed(timeEnabled, false, ZFps, TimeFps, CFps);
-            if (Mode == ViewMode.Filtered)
+            else
                 sp = new PlaySpeed(timeEnabled, true, ZFps, TimeFps, CFps);
             if (sp.ShowDialog() != DialogResult.OK)
                 return;
@@ -986,15 +973,12 @@ namespace BioImage
                 return ans;
             }
         }
-
-        List<RectangleF> rects = new List<RectangleF>();
         private void DrawOverlay(Graphics g)
         {
             Pen pen = null;
             Brush b = null;
             bool bounds = showBounds;
             bool labels = showText;
-            rects.Clear();
             if (Mode == ViewMode.RGBImage)
             {
                 foreach (BioImage.Annotation an in AnnotationsRGB)
@@ -1092,7 +1076,10 @@ namespace BioImage
                         g.DrawString(an.Text, an.font, b, pc);
                     if (bounds)
                     {
-                        g.DrawRectangle(Pens.Green, an.BoundingBox.ToRectangleInt());
+                        RectangleF[] rects = new RectangleF[1];
+                        rects[0] = an.BoundingBox.ToRectangleF();
+                        g.DrawRectangles(Pens.Green, rects);
+                       
                     }
                     if (an.selected)
                     {
@@ -1112,6 +1099,7 @@ namespace BioImage
                         }
                         if(rects.Count > 0)
                         g.DrawRectangles(Pens.Blue, rects.ToArray());
+                        rects.Clear();
                     }
                     pen.Dispose();
                 }
@@ -1214,7 +1202,9 @@ namespace BioImage
                         g.DrawString(an.Text, an.font, b, pc);
                     if (bounds)
                     {
-                        g.DrawRectangle(Pens.Green, an.BoundingBox.ToRectangleInt());
+                        RectangleF[] rects = new RectangleF[1];
+                        rects[0] = an.BoundingBox.ToRectangleF();
+                        g.DrawRectangles(Pens.Green, rects);
                     }
                     if (an.selected)
                     {
@@ -1234,6 +1224,7 @@ namespace BioImage
                         }
                         if (rects.Count > 0)
                             g.DrawRectangles(Pens.Blue, rects.ToArray());
+                        rects.Clear();
                     }
                     
                 }
@@ -1265,6 +1256,8 @@ namespace BioImage
         }
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
+            if (bitmap == null)
+                return;
             PointF pp = GetImagePoint();
             Graphics g = e.Graphics;
             g.TranslateTransform(origin.X, origin.Y);
@@ -1645,14 +1638,6 @@ namespace BioImage
             tools.BringToFront();
             tools.TopMost = true;
             
-        }
-        public void SetSizeMode(PictureBoxSizeMode mod)
-        {
-            pictureBox.SizeMode = mod;
-        }
-        private void pictureBox_SizeModeChanged(object sender, EventArgs e)
-        {
-            overlayPictureBox.SizeMode = pictureBox.SizeMode;
         }
         private void deleteROIToolStripMenuItem_Click(object sender, EventArgs e)
         {

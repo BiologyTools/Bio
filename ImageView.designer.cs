@@ -189,7 +189,7 @@ namespace BioImage
             // playZToolStripMenuItem
             // 
             this.playZToolStripMenuItem.Name = "playZToolStripMenuItem";
-            this.playZToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.playZToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.playZToolStripMenuItem.Text = "Play";
             this.playZToolStripMenuItem.Click += new System.EventHandler(this.playZToolStripMenuItem_Click);
             // 
@@ -198,21 +198,21 @@ namespace BioImage
             this.stopZToolStripMenuItem.Checked = true;
             this.stopZToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.stopZToolStripMenuItem.Name = "stopZToolStripMenuItem";
-            this.stopZToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.stopZToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.stopZToolStripMenuItem.Text = "Stop";
             this.stopZToolStripMenuItem.Click += new System.EventHandler(this.stopZToolStripMenuItem_Click);
             // 
             // playSpeedToolStripMenuItem
             // 
             this.playSpeedToolStripMenuItem.Name = "playSpeedToolStripMenuItem";
-            this.playSpeedToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.playSpeedToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.playSpeedToolStripMenuItem.Text = "Play Speed";
             this.playSpeedToolStripMenuItem.Click += new System.EventHandler(this.playSpeedToolStripMenuItem_Click);
             // 
             // setValueRangeToolStripMenuItem
             // 
             this.setValueRangeToolStripMenuItem.Name = "setValueRangeToolStripMenuItem";
-            this.setValueRangeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.setValueRangeToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.setValueRangeToolStripMenuItem.Text = "Set Value Range";
             this.setValueRangeToolStripMenuItem.Click += new System.EventHandler(this.setValueRangeToolStripMenuItem_Click);
             // 
@@ -223,7 +223,7 @@ namespace BioImage
             this.loopZToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.loopZToolStripMenuItem.Name = "loopZToolStripMenuItem";
             this.loopZToolStripMenuItem.ShowShortcutKeys = false;
-            this.loopZToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loopZToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
             this.loopZToolStripMenuItem.Text = "Loop";
             this.loopZToolStripMenuItem.Click += new System.EventHandler(this.loopZToolStripMenuItem_Click);
             // 
@@ -560,6 +560,8 @@ namespace BioImage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
+            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.Controls.Add(this.statusPanel);
             this.Controls.Add(this.trackBarPanel);
