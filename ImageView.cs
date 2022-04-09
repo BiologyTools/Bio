@@ -323,7 +323,7 @@ namespace BioImage
                 }
                 else
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint;
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint + mouseColor;
                 }
                 
             }
@@ -1404,10 +1404,10 @@ namespace BioImage
                 }
                 UpdateOverlay();
             }
-            
 
             if (e.Button == MouseButtons.Left)
             { 
+                mouseColor = "";
                 Point s = GetImageSize();
                 if ((p.X < s.X && p.Y < s.Y) || (p.X >= 0 && p.Y > 0))
                 {
@@ -1417,7 +1417,6 @@ namespace BioImage
                     int tc = coordinate.T;
                     if (Mode == ViewMode.RGBImage)
                     {
-                        mouseColor = "";
                         int r = image.GetValue(sc, zc, RChannel.Index, tc, (int)p.X, (int)p.Y);
                         int g = image.GetValue(sc, zc, GChannel.Index, tc, (int)p.X, (int)p.Y);
                         int b = image.GetValue(sc, zc, BChannel.Index, tc, (int)p.X, (int)p.Y);
@@ -1426,7 +1425,6 @@ namespace BioImage
                     else
                     if (Mode == ViewMode.Filtered || Mode == ViewMode.Raw)
                     {
-                        mouseColor = "";
                         int r = Buf.GetValue((int)p.X, (int)p.Y);
                         mouseColor = ", " + r.ToString();
                     }
@@ -1489,8 +1487,9 @@ namespace BioImage
                 }
                 UpdateView();
             }
-            tools.ToolMove(p, mouseDownButtons);
             UpdateStatus();
+            tools.ToolMove(p, mouseDownButtons);
+            
             pd = p;
         }
         private void pictureBox_MouseUp(object sender, MouseEventArgs e)
