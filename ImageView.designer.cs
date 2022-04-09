@@ -72,7 +72,6 @@ namespace BioImage
             this.statusPanel = new System.Windows.Forms.Panel();
             this.statusContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.hideStatusBarToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.ticksLabel = new System.Windows.Forms.Label();
             this.overlayPictureBox = new System.Windows.Forms.PictureBox();
             this.pictureBox = new System.Windows.Forms.PictureBox();
@@ -472,7 +471,6 @@ namespace BioImage
             | System.Windows.Forms.AnchorStyles.Right)));
             this.statusPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.statusPanel.ContextMenuStrip = this.statusContextMenuStrip;
-            this.statusPanel.Controls.Add(this.panel1);
             this.statusPanel.Controls.Add(this.ticksLabel);
             this.statusPanel.Controls.Add(this.statusLabel);
             this.statusPanel.Location = new System.Drawing.Point(0, 0);
@@ -493,13 +491,6 @@ namespace BioImage
             this.hideStatusBarToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.hideStatusBarToolStripMenuItem.Text = "Hide Status Bar";
             this.hideStatusBarToolStripMenuItem.Click += new System.EventHandler(this.hideStatusBarToolStripMenuItem_Click);
-            // 
-            // panel1
-            // 
-            this.panel1.Location = new System.Drawing.Point(0, 25);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(97, 108);
-            this.panel1.TabIndex = 21;
             // 
             // ticksLabel
             // 
@@ -640,6 +631,5 @@ namespace BioImage
         private System.Windows.Forms.PictureBox overlayPictureBox;
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.Panel panel;
-        private System.Windows.Forms.Panel panel1;
     }
 }

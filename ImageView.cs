@@ -126,6 +126,7 @@ namespace BioImage
                 UpdateOverlay();
                 if (viewMode == ViewMode.RGBImage)
                 {
+                    
                     rgbBoxsPanel.BringToFront();
                     cBar.SendToBack();
                     cLabel.SendToBack();
@@ -270,22 +271,25 @@ namespace BioImage
                 channelBoxG.Items.Add(ch);
                 channelBoxB.Items.Add(ch);
             }
-            if(image.RGBChannelCount == 1)
+
             if (image.Channels.Count > 2)
             {
                 channelBoxR.SelectedIndex = 0;
                 channelBoxG.SelectedIndex = 1;
                 channelBoxB.SelectedIndex = 2;
+                Mode = ViewMode.RGBImage;
             }
             else
             if (image.Channels.Count == 2)
             {
                 channelBoxR.SelectedIndex = 0;
                 channelBoxG.SelectedIndex = 1;
+                Mode = ViewMode.Filtered;
             }
             else
             {
                 channelBoxR.SelectedIndex = 0;
+                Mode = ViewMode.Filtered;
             }
             UpdateRGBChannels();
             //We threshold the image so that the max threshold value is the max pixel value in image. 
@@ -355,7 +359,7 @@ namespace BioImage
             else
             if (Mode == ViewMode.RGBImage)
             {
-                SetCoordinate(image.serie, zBar.Value, image.Channels[image.rgbChannels[0]].Index, timeBar.Value);
+                SetCoordinate(image.serie, zBar.Value, 0, timeBar.Value);
                 UpdateRGBChannels();
                 if (image.RGBChannelCount == 1)
                 {
@@ -377,7 +381,7 @@ namespace BioImage
                 }
                 else
                 {
-                    bitmap = image.GetImageRGB(GetCoordinate());
+                    bitmap = image.GetImageRGB(GetCoordinate(), RChannel.range, GChannel.range, BChannel.range);
                 }
             }
             pictureBox.Invalidate();
@@ -1400,43 +1404,29 @@ namespace BioImage
                 }
                 UpdateOverlay();
             }
-            mouseColor = "";
+            
 
             if (e.Button == MouseButtons.Left)
             { 
                 Point s = GetImageSize();
                 if ((p.X < s.X && p.Y < s.Y) || (p.X >= 0 && p.Y > 0))
                 {
+                    int sc = coordinate.S;
+                    int zc = coordinate.Z;
+                    int cc = coordinate.C;
+                    int tc = coordinate.T;
                     if (Mode == ViewMode.RGBImage)
                     {
-                        int sc = coordinate.S;
-                        int zc = coordinate.Z;
-                        int cc = coordinate.C;
-                        int tc = coordinate.T;
-                        if (image.RGBChannelCount == 1)
-                        {
-                            int r = image.GetValue(sc, zc, RChannel.Index, tc, (int)p.X, (int)p.Y);
-                            int g = image.GetValue(sc, zc, GChannel.Index, tc, (int)p.X, (int)p.Y);
-                            int b = image.GetValue(sc, zc, BChannel.Index, tc, (int)p.X, (int)p.Y);
-                            mouseColor = ", " + r + ", " + g + ", " + b;
-                        }
-                        else
-                        {
-                            int r = image.GetValueRGB(sc, zc, RChannel.Index, tc, (int)p.X, (int)p.Y, 0);
-                            int g = image.GetValueRGB(sc, zc, GChannel.Index, tc, (int)p.X, (int)p.Y, 1);
-                            int b = image.GetValueRGB(sc, zc, BChannel.Index, tc, (int)p.X, (int)p.Y, 2);
-                            mouseColor = ", " + r + ", " + g + ", " + b;
-                        }
+                        mouseColor = "";
+                        int r = image.GetValue(sc, zc, RChannel.Index, tc, (int)p.X, (int)p.Y);
+                        int g = image.GetValue(sc, zc, GChannel.Index, tc, (int)p.X, (int)p.Y);
+                        int b = image.GetValue(sc, zc, BChannel.Index, tc, (int)p.X, (int)p.Y);
+                        mouseColor = ", " + r.ToString() + ", " + g.ToString() + ", " + b.ToString();
                     }
                     else
-                    if (Mode == ViewMode.Filtered)
+                    if (Mode == ViewMode.Filtered || Mode == ViewMode.Raw)
                     {
-                        int r = Buf.GetValue((int)p.X, (int)p.Y);
-                        mouseColor = ", " + r.ToString();
-                    }
-                    else
-                    if (Mode == ViewMode.Raw)
-                    {
+                        mouseColor = "";
                         int r = Buf.GetValue((int)p.X, (int)p.Y);
                         mouseColor = ", " + r.ToString();
                     }

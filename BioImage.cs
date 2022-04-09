@@ -646,7 +646,7 @@ namespace BioImage
         {
             get
             {
-                return SizeZ * (int)((float)SizeC / (float)rGBChannelCount) * SizeT;
+                return SizeZ * SizeC * SizeT;
             }
         }
         public int imagesPerSeries = 0;
@@ -1708,6 +1708,47 @@ namespace BioImage
                     bitmap = new Bitmap(info.SizeX, info.SizeY, info.stride, pixel, new IntPtr(ptr));
                 }
                 return bitmap;
+            }
+
+            public static unsafe Bitmap GetBitmap(byte[] bts, int SizeX, int SizeY, int stride, PixelFormat pixel)
+            {
+                fixed (byte* ptr = bts)
+                {
+                    return new Bitmap(SizeX, SizeY, stride, pixel, new IntPtr(ptr));
+                }
+            }
+
+            public static byte[] GetBuffer(Bitmap bitmap)
+            {
+                bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                IntPtr ptr = data.Scan0;
+                int stride = 0;
+                if(bitmap.PixelFormat == PixelFormat.Format8bppIndexed)
+                {
+                    stride = bitmap.Width;
+                }
+                else
+                if(bitmap.PixelFormat == PixelFormat.Format16bppGrayScale)
+                {
+                    stride = bitmap.Width * 2;
+                }
+                else
+                if(bitmap.PixelFormat == PixelFormat.Format24bppRgb)
+                {
+                    stride = bitmap.Width * 3;
+                }
+                else
+                if (bitmap.PixelFormat == PixelFormat.Format48bppRgb)
+                {
+                    stride = bitmap.Width * 3 * 2;
+                }
+                int length = stride * bitmap.Height;
+                byte[] bytes = new byte[length];
+                Marshal.Copy(ptr, bytes, 0, length);
+                Array.Reverse(bytes);
+                bitmap.UnlockBits(data);
+                return bytes;
             }
 
             public unsafe void ToLittleEndian()
@@ -3184,20 +3225,68 @@ namespace BioImage
             serFiles.AddRange(reader.getSeriesUsedFiles());
             //List<BufferInfo> BufferInfos = new List<BufferInfo>(); 
             //List<string> Files = new List<string>();
-            for (int i = 0; i < imagesPerSeries; i++)
+            int imc = ImageCount / RGBChannelCount;
+            for (int i = 0; i < imc; i++)
             {
-                byte[] bytes = reader.openBytes(i);
                 int[] ints = reader.getZCTCoords(i);
+                byte[] bytes = reader.openBytes(i);
                 int z = ints[0];
-                int channel = ints[1];
-                int time = ints[2];
-                int lenbuf = bytes.Length;
-                Coords[ser, z, channel, time] = i;
-                //Here we generate an id for the buffer which we wish to create
-                BufferInfo fi = new BufferInfo(file, lenbuf, ser, SizeX, SizeY, stride, RGBChannelCount, bitsPerPixel, pixelFormat, time, channel, z, i, littleEndian, convertedToLittleEndian);
-                Buf buf = new Buf(fi, bytes);
-                Buffers.Add(buf);
-                Table.AddBuffer(buf);
+                int c = ints[1];
+                int t = ints[2];
+                if (pixelFormat == PixelFormat.Format48bppRgb || pixelFormat == PixelFormat.Format24bppRgb)
+                {
+                    //We split the RGB channels to 3 seperate planes.
+                    //The planes are in BGR order.
+                    Bitmap r = extractB.Apply(Buf.GetBitmap(bytes, SizeX, SizeY, stride, PixelFormat));
+                    byte[] rb = Buf.GetBuffer(r);
+                    Bitmap g = extractG.Apply(Buf.GetBitmap(bytes, SizeX, SizeY, stride, PixelFormat));
+                    byte[] gb = Buf.GetBuffer(g);
+                    Bitmap b = extractR.Apply(Buf.GetBitmap(bytes, SizeX, SizeY, stride, PixelFormat));
+                    byte[] bb = Buf.GetBuffer(b);
+                    rGBChannelCount = 1;
+                    PixelFormat px;
+                    if (pixelFormat == PixelFormat.Format48bppRgb)
+                    {
+                        px = PixelFormat.Format16bppGrayScale;
+                        stride = SizeX * rGBChannelCount * 2;
+                    }
+                    else
+                    {
+                        px = PixelFormat.Format8bppIndexed;
+                        stride = SizeX * rGBChannelCount;
+                    }
+                    int ic = i*3;
+                    int lenbuf = rb.Length;
+                    Coords[ser, z, c, t] = ic;
+                    BufferInfo rfi = new BufferInfo(file, lenbuf, ser, SizeX, SizeY, stride, RGBChannelCount, bitsPerPixel, px, t, c, z, ic, false, false);
+                    Buf rbuf = new Buf(rfi, rb);
+                    Buffers.Add(rbuf);
+                    Table.AddBuffer(rbuf);
+                    ic++;
+                    c++;
+                    Coords[ser, z, c, t] = ic;
+                    BufferInfo gfi = new BufferInfo(file, lenbuf, ser, SizeX, SizeY, stride, RGBChannelCount, bitsPerPixel, px, t, c, z, ic, false, false);
+                    Buf gbuf = new Buf(gfi, gb);
+                    Buffers.Add(gbuf);
+                    Table.AddBuffer(gbuf);
+                    ic++;
+                    c++;
+                    Coords[ser, z, c, t] = ic;
+                    BufferInfo bfi = new BufferInfo(file, lenbuf, ser, SizeX, SizeY, stride, RGBChannelCount, bitsPerPixel, px, t, c, z, ic, false, false);
+                    Buf bbuf = new Buf(bfi, bb);
+                    Buffers.Add(bbuf);
+                    Table.AddBuffer(bbuf);
+
+                }
+                else
+                {
+                    int lenbuf = bytes.Length;
+                    Coords[ser, z, c, t] = i;
+                    BufferInfo fi = new BufferInfo(file, lenbuf, ser, SizeX, SizeY, stride, RGBChannelCount, bitsPerPixel, pixelFormat, t, c, z, i, littleEndian, convertedToLittleEndian);
+                    Buf buf = new Buf(fi, bytes);
+                    Buffers.Add(buf);
+                    Table.AddBuffer(buf);
+                }
             }
             double stx = 0;
             double sty = 0;
