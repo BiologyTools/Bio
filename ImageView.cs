@@ -343,8 +343,8 @@ namespace BioImage
         Bitmap bitmap;
         public void UpdateView()
         {
-            if(bitmap!=null)
-            bitmap.Dispose();
+            //if(bitmap!=null)
+            //bitmap.Dispose();
             if (Mode == ViewMode.Raw)
             {
                 SetCoordinate(image.serie, zBar.Value, cBar.Value, timeBar.Value);
