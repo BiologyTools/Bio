@@ -870,14 +870,15 @@ namespace BioImage
         {
             watch.Restart();
             int ri = Coords[serie, coord.Z, coord.C, coord.T];
-            if (replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
-            {
-                replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri + RChannel.Index].GetBitmap());
-                replaceGFilter = new ReplaceChannel(AForge.Imaging.RGB.G, Buffers[ri + GChannel.Index].GetBitmap());
-                replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, Buffers[ri + BChannel.Index].GetBitmap());
-            }
+            
             if (RGBChannelCount == 1)
             {
+                if (replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
+                {
+                    replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri + RChannel.Index].GetBitmap());
+                    replaceGFilter = new ReplaceChannel(AForge.Imaging.RGB.G, Buffers[ri + GChannel.Index].GetBitmap());
+                    replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, Buffers[ri + BChannel.Index].GetBitmap());
+                }
                 replaceRFilter.ChannelImage.Dispose();
                 replaceRFilter.ChannelImage = Buffers[ri + RChannel.Index].GetBitmap();
                 replaceRFilter.ApplyInPlace(rgbBitmap8);
@@ -903,14 +904,15 @@ namespace BioImage
         {
             watch.Restart();
             int ri = Coords[serie, coord.Z, coord.C, coord.T];
-            if (replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
-            {
-                replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri].GetBitmap());
-                replaceGFilter = new ReplaceChannel(AForge.Imaging.RGB.G, Buffers[ri].GetBitmap());
-                replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, Buffers[ri].GetBitmap());
-            }
+            
             if (RGBChannelCount == 1)
             {
+                if (replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
+                {
+                    replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri].GetBitmap());
+                    replaceGFilter = new ReplaceChannel(AForge.Imaging.RGB.G, Buffers[ri].GetBitmap());
+                    replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, Buffers[ri].GetBitmap());
+                }
                 replaceRFilter.ChannelImage.Dispose();
                 replaceRFilter.ChannelImage = Buffers[ri].GetBitmap();
                 replaceRFilter.ApplyInPlace(rgbBitmap8);
@@ -2673,7 +2675,7 @@ namespace BioImage
                     imDesc.SetString(desc);
                     b.sizeC = imDesc.channels;
                     if (b.sizeC == 0)
-                        b.sizeC = b.rGBChannelCount;
+                        b.sizeC = 1;
                     b.sizeZ = imDesc.slices;
                     if (b.sizeZ == 0)
                         b.sizeZ = 1;
@@ -2771,7 +2773,7 @@ namespace BioImage
                         image.ReadScanline(bytes, offset, i, 0);
                         offset += stride;
                     }
-                    if (b.pixelFormat == PixelFormat.Format48bppRgb || b.pixelFormat == PixelFormat.Format24bppRgb)
+                    if (b.pixelFormat == PixelFormat.Format48bppRgb)
                     {
                         //We split the RGB channels to 3 seperate planes.
                         //The planes are in BGR order.
