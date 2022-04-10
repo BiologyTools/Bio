@@ -2762,8 +2762,7 @@ namespace BioImage
                 int z = 0;
                 int c = 0;
                 int t = 0;
-                int imcount = (int)((float)b.ImageCount / (float)b.rGBChannelCount);
-                for (int im = 0; im < imcount; im++)
+                for (int im = 0; im < b.ImageCount; im++)
                 {
                     image.SetDirectory((short)im);
                     b.Coords[0, z, c, t] = im;
@@ -3333,7 +3332,7 @@ namespace BioImage
                 int z = ints[0];
                 int c = ints[1];
                 int t = ints[2];
-                if (pixelFormat == PixelFormat.Format48bppRgb || pixelFormat == PixelFormat.Format24bppRgb)
+                if (pixelFormat == PixelFormat.Format48bppRgb)
                 {
                     //We split the RGB channels to 3 seperate planes.
                     //The planes are in BGR order.
@@ -3345,16 +3344,10 @@ namespace BioImage
                     byte[] bb = Buf.GetBuffer(b);
                     rGBChannelCount = 1;
                     PixelFormat px;
-                    if (pixelFormat == PixelFormat.Format48bppRgb)
-                    {
-                        px = PixelFormat.Format16bppGrayScale;
-                        stride = SizeX * rGBChannelCount * 2;
-                    }
-                    else
-                    {
-                        px = PixelFormat.Format8bppIndexed;
-                        stride = SizeX * rGBChannelCount;
-                    }
+
+                    px = PixelFormat.Format16bppGrayScale;
+                    stride = SizeX * rGBChannelCount * 2;
+
                     int ic = i*3;
                     int lenbuf = rb.Length;
                     Coords[ser, z, c, t] = ic;
