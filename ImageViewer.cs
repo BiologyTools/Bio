@@ -210,19 +210,11 @@ namespace BioImage
         {
             if (Image == null)
                 return;
-            if (saveFileDialog.ShowDialog() != DialogResult.OK)
+            if (saveTiffFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            if (saveFileDialog.FileName.EndsWith("ome.tif"))
-                viewer.image.SaveSeries(saveFileDialog.FileName, 0);
-            else
-            if (saveFileDialog.FileName.EndsWith("tif"))
-            {
-                //We save the tiff fast Libtiff otherwise we have to use BioFormats.
-                //We export the ROI's to CSV to preserve ROI information without Bioformats.
-                Image.Save(saveFileDialog.FileName);
-            }
-            else
-                viewer.image.SaveSeries(saveFileDialog.FileName, 0);
+            //We save the tiff fast Libtiff otherwise we have to use BioFormats.
+            //We export the ROI's to CSV to preserve ROI information without Bioformats.
+            Image.SaveTiff(saveTiffFileDialog.FileName);
         }
 
         private void ImageViewer_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -262,7 +254,7 @@ namespace BioImage
         {
             if (folderBrowserDialog.ShowDialog() != DialogResult.OK)
                 return;
-            saveFileDialog.InitialDirectory = folderBrowserDialog.SelectedPath;
+            saveOMEFileDialog.InitialDirectory = folderBrowserDialog.SelectedPath;
             if (saveCSVFileDialog.ShowDialog() != DialogResult.OK)
                 return;
             string f = Path.GetFileName(saveCSVFileDialog.FileName);
@@ -396,6 +388,15 @@ namespace BioImage
         {
             Recorder.recorder.WindowState = FormWindowState.Normal;
             Recorder.recorder.Show();
+        }
+
+        private void saveOMEToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Image == null)
+                return;
+            if (saveOMEFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+            Image.SaveSeries(saveOMEFileDialog.FileName, Image.serie);
         }
     }
 }

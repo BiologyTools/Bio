@@ -180,7 +180,6 @@ namespace BioImage
         private System.Windows.Forms.NumericUpDown tPlayspeed;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.NumericUpDown zFpsBox;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown cPlayspeed;
         private System.Windows.Forms.Label label9;

@@ -314,7 +314,7 @@ namespace BioImage
             Filename = file;
             serie = ser;
             if (file.EndsWith("ome.tif"))
-                OpenSeries(file, ser);
+                OpenOME(file, ser);
             else
             if (file.EndsWith("tif"))
             {
@@ -322,7 +322,7 @@ namespace BioImage
             }
             else
             {
-                OpenSeries(file, ser);
+                OpenOME(file, ser);
             }
             rgbChannels[0] = 0;
             rgbChannels[1] = 0;
@@ -553,6 +553,7 @@ namespace BioImage
             public bool loop;
             public double min = 0;
             public double max = 0;
+            public int count;
 
             public ImageJDesc FromImage(BioImage b)
             {
@@ -587,7 +588,7 @@ namespace BioImage
             public string GetString()
             {
                 string s = "";
-                s+= "ImageJ=" + ImageJ + "\n";
+                s += "ImageJ=" + ImageJ + "\n";
                 s += "images=" + images + "\n";
                 s += "channels=" + channels.ToString() + "\n";
                 s += "slices=" + slices.ToString() + "\n";
@@ -605,36 +606,43 @@ namespace BioImage
             public void SetString(string desc)
             {
                 string[] lines = desc.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                int maxlen = 13;
                 for (int i = 0; i < lines.Length; i++)
                 {
-                    string[] sp = lines[i].Split('=');
-                    if (sp[0] == "ImageJ")
-                        ImageJ = sp[1];
-                    if (sp[0] == "images")
-                        images = int.Parse(sp[1]);
-                    if (sp[0] == "channels")
-                        channels = int.Parse(sp[1]);
-                    if (sp[0] == "slices")
-                        slices = int.Parse(sp[1]);
-                    if (sp[0] == "frames")
-                        frames = int.Parse(sp[1]);
-                    if (sp[0] == "hyperstack")
-                        hyperstack = bool.Parse(sp[1]);
-                    if (sp[0] == "mode")
-                        mode = sp[1];
-                    if (sp[0] == "unit")
-                        unit = sp[1];
-                    if (sp[0] == "finterval")
-                        finterval = double.Parse(sp[1]);
-                    if (sp[0] == "spacing")
-                        spacing = double.Parse(sp[1]);
-                    if (sp[0] == "loop")
-                        loop = bool.Parse(sp[1]);
-                    if (sp[0] == "min")
-                        min = double.Parse(sp[1]);
-                    if (sp[0] == "max")
-                        max = double.Parse(sp[1]);
+                    if (i < maxlen)
+                    {
+                        string[] sp = lines[i].Split('=');
+                        if (sp[0] == "ImageJ")
+                            ImageJ = sp[1];
+                        if (sp[0] == "images")
+                            images = int.Parse(sp[1]);
+                        if (sp[0] == "channels")
+                            channels = int.Parse(sp[1]);
+                        if (sp[0] == "slices")
+                            slices = int.Parse(sp[1]);
+                        if (sp[0] == "frames")
+                            frames = int.Parse(sp[1]);
+                        if (sp[0] == "hyperstack")
+                            hyperstack = bool.Parse(sp[1]);
+                        if (sp[0] == "mode")
+                            mode = sp[1];
+                        if (sp[0] == "unit")
+                            unit = sp[1];
+                        if (sp[0] == "finterval")
+                            finterval = double.Parse(sp[1]);
+                        if (sp[0] == "spacing")
+                            spacing = double.Parse(sp[1]);
+                        if (sp[0] == "loop")
+                            loop = bool.Parse(sp[1]);
+                        if (sp[0] == "min")
+                            min = double.Parse(sp[1]);
+                        if (sp[0] == "max")
+                            max = double.Parse(sp[1]);
+                    }
+                    else
+                        return;
                 }
+                
             }
         }
 
@@ -2511,7 +2519,7 @@ namespace BioImage
 
             wr = writer;
             threadFile = Path.GetFileName(file);
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(WriteBytes));
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(OMEWriteBytes));
             t.Start();
             threadImage = this;
             Progress pr = new Progress(threadFile, "Saving");
@@ -2528,7 +2536,7 @@ namespace BioImage
         }
 
         private static BioImage threadImage = null;
-        public void Save(string file)
+        public void SaveTiff(string file)
         {
             //This is the default saving mode we save the roi's in CSV and save tiff fast with BitMiracle.
             threadImage = this;
@@ -2551,7 +2559,7 @@ namespace BioImage
             threadImage = this;
             threadFile = file;
             threadProgress = 0;
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Open));
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(OpenTiff));
             t.Start();
             Progress pr = new Progress(threadFile, "Opening");
             pr.Show();
@@ -2570,6 +2578,7 @@ namespace BioImage
             done = false;
             string fn = Path.GetFileNameWithoutExtension(file);
             string dir = Path.GetDirectoryName(file);
+            //Save ROIs to CSV file.
             if(b.Annotations.Count > 0)
             {
                 string f = dir + "//" + fn + ".csv";
@@ -2578,6 +2587,13 @@ namespace BioImage
             ImageJDesc j = new ImageJDesc();
             j.FromImage(b);
             string desc = j.GetString();
+            desc += NewLine + "BioImage-ROIs" + NewLine;
+            //Embed ROI's to image description.
+            for (int i = 0; i < b.Annotations.Count; i++)
+            {
+                desc += ROItoString(b.Annotations[i]);
+            }
+
             using (Tiff image = Tiff.Open(file, "w"))
             {
                 int stride = b.Buffers[0].info.stride;
@@ -2635,7 +2651,7 @@ namespace BioImage
             }
             done = true;
         }
-        private static void Open()
+        private static void OpenTiff()
         {
             string file = threadFile;
             BioImage b = threadImage;
@@ -2662,22 +2678,44 @@ namespace BioImage
                 if (desc.StartsWith("ImageJ"))
                 {
                     imDesc.SetString(desc);
-                    b.sizeC = imDesc.channels;
-                    if (b.sizeC == 0)
+                    if(imDesc.channels != 0)
+                        b.sizeC = imDesc.channels;
+                    else
                         b.sizeC = 1;
-                    b.sizeZ = imDesc.slices;
-                    if (b.sizeZ == 0)
+                    if (imDesc.slices != 0)
+                        b.sizeZ = imDesc.slices;
+                    else
                         b.sizeZ = 1;
-                    b.sizeT = imDesc.frames;
-                    if (b.sizeT == 0)
+                    if (imDesc.frames != 0)
+                        b.sizeT = imDesc.frames;
+                    else
                         b.sizeT = 1;
-                    b.frameInterval = imDesc.finterval;
-                    b.physicalSizeZ = imDesc.spacing;
+                    if (imDesc.finterval != 0)
+                        b.frameInterval = imDesc.finterval;
+                    else
+                        b.frameInterval = 1;
+                    if (imDesc.spacing != 0)
+                        b.physicalSizeZ = imDesc.spacing;
+                    else
+                        b.physicalSizeZ = 1;
                 }
-                else
+                string[] sts = desc.Split('\n');
+                bool start = false;
+                for (int i = 0; i < sts.Length; i++)
                 {
-                    throw new InvalidDataException("This tiff file is of unknown format. BioImage supports OME.TIF & ImageJ tiff files.");
+                    if(start)
+                    {
+                        if(sts[i].Length > 1)
+                            b.Annotations.Add(StringToROI(sts[i]));
+                    }
+                    if(sts[i].Contains("BioImage-ROI"))
+                    {
+                        start = true;
+                    }
+                    
                 }
+
+
                 b.Coords = new int[1, b.SizeZ, b.SizeC, b.SizeT];
                 try
                 {
@@ -2838,7 +2876,7 @@ namespace BioImage
         private static string threadFile = "";
         private static bool done = false;
         public static float threadProgress = 0;
-        public static void WriteBytes()
+        public static void OMEWriteBytes()
         {
             threadProgress = 0;
             done = false;
@@ -2851,12 +2889,12 @@ namespace BioImage
             wr.close();
         }
 
-        public static BioImage Open(string file, int ser)
+        public static BioImage OpenTiff(string file, int ser)
         {
             BioImage res = new BioImage(file, ser);
             return res;
         }
-        public void OpenSeries(string file, int ser)
+        public void OpenOME(string file, int ser)
         {
             // create OME-XML metadata store
             ServiceFactory factory = new ServiceFactory();
@@ -3431,7 +3469,10 @@ namespace BioImage
             imageReader.close();
             return c;
         }
-        public static List<Annotation> OpenROIs(string file)
+        const char NewLine = '\n';
+
+        public const string columns = "ROIID,ROINAME,TYPE,ID,SHAPEINDEX,TEXT,S,C,Z,T,X,Y,W,H,POINTS,STROKECOLOR,STROKECOLORW,FILLCOLOR,FONTSIZE\n";
+        public static List<Annotation> OpenOMEROIs(string file)
         {
             List<Annotation> Annotations = new List<Annotation>();
             // create OME-XML metadata store
@@ -3782,41 +3823,45 @@ namespace BioImage
             imageReader.close();
             return Annotations;
         }
-        public static void ExportROIsCSV(string filename, List<Annotation> Annotations)
+        public static string ROIsToString(List<Annotation> Annotations)
         {
-            string con = "";
-            string cols = "ROIID,ROINAME,TYPE,ID,SHAPEINDEX,TEXT,S,C,Z,T,X,Y,W,H,POINTS,STROKECOLOR,STROKECOLORW,FILLCOLOR,FONTSIZE" + Environment.NewLine;
-            con += cols;
+            string s = "";
             for (int i = 0; i < Annotations.Count; i++)
             {
-                BioImage.Annotation an = Annotations[i];
-                BioImage.PointD[] points = an.GetPoints();
-                string pts = "";
-                for (int j = 0; j < points.Length; j++)
-                {
-                    if (j == points.Length - 1)
-                        pts += points[j].X.ToString() + "," + points[j].Y.ToString();
-                    else
-                        pts += points[j].X.ToString() + "," + points[j].Y.ToString() + " ";
-                }
-
-                char sep = (char)34;
-                string sColor = sep.ToString() + an.strokeColor.A.ToString() + ',' + an.strokeColor.R.ToString() + ',' + an.strokeColor.G.ToString() + ',' + an.strokeColor.B.ToString() + sep.ToString();
-                string bColor = sep.ToString() + an.fillColor.A.ToString() + ',' + an.fillColor.R.ToString() + ',' + an.fillColor.G.ToString() + ',' + an.fillColor.B.ToString() + sep.ToString();
-
-                string line = an.roiID + ',' + an.roiName + ',' + an.type.ToString() + ',' + an.id + ',' + an.shapeIndex.ToString() + ',' +
-                    an.Text + ',' + an.coord.S.ToString() + ',' + an.coord.Z.ToString() + ',' + an.coord.C.ToString() + ',' + an.coord.T.ToString() + ',' + an.X.ToString() + ',' + an.Y.ToString() + ',' +
-                    an.W.ToString() + ',' + an.H.ToString() + ',' + sep.ToString() + pts + sep.ToString() + ',' + sColor + ',' + an.strokeWidth.ToString() + ',' + bColor + ',' + an.font.Size.ToString() + ',' + Environment.NewLine;
-                con += line;
+                s+= ROItoString(Annotations[i]);
             }
+            return s;
+        }
+        public static string ROItoString(Annotation an)
+        {
+            string s = "";
+            BioImage.PointD[] points = an.GetPoints();
+            string pts = "";
+            for (int j = 0; j < points.Length; j++)
+            {
+                if (j == points.Length - 1)
+                    pts += points[j].X.ToString() + "," + points[j].Y.ToString();
+                else
+                    pts += points[j].X.ToString() + "," + points[j].Y.ToString() + " ";
+            }
+
+            char sep = (char)34;
+            string sColor = sep.ToString() + an.strokeColor.A.ToString() + ',' + an.strokeColor.R.ToString() + ',' + an.strokeColor.G.ToString() + ',' + an.strokeColor.B.ToString() + sep.ToString();
+            string bColor = sep.ToString() + an.fillColor.A.ToString() + ',' + an.fillColor.R.ToString() + ',' + an.fillColor.G.ToString() + ',' + an.fillColor.B.ToString() + sep.ToString();
+
+            string line = an.roiID + ',' + an.roiName + ',' + an.type.ToString() + ',' + an.id + ',' + an.shapeIndex.ToString() + ',' +
+                an.Text + ',' + an.coord.S.ToString() + ',' + an.coord.Z.ToString() + ',' + an.coord.C.ToString() + ',' + an.coord.T.ToString() + ',' + an.X.ToString() + ',' + an.Y.ToString() + ',' +
+                an.W.ToString() + ',' + an.H.ToString() + ',' + sep.ToString() + pts + sep.ToString() + ',' + sColor + ',' + an.strokeWidth.ToString() + ',' + bColor + ',' + an.font.Size.ToString() + ',' + NewLine;
+            return line;
+        }
+        public static void ExportROIsCSV(string filename, List<Annotation> Annotations)
+        {
+            string con = columns;
+            con += ROIsToString(Annotations);          
             File.WriteAllText(filename, con);
         }
-        public static List<Annotation> ImportROIsCSV(string filename)
+        public static Annotation StringToROI(string sts)
         {
-            List<Annotation> list = new List<Annotation>();
-            string[] sts = File.ReadAllLines(filename);
-            for (int l = 1; l < sts.Length; l++)
-            {
                 BioImage.Annotation an = new BioImage.Annotation();
                 string val = "";
                 bool inSep = false;
@@ -3825,7 +3870,7 @@ namespace BioImage
                 double y = 0;
                 double w = 0;
                 double h = 0;
-                string line = sts[l];
+                string line = sts;
 
                 for (int i = 0; i < line.Length; i++)
                 {
@@ -3959,7 +4004,17 @@ namespace BioImage
                     else
                         val += c;
                 }
-                list.Add(an);
+
+                return an;
+        }
+        public static List<Annotation> ImportROIsCSV(string filename)
+        {
+            List<Annotation> list = new List<Annotation>();
+            string[] sts = File.ReadAllLines(filename);
+            //We start reading from line 1.
+            for (int i = 1; i < sts.Length; i++)
+            {
+                list.Add(StringToROI(sts[i]));
             }
             return list;
         }
@@ -3969,7 +4024,7 @@ namespace BioImage
             int i = 0;
             foreach (string f in fs)
             {
-                List<Annotation> annotations = OpenROIs(f);
+                List<Annotation> annotations = OpenOMEROIs(f);
                 string ff = Path.GetFileNameWithoutExtension(f);
                 ExportROIsCSV(path + "//" + ff + "-" + i.ToString() + ".csv", annotations);
                 i++;
