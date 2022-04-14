@@ -33,7 +33,7 @@ Best for working with ROI's in OME format & CSV.
 - AForge [LGPL](http://www.aforgenet.com/framework/license.html)
 - BioFormats.Net [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
 - [IKVM](https://github.com/gluck/ikvm/blob/master/LICENSE)
-- LibTiff.Net[BSD](https://bitmiracle.com/libtiff/)
+- LibTiff.Net [BSD](https://bitmiracle.com/libtiff/)
 - Cs-script [MIT](https://github.com/oleg-shilo/cs-script/blob/master/LICENSE)
 
 ## Example usage.
