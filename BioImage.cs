@@ -169,7 +169,7 @@ namespace BioImage
         {
             Buf bf = Buffers[i];
             int[] ints = new int[4];
-            ints[0] = bf.serie;
+            ints[0] = bf.info.Coordinate.S;
             ints[1] = bf.info.Coordinate.Z;
             ints[2] = bf.info.Coordinate.C;
             ints[3] = bf.info.Coordinate.T;
@@ -1365,8 +1365,8 @@ namespace BioImage
                 for (int i = 0; i < ints.Length; i++)
                 {
                     string[] sints = ints[i].Split(',');
-                    int x = int.Parse(sints[0]);
-                    int y = int.Parse(sints[1]);
+                    double x = double.Parse(sints[0]);
+                    double y = double.Parse(sints[1]);
                     pts.Add(new PointD(x, y));
                 }
                 return pts.ToArray();
@@ -1591,12 +1591,13 @@ namespace BioImage
         }
         public class Buf
         {
+            public bool mapped = false;
             public BufferInfo info;
             public MemoryMappedFile file;
-            public MemoryMappedViewStream stream;
+            public MemoryMappedViewStream mapstream;
+            public MemoryStream stream;
             public BinaryWriter writer;
             public BinaryReader read;
-            public int serie;
             public byte[] bytes
             {
                 get
@@ -1612,14 +1613,10 @@ namespace BioImage
             {
                 info = inf;
                 file = MemoryMappedFile.CreateOrOpen(info.ToString(), inf.length);
-                stream = file.CreateViewStream(0, inf.length, MemoryMappedFileAccess.ReadWrite);
-                
-                
-                read = new BinaryReader(stream);
-                writer = new BinaryWriter(stream);
-                serie = inf.Coordinate.S;
+                mapstream = file.CreateViewStream(0, inf.length, MemoryMappedFileAccess.ReadWrite);
+                read = new BinaryReader(mapstream);
+                writer = new BinaryWriter(mapstream);
                 bytes = bts;
-
                 if (info.RGBChannelsCount == 3 && info.RedGreenFlipped == false)
                 {
                     info.RedGreenFlipped = true;
@@ -2191,7 +2188,7 @@ namespace BioImage
             public void Dispose()
             {
                 file.Dispose();
-                stream.Dispose();
+                mapstream.Dispose();
                 writer.Dispose();
                 read.Dispose();
             }
@@ -2573,9 +2570,9 @@ namespace BioImage
             done = false;
             string fn = Path.GetFileNameWithoutExtension(file);
             string dir = Path.GetDirectoryName(file);
-            if(b.Annotations.Count >0)
+            if(b.Annotations.Count > 0)
             {
-                string f = fn + ".csv";
+                string f = dir + "//" + fn + ".csv";
                 ExportROIsCSV(f, b.Annotations);
             }
             ImageJDesc j = new ImageJDesc();
@@ -2585,7 +2582,7 @@ namespace BioImage
             {
                 int stride = b.Buffers[0].info.stride;
                 int im = 0;
-
+               
                 for (int c = 0; c < b.SizeC; c++)
                 {
                     for (int z = 0; z < b.SizeZ; z++)
@@ -2621,6 +2618,7 @@ namespace BioImage
                             // specify that it's a page within the multipage file
                             image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                             // specify the page number
+
                             byte[] buffer = b.Buffers[im].GetAllBytes();
                             image.SetField(TiffTag.PAGENUMBER, c, b.Buffers.Count);
                             for (int i = 0, offset = 0; i < b.SizeY; i++)
@@ -2648,7 +2646,7 @@ namespace BioImage
 
             if (File.Exists(fn + ".csv"))
             {
-                string f = fn + ".csv";
+                string f = dir + "//" + fn + ".csv";
                 b.Annotations = BioImage.ImportROIsCSV(f);
             }
 
@@ -2810,7 +2808,7 @@ namespace BioImage
                     }
                     else
                     {
-                        BufferInfo info = new BufferInfo(file, bytes.Length, b.SizeX, b.SizeY, stride, b.RGBChannelCount, b.bitsPerPixel, b.pixelFormat, new SZCT(b.serie, z, c, t), im, b.littleEndian, true);
+                        BufferInfo info = new BufferInfo(file, bytes.Length, b.SizeX, b.SizeY, stride, b.RGBChannelCount, b.bitsPerPixel, b.pixelFormat, new SZCT(b.serie, z, c, t), im, b.littleEndian, false);
                         Buf bf = new Buf(info, bytes);
                         b.Buffers.Add(bf);
                     }
@@ -2902,6 +2900,9 @@ namespace BioImage
                     pixelFormat = PixelFormat.Format24bppRgb;
             }
 
+            Progress pr = new Progress(threadFile, "Opening");
+            pr.Show();
+            
             //Lets get the channels amd initialize them.
             for (int i = 0; i < SizeC; i++)
             {
@@ -3371,6 +3372,8 @@ namespace BioImage
                     Buffers.Add(buf);
                     Table.AddBuffer(buf);
                 }
+                pr.UpdateProgressF((float)(i) / (float)imc);
+                Application.DoEvents();
             }
             double stx = 0;
             double sty = 0;
@@ -3410,6 +3413,7 @@ namespace BioImage
             }
             Table.AddImage(this);
             reader.close();
+            pr.Close();
             Recorder.AddLine("BioImage.Open(" + '"' + file + '"' + "," + ser + ");");
         }
         public int GetSeriesCount(string file)

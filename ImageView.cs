@@ -419,13 +419,19 @@ namespace BioImage
             {
                 trackBarPanel.Hide();
                 pictureBox.Height += trackBarPanel.Height;
-                showControlsToolStripMenuItem.Text = "Show Controls";
+                trackBarPanel.Height = 0;
+                overlayPictureBox.Height -= trackBarPanel.Height;
+                showControlsToolStripMenuItem.Text = "Hide Controls";
+                pictureBox.Dock = DockStyle.Fill;
             }
             else
             {
                 trackBarPanel.Show();
-                pictureBox.Height -= trackBarPanel.Height;
-                showControlsToolStripMenuItem.Text = "Hide Controls";
+                pictureBox.Height -= 75;
+                trackBarPanel.Height = 75;
+                overlayPictureBox.Height += trackBarPanel.Height;
+                showControlsToolStripMenuItem.Text = "Show Controls";
+                pictureBox.Dock = DockStyle.Fill;
             }
 
         }
@@ -617,15 +623,16 @@ namespace BioImage
             {
                 if (e.Delta > 0)
                 {
-                    scale.Width += 0.1f;
-                    scale.Height += 0.1f;
+                    scale.Width += 0.05f;
+                    scale.Height += 0.05f;
                 }
                 else
                 {
-                    scale.Width -= 0.1f;
-                    scale.Height -= 0.1f;
+                    scale.Width -= 0.05f;
+                    scale.Height -= 0.05f;
                 }
-                UpdateView();
+                pictureBox.Invalidate();
+                overlayPictureBox.Invalidate();
             }
             else
             if (e.Delta > 0)
