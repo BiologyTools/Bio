@@ -28,7 +28,7 @@ Best for working with ROI's in OME format & CSV.
 - [LibTiff.Net](https://bitmiracle.com/libtiff/)
 - [Cs-script](https://github.com/oleg-shilo/cs-script/blob/master/LICENSE)
 
-## License
+## Licenses
 - BioImage [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
 - AForge [LGPL](http://www.aforgenet.com/framework/license.html)
 - BioFormats.Net [GPL3](https://www.gnu.org/licenses/gpl-3.0.en.html)
