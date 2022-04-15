@@ -24,7 +24,7 @@ namespace BioImage
         }
         public void UpdateProgressF(float p)
         {
-            progressBar.Value = (int)(p*100);
+            progressBar.Value = (int)(p * 100);
         }
     }
 }

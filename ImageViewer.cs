@@ -214,11 +214,12 @@ namespace BioImage
                 return;
             //We save the tiff fast Libtiff otherwise we have to use BioFormats.
             //We export the ROI's to CSV to preserve ROI information without Bioformats.
-            Image.SaveTiff(saveTiffFileDialog.FileName);
+            Image.Save(saveTiffFileDialog.FileName);
         }
 
         private void ImageViewer_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
+            float moveAmount = 5;
             if(e.KeyCode == Keys.S && e.Control)
             {
                 saveToolStripMenuItem.PerformClick();
@@ -228,7 +229,10 @@ namespace BioImage
             {
                 openToolStripMenuItem.PerformClick();
             }
-           
+            if(e.KeyCode == Keys.Control && e.KeyCode == Keys.C && Tools.currentTool.type == Tools.Tool.Type.move)
+            {
+                
+            }
         }
 
         private void toolboxToolStripMenuItem_Click(object sender, EventArgs e)
@@ -363,9 +367,12 @@ namespace BioImage
         {
             if (!Modal)
             {
-                Table.RemoveImage(this.Image.IdString);
-                this.Image.Dispose();
-                //Recorder.AddLine("Table.RemoveImage(" + '"' + this.Image.IdString + '"' + ");");
+                if (this.Image != null)
+                {
+                    Table.RemoveImage(this.Image.IdString);
+                    this.Image.Dispose();
+                    //Recorder.AddLine("Table.RemoveImage(" + '"' + this.Image.IdString + '"' + ");");
+                }
             }
             else
             {
@@ -396,7 +403,12 @@ namespace BioImage
                 return;
             if (saveOMEFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            Image.SaveSeries(saveOMEFileDialog.FileName, Image.serie);
+            Image.SaveOME(saveOMEFileDialog.FileName, Image.serie);
+        }
+
+        private void copyToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

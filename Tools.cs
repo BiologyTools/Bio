@@ -376,7 +376,7 @@ namespace BioImage
                 an.type = BioImage.Annotation.Type.Label;
                 an.AddPoint(new BioImage.PointD(e.X, e.Y));
                 an.coord = ImageView.viewer.GetCoordinate();
-                TextInput ti = new TextInput();
+                TextInput ti = new TextInput("");
                 if (ti.ShowDialog() != DialogResult.OK)
                     return;
                 an.font = ti.font;
@@ -467,6 +467,13 @@ namespace BioImage
                 }
                 rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
                 UpdateOverlay();
+            }
+
+            if (Tools.currentTool.type == Tools.Tool.Type.pan)
+            {
+                PointF pf = new PointF(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
+                ImageView.viewer.Origin = new PointF(ImageView.viewer.Origin.X + pf.X, ImageView.viewer.Origin.Y + pf.Y);
+                UpdateView();
             }
         }
         public void ToolMove(PointF e, MouseButtons buts)
@@ -570,6 +577,13 @@ namespace BioImage
                     }
                 }
             }
+            if (Tools.currentTool.type == Tools.Tool.Type.pan && (buts == MouseButtons.Middle || buts == MouseButtons.Left))
+            {
+                PointF pf = new PointF(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
+                ImageView.viewer.Origin = new PointF(ImageView.viewer.Origin.X + pf.X, ImageView.viewer.Origin.Y + pf.Y);
+                UpdateView();
+            }
+
         }
 
         public void ToolDoubleClick(PointF e, MouseButtons buts)

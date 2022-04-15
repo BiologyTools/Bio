@@ -83,7 +83,7 @@ namespace BioImage
         }
 
         public static bool showBounds = true;
-        public static bool showText = false;
+        public static bool showText = true;
         public BioImage image;
         public string filepath = "";
         public int serie = 0;
@@ -343,8 +343,9 @@ namespace BioImage
         Bitmap bitmap;
         public void UpdateView()
         {
-            //if(bitmap!=null)
-            //bitmap.Dispose();
+            if(bitmap!=null)
+            bitmap.Dispose();
+
             if (Mode == ViewMode.Raw)
             {
                 SetCoordinate(image.serie, zBar.Value, cBar.Value, timeBar.Value);
@@ -385,6 +386,7 @@ namespace BioImage
                 }
             }
             pictureBox.Invalidate();
+            overlayPictureBox.Invalidate();
             UpdateStatus();
         }
 
@@ -418,19 +420,21 @@ namespace BioImage
             if (trackBarPanel.Visible)
             {
                 trackBarPanel.Hide();
-                pictureBox.Height += trackBarPanel.Height;
                 trackBarPanel.Height = 0;
-                overlayPictureBox.Height -= trackBarPanel.Height;
-                showControlsToolStripMenuItem.Text = "Hide Controls";
+                Application.DoEvents();
+                pictureBox.Height += 75;
+                overlayPictureBox.Height += 75;
+                showControlsToolStripMenuItem.Text = "Show Controls";
                 pictureBox.Dock = DockStyle.Fill;
             }
             else
             {
                 trackBarPanel.Show();
                 pictureBox.Height -= 75;
+                Application.DoEvents();
                 trackBarPanel.Height = 75;
                 overlayPictureBox.Height += trackBarPanel.Height;
-                showControlsToolStripMenuItem.Text = "Show Controls";
+                showControlsToolStripMenuItem.Text = "Hide Controls";
                 pictureBox.Dock = DockStyle.Fill;
             }
 
@@ -573,15 +577,12 @@ namespace BioImage
         }
         private void ImageView_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.C && e.Control)
+            float moveAmount = 5;
+            if (e.KeyCode == Keys.Delete)
             {
-                /*
-                if(Mode == ViewMode.RGBImage)   
-                    Clipboard.SetImage(image.rgbBitmap);
-                if(Mode != ViewMode.Plane)
-                    Clipboard.SetImage(image.planeBitmap);
-                */
+                deleteROIToolStripMenuItem.PerformClick();
             }
+            
         }
 
         public void GetRange()
@@ -760,181 +761,15 @@ namespace BioImage
         {
             loopC = loopCToolStripMenuItem.Checked;
         }
-        private Point toImagePoint(int px, int py)
-        {
-            int x, y;
-            Point p = new Point(px, py);
-            if (pictureBox.SizeMode == PictureBoxSizeMode.StretchImage)
-            {
-                x = (int)((((float)p.X) / (float)pictureBox.Width) * (float)image.SizeX);
-                y = (int)((((float)p.Y) / (float)pictureBox.Height) * (float)image.SizeY);
-                return new Point(x, y);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.Zoom)
-            {
-                //First we calculate the scaling factor for image width based on picturebox width
-                float fw = (float)pictureBox.Width / (float)image.SizeX;
-                //Next we calculate the scaling factor for image height based on picturebox height
-                float fh = (float)pictureBox.Height / (float)image.SizeY;
-                //Next we calculate the (0,0) origin point of the image in the picturebox.
-                float x0 = (pictureBox.Width - (fh * image.SizeX)) / 2;
-                if (x0 < 0)
-                    x0 = 0;
-                float y0 = (pictureBox.Height - (fw * image.SizeY)) / 2;
-                if (y0 < 0)
-                    y0 = 0;
-                float sw = (float)image.SizeX / (float)(pictureBox.Width - (x0 * 2));
-                float sh = (float)image.SizeY / (float)(pictureBox.Height - (y0 * 2));
-                float xp = (px - x0) * sw;
-                float yp = (py - y0) * sh;
-                return new Point((int)xp, (int)yp);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.Normal || pictureBox.SizeMode == PictureBoxSizeMode.AutoSize)
-            {
-                x = p.X;
-                y = p.Y;
-                if (x > image.SizeX)
-                    x = image.SizeX;
-                if (y > image.SizeY)
-                    y = image.SizeY;
-                if (x < 0)
-                    x = 0;
-                if (y < 0)
-                    y = 0;
-                return new Point(x, y);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.CenterImage)
-            {
-                //We calculate the center position
-                float cpx = (float)(pictureBox.Width / 2);
-                float cpy = (float)(pictureBox.Height / 2);
-                //we calculate position of image X:0 Y:0.
-                float x0 = cpx - ((float)image.SizeX / 2);
-                float y0 = cpy - ((float)image.SizeY / 2);
-                x = p.X - (int)x0;
-                y = p.Y - (int)y0;
-                if (x < 0)
-                    x = 0;
-                if (y < 0)
-                    y = 0;
-                if (x > image.SizeX)
-                    x = image.SizeX;
-                if (y > image.SizeY)
-                    y = image.SizeY;
-                return new Point(x, y);
-            }
-            return new Point(-1, -1);
-        }
-
         private Point GetImagePoint()
         {
-            int x, y;
-            if (pictureBox.SizeMode == PictureBoxSizeMode.StretchImage)
-            {
-                x = (int)((((float)0) / (float)pictureBox.Width) * (float)image.SizeX);
-                y = (int)((((float)0) / (float)pictureBox.Height) * (float)image.SizeY);
-                return new Point(x, y);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.Zoom)
-            {
-                //First we calculate the scaling factor for image width based on picturebox width
-                float fw = (float)pictureBox.Width / (float)image.SizeX;
-                //Next we calculate the scaling factor for image height based on picturebox height
-                float fh = (float)pictureBox.Height / (float)image.SizeY;
-                //Next we calculate the (0,0) origin point of the image in the picturebox.
-                float x0 = (pictureBox.Width - (fh * image.SizeX)) / 2;
-                if (x0 < 0)
-                    x0 = 0;
-                float y0 = (pictureBox.Height - (fw * image.SizeY)) / 2;
-                if (y0 < 0)
-                    y0 = 0;
-                return new Point((int)x0, (int)y0);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.Normal || pictureBox.SizeMode == PictureBoxSizeMode.AutoSize)
-            {
-                return new Point(0, 0);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.CenterImage)
-            {
-                //We calculate the center position
-                float cpx = (float)(pictureBox.Width / 2);
-                float cpy = (float)(pictureBox.Height / 2);
-                //we calculate position of image X:0 Y:0.
-                float x0 = cpx - ((float)image.SizeX / 2);
-                float y0 = cpy - ((float)image.SizeY / 2);
-                x = (int)x0;
-                y = (int)y0;
-                if (x < 0)
-                    x = 0;
-                if (y < 0)
-                    y = 0;
-                if (x > image.SizeX)
-                    x = image.SizeX;
-                if (y > image.SizeY)
-                    y = image.SizeY;
-                return new Point((int)x0, (int)y0);
-            }
-            return new Point(-1, -1);
+            return new Point(0, 0);
         }
         private Point GetImageSize()
         {
             if(image==null)
                 return new Point(pictureBox.Width, pictureBox.Height);
-            int x, y;
-            if (pictureBox.SizeMode == PictureBoxSizeMode.StretchImage)
-            {
-                return new Point(pictureBox.Width, pictureBox.Height);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.Zoom)
-            {
-                //First we calculate the scaling factor for image width based on picturebox width
-                float fw = (float)pictureBox.Width / (float)image.SizeX;
-                //Next we calculate the scaling factor for image height based on picturebox height
-                float fh = (float)pictureBox.Height / (float)image.SizeY;
-                //Next we calculate the (0,0) origin point of the image in the picturebox.
-                float x0 = (pictureBox.Width - (fh * image.SizeX)) / 2;
-                if (x0 < 0)
-                    x0 = 0;
-                float y0 = (pictureBox.Height - (fw * image.SizeY)) / 2;
-                if (y0 < 0)
-                    y0 = 0;
-                float sw = (float)image.SizeX / (float)(pictureBox.Width - (x0 * 2));
-                float sh = (float)image.SizeY / (float)(pictureBox.Height - (y0 * 2));
-
-                int wi = (int)(pictureBox.Width - (x0 * 2));
-                int hi = (int)(pictureBox.Height - (y0 * 2));
-
-                if (wi > image.SizeX)
-                    wi = image.SizeX;
-                if (hi > image.SizeY)
-                    hi = image.SizeY;
-                return new Point(wi, hi);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.Normal || pictureBox.SizeMode == PictureBoxSizeMode.AutoSize)
-            {
-                return new Point(image.SizeX, image.SizeY);
-            }
-            if (pictureBox.SizeMode == PictureBoxSizeMode.CenterImage)
-            {
-                //We calculate the center position
-                float cpx = (float)(pictureBox.Width / 2);
-                float cpy = (float)(pictureBox.Height / 2);
-                //we calculate position of image X:0 Y:0.
-                float x0 = cpx - ((float)image.SizeX / 2);
-                float y0 = cpy - ((float)image.SizeY / 2);
-                x = (int)(pictureBox.Width - (x0 * 2));
-                y = (int)(pictureBox.Height - (y0 * 2));
-                if (x < 0)
-                    x = 0;
-                if (y < 0)
-                    y = 0;
-                if (x > image.SizeX)
-                    x = image.SizeX;
-                if (y > image.SizeY)
-                    y = image.SizeY;
-                return new Point(x, y);
-            }
-            return new Point(-1, -1);
+            return new Point(image.SizeX, image.SizeY);
         }
 
         public bool showRROIs = true;
@@ -1084,22 +919,25 @@ namespace BioImage
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     if (labels)
-                        g.DrawString(an.Text, an.font, b, pc);
+                    {
+                        //Lets draw the text of this ROI in the middle of the ROI
+                        float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
+                        float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
+                        g.DrawString(an.Text, an.font, b, new PointF(fw, fh));
+                    }
                     if (bounds)
                     {
                         RectangleF[] rects = new RectangleF[1];
                         rects[0] = an.BoundingBox.ToRectangleF();
                         g.DrawRectangles(Pens.Green, rects);
-                       
                     }
                     if (an.selected)
                     {
-                        RectangleF[] rects = new RectangleF[1];
-                        rects[0] = an.BoundingBox.ToRectangleF();
-                        g.DrawRectangles(Pens.Magenta, rects);
-                    }
-                    if (an.selected)
-                    {
+                        //Lets draw the bounding box.
+                        RectangleF[] bo = new RectangleF[1];
+                        bo[0] = an.BoundingBox.ToRectangleF();
+                        g.DrawRectangles(Pens.Magenta, bo);
+                        //Lets draw the selectBoxes.
                         List<RectangleF> rects = new List<RectangleF>();
                         for (int i = 0; i < an.selectedPoints.Count; i++)
                         {
@@ -1111,6 +949,10 @@ namespace BioImage
                         if(rects.Count > 0)
                         g.DrawRectangles(Pens.Blue, rects.ToArray());
                         rects.Clear();
+                        //Lets draw the text of this ROI in the middle of the ROI
+                        float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
+                        float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
+                        g.DrawString(an.Text, an.font, b, new PointF(fw, fh));
                     }
                     pen.Dispose();
                 }
@@ -1202,7 +1044,6 @@ namespace BioImage
                             g.DrawLines(pen, points);
                         if (an.selected)
                             g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                        
                     }
                     if (an.type == BioImage.Annotation.Type.Label)
                     {
@@ -1210,7 +1051,12 @@ namespace BioImage
                         g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     if (labels)
-                        g.DrawString(an.Text, an.font, b, pc);
+                    {
+                        //Lets draw the text of this ROI in the middle of the ROI
+                        float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
+                        float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
+                        g.DrawString(an.Text, an.font, b, new PointF(fw, fh));
+                    }
                     if (bounds)
                     {
                         RectangleF[] rects = new RectangleF[1];
@@ -1219,12 +1065,11 @@ namespace BioImage
                     }
                     if (an.selected)
                     {
-                        RectangleF[] rects = new RectangleF[1];
-                        rects[0] = an.BoundingBox.ToRectangleF();
-                        g.DrawRectangles(Pens.Magenta, rects);
-                    }
-                    if (an.selected)
-                    {
+                        //Lets draw the bounding box.
+                        RectangleF[] bo = new RectangleF[1];
+                        bo[0] = an.BoundingBox.ToRectangleF();
+                        g.DrawRectangles(Pens.Magenta, bo);
+                        //Lets draw the selectBoxes.
                         List<RectangleF> rects = new List<RectangleF>();
                         for (int i = 0; i < an.selectedPoints.Count; i++)
                         {
@@ -1236,8 +1081,12 @@ namespace BioImage
                         if (rects.Count > 0)
                             g.DrawRectangles(Pens.Blue, rects.ToArray());
                         rects.Clear();
+                        //Lets draw the text of this ROI in the middle of the ROI
+                        float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
+                        float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
+                        g.DrawString(an.Text, an.font, b, new PointF(fw, fh));
                     }
-                    
+                    pen.Dispose();
                 }
             }
         }
@@ -1245,7 +1094,11 @@ namespace BioImage
         public PointF Origin
         {
             get { return origin; }
-            set { origin = value; }
+            set 
+            { 
+                origin = value;
+                viewer.UpdateOverlay(); 
+            }
         }
 
         private void overlayPictureBox_Paint(object sender, PaintEventArgs e)
@@ -1275,19 +1128,6 @@ namespace BioImage
             g.ScaleTransform(scale.Width, scale.Height);
             PointF ss = GetImageSize();
             g.DrawImage(bitmap,pp.X, pp.Y, ss.X, ss.Y);
-        }
-        private void hideStatusBarToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (statusPanel.Visible == true)
-            {
-                statusPanel.Visible = false;
-                showStatusBarToolStripMenuItem.Visible = true;
-            }
-            else
-            {
-                statusPanel.Visible = true;
-                showStatusBarToolStripMenuItem.Visible = false;
-            }
         }
 
         public static List<BioImage.Annotation> selectedAnnotations = new List<BioImage.Annotation>();
@@ -1437,7 +1277,6 @@ namespace BioImage
                     }
                 }
             }
-
             if (Tools.currentTool != null)
             if(Tools.currentTool.type == Tools.Tool.Type.pencil && e.Button == MouseButtons.Left)
             if (Mode == ViewMode.RGBImage)
@@ -1513,14 +1352,6 @@ namespace BioImage
             mouseUp = p;
             down = false;
             up = true;
-            if (Tools.currentTool.type == Tools.Tool.Type.pan)
-            {
-                PointF pf = new PointF(mouseUp.X - mouseDown.X, mouseUp.Y - mouseDown.Y);
-                origin.X += pf.X;
-                origin.Y += pf.Y;
-                UpdateOverlay();
-                UpdateView();
-            }
             tools.ToolUp(p, e.Button);
         }
         private void pictureBox_MouseDown(object sender, MouseEventArgs e)
@@ -1654,6 +1485,128 @@ namespace BioImage
                 }
             }
             UpdateOverlay();
+        }
+        private void setTextSelectionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (BioImage.Annotation item in AnnotationsRGB)
+            {
+                if(item.selected)
+                {
+                    TextInput input = new TextInput(item.Text);
+                    if (input.ShowDialog() != DialogResult.OK)
+                        return;
+                    item.Text = input.textInput;
+                    item.font = input.font;
+                    item.strokeColor = input.color;
+                    UpdateOverlay();
+                }
+            }
+        }
+
+        private void copyViewToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bitmap bm = new Bitmap(pictureBox.Width, pictureBox.Height);
+            using (Graphics g = Graphics.FromImage(bm))
+            {
+                g.CopyFromScreen(PointToScreen(new Point(pictureBox.Left, pictureBox.Top + 25)), Point.Empty, bm.Size);
+            }
+            Clipboard.SetImage(bm);
+        }
+        List<BioImage.Annotation> copys = new List<BioImage.Annotation>();
+
+        public void CopySelection()
+        {
+            if (!Ctrl)
+                copys.Clear();
+            foreach (BioImage.Annotation item in AnnotationsRGB)
+            {
+                if (item.selected)
+                {
+                    copys.Add(item);
+                }
+            }
+        }
+        public void PasteSelection()
+        {
+            foreach (BioImage.Annotation item in copys)
+            {
+                image.Annotations.Add(item.Copy(Coordinate));
+            }
+            UpdateOverlay();
+        }
+        private void copyROIToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelection();
+        }
+
+        private void pasteROIToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PasteSelection();
+        }
+
+
+        private enum KeyMessages
+        {
+            WM_KEYFIRST = 0x100,
+            WM_KEYDOWN = 0x100,
+            WM_KEYUP = 0x101,
+            WM_CHAR = 0x102,
+            WM_SYSKEYDOWN = 0x0104,
+            WM_SYSKEYUP = 0x0105,
+            WM_SYSCHAR = 0x0106,
+        }
+        bool ctrlDown = false;
+        protected override bool ProcessCmdKey(ref Message msg, Keys key)
+        {
+            
+            int moveAmount = 5;
+            if (viewer != null && msg.Msg == (int)KeyMessages.WM_KEYDOWN)
+            {
+                if(key == Keys.W)
+                {
+                    viewer.Origin = new System.Drawing.PointF(viewer.Origin.X, viewer.Origin.Y + moveAmount);
+                    return true;
+                }
+                if (key == Keys.S)
+                {
+                    viewer.Origin = new System.Drawing.PointF(viewer.Origin.X, viewer.Origin.Y - moveAmount);
+                    return true;
+                }
+                if (key == Keys.A)
+                {
+                    viewer.Origin = new System.Drawing.PointF(viewer.Origin.X + moveAmount, viewer.Origin.Y);
+                    return true;
+                }
+                if (key == Keys.D)
+                {
+                    viewer.Origin = new System.Drawing.PointF(viewer.Origin.X - moveAmount, viewer.Origin.Y);
+                    return true;
+                }
+                if(key.HasFlag(Keys.C) && ctrlDown && Tools.currentTool.type == Tools.Tool.Type.move)
+                {
+                    viewer.CopySelection();
+                    return true;
+                }
+                if (key.HasFlag(Keys.V) && ctrlDown && Tools.currentTool.type == Tools.Tool.Type.move)
+                {
+                    viewer.PasteSelection();
+                    return true;
+                }
+                if (key.HasFlag(Keys.ControlKey))
+                {
+                    ctrlDown = true;
+                    return true;
+                }
+            }
+            if (viewer != null && msg.Msg == (int)KeyMessages.WM_KEYUP)
+            {
+                if (key.HasFlag(Keys.ControlKey))
+                {
+                    ctrlDown = false;
+                    return true;
+                }
+            }
+            return base.ProcessCmdKey(ref msg, key);
         }
     }
 }

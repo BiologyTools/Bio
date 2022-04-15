@@ -1078,7 +1078,7 @@ namespace BioImage
         }
         public class Annotation
         {
-            public float selectBoxSize = 4;
+            
             public enum Type
             {
                 Rectangle,
@@ -1090,7 +1090,7 @@ namespace BioImage
                 Ellipse,
                 Label
             }
-            public Type type;
+            
             public PointD Point
             {
                 get
@@ -1198,7 +1198,9 @@ namespace BioImage
                     Rect = new RectangleD(X, Y, W, value);
                 }
             }
-
+            
+            public Type type;
+            public float selectBoxSize = 4;
             private List<PointD> Points = new List<PointD>();
             public List<PointD> PointsD
             {
@@ -1219,6 +1221,59 @@ namespace BioImage
             public string roiID = "";
             public string roiName = "";
             private string text = "";
+            
+            public double strokeWidth = 1;
+            public int shapeIndex = 0;
+            public bool closed = false;
+            public bool selected = false;
+
+            public Annotation Copy()
+            {
+                Annotation copy = new Annotation();
+                copy.id = id;
+                copy.roiID = roiID;
+                copy.roiName = roiName;
+                copy.text = text;
+                copy.strokeWidth = strokeWidth;
+                copy.strokeColor = strokeColor;
+                copy.fillColor = fillColor;
+                copy.Points = Points;
+                copy.selected = selected;
+                copy.shapeIndex = shapeIndex;
+                copy.closed = closed;
+                copy.font = font;
+                copy.selectBoxs = selectBoxs;
+                copy.BoundingBox = BoundingBox;
+                copy.isFilled = isFilled;
+                copy.coord = coord;
+                copy.selectedPoints = selectedPoints;
+
+                return copy;
+            }
+            public Annotation Copy(SZCT cord)
+            {
+                Annotation copy = new Annotation();
+                copy.type = type;
+                copy.selectBoxSize = selectBoxSize;
+                copy.id = id;
+                copy.roiID = roiID;
+                copy.roiName = roiName;
+                copy.text = text;
+                copy.strokeWidth = strokeWidth;
+                copy.strokeColor = strokeColor;
+                copy.fillColor = fillColor;
+                copy.Points.AddRange(Points);
+                copy.selected = selected;
+                copy.shapeIndex = shapeIndex;
+                copy.closed = closed;
+                copy.font = font;
+                copy.selectBoxs.AddRange(selectBoxs);
+                copy.BoundingBox = BoundingBox;
+                copy.isFilled = isFilled;
+                copy.coord = cord;
+                copy.selectedPoints = selectedPoints;
+                return copy;
+            }
             public string Text
             {
                 get
@@ -1235,11 +1290,13 @@ namespace BioImage
                     }
                 }
             }
-            public double strokeWidth = 1;
-            public int shapeIndex = 0;
-            public bool closed = false;
-            public bool selected = false;
-            
+            public Size TextSize
+            {
+                get
+                {
+                    return TextRenderer.MeasureText(text, font);
+                }
+            }
             public RectangleD GetSelectBound()
             {
                 double f = selectBoxSize / 2;
@@ -1417,13 +1474,14 @@ namespace BioImage
                     selectBoxs.Add(new RectangleF((float)Points[i].X - f, (float)Points[i].Y - f, selectBoxSize, selectBoxSize));
                 }
             }
+            
             public void UpdateBoundingBox()
             {
                 if (type == Type.Label)
                 {
                     if (text != "")
                     {
-                        Size s = TextRenderer.MeasureText(text, font);
+                        Size s = TextSize;
                         BoundingBox = new RectangleD(Points[0].X, Points[0].Y, s.Width, s.Height);
                     }
                 }
@@ -1452,7 +1510,7 @@ namespace BioImage
             }
             public override string ToString()
             {
-                return "(" + Point.X + ", " + Point.Y + ") " + coord.ToString() + " " + type.ToString() + " " + roiName;
+                return type.ToString() + ", " + Text + "(" + Point.X + ", " + Point.Y + ") " + coord.ToString();
             }
         }
         public class Channel
@@ -1724,27 +1782,12 @@ namespace BioImage
                 //Here we write any changes made to the 
                 writer.Flush();
             }
-            Bitmap bitmap;
             public unsafe Bitmap GetBitmap()
             {
-                if(bitmap!=null)
-                    bitmap.Dispose();
                 fixed (byte* ptr = GetAllBytes())
                 {
-                    bitmap = new Bitmap(info.SizeX, info.SizeY, info.stride, info.pixelFormat, new IntPtr(ptr));
+                   return new Bitmap(info.SizeX, info.SizeY, info.stride, info.pixelFormat, new IntPtr(ptr));
                 }
-                return bitmap;
-            }
-
-            public unsafe Bitmap GetBuffer(PixelFormat pixel)
-            {
-                if (bitmap != null)
-                    bitmap.Dispose();
-                fixed (byte* ptr = GetAllBytes())
-                {
-                    bitmap = new Bitmap(info.SizeX, info.SizeY, info.stride, pixel, new IntPtr(ptr));
-                }
-                return bitmap;
             }
 
             public static unsafe Bitmap GetBitmap(byte[] bts, int SizeX, int SizeY, int stride, PixelFormat pixel)
@@ -1838,16 +1881,15 @@ namespace BioImage
                 return bytes;
             }
 
-            public unsafe Bitmap GetFiltered(IntRange range)
+            public Bitmap GetFiltered(IntRange range)
             {
-                bitmap = GetBitmap();
                 if (info.bitsPerPixel > 8)
                 {
                     // set ranges
                     filter16.InRed = range;
                     filter16.InGreen = range;
                     filter16.InBlue = range;
-                    return filter16.Apply(bitmap);
+                    return filter16.Apply(GetBitmap());
                 }
                 else
                 {
@@ -1855,19 +1897,18 @@ namespace BioImage
                     filter8.InRed = range;
                     filter8.InGreen = range;
                     filter8.InBlue = range;
-                    return filter8.Apply(bitmap);
+                    return filter8.Apply(GetBitmap());
                 }
             }
-            public unsafe Bitmap GetFiltered(IntRange r, IntRange g, IntRange b)
+            public Bitmap GetFiltered(IntRange r, IntRange g, IntRange b)
             {
-                bitmap = GetBitmap();
                 if (info.bitsPerPixel > 8)
                 {
                     // set ranges
                     filter16.InRed = r;
                     filter16.InGreen = g;
                     filter16.InBlue = b;
-                    return filter16.Apply(bitmap);
+                    return filter16.Apply(GetBitmap());
                 }
                 else
                 {
@@ -1875,8 +1916,8 @@ namespace BioImage
                     filter8.InRed = r;
                     filter8.InGreen = g;
                     filter8.InBlue = b;
-                    return filter8.Apply(bitmap);
-                }
+                    return filter8.Apply(GetBitmap());
+                } 
             }
             public Bitmap switchRedBlue(Bitmap image)
             {
@@ -2220,14 +2261,14 @@ namespace BioImage
 
         public static void Save(BioImage im, string file, int ser)
         {
-            im.SaveSeries(file, ser);
+            im.SaveOME(file, ser);
         }
         public static void Save(string id, string file, int ser)
         {
             BioImage b = Table.GetImage(id);
-            b.SaveSeries(file, ser);
+            b.SaveOME(file, ser);
         }
-        public bool SaveSeries(string file, int series)
+        public bool SaveOME(string file, int series)
         {
             // create OME-XML metadata store
             ServiceFactory factory = new ServiceFactory();
@@ -2531,12 +2572,12 @@ namespace BioImage
             } while (!done);
             pr.Close();
             pr.Dispose();
-            Recorder.AddLine("BioImage.Save(" + '"' + IdString + '"'+ "," + '"' + file + '"' + "," + series + ");");
+            Recorder.AddLine("BioImage.SaveOME(" + '"' + IdString + '"'+ "," + '"' + file + '"' + "," + series + ");");
             return true;
         }
 
         private static BioImage threadImage = null;
-        public void SaveTiff(string file)
+        public void Save(string file)
         {
             //This is the default saving mode we save the roi's in CSV and save tiff fast with BitMiracle.
             threadImage = this;
@@ -2559,7 +2600,7 @@ namespace BioImage
             threadImage = this;
             threadFile = file;
             threadProgress = 0;
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(OpenTiff));
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Open));
             t.Start();
             Progress pr = new Progress(threadFile, "Opening");
             pr.Show();
@@ -2651,7 +2692,7 @@ namespace BioImage
             }
             done = true;
         }
-        private static void OpenTiff()
+        private static void Open()
         {
             string file = threadFile;
             BioImage b = threadImage;
@@ -3452,7 +3493,7 @@ namespace BioImage
             Table.AddImage(this);
             reader.close();
             pr.Close();
-            Recorder.AddLine("BioImage.Open(" + '"' + file + '"' + "," + ser + ");");
+            Recorder.AddLine("BioImage.OpenOME(" + '"' + file + '"' + "," + ser + ");");
         }
         public int GetSeriesCount(string file)
         {
@@ -3469,6 +3510,8 @@ namespace BioImage
             imageReader.close();
             return c;
         }
+
+        //We use UNIX type line endings since they are supported by ImageJ & BioImage.
         const char NewLine = '\n';
 
         public const string columns = "ROIID,ROINAME,TYPE,ID,SHAPEINDEX,TEXT,S,C,Z,T,X,Y,W,H,POINTS,STROKECOLOR,STROKECOLORW,FILLCOLOR,FONTSIZE\n";

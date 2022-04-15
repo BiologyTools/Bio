@@ -14,10 +14,11 @@ namespace BioImage
     {
         public string textInput = "";
         public Font font = DefaultFont;
-        public Color color = Color.Black;
-        public TextInput()
+        public Color color = Color.Yellow;
+        public TextInput(string text)
         {
             InitializeComponent();
+            textBox.Text = text;
         }
 
         private void okBut_Click(object sender, EventArgs e)

@@ -59,6 +59,7 @@
             // 
             // cancelBut
             // 
+            this.cancelBut.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelBut.ForeColor = System.Drawing.Color.Black;
             this.cancelBut.Location = new System.Drawing.Point(94, 58);
             this.cancelBut.Name = "cancelBut";
@@ -103,9 +104,11 @@
             // 
             // TextInput
             // 
+            this.AcceptButton = this.okBut;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.CancelButton = this.cancelBut;
             this.ClientSize = new System.Drawing.Size(272, 97);
             this.Controls.Add(this.colorBut);
             this.Controls.Add(this.fontBut);
