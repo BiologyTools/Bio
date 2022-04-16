@@ -12,57 +12,88 @@ namespace BioImage
 {
     public partial class MainForm : Form
     {
+        public class Node
+        {
+            public TreeNode node;
+            public enum DataType
+            {
+                image,
+                buf,
+                roi,
+                text
+            }
+            private DataType type;
+            public DataType Type
+            {
+                get { return type; }
+                set { type = value; }
+            }
+            private object obj;
+            public object Object
+            {
+                get { return obj; }
+                set { obj = value; }
+            }
+            public Node(object data,DataType typ)
+            {
+                type = typ;
+                obj = data;
+                node = new TreeNode();
+                node.Tag = this;
+                node.Text = obj.ToString();
+                node.ForeColor = Color.White;
+            }
+            public string Text
+            {
+                get { return node.Text; }
+                set { node.Text = value; }
+            }
+        }
         public MainForm(string[] args)
         {
             InitializeComponent();
             UpdateNodes();
-            if(args.Length > 0)
-                viewer = new ImageViewer(args[0]);
+            if (args.Length > 0)
+            {
+                ImageViewer viewer = new ImageViewer(args[0]);
+                viewer.Show();
+            }
         }
 
         public void UpdateNodes()
         {
+            
             treeView.Nodes.Clear();
             TreeNode images = new TreeNode();
             images.Text = "BioImages";
             images.ForeColor = Color.White;
             foreach (BioImage item in Table.bioimages.Values)
             {
-                TreeNode node = new TreeNode();
-                node.Text = item.Filename;
-                node.ForeColor = Color.White;
-                node.Tag = item;
+                //TreeNode node = new TreeNode();
+                Node tree = new Node(item, Node.DataType.image);
 
-                TreeNode implanes = new TreeNode();
+
+                Node implanes = new Node(item, Node.DataType.text);
                 implanes.Text = "Planes";
-                implanes.ForeColor = Color.White;
 
                 foreach (BioImage.Buf buf in item.Buffers)
                 {
-                    TreeNode plane = new TreeNode();
+                    Node plane = new Node(item, Node.DataType.buf);
                     plane.Text = buf.info.stringId;
-                    plane.ForeColor = Color.White;
-                    plane.Tag = buf;
-                    implanes.Nodes.Add(plane);
+                    implanes.node.Nodes.Add(plane.node);
                 }
-                node.Nodes.Add(implanes);
+                tree.node.Nodes.Add(implanes.node);
 
-
-                TreeNode rois = new TreeNode();
+                Node rois = new Node(item, Node.DataType.text);
                 rois.Text = "ROI";
-                rois.ForeColor = Color.White;
 
                 foreach (BioImage.Annotation an in item.Annotations)
                 {
-                    TreeNode roi = new TreeNode();
-                    roi.Text = an.ToString();
-                    roi.ForeColor = Color.White;
-                    roi.Tag = an;
-                    rois.Nodes.Add(roi);
+                    Node roi = new Node(an, Node.DataType.text);
+                    rois.node.Nodes.Add(roi.node);
                 }
-                node.Nodes.Add(rois);
-
-                images.Nodes.Add(node);
+                tree.node.Nodes.Add(rois.node);
+                images.Nodes.Add(tree.node);
             }
             treeView.Nodes.Add(images);
         }
