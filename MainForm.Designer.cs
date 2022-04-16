@@ -47,7 +47,7 @@
             this.treeView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.treeView.Location = new System.Drawing.Point(-1, 27);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(335, 182);
+            this.treeView.Size = new System.Drawing.Size(335, 219);
             this.treeView.TabIndex = 2;
             // 
             // menuStrip
@@ -99,12 +99,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(334, 209);
+            this.ClientSize = new System.Drawing.Size(334, 246);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.treeView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
-            this.Text = "BioImage - Tree View";
+            this.Text = "BioImage";
             this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
