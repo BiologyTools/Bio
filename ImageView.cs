@@ -1516,8 +1516,7 @@ namespace BioImage
 
         public void CopySelection()
         {
-            if (!Ctrl)
-                copys.Clear();
+            copys.Clear();
             foreach (BioImage.Annotation item in AnnotationsRGB)
             {
                 if (item.selected)
@@ -1582,27 +1581,14 @@ namespace BioImage
                     viewer.Origin = new System.Drawing.PointF(viewer.Origin.X - moveAmount, viewer.Origin.Y);
                     return true;
                 }
-                if(key.HasFlag(Keys.C) && ctrlDown && Tools.currentTool.type == Tools.Tool.Type.move)
+                if(key.HasFlag(Keys.C) && Ctrl && Tools.currentTool.type == Tools.Tool.Type.move)
                 {
                     viewer.CopySelection();
                     return true;
                 }
-                if (key.HasFlag(Keys.V) && ctrlDown && Tools.currentTool.type == Tools.Tool.Type.move)
+                if (key.HasFlag(Keys.V) && Ctrl && Tools.currentTool.type == Tools.Tool.Type.move)
                 {
                     viewer.PasteSelection();
-                    return true;
-                }
-                if (key.HasFlag(Keys.ControlKey))
-                {
-                    ctrlDown = true;
-                    return true;
-                }
-            }
-            if (viewer != null && msg.Msg == (int)KeyMessages.WM_KEYUP)
-            {
-                if (key.HasFlag(Keys.ControlKey))
-                {
-                    ctrlDown = false;
                     return true;
                 }
             }
