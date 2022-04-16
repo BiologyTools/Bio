@@ -26,6 +26,7 @@ namespace BioImage
             stackTools = new StackTools();
             app = this;
             SetImage(arg);
+            Table.AddViewer(this);
         }
         public ImageViewer(string arg)
         {
@@ -43,6 +44,8 @@ namespace BioImage
             {
                 SetFile(arg, 0);
             }
+
+            Table.AddViewer(this);
         }
         public static ImageViewer FromID(string id)
         {
@@ -74,7 +77,6 @@ namespace BioImage
             app = this;
             runner = new Scripting();
             stackTools = new StackTools();
-
             if (arg.Length == 0)
                 return;
             else
@@ -89,6 +91,7 @@ namespace BioImage
                     SetFile(arg[0], 0);
                 }
             }
+            Table.AddViewer(this);
         }
 
         private static void Init()
@@ -111,9 +114,7 @@ namespace BioImage
             viewer.Dock = DockStyle.Fill;
             panel.Controls.Add(viewer);
             string name = Path.GetFileName(file);
-            Table.AddViewer(this);
             this.Text = name;
-
             viewer.UpdateView();
             System.Drawing.Size s = new System.Drawing.Size(viewer.image.SizeX + 20, viewer.image.SizeY + 165);
             if (s.Width > Screen.PrimaryScreen.Bounds.Width || s.Height > Screen.PrimaryScreen.Bounds.Height)
@@ -219,7 +220,6 @@ namespace BioImage
 
         private void ImageViewer_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
         {
-            float moveAmount = 5;
             if(e.KeyCode == Keys.S && e.Control)
             {
                 saveToolStripMenuItem.PerformClick();
@@ -228,10 +228,6 @@ namespace BioImage
             if (e.KeyCode == Keys.O && e.Control)
             {
                 openToolStripMenuItem.PerformClick();
-            }
-            if(e.KeyCode == Keys.Control && e.KeyCode == Keys.C && Tools.currentTool.type == Tools.Tool.Type.move)
-            {
-                
             }
         }
 

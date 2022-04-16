@@ -577,7 +577,6 @@ namespace BioImage
         }
         private void ImageView_KeyDown(object sender, KeyEventArgs e)
         {
-            float moveAmount = 5;
             if (e.KeyCode == Keys.Delete)
             {
                 deleteROIToolStripMenuItem.PerformClick();
@@ -1517,19 +1516,29 @@ namespace BioImage
         public void CopySelection()
         {
             copys.Clear();
+            string s = "";
             foreach (BioImage.Annotation item in AnnotationsRGB)
             {
                 if (item.selected)
                 {
                     copys.Add(item);
+                    s += BioImage.ROItoString(item);
                 }
             }
+            Clipboard.SetText(s);
         }
         public void PasteSelection()
         {
-            foreach (BioImage.Annotation item in copys)
+            string[] sts = Clipboard.GetText().Split(BioImage.NewLine);
+            foreach (string line in sts)
             {
-                image.Annotations.Add(item.Copy(Coordinate));
+                if (line.Length > 8)
+                {
+                    BioImage.Annotation an = BioImage.StringToROI(line);
+                    //We set the coordinates of the ROI's we are pasting
+                    an.coord = Coordinate;
+                    image.Annotations.Add(an);
+                }
             }
             UpdateOverlay();
         }
@@ -1554,10 +1563,8 @@ namespace BioImage
             WM_SYSKEYUP = 0x0105,
             WM_SYSCHAR = 0x0106,
         }
-        bool ctrlDown = false;
         protected override bool ProcessCmdKey(ref Message msg, Keys key)
         {
-            
             int moveAmount = 5;
             if (viewer != null && msg.Msg == (int)KeyMessages.WM_KEYDOWN)
             {

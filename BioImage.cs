@@ -661,6 +661,7 @@ namespace BioImage
         public bool isGroup = false;
         public long loadTimeMS = 0;
         public long loadTimeTicks = 0;
+        public bool selected = false;
         private int sizeX, sizeY, sizeZ, sizeC, sizeT;
         public int SizeX
         {
@@ -1078,7 +1079,6 @@ namespace BioImage
         }
         public class Annotation
         {
-            
             public enum Type
             {
                 Rectangle,
@@ -1090,7 +1090,6 @@ namespace BioImage
                 Ellipse,
                 Label
             }
-            
             public PointD Point
             {
                 get
@@ -2929,7 +2928,6 @@ namespace BioImage
             done = true;
             wr.close();
         }
-
         public static BioImage OpenTiff(string file, int ser)
         {
             BioImage res = new BioImage(file, ser);
@@ -3512,7 +3510,7 @@ namespace BioImage
         }
 
         //We use UNIX type line endings since they are supported by ImageJ & BioImage.
-        const char NewLine = '\n';
+        public const char NewLine = '\n';
 
         public const string columns = "ROIID,ROINAME,TYPE,ID,SHAPEINDEX,TEXT,S,C,Z,T,X,Y,W,H,POINTS,STROKECOLOR,STROKECOLORW,FILLCOLOR,FONTSIZE\n";
         public static List<Annotation> OpenOMEROIs(string file)
