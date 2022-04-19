@@ -49,11 +49,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.treeView.CheckBoxes = true;
+            this.treeView.ContextMenuStrip = this.contextMenuStrip;
             this.treeView.Location = new System.Drawing.Point(-1, 27);
             this.treeView.Name = "treeView";
             this.treeView.Size = new System.Drawing.Size(335, 219);
             this.treeView.TabIndex = 2;
+            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             // 
             // menuStrip
             // 
@@ -105,12 +106,12 @@
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deleteToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(108, 26);
+            this.contextMenuStrip.Size = new System.Drawing.Size(181, 48);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             // 
             // MainForm

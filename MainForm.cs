@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace BioImage
 {
@@ -78,8 +79,9 @@ namespace BioImage
 
                 foreach (BioImage.Buf buf in item.Buffers)
                 {
-                    Node plane = new Node(item, Node.DataType.buf);
+                    Node plane = new Node(buf, Node.DataType.buf);
                     plane.Text = buf.info.stringId;
+                   
                     implanes.node.Nodes.Add(plane.node);
                 }
                 tree.node.Nodes.Add(implanes.node);
@@ -89,7 +91,7 @@ namespace BioImage
 
                 foreach (BioImage.Annotation an in item.Annotations)
                 {
-                    Node roi = new Node(an, Node.DataType.text);
+                    Node roi = new Node(an, Node.DataType.roi);
                     rois.node.Nodes.Add(roi.node);
                 }
                 tree.node.Nodes.Add(rois.node);
@@ -119,6 +121,35 @@ namespace BioImage
         {
             ImageViewer iv = new ImageViewer("");
             iv.Show();
+        }
+
+        private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (treeView.SelectedNode == null)
+                return;
+
+            Node node = (Node)treeView.SelectedNode.Tag;
+            if(node!=null)
+            if(node.Type == Node.DataType.buf)
+            {
+                BioImage.Buf buf = (BioImage.Buf)node.Object;
+                int ind = int.Parse(Path.GetFileName(buf.ToString()));
+                string name = buf.ToString();
+                int inds = name.IndexOf("/s");
+                string filename = name.Substring(0, inds);
+                ImageViewer v = Table.GetViewer(Path.GetFileName(filename));
+                if(v!=null)
+                    v.viewer.SetCoordinate(buf.info.Coordinate.S, buf.info.Coordinate.Z, buf.info.Coordinate.C, buf.info.Coordinate.T);
+            }
+            else
+            if(node.Type == Node.DataType.roi)
+            {
+                BioImage.Annotation an = (BioImage.Annotation)node.Object;
+                string name = node.node.Parent.Parent.Text;
+                ImageViewer v = Table.GetViewer(name);
+                if (v != null)
+                    v.viewer.SetCoordinate(an.coord.S, an.coord.Z, an.coord.C, an.coord.T);
+            }
         }
     }
 }

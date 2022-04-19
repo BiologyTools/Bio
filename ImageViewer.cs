@@ -361,25 +361,17 @@ namespace BioImage
         }
         private void ImageViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (Image == null)
+                return;
             if (!Modal)
             {
-                if (this.Image != null)
-                {
-                    Table.RemoveImage(this.Image.IdString);
-                    this.Image.Dispose();
-                    //Recorder.AddLine("Table.RemoveImage(" + '"' + this.Image.IdString + '"' + ");");
-                }
-            }
-            else
-            {
-                if (this.DialogResult == DialogResult.None)
-                {
-                    e.Cancel = true;
-                    return;
-                }
+                //If this is not a dialog we dispose of the image.
+                Recorder.AddLine("Table.RemoveImage(" + '"' + this.Text + '"' + ");");
+                Table.RemoveImage(this.Image.IdString);
+                this.Image.Dispose();
             }
             Table.RemoveViewer(this);
-            Recorder.AddLine("Table.CloseViewer(" + '"' + this.Text + '"' + ");");
+            Recorder.AddLine("Table.RemoveViewer(" + '"' + this.Text + '"' + ");");
         }
 
         private void stackToolsToolStripMenuItem_Click(object sender, EventArgs e)

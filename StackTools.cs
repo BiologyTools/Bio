@@ -108,17 +108,20 @@ namespace BioImage
 
         private void setMaxToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if(ImageA!=null)
             zEndBox.Value = ImageA.SizeZ;
         }
 
         private void setMaxCToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            cEndBox.Value = ImageA.SizeC;
+            if (ImageA != null)
+                cEndBox.Value = ImageA.SizeC;
         }
 
         private void setMaxTToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            tEndBox.Value = ImageA.SizeT;
+            if (ImageA != null)
+                tEndBox.Value = ImageA.SizeT;
         }
 
         private void StackTools_FormClosing(object sender, FormClosingEventArgs e)

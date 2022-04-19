@@ -93,6 +93,9 @@ namespace BioImage
         {
             coordinate = new BioImage.SZCT(s, z, c, t);
             Coordinate = coordinate;
+            zBar.Value = z;
+            cBar.Value = c;
+            timeBar.Value = t;
         }
         public BioImage.SZCT GetCoordinate()
         {
@@ -1111,11 +1114,11 @@ namespace BioImage
             if (Tools.currentTool.type == Tools.Tool.Type.rectSel && down)
             {
                 RectangleF[] fs = new RectangleF[1];
-                fs[0] = Tools.rectSel.Selection.ToRectangleF();
+                fs[0] = Tools.GetTool(Tools.Tool.Type.rectSel).RectangleF;
                 g.DrawRectangles(Pens.Magenta, fs);
             }
             else
-                Tools.rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
+                Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new BioImage.RectangleD(0, 0, 0, 0);
         }
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
@@ -1276,6 +1279,8 @@ namespace BioImage
                     }
                 }
             }
+
+            //Pencil tool
             if (Tools.currentTool != null)
             if(Tools.currentTool.type == Tools.Tool.Type.pencil && e.Button == MouseButtons.Left)
             if (Mode == ViewMode.RGBImage)
@@ -1294,15 +1299,15 @@ namespace BioImage
                 if (Mode == ViewMode.RGBImage)
                 {
                     if (Tools.rEnabled)
-                        image.SetValue((int)p.X, (int)p.Y, RChannel.Index, Tools.pencil.Color.R);
+                        image.SetValue((int)p.X, (int)p.Y, RChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
                     if (Tools.gEnabled)
-                        image.SetValue((int)p.X, (int)p.Y, GChannel.Index, Tools.pencil.Color.G);
+                        image.SetValue((int)p.X, (int)p.Y, GChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.G);
                     if (Tools.bEnabled)
-                        image.SetValue((int)p.X, (int)p.Y, BChannel.Index, Tools.pencil.Color.B);
+                        image.SetValue((int)p.X, (int)p.Y, BChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.B);
                 }
                 else
                 {
-                    image.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.pencil.Color.R);
+                    image.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
                 }
                 UpdateView();
             }
@@ -1311,11 +1316,11 @@ namespace BioImage
             {
                 if (image.RGBChannelCount > 1)
                 {
-                    Buf.SetValueRGB((int)p.X, (int)p.Y, cBar.Value, Tools.pencil.Color.R);
+                    Buf.SetValueRGB((int)p.X, (int)p.Y, cBar.Value, Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
                 }
                 else
                 {
-                    image.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.pencil.Color.R);
+                    image.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
                 }
                 UpdateView();
             }
@@ -1332,9 +1337,9 @@ namespace BioImage
                 }
                 UpdateView();
             }
+
             UpdateStatus();
             tools.ToolMove(p, mouseDownButtons);
-            
             pd = p;
         }
         private void pictureBox_MouseUp(object sender, MouseEventArgs e)
@@ -1588,7 +1593,12 @@ namespace BioImage
                     viewer.Origin = new System.Drawing.PointF(viewer.Origin.X - moveAmount, viewer.Origin.Y);
                     return true;
                 }
-                if(key.HasFlag(Keys.C) && Ctrl && Tools.currentTool.type == Tools.Tool.Type.move)
+                if (key == Keys.Delete)
+                {
+                    Tools.currentTool = Tools.GetTool(Tools.Tool.Type.delete);
+                    return true;
+                }
+                if (key.HasFlag(Keys.C) && Ctrl && Tools.currentTool.type == Tools.Tool.Type.move)
                 {
                     viewer.CopySelection();
                     return true;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,24 +20,8 @@ namespace BioImage
         public static bool rEnabled = true;
         public static bool gEnabled = true;
         public static bool bEnabled = true;
-        public static PencilTool pencil;
-        public static MoveTool move;
-        public static BrushTool brush;
-        public static BucketTool bucket;
-        public static EraserTool eraser;
-        public static PointTool point;
-        public static LineTool line;
-        public static RectTool rect;
-        public static EllipseTool ellipse;
-        public static PolygonTool polygon;
-        public static TextTool text;
-        public static DeleteTool delete;
-        public static FreeformTool freeform;
-        public static RectSelTool rectSel;
-        public static PointSelTool pointSel;
-        public static PanTool pan;
         public static Rectangle selectionRectangle;
-
+        public static Hashtable tools = new Hashtable();
         public class Tool : Control
         {
             public enum ToolType
@@ -67,157 +52,75 @@ namespace BioImage
                 pan
             }
 
+            public static void Init()
+            {
+                if (tools.Count == 0)
+                {
+                    foreach (Tool.Type tool in (Tool.Type[])Enum.GetValues(typeof(Tool.Type)))
+                    {
+                        tools.Add(tool.ToString(), new Tool(tool, new BioImage.ColorS(0, 0, 0), 1));
+                    }
+                }
+            }
+
             public BioImage.ColorS Color;
             public List<Point> Points;
             public ToolType toolType;
+            private BioImage.RectangleD rect;
+            public BioImage.RectangleD Rectangle
+            {
+                get { return rect; }
+                set { rect = value; }
+            }
+            public RectangleF RectangleF
+            {
+                get { return new RectangleF((float)rect.X, (float)rect.Y, (float)rect.W, (float)rect.H); }
+            }
+            public double width = 1;
+            public Scripting.Script script;
             public Type type;
-        }
-        public class PencilTool : Tool
-        {
-            public PencilTool(BioImage.ColorS col)
+            public Tool()
             {
+            }
+            public Tool(Type t)
+            {
+                type = t;
+            }
+            public Tool(Type t, BioImage.ColorS col)
+            {
+                type = t;
                 Color = col;
-                toolType = ToolType.color;
-                type = Type.pencil;
             }
-        }
-        public class BrushTool : Tool
-        {
-            public int BrushWidth;
-            public BrushTool(BioImage.ColorS col,int BrushWidth)
+            public Tool(Type t, BioImage.ColorS col, double w)
             {
-                this.BrushWidth = BrushWidth;
-                this.Color = col;
-                type = Type.brush;
+                type = t;
+                Color = col;
+                width = w;
             }
-        }
-        public class BucketTool : Tool
-        {
-            public BucketTool(BioImage.ColorS col)
+            public Tool(Type t, BioImage.RectangleD r)
             {
-                this.Color = col;
-                type = Type.bucket;
+                type = t;
+                rect = r;
             }
-        }
-        public class EraserTool : Tool
-        {
-            public int EraserWidth;
-            public EraserTool(BioImage.ColorS col, int EraserWidth)
+
+            public ushort R
             {
-                this.EraserWidth = EraserWidth;
-                this.Color = col;
-                type = Type.brush;
+                get { return Color.R; }
+                set { Color.R = value; }
             }
-        }
-        public class MoveTool : Tool
-        {
-            public MoveTool()
+            public ushort G
             {
-                toolType = ToolType.annotation;
-                type = Type.move;
+                get { return Color.G; }
+                set { Color.G = value; }
             }
-        }
-        public class PointTool : Tool
-        {
-            public PointTool()
+            public ushort B
             {
-                toolType = ToolType.annotation;
-                type = Type.point;
+                get { return Color.B; }
+                set { Color.B = value; }
             }
-        }
-        public class LineTool : Tool
-        {
-            public LineTool()
+            public override string ToString()
             {
-                toolType = ToolType.annotation;
-                type = Type.line;
-            }
-        }
-        public class RectTool : Tool
-        {
-            public RectTool()
-            {
-                toolType = ToolType.annotation;
-                type = Type.rect;
-            }
-        }
-        public class EllipseTool : Tool
-        {
-            public EllipseTool()
-            {
-                toolType = ToolType.annotation;
-                type = Type.ellipse;
-            }
-        }
-        public class PolygonTool : Tool
-        {
-            public PolygonTool()
-            {
-                toolType = ToolType.annotation;
-                type = Type.polygon;
-            }
-        }
-        public class TextTool : Tool
-        {
-            public TextTool()
-            {
-                toolType = ToolType.annotation;
-                type = Type.text;
-            }
-        }
-        public class DeleteTool : Tool
-        {
-            public DeleteTool()
-            {
-                toolType = ToolType.annotation;
-                type = Type.delete;
-            }
-        }
-        public class FreeformTool : Tool
-        {
-            public FreeformTool()
-            {
-                toolType = ToolType.annotation;
-                type = Type.freeform;
-            }
-        }
-        public class PointSelTool : Tool
-        {
-            public PointSelTool()
-            {
-                toolType = ToolType.select;
-                type = Type.pointSel;
-            }
-        }
-        public class PanTool : Tool
-        {
-            public PanTool()
-            {
-                toolType = ToolType.select;
-                type = Type.pan;
-            }
-        }
-        public class RectSelTool : Tool
-        {
-            private BioImage.RectangleD selection;
-            public BioImage.RectangleD Selection
-            {
-                get
-                {
-                    return selection;
-                }
-                set
-                {
-                    selectionRect = value;
-                    selection = value;
-                }
-        
-            }
-            public RectSelTool()
-            {
-                toolType = ToolType.select;
-                type = Type.rectSel;
-                
+                return type.ToString();
             }
         }
 
@@ -227,28 +130,20 @@ namespace BioImage
         public Tools()
         {
             InitializeComponent();
+            Tool.Init();
             BioImage.ColorS col = new BioImage.ColorS(ushort.MaxValue);
-            pencil = new PencilTool(col);
-            move = new MoveTool();
-            currentTool = move;
-            colorTool = new ColorTool();
-            brush = new BrushTool(col,5);
-            bucket = new BucketTool(col);
-            eraser = new EraserTool(col, 5);
-            move = new MoveTool();
-            point = new PointTool();
-            line = new LineTool();
-            rect = new RectTool();
-            ellipse = new EllipseTool();
-            polygon = new PolygonTool();
-            text = new TextTool();
-            delete = new DeleteTool();
-            freeform = new FreeformTool();
-            rectSel = new RectSelTool();
-            pointSel = new PointSelTool();
-            pan = new PanTool();
+            //We initialize the tools
+            currentTool = GetTool(Tool.Type.move);
         }
 
+        public static Tool GetTool(string name)
+        {
+            return (Tool)tools[name];
+        }
+        public static Tool GetTool(Tool.Type typ)
+        {
+            return (Tool)tools[typ.ToString()];
+        }
         public void UpdateOverlay()
         {
             ImageView.viewer.UpdateOverlay();
@@ -386,7 +281,7 @@ namespace BioImage
             }
             if (buts == MouseButtons.Middle || currentTool.type == Tool.Type.pan)
             {
-                currentTool = pan;
+                currentTool = GetTool(Tool.Type.pan);
                 UpdateSelected();
                 panPanel.BackColor = Color.LightGray;
                 Cursor.Current = Cursors.Hand;
@@ -446,7 +341,7 @@ namespace BioImage
             if (currentTool.type == Tool.Type.rectSel)
             {
                 ImageView.selectedAnnotations.Clear();
-                RectangleF r = rectSel.Selection.ToRectangleF();
+                RectangleF r = GetTool(Tool.Type.rectSel).RectangleF;
                 foreach (BioImage.Annotation an in ImageView.viewer.AnnotationsRGB)
                 {
                     if (an.GetSelectBound().ToRectangleF().IntersectsWith(r))
@@ -465,7 +360,7 @@ namespace BioImage
                     else
                         an.selected = false;
                 }
-                rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
+                Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new BioImage.RectangleD(0, 0, 0, 0);
                 UpdateOverlay();
             }
 
@@ -524,8 +419,8 @@ namespace BioImage
             if (currentTool.type == Tool.Type.rectSel && buts == MouseButtons.Left && ImageView.down)
             {
                 BioImage.PointD d = new BioImage.PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
-                rectSel.Selection = new BioImage.RectangleD(ImageView.mouseDown.X, ImageView.mouseDown.Y, d.X, d.Y);
-                RectangleF r = rectSel.Selection.ToRectangleF();
+                Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new BioImage.RectangleD(ImageView.mouseDown.X, ImageView.mouseDown.Y, d.X, d.Y);
+                RectangleF r = Tools.GetTool(Tools.Tool.Type.rectSel).RectangleF;
                 foreach (BioImage.Annotation an in ImageView.viewer.AnnotationsRGB)
                 {
                     if (an.GetSelectBound().ToRectangleF().IntersectsWith(r))
@@ -549,7 +444,7 @@ namespace BioImage
             else
             if (currentTool.type == Tool.Type.rectSel && ImageView.up)
             {
-                rectSel.Selection = new BioImage.RectangleD(0, 0, 0, 0);
+                Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new BioImage.RectangleD(0, 0, 0, 0);
             }
             else
             if (Win32.GetKeyState(Keys.Delete))
@@ -601,7 +496,7 @@ namespace BioImage
         private void pencilPanel_DoubleClick(object sender, EventArgs e)
         {
             colorTool.Show();
-            currentTool = pencil;
+            currentTool = GetTool(Tool.Type.pencil);
             UpdateSelected();
             pencilPanel.BackColor = Color.DarkGray;
             Cursor.Current = Cursors.Arrow;
@@ -609,7 +504,7 @@ namespace BioImage
 
         private void pencilPanel_Click(object sender, EventArgs e)
         {
-            currentTool = pencil;
+            currentTool = GetTool(Tool.Type.pencil);
             UpdateSelected();
             pencilPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
@@ -617,7 +512,7 @@ namespace BioImage
 
         private void movePanel_Click(object sender, EventArgs e)
         {
-            currentTool = move;
+            currentTool = GetTool(Tool.Type.move);
             UpdateSelected();
             movePanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
@@ -625,7 +520,7 @@ namespace BioImage
 
         private void textPanel_Click(object sender, EventArgs e)
         {
-            currentTool = text;
+            currentTool = GetTool(Tool.Type.text);
             UpdateSelected();
             textPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
@@ -633,7 +528,7 @@ namespace BioImage
 
         private void textPanel_DoubleClick(object sender, EventArgs e)
         {
-            currentTool = text;
+            currentTool = GetTool(Tool.Type.text);
             UpdateSelected();
             textPanel.BackColor = Color.LightGray;
 
@@ -644,28 +539,28 @@ namespace BioImage
         }
         private void pointPanel_Click(object sender, EventArgs e)
         {
-            currentTool = point;
+            currentTool = GetTool(Tool.Type.point);
             UpdateSelected();
             pointPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
         }
         private void linePanel_Click(object sender, EventArgs e)
         {
-            currentTool = line;
+            currentTool = GetTool(Tool.Type.line);
             UpdateSelected();
             linePanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
         }
         private void rectPanel_Click(object sender, EventArgs e)
         {
-            currentTool = rect;
+            currentTool = GetTool(Tool.Type.rect);
             UpdateSelected();
             rectPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
         }
         private void ellipsePanel_Click(object sender, EventArgs e)
         {
-            currentTool = ellipse;
+            currentTool = GetTool(Tool.Type.ellipse);
             UpdateSelected();
             ellipsePanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
@@ -673,7 +568,7 @@ namespace BioImage
 
         private void polyPanel_Click(object sender, EventArgs e)
         {
-            currentTool = polygon;
+            currentTool = GetTool(Tool.Type.polygon);
             UpdateSelected();
             polyPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
@@ -681,7 +576,7 @@ namespace BioImage
 
         private void deletePanel_Click(object sender, EventArgs e)
         {
-            currentTool = delete;
+            currentTool = GetTool(Tool.Type.delete);
             UpdateSelected();
             deletePanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
@@ -689,7 +584,7 @@ namespace BioImage
 
         private void freeformPanel_Click(object sender, EventArgs e)
         {
-            currentTool = freeform;
+            currentTool = GetTool(Tool.Type.freeform);
             UpdateSelected();
             freeformPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
@@ -697,7 +592,7 @@ namespace BioImage
 
         private void rectSelPanel_Click(object sender, EventArgs e)
         {
-            currentTool = rectSel;
+            currentTool = GetTool(Tool.Type.rectSel);
             UpdateSelected();
             rectSelPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
@@ -705,7 +600,7 @@ namespace BioImage
 
         private void panPanel_Click(object sender, EventArgs e)
         {
-            currentTool = pan;
+            currentTool = GetTool(Tool.Type.pan);
             UpdateSelected();
             panPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Hand;
