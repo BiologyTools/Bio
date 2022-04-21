@@ -63,7 +63,7 @@ image.SaveSeries("16bitTestSaveStack.ome.tif", 0);
 -  Double click on script name in Script runner to run script.
 -  Scripts saved in Scripts folder will be loaded into script runner.
 -  Program installer include sample script "Sample.cs" which gets & sets pixels and saves resulting image.
--  Use Script recorder to record program function calls and script runner to turn recorder text into working scripts. (See sample scripts)
+-  Use Script recorder to record program function calls and script runner to turn recorder text into working scripts. (See sample [scripts](https://github.com/BioMicroscopy/BioImage-Scripts))
 ## Sample Script
 
 //css_reference BioImage.dll;
