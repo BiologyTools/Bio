@@ -74,12 +74,11 @@ using System.Windows.Forms;
 
 using BioImage;
 
-public class Loader 
+public class Loader
 {
 
 	public string Load()
-	{
-
+	{	
 		BioImage.BioImage b =  new BioImage.BioImage("E://TESTIMAGES//text.ome.tif",0);
 		//We create a substack of BioImage b.
 		BioImage.BioImage bio = new BioImage.BioImage(b,"subStack.ome.tif", 0, 0, 3, 0, 3, 0, 2);
@@ -87,16 +86,72 @@ public class Loader
 		b.SetValueRGB(0,0,0,0,0,0,0,15000);
 		//GetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex);
 		ushort val = b.GetValueRGB(0,0,0,0,0,0,1);
-		//ushort[,] GetBlock(int ix, int iy, int iw, int ih)
-		ushort[,] val = b.GetBlock(0, 0, 0, 0, 0, 0, 150, 150);
-		//SetBlock(int ix, int iy, int iw, int ih, ushort[,] sh)
-            	b.SetBlock(0, 0, 0, 0, 150, 150, 150, 150, val);
 		b.SaveSeries("E://TESTIMAGES//save.ome.tif",0);
 		bio.SaveSeries("E://TESTIMAGES//subStack.ome.tif",0);
 		ImageViewer iv = new ImageViewer(bio);
 		//We open the result in an ImageViewer.
 		iv.ShowDialog();
 		return val.ToString();
+	}
+	
+}
+## Sample Tool Script
+
+//css_reference BioImage.dll;
+
+using System;
+
+using System.Windows.Forms;
+
+using System.Drawing;
+
+using BioImage;
+
+public class Loader
+{
+
+	public string Load()
+	{
+		bool run = true;
+		do
+		{
+			BioImage.Scripting.State s = BioImage.Scripting.GetState();
+			if (s != null)
+			{
+				if (s.p.X < 10 && s.p.Y < 10)
+				{
+					run = false;
+				}
+				if (s.type == BioImage.Scripting.Event.Move)
+				{
+					if (s.p.X < 25 && s.p.Y < 25)
+					{
+						run = false;
+						return "Move";
+					}
+				}
+				else
+				if (s.type == BioImage.Scripting.Event.Up)
+				{
+					if (s.p.X < 50 && s.p.Y < 50)
+					{
+						run = false;
+						return "Up";
+					}
+				}
+				else
+				if (s.type == BioImage.Scripting.Event.Down)
+				{
+					if (s.p.X < 50 && s.p.Y < 50)
+					{
+						run = false;
+						return "Down";
+					}
+				}
+			}
+		} while (run);
+
+		return "OK";
 	}
 }
 
