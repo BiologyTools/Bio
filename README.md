@@ -124,30 +124,36 @@ public class Loader
 				}
 				if (s.type == BioImage.Scripting.Event.Move)
 				{
+					string st = "Move (" + s.p.X + ", " + s.p.Y + ")";
 					if (s.p.X < 25 && s.p.Y < 25)
 					{
-						return "Move (" + s.p.X + ", " + s.p.Y + ")";
+						return st;
 					}
+					BioImage.Scripting.LogLine(st);
 				}
 				else
 				if (s.type == BioImage.Scripting.Event.Up)
 				{
+					string st = "Up (" + s.p.X + ", " + s.p.Y + ")";
 					if (s.p.X < 50 && s.p.Y < 50)
 					{
-						return "Up (" + s.p.X + ", " + s.p.Y + ")";
+						return st;
 					}
+					BioImage.Scripting.LogLine(st);
 				}
 				else
 				if (s.type == BioImage.Scripting.Event.Down)
 				{
+					string st = "Down (" + s.p.X + ", " + s.p.Y + ")";
 					if (s.p.X < 75 && s.p.Y < 75)
 					{
-						return "Down (" + s.p.X + ", " + s.p.Y + ")";
+						return st;
 					}
+					BioImage.Scripting.LogLine(st);
 				}
 			}
 		} while (true);
-		BioImage.Scripting.RunByName("Tool2.cs");
+
 		return "Done";
 	}
 }
