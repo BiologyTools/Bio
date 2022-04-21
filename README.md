@@ -112,7 +112,6 @@ public class Loader
 
 	public string Load()
 	{
-		bool run = true;
 		do
 		{
 			BioImage.Scripting.State s = BioImage.Scripting.GetState();
@@ -120,14 +119,14 @@ public class Loader
 			{
 				if (s.p.X < 10 && s.p.Y < 10)
 				{
-					run = false;
+					return "Corner (" + s.p.X + ", " + s.p.Y + ")";
+
 				}
 				if (s.type == BioImage.Scripting.Event.Move)
 				{
 					if (s.p.X < 25 && s.p.Y < 25)
 					{
-						run = false;
-						return "Move";
+						return "Move (" + s.p.X + ", " + s.p.Y + ")";
 					}
 				}
 				else
@@ -135,23 +134,21 @@ public class Loader
 				{
 					if (s.p.X < 50 && s.p.Y < 50)
 					{
-						run = false;
-						return "Up";
+						return "Up (" + s.p.X + ", " + s.p.Y + ")";
 					}
 				}
 				else
 				if (s.type == BioImage.Scripting.Event.Down)
 				{
-					if (s.p.X < 50 && s.p.Y < 50)
+					if (s.p.X < 75 && s.p.Y < 75)
 					{
-						run = false;
-						return "Down";
+						return "Down (" + s.p.X + ", " + s.p.Y + ")";
 					}
 				}
 			}
-		} while (run);
-
-		return "OK";
+		} while (true);
+		BioImage.Scripting.RunByName("Tool2.cs");
+		return "Done";
 	}
 }
 
