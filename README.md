@@ -10,18 +10,19 @@ Best for working with ROI's in OME format & CSV.
 
 - Open & Save ImageJ Tiff files and embed ROI's in image Description tag.
 
-- C# Scripting with sample tool script and regular scripts in "/Scripts/" folder.
-
-- Viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
+- C# scripting with sample tool-script and other sample scripts in "/Scripts/" folder. [See samples](https://github.com/BioMicroscopy/BioImage-Scripts)
 
 - RGB image viewing mode which automatically combines 3 channels into RGB image & shows ROI from each channel which can be configured in ROI Manager.
 
+- Viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
+
 - Editing & saving ROI's in images to OME format image stacks.
 
+- Copy & Paste to quickly annotate images and name them easily by right click.
+
+- Select multiple points by holding down control key, for delete & move tools. 
+
 - Exporting ROI's from each OME image in a folder of images to CSV.
-
-- Select multiple points by holding down left control key for move & delete tools. Delete button for delete.
-
 
 ## Dependencies
 - [BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
