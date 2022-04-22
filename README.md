@@ -9,17 +9,17 @@ Best for working with ROI's in OME format & CSV.
 
 - Exporting ROI's to CSV files for easy analysis in statistics programs.
 
-- Great at viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
+- Viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
 
 - RGB image viewing mode which automatically combines 3 channels into RGB image & shows ROI from each channel which can be configured in ROI Manager.
 
 - Editing & saving ROI's in images to OME format image stacks.
 
-- Exporting ROI's from each image in a folder of images to CSV. For further quick & easy analysis of images.
+- Exporting ROI's from each OME image in a folder of images to CSV.
 
-- Exports bounding boxes of ROI's in CSV format.
-
-- Select multiple points by holding down left control key for move & delete tools.
+- Select multiple points by holding down left control key for move & delete tools. Delete button for delete.
+- Open & Save ImageJ Tiff files and embed ROI's in image Description tag.
+- C# Scripting with sample tool script and regular scripts in "/Scripts/" folder.
 
 ## Dependencies
 - [BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
