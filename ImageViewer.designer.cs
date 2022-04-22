@@ -40,6 +40,7 @@ namespace BioImage
             this.filteredToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolboxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rOIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rOIManagerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,6 +49,10 @@ namespace BioImage
             this.channelsToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoThresholdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.channelsToolToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.scriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stackToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveOMEFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.panel = new System.Windows.Forms.Panel();
@@ -55,10 +60,6 @@ namespace BioImage
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveTiffFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.stackToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -90,21 +91,21 @@ namespace BioImage
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.openToolStripMenuItem.Text = "Open Files";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.saveToolStripMenuItem.Text = "Save Tiff";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveOMEToolStripMenuItem
             // 
             this.saveOMEToolStripMenuItem.Name = "saveOMEToolStripMenuItem";
-            this.saveOMEToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveOMEToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.saveOMEToolStripMenuItem.Text = "Save OME";
             this.saveOMEToolStripMenuItem.Click += new System.EventHandler(this.saveOMEToolStripMenuItem_Click);
             // 
@@ -144,10 +145,19 @@ namespace BioImage
             // 
             // toolboxToolStripMenuItem
             // 
+            this.toolboxToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.setToolToolStripMenuItem});
             this.toolboxToolStripMenuItem.Name = "toolboxToolStripMenuItem";
             this.toolboxToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.toolboxToolStripMenuItem.Text = "Toolbox";
             this.toolboxToolStripMenuItem.Click += new System.EventHandler(this.toolboxToolStripMenuItem_Click);
+            // 
+            // setToolToolStripMenuItem
+            // 
+            this.setToolToolStripMenuItem.Name = "setToolToolStripMenuItem";
+            this.setToolToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.setToolToolStripMenuItem.Text = "Set Tool";
+            this.setToolToolStripMenuItem.Click += new System.EventHandler(this.setToolToolStripMenuItem_Click);
             // 
             // rOIToolStripMenuItem
             // 
@@ -200,16 +210,46 @@ namespace BioImage
             // autoThresholdToolStripMenuItem
             // 
             this.autoThresholdToolStripMenuItem.Name = "autoThresholdToolStripMenuItem";
-            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.autoThresholdToolStripMenuItem.Text = "Auto Threshold All";
             this.autoThresholdToolStripMenuItem.Click += new System.EventHandler(this.autoThresholdToolStripMenuItem_Click);
             // 
             // channelsToolToolStripMenuItem1
             // 
             this.channelsToolToolStripMenuItem1.Name = "channelsToolToolStripMenuItem1";
-            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(172, 22);
             this.channelsToolToolStripMenuItem1.Text = "Channels Tool";
             this.channelsToolToolStripMenuItem1.Click += new System.EventHandler(this.channelsToolToolStripMenuItem_Click);
+            // 
+            // scriptToolStripMenuItem
+            // 
+            this.scriptToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.scriptRunnerToolStripMenuItem,
+            this.scriptRecorderToolStripMenuItem});
+            this.scriptToolStripMenuItem.Name = "scriptToolStripMenuItem";
+            this.scriptToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
+            this.scriptToolStripMenuItem.Text = "Script";
+            // 
+            // scriptRunnerToolStripMenuItem
+            // 
+            this.scriptRunnerToolStripMenuItem.Name = "scriptRunnerToolStripMenuItem";
+            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
+            this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click);
+            // 
+            // scriptRecorderToolStripMenuItem
+            // 
+            this.scriptRecorderToolStripMenuItem.Name = "scriptRecorderToolStripMenuItem";
+            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.scriptRecorderToolStripMenuItem.Text = "Script Recorder";
+            this.scriptRecorderToolStripMenuItem.Click += new System.EventHandler(this.scriptRecorderToolStripMenuItem_Click);
+            // 
+            // stackToolsToolStripMenuItem
+            // 
+            this.stackToolsToolStripMenuItem.Name = "stackToolsToolStripMenuItem";
+            this.stackToolsToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.stackToolsToolStripMenuItem.Text = "Stacks";
+            this.stackToolsToolStripMenuItem.Click += new System.EventHandler(this.stackToolsToolStripMenuItem_Click);
             // 
             // openFilesDialog
             // 
@@ -232,7 +272,6 @@ namespace BioImage
             this.panel.Size = new System.Drawing.Size(384, 337);
             this.panel.TabIndex = 1;
             this.panel.Click += new System.EventHandler(this.panel_Click);
-            this.panel.Paint += new System.Windows.Forms.PaintEventHandler(this.panel_Paint);
             // 
             // saveCSVFileDialog
             // 
@@ -252,36 +291,6 @@ namespace BioImage
             this.saveTiffFileDialog.Filter = "\"TIFF Files (*.tif)|*.tif\"";
             this.saveTiffFileDialog.SupportMultiDottedExtensions = true;
             this.saveTiffFileDialog.Title = "Save Image";
-            // 
-            // stackToolsToolStripMenuItem
-            // 
-            this.stackToolsToolStripMenuItem.Name = "stackToolsToolStripMenuItem";
-            this.stackToolsToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.stackToolsToolStripMenuItem.Text = "Stacks";
-            this.stackToolsToolStripMenuItem.Click += new System.EventHandler(this.stackToolsToolStripMenuItem_Click);
-            // 
-            // scriptRunnerToolStripMenuItem
-            // 
-            this.scriptRunnerToolStripMenuItem.Name = "scriptRunnerToolStripMenuItem";
-            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
-            this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click);
-            // 
-            // scriptRecorderToolStripMenuItem
-            // 
-            this.scriptRecorderToolStripMenuItem.Name = "scriptRecorderToolStripMenuItem";
-            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.scriptRecorderToolStripMenuItem.Text = "Script Recorder";
-            this.scriptRecorderToolStripMenuItem.Click += new System.EventHandler(this.scriptRecorderToolStripMenuItem_Click);
-            // 
-            // scriptToolStripMenuItem
-            // 
-            this.scriptToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.scriptRunnerToolStripMenuItem,
-            this.scriptRecorderToolStripMenuItem});
-            this.scriptToolStripMenuItem.Name = "scriptToolStripMenuItem";
-            this.scriptToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
-            this.scriptToolStripMenuItem.Text = "Script";
             // 
             // ImageViewer
             // 
@@ -340,5 +349,6 @@ namespace BioImage
         private System.Windows.Forms.ToolStripMenuItem scriptToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scriptRunnerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scriptRecorderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setToolToolStripMenuItem;
     }
 }

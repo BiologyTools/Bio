@@ -12,8 +12,8 @@ namespace BioImage
 {
     public partial class ColorTool : Form
     {
-        private BioImage.ColorS color = new BioImage.ColorS(65535, 65535, 65535);
-        public BioImage.ColorS Color
+        private ColorS color = new ColorS(65535, 65535, 65535);
+        public ColorS Color
         {
             get
             {
@@ -27,8 +27,8 @@ namespace BioImage
 
         public void UpdateColor()
         {
-            color = new BioImage.ColorS((ushort)redBox.Value, (ushort)greenBox.Value, (ushort)blueBox.Value);
-            colorPanel.BackColor = BioImage.ColorS.ToColor(color);
+            color = new ColorS((ushort)redBox.Value, (ushort)greenBox.Value, (ushort)blueBox.Value);
+            colorPanel.BackColor = ColorS.ToColor(color);
             Tools.currentTool.Color = color;
         }
 
@@ -43,7 +43,7 @@ namespace BioImage
             InitializeComponent();
             UpdateColor();
         }
-        public ColorTool(BioImage.ColorS col)
+        public ColorTool(ColorS col)
         {
             InitializeComponent();
             color = col;

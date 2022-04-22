@@ -329,6 +329,12 @@
     <Compile Include="Scripting.Designer.cs">
       <DependentUpon>Scripting.cs</DependentUpon>
     </Compile>
+    <Compile Include="SetTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetTool.Designer.cs">
+      <DependentUpon>SetTool.cs</DependentUpon>
+    </Compile>
     <Compile Include="Slider.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -395,6 +401,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Scripting.resx">
       <DependentUpon>Scripting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetTool.resx">
+      <DependentUpon>SetTool.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Slider.resx">
       <DependentUpon>Slider.cs</DependentUpon>

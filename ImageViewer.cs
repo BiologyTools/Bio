@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Drawing;
 using System.IO;
 
 namespace BioImage
@@ -13,8 +14,8 @@ namespace BioImage
         public static bool init = false;
         public static ImageViewer app = null;
         public ImageView viewer = null;
-        public Scripting runner = null;
         public StackTools stackTools = null;
+        public static Graphics graphics = null;  
         
         public ImageViewer(BioImage arg)
         {
@@ -22,7 +23,6 @@ namespace BioImage
             DialogResult = DialogResult.None;
             Init();
             tools = new Tools();
-            runner = new Scripting();
             stackTools = new StackTools();
             app = this;
             SetImage(arg);
@@ -35,7 +35,6 @@ namespace BioImage
             Init();
             tools = new Tools();
             manager = new ROIManager();
-            runner = new Scripting();
             app = this;
             stackTools = new StackTools();
             if (arg.Length == 0)
@@ -75,7 +74,6 @@ namespace BioImage
             tools = new Tools();
             manager = new ROIManager();
             app = this;
-            runner = new Scripting();
             stackTools = new StackTools();
             if (arg.Length == 0)
                 return;
@@ -84,7 +82,7 @@ namespace BioImage
             {
                 if (arg[0].EndsWith(".cs"))
                 {
-                    runner.RunScriptFile(arg[0]);
+                    MainForm.runner.RunScriptFile(arg[0]);
                 }
                 else
                 {
@@ -349,15 +347,10 @@ namespace BioImage
             if(v == ImageView.ViewMode.Raw)
                 rawToolStripMenuItem.Checked = true;
         }
-
-        private void panel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
         private void scriptRunnerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            runner.WindowState = FormWindowState.Normal;
-            runner.Show();
+            MainForm.runner.WindowState = FormWindowState.Normal;
+            MainForm.runner.Show();
         }
         private void ImageViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -395,6 +388,11 @@ namespace BioImage
         }
 
         private void copyToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void setToolToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
         }

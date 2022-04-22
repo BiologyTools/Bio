@@ -13,6 +13,7 @@ namespace BioImage
 {
     public partial class MainForm : Form
     {
+        public static Scripting runner = null;
         public class Node
         {
             public TreeNode node;
@@ -53,6 +54,7 @@ namespace BioImage
         public MainForm(string[] args)
         {
             InitializeComponent();
+            Init();
             UpdateNodes();
             if (args.Length > 0)
             {
@@ -61,6 +63,10 @@ namespace BioImage
             }
         }
 
+        private static void Init()
+        {
+            runner = new Scripting();
+        }
         public void UpdateNodes()
         {
             
@@ -77,7 +83,7 @@ namespace BioImage
                 Node implanes = new Node(item, Node.DataType.text);
                 implanes.Text = "Planes";
 
-                foreach (BioImage.Buf buf in item.Buffers)
+                foreach (Buf buf in item.Buffers)
                 {
                     Node plane = new Node(buf, Node.DataType.buf);
                     plane.Text = buf.info.stringId;
@@ -89,7 +95,7 @@ namespace BioImage
                 Node rois = new Node(item, Node.DataType.text);
                 rois.Text = "ROI";
 
-                foreach (BioImage.Annotation an in item.Annotations)
+                foreach (Annotation an in item.Annotations)
                 {
                     Node roi = new Node(an, Node.DataType.roi);
                     rois.node.Nodes.Add(roi.node);
@@ -132,7 +138,7 @@ namespace BioImage
             if(node!=null)
             if(node.Type == Node.DataType.buf)
             {
-                BioImage.Buf buf = (BioImage.Buf)node.Object;
+                Buf buf = (Buf)node.Object;
                 int ind = int.Parse(Path.GetFileName(buf.ToString()));
                 string name = buf.ToString();
                 int inds = name.IndexOf("/s");
@@ -144,12 +150,18 @@ namespace BioImage
             else
             if(node.Type == Node.DataType.roi)
             {
-                BioImage.Annotation an = (BioImage.Annotation)node.Object;
+                Annotation an = (Annotation)node.Object;
                 string name = node.node.Parent.Parent.Text;
                 ImageViewer v = Table.GetViewer(name);
                 if (v != null)
                     v.viewer.SetCoordinate(an.coord.S, an.coord.Z, an.coord.C, an.coord.T);
             }
+        }
+
+        private void scriptRunnerToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            runner.WindowState = FormWindowState.Normal;
+            runner.Show();
         }
     }
 }

@@ -42,6 +42,8 @@
             this.outputBox = new System.Windows.Forms.TextBox();
             this.error = new System.Windows.Forms.TabPage();
             this.errorBox = new System.Windows.Forms.TextBox();
+            this.logTabPage = new System.Windows.Forms.TabPage();
+            this.logBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.scriptLabel = new System.Windows.Forms.Label();
             this.runButton = new System.Windows.Forms.Button();
@@ -49,10 +51,12 @@
             this.scriptLoadBut = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.stopBut = new System.Windows.Forms.Button();
             this.contextMenuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.outputTab.SuspendLayout();
             this.error.SuspendLayout();
+            this.logTabPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // scriptView
@@ -107,7 +111,7 @@
             // 
             // timer
             // 
-            this.timer.Interval = 1000;
+            this.timer.Interval = 200;
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // textBox
@@ -128,6 +132,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.outputTab);
             this.tabControl.Controls.Add(this.error);
+            this.tabControl.Controls.Add(this.logTabPage);
             this.tabControl.Location = new System.Drawing.Point(185, 259);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -162,7 +167,7 @@
             this.error.Location = new System.Drawing.Point(4, 22);
             this.error.Name = "error";
             this.error.Padding = new System.Windows.Forms.Padding(3);
-            this.error.Size = new System.Drawing.Size(297, 107);
+            this.error.Size = new System.Drawing.Size(353, 107);
             this.error.TabIndex = 0;
             this.error.Text = "Error";
             this.error.UseVisualStyleBackColor = true;
@@ -173,9 +178,30 @@
             this.errorBox.Location = new System.Drawing.Point(3, 3);
             this.errorBox.Multiline = true;
             this.errorBox.Name = "errorBox";
-            this.errorBox.Size = new System.Drawing.Size(291, 101);
+            this.errorBox.Size = new System.Drawing.Size(347, 101);
             this.errorBox.TabIndex = 3;
             this.errorBox.TabStop = false;
+            // 
+            // logTabPage
+            // 
+            this.logTabPage.Controls.Add(this.logBox);
+            this.logTabPage.Location = new System.Drawing.Point(4, 22);
+            this.logTabPage.Name = "logTabPage";
+            this.logTabPage.Size = new System.Drawing.Size(353, 107);
+            this.logTabPage.TabIndex = 2;
+            this.logTabPage.Text = "Log";
+            this.logTabPage.UseVisualStyleBackColor = true;
+            // 
+            // logBox
+            // 
+            this.logBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.logBox.Location = new System.Drawing.Point(0, 0);
+            this.logBox.Multiline = true;
+            this.logBox.Name = "logBox";
+            this.logBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.logBox.Size = new System.Drawing.Size(353, 107);
+            this.logBox.TabIndex = 4;
+            this.logBox.TabStop = false;
             // 
             // label1
             // 
@@ -199,9 +225,9 @@
             // runButton
             // 
             this.runButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.runButton.Location = new System.Drawing.Point(471, 398);
+            this.runButton.Location = new System.Drawing.Point(426, 398);
             this.runButton.Name = "runButton";
-            this.runButton.Size = new System.Drawing.Size(75, 23);
+            this.runButton.Size = new System.Drawing.Size(57, 23);
             this.runButton.TabIndex = 11;
             this.runButton.TabStop = false;
             this.runButton.Text = "Run";
@@ -211,7 +237,7 @@
             // saveButton
             // 
             this.saveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveButton.Location = new System.Drawing.Point(390, 398);
+            this.saveButton.Location = new System.Drawing.Point(345, 398);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 13;
@@ -223,7 +249,7 @@
             // scriptLoadBut
             // 
             this.scriptLoadBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.scriptLoadBut.Location = new System.Drawing.Point(308, 398);
+            this.scriptLoadBut.Location = new System.Drawing.Point(263, 398);
             this.scriptLoadBut.Name = "scriptLoadBut";
             this.scriptLoadBut.Size = new System.Drawing.Size(75, 23);
             this.scriptLoadBut.TabIndex = 12;
@@ -241,12 +267,25 @@
             // 
             this.saveFileDialog.Filter = "\"C# Files (*.cs)|*.cs|All files (*.*)|*.*\"";
             // 
+            // stopBut
+            // 
+            this.stopBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.stopBut.Location = new System.Drawing.Point(489, 398);
+            this.stopBut.Name = "stopBut";
+            this.stopBut.Size = new System.Drawing.Size(57, 23);
+            this.stopBut.TabIndex = 14;
+            this.stopBut.TabStop = false;
+            this.stopBut.Text = "Stop";
+            this.stopBut.UseVisualStyleBackColor = true;
+            this.stopBut.Click += new System.EventHandler(this.stopBut_Click);
+            // 
             // Scripting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.ClientSize = new System.Drawing.Size(552, 428);
+            this.Controls.Add(this.stopBut);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.scriptLoadBut);
             this.Controls.Add(this.runButton);
@@ -265,6 +304,8 @@
             this.outputTab.PerformLayout();
             this.error.ResumeLayout(false);
             this.error.PerformLayout();
+            this.logTabPage.ResumeLayout(false);
+            this.logTabPage.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -291,5 +332,8 @@
         private System.Windows.Forms.Button scriptLoadBut;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.TabPage logTabPage;
+        private System.Windows.Forms.TextBox logBox;
+        private System.Windows.Forms.Button stopBut;
     }
 }

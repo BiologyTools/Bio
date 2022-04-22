@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -18,6 +19,13 @@ namespace BioImage
     public partial class Scripting : Form
     {
         public static Scripting runner;
+
+        public static string log;
+        
+        public static void LogLine(string s)
+        {
+            log += s + Environment.NewLine;
+        }
 
         public static Dictionary<string, Script> Scripts = new Dictionary<string, Script>();
         public class Script
@@ -42,6 +50,8 @@ namespace BioImage
                 scriptString = File.ReadAllText(file);
                 this.file = file;
             }
+            public Script()
+            { }
             public static void Run(Script rn)
             {
                 scriptName = rn.name;
@@ -58,8 +68,6 @@ namespace BioImage
                 {
                     rn.done = false;
                     rn.script = CSScript.Evaluator.LoadCode(rn.scriptString);
-                    //rn.script = CSScript.CodeDomEvaluator.LoadCode(rn.scriptString, null);
-                    //rn.script = CSScript.RoslynEvaluator.LoadCode(rn.scriptString);
                     rn.obj = rn.script.Load();
                     rn.output = rn.obj.ToString();
                     rn.done = true;
@@ -76,6 +84,10 @@ namespace BioImage
                 scriptName = this.name;
                 thread = new Thread(new ThreadStart(RunScript));
                 thread.Start();
+            }
+            public void Stop()
+            {
+                thread.Abort();
             }
             public override string ToString()
             {
@@ -95,6 +107,59 @@ namespace BioImage
                 }
                 return name.ToString();
             }
+        }
+        public class State
+        {
+            public Event type;
+            public static State GetUp(PointF pf,MouseButtons mb)
+            {
+                State st = new State();
+                st.type = Event.Up;
+                st.p = pf;
+                st.buts = mb;
+                return st;
+            }
+            public static State GetDown(PointF pf, MouseButtons mb)
+            {
+                State st = new State();
+                st.type = Event.Down;
+                st.p = pf;
+                st.buts = mb;
+                return st;
+            }
+            public static State GetMove(PointF pf, MouseButtons mb)
+            {
+                State st = new State();
+                st.type = Event.Move;
+                st.p = pf;
+                st.buts = mb;
+                return st;
+            }
+            public PointF p;
+            public MouseButtons buts;
+            //public bool processed = false;
+            public override string ToString()
+            {
+                return type.ToString() + " ,(" + p.X.ToString() + ", " + p.Y.ToString() + "), " + buts.ToString();
+            }
+
+        }
+        public enum Event
+        {
+            Down,
+            Up,
+            Move,
+            None
+        }
+        private static State state;
+        public static State GetState()
+        {
+            return state;
+        }
+        public static void UpdateState(State s)
+        {
+            if(s!=null)
+                state = s;
         }
         public void RefreshItems()
         {
@@ -118,17 +183,21 @@ namespace BioImage
         }
         public void RefreshStatus()
         {
-            foreach (ListViewItem item in scriptView.Items)
-            {
-                Script sc = ((Script)item.Tag);
-                item.Text = sc.ToString();
-            }
             foreach (ListViewItem item in scriptView.SelectedItems)
             {
                 Script s = (Script)item.Tag;
+                //We update item text to show Script status.
+                item.Text = s.ToString();
                 outputBox.Text = s.output;
                 if(s.ex!=null)
                 errorBox.Text = s.ex.Message.ToString();
+            }
+            logBox.Text = log;
+            //We scroll to end of text so we see latest log output.
+            if (logBox.SelectionStart != logBox.Text.Length)
+            {
+                logBox.SelectionStart = logBox.Text.Length;
+                logBox.ScrollToCaret();
             }
         }
         public Scripting()
@@ -158,10 +227,23 @@ namespace BioImage
                 //We run this script
                 Script sc = (Script)item.Tag;
                 sc.scriptString = textBox.Text;
+                sc.output = "";
                 sc.Run();
+                outputBox.Text = sc.output;
+                logBox.Text = log;
             }
         }
-
+        public void Stop()
+        {
+            if (scriptView.SelectedItems.Count == 0)
+                return;
+            foreach (ListViewItem item in scriptView.SelectedItems)
+            {
+                //We run this script
+                Script sc = (Script)item.Tag;
+                sc.Stop();
+            }
+        }
         public static void RunByName(string name)
         {
             Scripts[name].Run();
@@ -191,8 +273,10 @@ namespace BioImage
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            if(this.WindowState != FormWindowState.Minimized)
-            RefreshStatus();
+            if (this.WindowState != FormWindowState.Minimized)
+            {
+                RefreshStatus();
+            }
         }
 
         private void ScriptRunner_FormClosing(object sender, FormClosingEventArgs e)
@@ -239,6 +323,11 @@ namespace BioImage
                 return;
             scriptLabel.Text = Path.GetFileName(saveFileDialog.FileName);
             File.WriteAllText(saveFileDialog.FileName, textBox.Text);
+        }
+
+        private void stopBut_Click(object sender, EventArgs e)
+        {
+            Stop();
         }
     }
 }

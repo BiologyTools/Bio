@@ -764,6 +764,7 @@
             this.Name = "ROIManager";
             this.Text = "ROI Manager";
             this.Activated += new System.EventHandler(this.ROIManager_Activated);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ROIManager_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.rBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bBox)).EndInit();

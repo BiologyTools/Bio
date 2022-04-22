@@ -6,7 +6,7 @@ namespace BioImage
 {
     public partial class ChannelsTool : Form
     {
-        public List<BioImage.Channel> Channels;
+        public List<Channel> Channels;
 
         public void UpdateChannels()
         {
@@ -16,11 +16,11 @@ namespace BioImage
                 ImageView.viewer.UpdateView();
             }
         }
-        public ChannelsTool(List<BioImage.Channel> channels)
+        public ChannelsTool(List<Channel> channels)
         {
             InitializeComponent();
             Channels = channels;
-            foreach (BioImage.Channel item in Channels)
+            foreach (Channel item in Channels)
             {
                 channelsBox.Items.Add(item);
             }
@@ -33,7 +33,7 @@ namespace BioImage
         {
             if (channelsBox.SelectedIndex == -1)
                 return;
-            BioImage.Channel c = (BioImage.Channel)channelsBox.SelectedItem;
+            Channel c = (Channel)channelsBox.SelectedItem;
             Channels[channelsBox.SelectedIndex].Min = (int)minBox.Value;
             UpdateChannels();
         }
@@ -42,7 +42,7 @@ namespace BioImage
         {
             if (channelsBox.SelectedIndex == -1)
                 return;
-            BioImage.Channel c = (BioImage.Channel)channelsBox.SelectedItem;
+            Channel c = (Channel)channelsBox.SelectedItem;
             Channels[channelsBox.SelectedIndex].Max = (int)maxBox.Value;
             UpdateChannels();
         }
@@ -68,7 +68,7 @@ namespace BioImage
 
         private void setMaxAllBut_Click(object sender, EventArgs e)
         {
-            foreach (BioImage.Channel c in Channels)
+            foreach (Channel c in Channels)
             {
                 c.Max = (int)maxBox.Value;
             }
@@ -77,7 +77,7 @@ namespace BioImage
 
         private void setMinAllBut_Click(object sender, EventArgs e)
         {
-            foreach (BioImage.Channel c in Channels)
+            foreach (Channel c in Channels)
             {
                 c.Min = (int)minBox.Value;
             }

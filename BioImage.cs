@@ -33,18 +33,18 @@ namespace BioImage
             int hash = ids.GetHashCode();
             return (BioImage)bioimages[hash];
         }
-        public static BioImage GetImageByHash(int hash, BioImage.SZCT coord)
+        public static BioImage GetImageByHash(int hash, SZCT coord)
         {
             return (BioImage)bioimages[hash];
         }
-        public static BioImage.Buf GetBufferByHash(int hashid)
+        public static Buf GetBufferByHash(int hashid)
         {
-            return (BioImage.Buf)buffers[hashid];
+            return (Buf)buffers[hashid];
         }
-        public static BioImage.Buf GetBuffer(string id)
+        public static Buf GetBuffer(string id)
         {
             int hash = id.GetHashCode();
-            return (BioImage.Buf)buffers[hash];
+            return (Buf)buffers[hash];
         }
         public static string GetStringByHash(int hashid)
         {
@@ -55,7 +55,7 @@ namespace BioImage
             int hash = id.GetHashCode();
             return buffers[hash].ToString();
         }
-        private static void AddBuf(int hashid, BioImage.Buf buf)
+        private static void AddBuf(int hashid, Buf buf)
         {
             try
             {
@@ -68,7 +68,7 @@ namespace BioImage
             
         }
         private static int duplicates = 0;
-        public static void AddBuffer(BioImage.Buf buf)
+        public static void AddBuffer(Buf buf)
         {
             int hash = buf.info.HashID;
             //We check to see if this buffer has already been added.
@@ -104,7 +104,7 @@ namespace BioImage
             if (im == null)
                 return;
             bioimages.Remove(im.HashID);
-            foreach (BioImage.Buf item in im.Buffers)
+            foreach (Buf item in im.Buffers)
             {
                 if (buffers.Contains(item))
                     buffers.Remove(item);
@@ -128,9 +128,1387 @@ namespace BioImage
             return (ImageViewer)viewers[s];
         }
     }
+    public struct SZCT
+    {
+        public int S, Z, C, T;
+        public SZCT(int s, int z, int c, int t)
+        {
+            S = s;
+            Z = z;
+            C = c;
+            T = t;
+        }
+        public static bool operator ==(SZCT c1, SZCT c2)
+        {
+            if (c1.S == c2.S && c1.Z == c2.Z && c1.C == c2.C && c1.T == c2.T)
+                return true;
+            else
+                return false;
+        }
+        public static bool operator !=(SZCT c1, SZCT c2)
+        {
+            if (c1.S != c2.S || c1.Z != c2.Z || c1.C != c2.C || c1.T != c2.T)
+                return false;
+            else
+                return true;
+        }
+        public override string ToString()
+        {
+            return S + "," + Z + "," + C + "," + T;
+        }
+    }
+    public struct SZCTXY
+    {
+        public int S, Z, C, T, X, Y;
+        public SZCTXY(int s, int z, int c, int t, int x, int y)
+        {
+            S = s;
+            Z = z;
+            C = c;
+            T = t;
+            X = x;
+            Y = y;
+        }
+        public override string ToString()
+        {
+            return S + "," + Z + "," + C + "," + T + "," + X + "," + Y;
+        }
+
+        public static bool operator ==(SZCTXY c1, SZCTXY c2)
+        {
+            if (c1.S == c2.S && c1.Z == c2.Z && c1.C == c2.C && c1.T == c2.T && c1.X == c2.X && c1.Y == c2.Y)
+                return true;
+            else
+                return false;
+        }
+        public static bool operator !=(SZCTXY c1, SZCTXY c2)
+        {
+            if (c1.S != c2.S || c1.Z != c2.Z || c1.C != c2.C || c1.T != c2.T || c1.X != c2.X || c1.Y != c2.Y)
+                return false;
+            else
+                return true;
+        }
+    }
+    public enum RGB
+        {
+            R,
+            G,
+            B
+        }
+    public class ColorS
+    {
+        public ushort R = 0;
+        public ushort G = 0;
+        public ushort B = 0;
+        public ColorS()
+        {
+
+        }
+        public ColorS(ushort s)
+        {
+            R = s;
+            G = s;
+            B = s;
+        }
+        public ColorS(ushort r, ushort g, ushort b)
+        {
+            R = r;
+            G = g;
+            B = b;
+        }
+        public static ColorS FromColor(System.Drawing.Color col)
+        {
+            float r = (((float)col.R) / 255) * ushort.MaxValue;
+            float g = (((float)col.G) / 255) * ushort.MaxValue;
+            float b = (((float)col.B) / 255) * ushort.MaxValue;
+            ColorS color = new ColorS();
+            color.R = (ushort)r;
+            color.G = (ushort)g;
+            color.B = (ushort)b;
+            return color;
+        }
+        public static System.Drawing.Color ToColor(ColorS col)
+        {
+            float r = ((float)(col.R) / 65535) * 255;
+            float g = ((float)(col.G) / 65535) * 255;
+            float b = ((float)(col.B) / 65535) * 255;
+            System.Drawing.Color c = System.Drawing.Color.FromArgb((byte)r, (byte)g, (byte)b);
+            return c;
+        }
+        public override string ToString()
+        {
+            return R + "," + G + "," + B;
+        }
+    }
+    public struct PointD
+    {
+        public double X;
+        public double Y;
+        public PointD(double x, double y)
+        {
+            X = x;
+            Y = y;
+        }
+        public PointF ToPointF()
+        {
+            return new PointF((float)X, (float)Y);
+        }
+        public System.Drawing.Point ToPointInt()
+        {
+            return new System.Drawing.Point((int)X, (int)Y);
+        }
+
+        public override string ToString()
+        {
+            return X.ToString() + ", " + Y.ToString();
+        }
+        // this is first one '=='
+        public static bool operator ==(PointD p1, PointD p2)
+        {
+            return (p1.X == p2.X && p1.Y == p2.Y);
+        }
+
+        // this is second one '!='
+        public static bool operator !=(PointD p1, PointD p2)
+        {
+            return (p1.X != p2.X && p1.Y != p2.Y);
+        }
+    }
+    public struct RectangleD
+    {
+        public double X;
+        public double Y;
+        public double W;
+        public double H;
+
+        public RectangleD(double x, double y, double w, double h)
+        {
+            X = x;
+            Y = y;
+            W = w;
+            H = h;
+        }
+        public System.Drawing.Rectangle ToRectangleInt()
+        {
+            return new System.Drawing.Rectangle((int)X, (int)Y, (int)W, (int)H);
+        }
+        public bool IntersectsWith(PointD p)
+        {
+            if (X <= p.X && (X + W) >= p.X && Y <= p.Y && (Y + H) >= p.Y)
+                return true;
+            else
+                return false;
+        }
+        public bool IntersectsWith(double x, double y)
+        {
+            if (X <= x && (X + W) >= x && Y <= y && (Y + H) >= y)
+                return true;
+            else
+                return false;
+        }
+        public RectangleF ToRectangleF()
+        {
+            return new RectangleF((float)X, (float)Y, (float)W, (float)H);
+        }
+        public override string ToString()
+        {
+            return X.ToString() + ", " + Y.ToString() + ", " + W.ToString() + ", " + H.ToString();
+        }
+
+    }
+    public class Annotation
+    {
+        public enum Type
+        {
+            Rectangle,
+            Point,
+            Line,
+            Polygon,
+            Polyline,
+            Freeform,
+            Ellipse,
+            Label
+        }
+        public PointD Point
+        {
+            get
+            {
+                if (type == Type.Line || type == Type.Ellipse || type == Type.Label || type == Type.Freeform)
+                    return new PointD(BoundingBox.X, BoundingBox.Y);
+                return Points[0];
+            }
+            set
+            {
+                if (Points.Count == 0)
+                {
+                    AddPoint(value);
+                }
+                else
+                    UpdatePoint(value, 0);
+                UpdateSelectBoxs();
+                UpdateBoundingBox();
+            }
+        }
+        public RectangleD Rect
+        {
+            get
+            {
+                if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform || type == Type.Label)
+                    return BoundingBox;
+                if (type == Type.Rectangle || type == Type.Ellipse)
+                    return new RectangleD(Points[0].X, Points[0].Y, Points[1].X - Points[0].X, Points[2].Y - Points[0].Y);
+                else
+                    return new RectangleD(Points[0].X, Points[0].Y, 1, 1);
+            }
+            set
+            {
+                if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform)
+                {
+                    BoundingBox = value;
+                }
+                else
+                if (Points.Count < 4 && (type == Type.Rectangle || type == Type.Ellipse))
+                {
+                    AddPoint(new PointD(value.X, value.Y));
+                    AddPoint(new PointD(value.X + value.W, value.Y));
+                    AddPoint(new PointD(value.X, value.Y + value.H));
+                    AddPoint(new PointD(value.X + value.W, value.Y + value.H));
+                }
+                else
+                if (type == Type.Rectangle || type == Type.Ellipse)
+                {
+                    Points[0] = new PointD(value.X, value.Y);
+                    Points[1] = new PointD(value.X + value.W, value.Y);
+                    Points[2] = new PointD(value.X, value.Y + value.H);
+                    Points[3] = new PointD(value.X + value.W, value.Y + value.H);
+                }
+                UpdateSelectBoxs();
+                UpdateBoundingBox();
+            }
+        }
+        public double X
+        {
+            get
+            {
+                return Point.X;
+            }
+            set
+            {
+                Rect = new RectangleD(value, Y, W, H);
+            }
+        }
+        public double Y
+        {
+            get
+            {
+                return Point.Y;
+            }
+            set
+            {
+                Rect = new RectangleD(X, value, W, H);
+            }
+        }
+        public double W
+        {
+            get
+            {
+                if (type == Type.Point)
+                    return strokeWidth;
+                else
+                    return BoundingBox.W;
+            }
+            set
+            {
+                Rect = new RectangleD(X, Y, value, H);
+            }
+        }
+        public double H
+        {
+            get
+            {
+                if (type == Type.Point)
+                    return strokeWidth;
+                else
+                    return BoundingBox.H;
+            }
+            set
+            {
+                Rect = new RectangleD(X, Y, W, value);
+            }
+        }
+            
+        public Type type;
+        public float selectBoxSize = 4;
+        private List<PointD> Points = new List<PointD>();
+        public List<PointD> PointsD
+        {
+            get
+            {
+                return Points;
+            }
+        }
+        public List<RectangleF> selectBoxs = new List<RectangleF>();
+        public List<int> selectedPoints = new List<int>();
+        public RectangleD BoundingBox;
+        public Font font = System.Drawing.SystemFonts.DefaultFont;
+        public SZCT coord;
+        public System.Drawing.Color strokeColor;
+        public System.Drawing.Color fillColor;
+        public bool isFilled = false;
+        public string id = "";
+        public string roiID = "";
+        public string roiName = "";
+        private string text = "";
+            
+        public double strokeWidth = 1;
+        public int shapeIndex = 0;
+        public bool closed = false;
+        public bool selected = false;
+
+        public Annotation Copy()
+        {
+            Annotation copy = new Annotation();
+            copy.id = id;
+            copy.roiID = roiID;
+            copy.roiName = roiName;
+            copy.text = text;
+            copy.strokeWidth = strokeWidth;
+            copy.strokeColor = strokeColor;
+            copy.fillColor = fillColor;
+            copy.Points = Points;
+            copy.selected = selected;
+            copy.shapeIndex = shapeIndex;
+            copy.closed = closed;
+            copy.font = font;
+            copy.selectBoxs = selectBoxs;
+            copy.BoundingBox = BoundingBox;
+            copy.isFilled = isFilled;
+            copy.coord = coord;
+            copy.selectedPoints = selectedPoints;
+
+            return copy;
+        }
+        public Annotation Copy(SZCT cord)
+        {
+            Annotation copy = new Annotation();
+            copy.type = type;
+            copy.selectBoxSize = selectBoxSize;
+            copy.id = id;
+            copy.roiID = roiID;
+            copy.roiName = roiName;
+            copy.text = text;
+            copy.strokeWidth = strokeWidth;
+            copy.strokeColor = strokeColor;
+            copy.fillColor = fillColor;
+            copy.Points.AddRange(Points);
+            copy.selected = selected;
+            copy.shapeIndex = shapeIndex;
+            copy.closed = closed;
+            copy.font = font;
+            copy.selectBoxs.AddRange(selectBoxs);
+            copy.BoundingBox = BoundingBox;
+            copy.isFilled = isFilled;
+            copy.coord = cord;
+            copy.selectedPoints = selectedPoints;
+            return copy;
+        }
+        public string Text
+        {
+            get
+            {
+                return text;
+            }
+            set
+            {
+                text = value;
+                if(type == Type.Label)
+                {
+                    UpdateBoundingBox();
+                    UpdateSelectBoxs();
+                }
+            }
+        }
+        public Size TextSize
+        {
+            get
+            {
+                return TextRenderer.MeasureText(text, font);
+            }
+        }
+        public RectangleD GetSelectBound()
+        {
+            double f = selectBoxSize / 2;
+            return new RectangleD(BoundingBox.X - f, BoundingBox.Y - f, BoundingBox.W + f, BoundingBox.H + f);
+        }
+        public Annotation()
+        {
+            coord = new SZCT(0, 0, 0, 0);
+            strokeColor = System.Drawing.Color.Yellow;
+            font = SystemFonts.DefaultFont;
+            BoundingBox = new RectangleD(0, 0, 1, 1);
+        }
+
+        public static Annotation CreatePoint(SZCT coord, double x, double y)
+        {
+            Annotation an = new Annotation();
+            an.coord = coord;
+            an.AddPoint(new PointD(x, y));
+            an.type = Type.Point;
+            return an;
+        }
+        public static Annotation CreateLine(SZCT coord, PointD x1, PointD x2)
+        {
+            Annotation an = new Annotation();
+            an.coord = coord;
+            an.type = Type.Line;
+            an.AddPoint(x1);
+            an.AddPoint(x2);
+            return an;
+        }
+        public static Annotation CreateRectangle(SZCT coord, double x, double y, double w, double h)
+        {
+            Annotation an = new Annotation();
+            an.coord = coord;
+            an.type = Type.Rectangle;
+            an.Rect = new RectangleD(x,y, w, h);
+            return an;
+        }
+        public static Annotation CreateEllipse(SZCT coord, double x, double y, double w, double h)
+        {
+            Annotation an = new Annotation();
+            an.coord = coord;
+            an.type = Type.Ellipse;
+            an.Rect = new RectangleD(x, y, w, h);
+            return an;
+        }
+        public static Annotation CreatePolygon(SZCT coord, PointD[] pts)
+        {
+            Annotation an = new Annotation();
+            an.coord = coord;
+            an.type = Type.Polygon;
+            an.AddPoints(pts);
+            an.closed = true;
+            return an;
+        }
+        public static Annotation CreateFreeform(SZCT coord, PointD[] pts)
+        {
+            Annotation an = new Annotation();
+            an.coord = coord;
+            an.type = Type.Freeform;
+            an.AddPoints(pts);
+            an.closed = true;
+            return an;
+        }
+
+        public void UpdatePoint(PointD p, int i)
+        {
+            if (i < Points.Count)
+            {
+                Points[i] = p;
+            }
+            UpdateBoundingBox();
+            UpdateSelectBoxs();
+        }
+        public PointD GetPoint(int i)
+        {
+            return Points[i];
+        }
+        public PointD[] GetPoints()
+        {
+            return Points.ToArray();
+        }
+        public PointF[] GetPointsF()
+        {
+            PointF[] pfs = new PointF[Points.Count];
+            for (int i = 0; i < Points.Count; i++)
+            {
+                pfs[i].X = (float)Points[i].X;
+                pfs[i].Y = (float)Points[i].Y;
+            }
+            return pfs;
+        }
+        public void AddPoint(PointD p)
+        {
+            Points.Add(p);
+            UpdateSelectBoxs();
+            UpdateBoundingBox();
+        }
+        public void AddPoints(PointD[] p)
+        {
+            Points.AddRange(p);
+            UpdateSelectBoxs();
+            UpdateBoundingBox();
+        }
+        public void RemovePoints(int[] indexs)
+        {
+            List<PointD> inds = new List<PointD>();
+            for (int i = 0; i < Points.Count; i++)
+            {
+                bool found = false;
+                for (int ind = 0; ind < indexs.Length; ind++)
+                {
+                    if (indexs[ind] == i)
+                        found = true;
+                }
+                if (!found)
+                    inds.Add(Points[i]);
+            }
+            Points = inds;
+            UpdateBoundingBox();
+            UpdateSelectBoxs();
+        }
+        public int GetPointCount()
+        {
+            return Points.Count;
+        }
+        public PointD[] stringToPoints(string s)
+        {
+            List<PointD> pts = new List<PointD>();
+            string[] ints = s.Split(' ');
+            for (int i = 0; i < ints.Length; i++)
+            {
+                string[] sints = ints[i].Split(',');
+                double x = double.Parse(sints[0]);
+                double y = double.Parse(sints[1]);
+                pts.Add(new PointD(x, y));
+            }
+            return pts.ToArray();
+        }
+        public string PointsToString()
+        {
+            string pts = "";
+            for (int j = 0; j < Points.Count; j++)
+            {
+                if (j == Points.Count - 1)
+                    pts += Points[j].X.ToString() + "," + Points[j].Y.ToString();
+                else
+                    pts += Points[j].X.ToString() + "," + Points[j].Y.ToString() + " ";
+            }
+            return pts;
+        }
+        public string PointsToString(PointD[] Points)
+        {
+            string pts = "";
+            for (int j = 0; j < Points.Length; j++)
+            {
+                if (j == Points.Length - 1)
+                    pts += Points[j].X.ToString() + "," + Points[j].Y.ToString();
+                else
+                    pts += Points[j].X.ToString() + "," + Points[j].Y.ToString() + " ";
+            }
+            return pts;
+        }
+        public void UpdateSelectBoxs()
+        {
+            float f = selectBoxSize / 2;
+            selectBoxs.Clear();
+            if(type == Type.Label)
+            {
+                selectBoxs.Add(new RectangleF((float)Points[0].X - f, (float)Points[0].Y - f, selectBoxSize, selectBoxSize));
+            }
+            else
+            for (int i = 0; i < Points.Count; i++)
+            {
+                selectBoxs.Add(new RectangleF((float)Points[i].X - f, (float)Points[i].Y - f, selectBoxSize, selectBoxSize));
+            }
+        }
+            
+        public void UpdateBoundingBox()
+        {
+            if (type == Type.Label)
+            {
+                if (text != "")
+                {
+                    Size s = TextSize;
+                    BoundingBox = new RectangleD(Points[0].X, Points[0].Y, s.Width, s.Height);
+                }
+            }
+            else
+            {
+                RectangleD r = new RectangleD(float.MaxValue, float.MaxValue, 0, 0);
+                foreach (PointD p in Points)
+                {
+                    if (r.X > p.X)
+                        r.X = p.X;
+                    if (r.Y > p.Y)
+                        r.Y = p.Y;
+                    if (r.W < p.X)
+                        r.W = p.X;
+                    if (r.H < p.Y)
+                        r.H = p.Y;
+                }
+                r.W = r.W - r.X;
+                r.H = r.H - r.Y;
+                if (r.W == 0)
+                    r.W = 1;
+                if (r.H == 0)
+                    r.H = 1;
+                BoundingBox = r;
+            }
+        }
+        public override string ToString()
+        {
+            return type.ToString() + ", " + Text + "(" + Point.X + ", " + Point.Y + ") " + coord.ToString();
+        }
+    }
+    public class Channel
+    {
+        public string Name = "";
+        public string ID = "";
+        private int index = 0;
+        public string Fluor = "";
+        public int SamplesPerPixel;
+        public System.Drawing.Color? color;
+        public int Emission = -1;
+        public int Excitation = -1;
+        public int Exposure = -1;
+        public string LightSource = "";
+        public double LightSourceIntensity = -1;
+        public int LightSourceWavelength = -1;
+        public string ContrastMethod = "";
+        public string IlluminationType = "";
+        public int bitsPerPixel;
+
+        public IntRange range;
+        public int Index
+        {
+            get
+            {
+                return index;
+            }
+            set
+            {
+                index = value;
+            }
+
+        }
+        public int Max
+        {
+            get
+            {
+                return range.Max;
+            }
+            set
+            {
+                range.Max = value;
+            }
+        }
+        public int Min
+        {
+            get
+            {
+                return range.Min;
+            }
+            set
+            {
+                range.Min = value;
+            }
+        }
+        public RGB rgb = RGB.R;
+        public Channel(int ind, int bitsPerPixel)
+        {
+            if (bitsPerPixel == 16)
+                Max = 65535;
+            if (bitsPerPixel == 14)
+                Max = 16383;
+            if (bitsPerPixel == 12)
+                Max = 4096;
+            if (bitsPerPixel == 10)
+                Max = 1024;
+            if (bitsPerPixel == 8)
+                Max = byte.MaxValue;
+            range = new IntRange(0, Max);
+            Min = 0;
+            index = ind;
+        }
+        public Channel Copy()
+        {
+            Channel c = new Channel(index, bitsPerPixel);
+            c.Name = Name;
+            c.ID = ID;
+            c.range = range;
+            c.color = color;
+            c.Fluor = Fluor;
+            c.SamplesPerPixel = SamplesPerPixel;
+            c.Emission = Emission;
+            c.Excitation = Excitation;
+            c.Exposure = Exposure;
+            c.LightSource = LightSource;
+            c.LightSourceIntensity = LightSourceIntensity;
+            c.LightSourceWavelength = LightSourceWavelength;
+            c.ContrastMethod = ContrastMethod;
+            c.IlluminationType = IlluminationType;
+            return c;
+        }
+        public override string ToString()
+        {
+            if (Name == "")
+                return index.ToString();
+            else
+                return index + ", " + Name;
+        }
+    }
+
+    public struct BufferInfo
+    {
+        public static int CreateHash(string filepath, int ser, int index)
+        {
+            filepath = filepath.Replace("\\", "/");
+            string ids = CreateID(filepath, ser, index);
+            return ids.GetHashCode();
+        }
+        public static string CreateID(string filepath, int ser, int index)
+        {
+            const char sep = '/';
+            filepath = filepath.Replace("\\", "/");
+            string s = filepath + sep + 's' + sep + ser + sep + 'i' + sep + index;
+            return s;
+        }
+        public static LevelsLinear filter8 = new LevelsLinear();
+        public static LevelsLinear16bpp filter16 = new LevelsLinear16bpp();
+        public string stringId;
+        public int HashID
+        {
+            get
+            {
+                return stringId.GetHashCode();
+            }
+        }
+        public bool littleEndian;
+        public bool ConvertToLittleEndian;
+        public bool RedGreenFlipped;
+        public int length;
+        public int SizeX, SizeY;
+        public int stride;
+        public int RGBChannelsCount;
+        public int bitsPerPixel;
+        public PixelFormat pixelFormat;
+        public SZCT Coordinate;
+
+        public BufferInfo(string filepath, int len, int w, int h, int strid, int RGBChsCount, int bitsPerPx, PixelFormat px, SZCT coord, int index, bool litleEnd, bool convertToLittleEndian)
+        {
+            stringId = CreateID(filepath, coord.S, index);
+            littleEndian = litleEnd;
+            ConvertToLittleEndian = convertToLittleEndian;
+            RedGreenFlipped = false;
+            length = len;
+            SizeX = w;
+            SizeY = h;
+            stride = strid;
+            RGBChannelsCount = RGBChsCount;
+            bitsPerPixel = bitsPerPx;
+            pixelFormat = px;
+            Coordinate = coord;
+        }
+
+        public override string ToString()
+        {
+            return stringId;
+        }
+
+    }
+    public class Buf
+    {
+        public bool mapped = false;
+        public BufferInfo info;
+        public MemoryMappedFile file;
+        public MemoryMappedViewStream mapstream;
+        public MemoryStream stream;
+        public BinaryWriter writer;
+        public BinaryReader read;
+        public byte[] bytes
+        {
+            get
+            {
+                return GetAllBytes();
+            }
+            set
+            {
+                SetAllBytes(value);
+            }
+        }
+        public Buf(BufferInfo inf, byte[] bts)
+        {
+            info = inf;
+            file = MemoryMappedFile.CreateOrOpen(info.ToString(), inf.length);
+            mapstream = file.CreateViewStream(0, inf.length, MemoryMappedFileAccess.ReadWrite);
+            read = new BinaryReader(mapstream);
+            writer = new BinaryWriter(mapstream);
+            bytes = bts;
+            if (info.RGBChannelsCount == 3 && info.RedGreenFlipped == false)
+            {
+                info.RedGreenFlipped = true;
+                //RGB Channels are stored in BGR so we switch them to RGB
+                SetBuffer(switchRedBlue(GetBitmap()));
+                //Then turn the 48bpp buffers to 3 RGB 16bpp buffers
+            }
+            if (!info.littleEndian && info.ConvertToLittleEndian == true)
+            {
+                info.ConvertToLittleEndian = true;
+                //We need to convert this buffer to little endian.
+                ToLittleEndian();
+            }
+
+        }
+        public static Buf GetFromID(string bid)
+        {
+            return Table.GetBuffer(bid);
+        }
+        public Buf BufFromHash(int hash)
+        {
+            return Table.GetBufferByHash(hash);
+        }
+        public Buf BufFromID(string id)
+        {
+            int hash = id.GetHashCode();
+            return BufFromHash(hash);
+        }
+        public static Buf Copy(Buf b, string file, int index)
+        {
+            byte[] bts = new byte[b.info.length];
+            Buffer.BlockCopy(b.bytes, 0, bts, 0, b.bytes.Length);
+            BufferInfo bi = b.info;
+            bi.stringId = BufferInfo.CreateID(file, b.info.Coordinate.S, index);
+            Buf bf = new Buf(bi, bts);
+            return bf;
+        }
+        public static Buf Copy(Buf b)
+        {
+            return new Buf(b.info, b.bytes);
+        }
+
+        public override string ToString()
+        {
+            return info.stringId;
+        }
+
+        public byte[] GetAllBytes()
+        {
+            read.BaseStream.Position = 0;
+            return read.ReadBytes(info.length);
+        }
+        public byte[] GetBytes(int start, int count)
+        {
+            read.BaseStream.Position = start;
+            return read.ReadBytes(count);
+        }
+        public void Seek0()
+        {
+            read.BaseStream.Position = 0;
+        }
+        public void SetAllBytes(byte[] bytes)
+        {
+            writer.Seek(0, SeekOrigin.Begin);
+            writer.Write(bytes, 0, info.length);
+        }
+        public void SetByte(byte bt, int ind)
+        {
+            writer.Seek(ind, SeekOrigin.Begin);
+            writer.Write(bt);
+        }
+        public void SetBytes(byte[] bytes, int ind)
+        {
+            writer.Seek(ind, SeekOrigin.Begin);
+            writer.Write(bytes, ind, bytes.Length);
+        }
+        public void SetShorts(ushort[] shorts, int ind)
+        {
+            byte[] target = new byte[shorts.Length * 2];
+            Buffer.BlockCopy(shorts, 0, target, ind, shorts.Length * 2);
+        }
+        public void SetBuffer(Bitmap bitmap)
+        {
+            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, info.SizeX, info.SizeY), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+            info.pixelFormat = data.PixelFormat;
+            IntPtr ptr = data.Scan0;
+            int length = data.Stride * bitmap.Height;
+            byte[] bytes = new byte[length];
+            Marshal.Copy(ptr, bytes, 0, length);
+            SetAllBytes(bytes);
+            bitmap.UnlockBits(data);
+            bitmap.Dispose();
+        }
+
+        public void Flush()
+        {
+            //Here we write any changes made to the 
+            writer.Flush();
+        }
+        public unsafe Bitmap GetBitmap()
+        {
+            fixed (byte* ptr = GetAllBytes())
+            {
+                return new Bitmap(info.SizeX, info.SizeY, info.stride, info.pixelFormat, new IntPtr(ptr));
+            }
+        }
+
+        public static unsafe Bitmap GetBitmap(byte[] bts, int SizeX, int SizeY, int stride, PixelFormat pixel)
+        {
+            fixed (byte* ptr = bts)
+            {
+                return new Bitmap(SizeX, SizeY, stride, pixel, new IntPtr(ptr));
+            }
+        }
+
+        public static byte[] GetBuffer(Bitmap bitmap)
+        {
+            bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+            IntPtr ptr = data.Scan0;
+            int stride = 0;
+            if(bitmap.PixelFormat == PixelFormat.Format8bppIndexed)
+            {
+                stride = bitmap.Width;
+            }
+            else
+            if(bitmap.PixelFormat == PixelFormat.Format16bppGrayScale)
+            {
+                stride = bitmap.Width * 2;
+            }
+            else
+            if(bitmap.PixelFormat == PixelFormat.Format24bppRgb)
+            {
+                stride = bitmap.Width * 3;
+            }
+            else
+            if (bitmap.PixelFormat == PixelFormat.Format48bppRgb)
+            {
+                stride = bitmap.Width * 3 * 2;
+            }
+            int length = stride * bitmap.Height;
+            byte[] bytes = new byte[length];
+            Marshal.Copy(ptr, bytes, 0, length);
+            Array.Reverse(bytes);
+            bitmap.UnlockBits(data);
+            return bytes;
+        }
+
+        public unsafe void ToLittleEndian()
+        {
+            //Here we convert this buffer to little endian.
+            byte[] bts = GetAllBytes();
+            Bitmap bitmap;
+            Array.Reverse(bts);
+            fixed (byte* ptr = bts)
+            {
+                bitmap = new Bitmap(info.SizeX, info.SizeY, info.stride, info.pixelFormat, new IntPtr(ptr));
+                bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            }
+            SetBuffer(bitmap);
+            info.ConvertToLittleEndian = true;
+            info.littleEndian = true;
+        }
+
+        public unsafe void ToBigEndian()
+        {
+            //Here we convert this buffer to big endian.
+            byte[] bytes = GetAllBytes();
+            Array.Reverse(bytes);
+            Bitmap bitmap;
+            fixed (byte* ptr = bytes)
+            {
+                bitmap = new Bitmap(info.SizeX, info.SizeY, info.stride, info.pixelFormat, new IntPtr(ptr));
+                bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            }
+            SetBuffer(bitmap);
+            bitmap.Dispose();
+        }
+
+        public byte[] GetSaveBytes()
+        {
+            Bitmap bitmap;
+            if (info.RGBChannelsCount == 1)
+                bitmap = GetBitmap();
+            else
+                bitmap = switchRedBlue(GetBitmap());
+            bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, info.SizeX, info.SizeY), ImageLockMode.ReadWrite, info.pixelFormat);
+            IntPtr ptr = data.Scan0;
+            int length = this.bytes.Length;
+            byte[] bytes = new byte[length];
+            Marshal.Copy(ptr, bytes, 0, length);
+            Array.Reverse(bytes);
+            bitmap.UnlockBits(data);
+            bitmap.Dispose();
+            return bytes;
+        }
+
+        public Bitmap GetFiltered(IntRange range)
+        {
+            if (info.bitsPerPixel > 8)
+            {
+                // set ranges
+                BioImage.filter16.InRed = range;
+                BioImage.filter16.InGreen = range;
+                BioImage.filter16.InBlue = range;
+                return BioImage.filter16.Apply(GetBitmap());
+            }
+            else
+            {
+                // set ranges
+                BioImage.filter8.InRed = range;
+                BioImage.filter8.InGreen = range;
+                BioImage.filter8.InBlue = range;
+                return BioImage.filter8.Apply(GetBitmap());
+            }
+        }
+        public Bitmap GetFiltered(IntRange r, IntRange g, IntRange b)
+        {
+            if (info.bitsPerPixel > 8)
+            {
+                // set ranges
+                BioImage.filter16.InRed = r;
+                BioImage.filter16.InGreen = g;
+                BioImage.filter16.InBlue = b;
+                return BioImage.filter16.Apply(GetBitmap());
+            }
+            else
+            {
+                // set ranges
+                BioImage.filter8.InRed = r;
+                BioImage.filter8.InGreen = g;
+                BioImage.filter8.InBlue = b;
+                return BioImage.filter8.Apply(GetBitmap());
+            } 
+        }
+        public Bitmap switchRedBlue(Bitmap image)
+        {
+            ExtractChannel cr = new ExtractChannel(AForge.Imaging.RGB.R);
+            ExtractChannel cb = new ExtractChannel(AForge.Imaging.RGB.B);
+            // apply the filter
+            Bitmap rImage = cr.Apply(image);
+            Bitmap bImage = cb.Apply(image);
+
+            ReplaceChannel replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, bImage);
+            replaceRFilter.ApplyInPlace(image);
+
+            ReplaceChannel replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, rImage);
+            replaceBFilter.ApplyInPlace(image);
+            rImage.Dispose();
+            bImage.Dispose();
+            return image;
+        }
+        public int GetIndex(int ix, int iy)
+        {
+            int stridex = info.SizeX;
+            int x = ix;
+            int y = iy;
+            if (!info.littleEndian)
+            {
+                x = (info.SizeX - 1) - x;
+                y = (info.SizeY - 1) - y;
+                if (info.bitsPerPixel > 8)
+                {
+                    return (y * stridex + x) * 2;
+                }
+                else
+                {
+                    return (y * stridex + x);
+                }
+            }
+            else
+            {
+                if (info.bitsPerPixel > 8)
+                {
+                    return (y * stridex + x) * 2;
+                }
+                else
+                {
+                    return (y * stridex + x);
+                }
+            }
+        }
+        public int GetIndexRGB(int ix, int iy, int index)
+        {
+            int stridex = info.SizeX;
+            //For 16bit (2*8bit) images we multiply buffer index by 2
+            int x = ix;
+            int y = iy;
+            if (!info.littleEndian)
+            {
+                x = (info.SizeX - 1) - x;
+                y = (info.SizeY - 1) - y;
+                if (info.bitsPerPixel > 8)
+                {
+                    return (y * stridex + x) * 2 * index;
+                }
+                else
+                {
+                    return (y * stridex + x) * index;
+                }
+            }
+            else
+            {
+                if (info.bitsPerPixel > 8)
+                {
+                    return (y * stridex + x) * 2 * index;
+                }
+                else
+                {
+                    return (y * stridex + x) * index;
+                }
+            }
+        }
+        public ushort GetValueRGB(int ix, int iy, int index)
+        {
+            int i = -1;
+            int stridex = info.SizeX;
+            //For 16bit (2*8bit) images we multiply buffer index by 2
+            int x = ix;
+            int y = iy;
+            if (!info.littleEndian)
+            {
+                x = (info.SizeX - 1) - x;
+                y = (info.SizeY - 1) - y;
+                if (info.bitsPerPixel > 8)
+                {
+                    int index2 = (y * stridex + x) * 2 * index;
+                    i = BitConverter.ToUInt16(bytes, index2);
+                    return (ushort)i;
+                }
+                else
+                {
+                    int stride = info.SizeX;
+                    int indexb = (y * stridex + x) * index;
+                    i = bytes[indexb];
+                    return (ushort)i;
+                }
+            }
+            else
+            {
+                if (info.bitsPerPixel > 8)
+                {
+                    int index2 = (y * stridex + x) * 2 * index;
+                    i = BitConverter.ToUInt16(bytes, index2);
+                    return (ushort)i;
+                }
+                else
+                {
+                    int stride = info.SizeX;
+                    int indexb = (y * stridex + x) * index;
+                    i = bytes[indexb];
+                    return (ushort)i;
+                }
+            }
+        }
+        public ushort GetValue(int ix, int iy)
+        {
+            int i = 0;
+            int stridex = info.SizeX;
+            //For 16bit (2*8bit) images we multiply buffer index by 2
+            int x = ix;
+            int y = iy;
+            if (ix < 0)
+                x = 0;
+            if (iy < 0)
+                y = 0;
+            if (ix >= info.SizeX)
+                x = info.SizeX - 1;
+            if (iy >= info.SizeY)
+                y = info.SizeY - 1;
+            if (!info.littleEndian)
+            {
+                x = (info.SizeX - 1) - x;
+                y = (info.SizeY - 1) - y;
+                if (info.bitsPerPixel > 8)
+                {
+                    int index2 = (y * stridex + x) * 2 * info.RGBChannelsCount;
+                    i = BitConverter.ToUInt16(bytes, index2);
+                    return (ushort)i;
+                }
+                else
+                {
+                    int index = (y * stridex + x) * info.RGBChannelsCount;
+                    i = bytes[index];
+                    return (ushort)i;
+                }
+            }
+            else
+            {
+                if (info.bitsPerPixel > 8)
+                {
+                    int index2 = (y * stridex + x) * 2 * info.RGBChannelsCount;
+                    i = BitConverter.ToUInt16(bytes, index2);
+                    return (ushort)i;
+                }
+                else
+                {
+                    int index = (y * stridex + x) * info.RGBChannelsCount;
+                    i = bytes[index];
+                    return (ushort)i;
+                }
+            }
+        }
+        public void SetValue(int ix, int iy, ushort value)
+        {
+            byte[] bts = bytes;
+            int stridex = info.SizeX;
+            //For 16bit (2*8bit) images we multiply buffer index by 2
+            int x = ix;
+            int y = iy;
+            if (!info.littleEndian)
+            {
+                x = (info.SizeX - 1) - x;
+                y = (info.SizeY - 1) - y;
+                if (info.bitsPerPixel > 8)
+                {
+                    int index2 = (y * stridex + x) * 2 * info.RGBChannelsCount;
+                    byte upper = (byte)(value >> 8);
+                    byte lower = (byte)(value & 0xff);
+                    SetByte(upper, index2);
+                    SetByte(lower, index2 + 1);
+                }
+                else
+                {
+                    int index = (y * stridex + x) * info.RGBChannelsCount;
+                    SetByte((byte)value, index);
+                }
+            }
+            else
+            {
+                if (info.bitsPerPixel > 8)
+                {
+                    int index2 = ((y * stridex + x) * 2 * info.RGBChannelsCount);
+                    byte upper = (byte)(value >> 8);
+                    byte lower = (byte)(value & 0xff);
+                    SetByte(lower, index2);
+                    SetByte(upper, index2 + 1);
+                }
+                else
+                {
+                    int index = (y * stridex + x) * info.RGBChannelsCount;
+                    SetByte((byte)value, index);
+                }
+            }
+        }
+        public void SetValueRGB(int ix, int iy, int RGBChannel, ushort value)
+        {
+            //Planes are in BGR order so we invert the RGBChannel parameter.
+            if (RGBChannel == 0)
+                RGBChannel = 2;
+            else
+            if (RGBChannel == 2)
+                RGBChannel = 0;
+            int stride = info.SizeX;
+            int x = ix;
+            int y = iy;
+            if (!info.littleEndian)
+            {
+                x = (info.SizeX - 1) - x;
+                y = (info.SizeY - 1) - y;
+                if (info.bitsPerPixel > 8)
+                {
+                    int index2 = ((y * stride + x) * 2 * info.RGBChannelsCount) + (RGBChannel);
+                    byte upper = (byte)(value >> 8);
+                    byte lower = (byte)(value & 0xff);
+                    SetByte(upper, index2);
+                    SetByte(lower, index2 + 1);
+                }
+                else
+                {
+                    int index = ((y * stride + x) * info.RGBChannelsCount) + (RGBChannel);
+                    bytes[index] = (byte)value;
+                }
+            }
+            else
+            {
+                if (info.bitsPerPixel > 8)
+                {
+                    int index2 = ((y * stride + x) * 2 * info.RGBChannelsCount);
+                    byte upper = (byte)(value >> 8);
+                    byte lower = (byte)(value & 0xff);
+                    SetByte(lower, index2);
+                    SetByte(upper, index2 + 1);
+                }
+                else
+                {
+                    int index = ((y * stride + x) * info.RGBChannelsCount) + (RGBChannel);
+                    bytes[index] = (byte)value;
+                }
+            }
+        }
+        public ushort[,] GetBlock(int ix, int iy, int iw, int ih)
+        {
+            byte[] bt = new byte[2];
+            ushort[,] sh = new ushort[iw,ih];
+            for (int y = iy; y < iy + ih; y++)
+            {
+                for (int x = ix; x < ix + iw; x++)
+                {
+                    int l = GetIndex(x, y);
+                    if (info.bitsPerPixel > 8)
+                    {
+                        sh[x,y] = BitConverter.ToUInt16(bytes, l);
+                    }
+                    else
+                        sh[x,y] = (ushort)bytes[l];
+                }
+            }
+            return sh;
+        }
+        public void SetBlock(int ix, int iy, int iw, int ih, ushort[,] sh)
+        {
+            int xx = ix;
+            int yy = iy;
+            for (int y = 0; y < ih; y++)
+            {
+                for (int x = 0; x <iw; x++)
+                {
+                    if (info.bitsPerPixel > 8)
+                    {
+                        if (info.littleEndian)
+                        {
+                            SetValue(x+ix,y+iy, sh[x,y]);
+                            //SetByte(bt[0],l);
+                            //SetByte(bt[1],l+1);
+                        }
+                        else
+                        {
+                            SetValue(x, y, sh[x, y]);
+                            //SetByte(bt[0], l);
+                            //SetByte(bt[1], l+1);
+                        }
+                    }
+                    else
+                    {
+                        if (info.littleEndian)
+                        {
+                            //SetByte(bt[0], l);
+                        }
+                        else
+                        {
+                            //SetByte(bt[0], l);
+                        }
+                    }
+                    xx++;
+                }
+                yy++;
+            } 
+                
+        }
+        public void Dispose()
+        {
+            file.Dispose();
+            mapstream.Dispose();
+            writer.Dispose();
+            read.Dispose();
+        }
+    }
     public class BioImage
     {
-        public const char sep = '/';
+        public static int CreateHash(string filepath, int ser, int index)
+        {
+            filepath = filepath.Replace("\\", "/");
+            string ids = CreateID(filepath, ser, index);
+            return ids.GetHashCode();
+        }
+        public static string CreateID(string filepath, int ser, int index)
+        {
+            const char sep = '/';
+            filepath = filepath.Replace("\\", "/");
+            string s = filepath + sep + 's' + sep + ser + sep + 'i' + sep + index;
+            return s;
+        }
         public int GetHash(int s, int z, int c, int t)
         {
             return CreateHash(filename, s, Coords[s, z, c, t]);
@@ -140,20 +1518,6 @@ namespace BioImage
             int h = CreateHash(filename, coord.S, Coords[coord.S, coord.Z, coord.C, coord.T]);
             return h;
         }
-
-        public static int CreateHash(string filepath, int ser, int index)
-        {
-            filepath = filepath.Replace("\\", "/");
-            string ids = CreateID(filepath, ser, index);
-            return ids.GetHashCode();
-        }
-        public static string CreateID(string filepath, int ser, int index)
-        {
-            filepath = filepath.Replace("\\", "/");
-            string s = filepath + sep + 's' + sep + ser + sep + 'i' + sep + index;
-            return s;
-        }
-
         public int[] GetSZCRTCoordInts(int i)
         {
             Buf bf = Buffers[i];
@@ -323,7 +1687,7 @@ namespace BioImage
         }
         public static BioImage MergeChannels(BioImage b2, BioImage b)
         {
-            Recorder.AddLine("BioImage.MergeChannels(" + '"' + b.IdString + '"' + "," + '"' + b2.IdString + '"' + ");");
+            Recorder.AddLine("MergeChannels(" + '"' + b.IdString + '"' + "," + '"' + b2.IdString + '"' + ");");
             BioImage res = new BioImage(b2.Filename, b2.SizeX, b2.SizeY);
             res.serie = b2.serie;
             res.sizeZ = b2.SizeZ;
@@ -411,7 +1775,7 @@ namespace BioImage
         /*
          * public static BioImage MergeChannels(BioImage b, BioImage b2)
         {
-            Recorder.AddLine("BioImage.MergeChannels(" + '"' + b.IdString + '"' + "," + '"' + b2.IdString + '"' + ");");
+            Recorder.AddLine("MergeChannels(" + '"' + b.IdString + '"' + "," + '"' + b2.IdString + '"' + ");");
             BioImage res = new BioImage(b2.Filename, b2.SizeX, b2.SizeY);
             res.serie = b2.serie;
             res.sizeZ = b2.SizeZ;
@@ -547,68 +1911,6 @@ namespace BioImage
             get
             {
                 return Channels[rgbChannels[2]];
-            }
-        }
-
-        public class SZCT
-        {
-            public int S, Z, C, T;
-            public SZCT(int s, int z, int c, int t)
-            {
-                S = s;
-                Z = z;
-                C = c;
-                T = t;
-            }
-            public static bool operator ==(SZCT c1, SZCT c2)
-            {
-                if (c1.S == c2.S && c1.Z == c2.Z && c1.C == c2.C && c1.T == c2.T)
-                    return true;
-                else
-                    return false;
-            }
-            public static bool operator !=(SZCT c1, SZCT c2)
-            {
-                if (c1.S != c2.S || c1.Z != c2.Z || c1.C != c2.C || c1.T != c2.T)
-                    return false;
-                else
-                    return true;
-            }
-            public override string ToString()
-            {
-                return S + "," + Z + "," + C + "," + T;
-            }
-        }
-        public struct SZCTXY
-        {
-            public int S, Z, C, T, X, Y;
-            public SZCTXY(int s, int z, int c, int t, int x, int y)
-            {
-                S = s;
-                Z = z;
-                C = c;
-                T = t;
-                X = x;
-                Y = y;
-            }
-            public override string ToString()
-            {
-                return S + "," + Z + "," + C + "," + T + "," + X + "," + Y;
-            }
-
-            public static bool operator ==(SZCTXY c1, SZCTXY c2)
-            {
-                if (c1.S == c2.S && c1.Z == c2.Z && c1.C == c2.C && c1.T == c2.T && c1.X == c2.X && c1.Y == c2.Y)
-                    return true;
-                else
-                    return false;
-            }
-            public static bool operator !=(SZCTXY c1, SZCTXY c2)
-            {
-                if (c1.S != c2.S || c1.Z != c2.Z || c1.C != c2.C || c1.T != c2.T || c1.X != c2.X || c1.Y != c2.Y)
-                    return false;
-                else
-                    return true;
             }
         }
 
@@ -1016,121 +2318,7 @@ namespace BioImage
         }
 
         public static Stopwatch swatch = new Stopwatch();
-        public enum RGB
-        {
-            R,
-            G,
-            B
-        }
-        public class ColorS
-        {
-            public ushort R = 0;
-            public ushort G = 0;
-            public ushort B = 0;
-            public ColorS()
-            {
-
-            }
-            public ColorS(ushort s)
-            {
-                R = s;
-                G = s;
-                B = s;
-            }
-            public ColorS(ushort r, ushort g, ushort b)
-            {
-                R = r;
-                G = g;
-                B = b;
-            }
-            public static ColorS FromColor(System.Drawing.Color col)
-            {
-                float r = (((float)col.R) / 255) * ushort.MaxValue;
-                float g = (((float)col.G) / 255) * ushort.MaxValue;
-                float b = (((float)col.B) / 255) * ushort.MaxValue;
-                ColorS color = new ColorS();
-                color.R = (ushort)r;
-                color.G = (ushort)g;
-                color.B = (ushort)b;
-                return color;
-            }
-            public static System.Drawing.Color ToColor(ColorS col)
-            {
-                float r = ((float)(col.R) / 65535) * 255;
-                float g = ((float)(col.G) / 65535) * 255;
-                float b = ((float)(col.B) / 65535) * 255;
-                System.Drawing.Color c = System.Drawing.Color.FromArgb((byte)r, (byte)g, (byte)b);
-                return c;
-            }
-            public override string ToString()
-            {
-                return R + "," + G + "," + B;
-            }
-        }
-        public struct PointD
-        {
-            public double X;
-            public double Y;
-            public PointD(double x, double y)
-            {
-                X = x;
-                Y = y;
-            }
-            public PointF ToPointF()
-            {
-                return new PointF((float)X, (float)Y);
-            }
-            public System.Drawing.Point ToPointInt()
-            {
-                return new System.Drawing.Point((int)X, (int)Y);
-            }
-
-            public override string ToString()
-            {
-                return X.ToString() + ", " + Y.ToString();
-            }
-        }
-        public struct RectangleD
-        {
-            public double X;
-            public double Y;
-            public double W;
-            public double H;
-
-            public RectangleD(double x, double y, double w, double h)
-            {
-                X = x;
-                Y = y;
-                W = w;
-                H = h;
-            }
-            public System.Drawing.Rectangle ToRectangleInt()
-            {
-                return new System.Drawing.Rectangle((int)X, (int)Y, (int)W, (int)H);
-            }
-            public bool IntersectsWith(PointD p)
-            {
-                if (X <= p.X && (X + W) >= p.X && Y <= p.Y && (Y + H) >= p.Y)
-                    return true;
-                else
-                    return false;
-            }
-            public bool IntersectsWith(double x, double y)
-            {
-                if (X <= x && (X + W) >= x && Y <= y && (Y + H) >= y)
-                    return true;
-                else
-                    return false;
-            }
-            public RectangleF ToRectangleF()
-            {
-                return new RectangleF((float)X, (float)Y, (float)W, (float)H);
-            }
-            public override string ToString()
-            {
-                return X.ToString() + ", " + Y.ToString() + ", " + W.ToString() + ", " + H.ToString();
-            }
-        }
+        
         public List<Annotation> GetAnnotations(SZCT coord)
         {
             List<Annotation> annotations = new List<Annotation>();
@@ -1150,1170 +2338,6 @@ namespace BioImage
                     annotations.Add(an);
             }
             return annotations;
-        }
-        public class Annotation
-        {
-            public enum Type
-            {
-                Rectangle,
-                Point,
-                Line,
-                Polygon,
-                Polyline,
-                Freeform,
-                Ellipse,
-                Label
-            }
-            public PointD Point
-            {
-                get
-                {
-                    if (type == Type.Line || type == Type.Ellipse || type == Type.Label || type == Type.Freeform)
-                        return new PointD(BoundingBox.X, BoundingBox.Y);
-                    return Points[0];
-                }
-                set
-                {
-                    if (Points.Count == 0)
-                    {
-                        AddPoint(value);
-                    }
-                    else
-                        UpdatePoint(value, 0);
-                    UpdateSelectBoxs();
-                    UpdateBoundingBox();
-                }
-            }
-            public RectangleD Rect
-            {
-                get
-                {
-                    if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform || type == Type.Label)
-                        return BoundingBox;
-                    if (type == Type.Rectangle || type == Type.Ellipse)
-                        return new RectangleD(Points[0].X, Points[0].Y, Points[1].X - Points[0].X, Points[2].Y - Points[0].Y);
-                    else
-                        return new RectangleD(Points[0].X, Points[0].Y, 1, 1);
-                }
-                set
-                {
-                    if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform)
-                    {
-                        BoundingBox = value;
-                    }
-                    else
-                    if (Points.Count < 4 && (type == Type.Rectangle || type == Type.Ellipse))
-                    {
-                        AddPoint(new PointD(value.X, value.Y));
-                        AddPoint(new PointD(value.X + value.W, value.Y));
-                        AddPoint(new PointD(value.X, value.Y + value.H));
-                        AddPoint(new PointD(value.X + value.W, value.Y + value.H));
-                    }
-                    else
-                    if (type == Type.Rectangle || type == Type.Ellipse)
-                    {
-                        Points[0] = new PointD(value.X, value.Y);
-                        Points[1] = new PointD(value.X + value.W, value.Y);
-                        Points[2] = new PointD(value.X, value.Y + value.H);
-                        Points[3] = new PointD(value.X + value.W, value.Y + value.H);
-                    }
-                    UpdateSelectBoxs();
-                    UpdateBoundingBox();
-                }
-            }
-            public double X
-            {
-                get
-                {
-                    return Point.X;
-                }
-                set
-                {
-                    Rect = new RectangleD(value, Y, W, H);
-                }
-            }
-            public double Y
-            {
-                get
-                {
-                    return Point.Y;
-                }
-                set
-                {
-                    Rect = new RectangleD(X, value, W, H);
-                }
-            }
-            public double W
-            {
-                get
-                {
-                    if (type == Type.Point)
-                        return strokeWidth;
-                    else
-                        return BoundingBox.W;
-                }
-                set
-                {
-                    Rect = new RectangleD(X, Y, value, H);
-                }
-            }
-            public double H
-            {
-                get
-                {
-                    if (type == Type.Point)
-                        return strokeWidth;
-                    else
-                        return BoundingBox.H;
-                }
-                set
-                {
-                    Rect = new RectangleD(X, Y, W, value);
-                }
-            }
-            
-            public Type type;
-            public float selectBoxSize = 4;
-            private List<PointD> Points = new List<PointD>();
-            public List<PointD> PointsD
-            {
-                get
-                {
-                    return Points;
-                }
-            }
-            public List<RectangleF> selectBoxs = new List<RectangleF>();
-            public List<int> selectedPoints = new List<int>();
-            public RectangleD BoundingBox;
-            public Font font = System.Drawing.SystemFonts.DefaultFont;
-            public SZCT coord;
-            public System.Drawing.Color strokeColor;
-            public System.Drawing.Color fillColor;
-            public bool isFilled = false;
-            public string id = "";
-            public string roiID = "";
-            public string roiName = "";
-            private string text = "";
-            
-            public double strokeWidth = 1;
-            public int shapeIndex = 0;
-            public bool closed = false;
-            public bool selected = false;
-
-            public Annotation Copy()
-            {
-                Annotation copy = new Annotation();
-                copy.id = id;
-                copy.roiID = roiID;
-                copy.roiName = roiName;
-                copy.text = text;
-                copy.strokeWidth = strokeWidth;
-                copy.strokeColor = strokeColor;
-                copy.fillColor = fillColor;
-                copy.Points = Points;
-                copy.selected = selected;
-                copy.shapeIndex = shapeIndex;
-                copy.closed = closed;
-                copy.font = font;
-                copy.selectBoxs = selectBoxs;
-                copy.BoundingBox = BoundingBox;
-                copy.isFilled = isFilled;
-                copy.coord = coord;
-                copy.selectedPoints = selectedPoints;
-
-                return copy;
-            }
-            public Annotation Copy(SZCT cord)
-            {
-                Annotation copy = new Annotation();
-                copy.type = type;
-                copy.selectBoxSize = selectBoxSize;
-                copy.id = id;
-                copy.roiID = roiID;
-                copy.roiName = roiName;
-                copy.text = text;
-                copy.strokeWidth = strokeWidth;
-                copy.strokeColor = strokeColor;
-                copy.fillColor = fillColor;
-                copy.Points.AddRange(Points);
-                copy.selected = selected;
-                copy.shapeIndex = shapeIndex;
-                copy.closed = closed;
-                copy.font = font;
-                copy.selectBoxs.AddRange(selectBoxs);
-                copy.BoundingBox = BoundingBox;
-                copy.isFilled = isFilled;
-                copy.coord = cord;
-                copy.selectedPoints = selectedPoints;
-                return copy;
-            }
-            public string Text
-            {
-                get
-                {
-                    return text;
-                }
-                set
-                {
-                    text = value;
-                    if(type == Type.Label)
-                    {
-                        UpdateBoundingBox();
-                        UpdateSelectBoxs();
-                    }
-                }
-            }
-            public Size TextSize
-            {
-                get
-                {
-                    return TextRenderer.MeasureText(text, font);
-                }
-            }
-            public RectangleD GetSelectBound()
-            {
-                double f = selectBoxSize / 2;
-                return new RectangleD(BoundingBox.X - f, BoundingBox.Y - f, BoundingBox.W + f, BoundingBox.H + f);
-            }
-            public Annotation()
-            {
-                coord = new SZCT(0, 0, 0, 0);
-                strokeColor = System.Drawing.Color.Yellow;
-                font = SystemFonts.DefaultFont;
-                BoundingBox = new RectangleD(0, 0, 1, 1);
-            }
-
-            public static Annotation CreatePoint(SZCT coord, double x, double y)
-            {
-                Annotation an = new Annotation();
-                an.coord = coord;
-                an.AddPoint(new PointD(x, y));
-                an.type = Type.Point;
-                return an;
-            }
-            public static Annotation CreateLine(SZCT coord, PointD x1, PointD x2)
-            {
-                Annotation an = new Annotation();
-                an.coord = coord;
-                an.type = Type.Line;
-                an.AddPoint(x1);
-                an.AddPoint(x2);
-                return an;
-            }
-            public static Annotation CreateRectangle(SZCT coord, double x, double y, double w, double h)
-            {
-                Annotation an = new Annotation();
-                an.coord = coord;
-                an.type = Type.Rectangle;
-                an.Rect = new RectangleD(x,y, w, h);
-                return an;
-            }
-            public static Annotation CreateEllipse(SZCT coord, double x, double y, double w, double h)
-            {
-                Annotation an = new Annotation();
-                an.coord = coord;
-                an.type = Type.Ellipse;
-                an.Rect = new RectangleD(x, y, w, h);
-                return an;
-            }
-            public static Annotation CreatePolygon(SZCT coord, PointD[] pts)
-            {
-                Annotation an = new Annotation();
-                an.coord = coord;
-                an.type = Type.Polygon;
-                an.AddPoints(pts);
-                an.closed = true;
-                return an;
-            }
-            public static Annotation CreateFreeform(SZCT coord, PointD[] pts)
-            {
-                Annotation an = new Annotation();
-                an.coord = coord;
-                an.type = Type.Freeform;
-                an.AddPoints(pts);
-                an.closed = true;
-                return an;
-            }
-
-            public void UpdatePoint(PointD p, int i)
-            {
-                if (i < Points.Count)
-                {
-                    Points[i] = p;
-                }
-                UpdateBoundingBox();
-                UpdateSelectBoxs();
-            }
-            public PointD GetPoint(int i)
-            {
-                return Points[i];
-            }
-            public PointD[] GetPoints()
-            {
-                return Points.ToArray();
-            }
-            public PointF[] GetPointsF()
-            {
-                PointF[] pfs = new PointF[Points.Count];
-                for (int i = 0; i < Points.Count; i++)
-                {
-                    pfs[i].X = (float)Points[i].X;
-                    pfs[i].Y = (float)Points[i].Y;
-                }
-                return pfs;
-            }
-            public void AddPoint(PointD p)
-            {
-                Points.Add(p);
-                UpdateSelectBoxs();
-                UpdateBoundingBox();
-            }
-            public void AddPoints(PointD[] p)
-            {
-                Points.AddRange(p);
-                UpdateSelectBoxs();
-                UpdateBoundingBox();
-            }
-            public void RemovePoints(int[] indexs)
-            {
-                List<PointD> inds = new List<PointD>();
-                for (int i = 0; i < Points.Count; i++)
-                {
-                    bool found = false;
-                    for (int ind = 0; ind < indexs.Length; ind++)
-                    {
-                        if (indexs[ind] == i)
-                            found = true;
-                    }
-                    if (!found)
-                        inds.Add(Points[i]);
-                }
-                Points = inds;
-                UpdateBoundingBox();
-                UpdateSelectBoxs();
-            }
-            public int GetPointCount()
-            {
-                return Points.Count;
-            }
-            public PointD[] stringToPoints(string s)
-            {
-                List<PointD> pts = new List<PointD>();
-                string[] ints = s.Split(' ');
-                for (int i = 0; i < ints.Length; i++)
-                {
-                    string[] sints = ints[i].Split(',');
-                    double x = double.Parse(sints[0]);
-                    double y = double.Parse(sints[1]);
-                    pts.Add(new PointD(x, y));
-                }
-                return pts.ToArray();
-            }
-            public string PointsToString()
-            {
-                string pts = "";
-                for (int j = 0; j < Points.Count; j++)
-                {
-                    if (j == Points.Count - 1)
-                        pts += Points[j].X.ToString() + "," + Points[j].Y.ToString();
-                    else
-                        pts += Points[j].X.ToString() + "," + Points[j].Y.ToString() + " ";
-                }
-                return pts;
-            }
-            public string PointsToString(PointD[] Points)
-            {
-                string pts = "";
-                for (int j = 0; j < Points.Length; j++)
-                {
-                    if (j == Points.Length - 1)
-                        pts += Points[j].X.ToString() + "," + Points[j].Y.ToString();
-                    else
-                        pts += Points[j].X.ToString() + "," + Points[j].Y.ToString() + " ";
-                }
-                return pts;
-            }
-            public void UpdateSelectBoxs()
-            {
-                float f = selectBoxSize / 2;
-                selectBoxs.Clear();
-                if(type == Type.Label)
-                {
-                    selectBoxs.Add(new RectangleF((float)Points[0].X - f, (float)Points[0].Y - f, selectBoxSize, selectBoxSize));
-                }
-                else
-                for (int i = 0; i < Points.Count; i++)
-                {
-                    selectBoxs.Add(new RectangleF((float)Points[i].X - f, (float)Points[i].Y - f, selectBoxSize, selectBoxSize));
-                }
-            }
-            
-            public void UpdateBoundingBox()
-            {
-                if (type == Type.Label)
-                {
-                    if (text != "")
-                    {
-                        Size s = TextSize;
-                        BoundingBox = new RectangleD(Points[0].X, Points[0].Y, s.Width, s.Height);
-                    }
-                }
-                else
-                {
-                    RectangleD r = new RectangleD(float.MaxValue, float.MaxValue, 0, 0);
-                    foreach (PointD p in Points)
-                    {
-                        if (r.X > p.X)
-                            r.X = p.X;
-                        if (r.Y > p.Y)
-                            r.Y = p.Y;
-                        if (r.W < p.X)
-                            r.W = p.X;
-                        if (r.H < p.Y)
-                            r.H = p.Y;
-                    }
-                    r.W = r.W - r.X;
-                    r.H = r.H - r.Y;
-                    if (r.W == 0)
-                        r.W = 1;
-                    if (r.H == 0)
-                        r.H = 1;
-                    BoundingBox = r;
-                }
-            }
-            public override string ToString()
-            {
-                return type.ToString() + ", " + Text + "(" + Point.X + ", " + Point.Y + ") " + coord.ToString();
-            }
-        }
-        public class Channel
-        {
-            public string Name = "";
-            public string ID = "";
-            private int index = 0;
-            public string Fluor = "";
-            public int SamplesPerPixel;
-            public System.Drawing.Color? color;
-            public int Emission = -1;
-            public int Excitation = -1;
-            public int Exposure = -1;
-            public string LightSource = "";
-            public double LightSourceIntensity = -1;
-            public int LightSourceWavelength = -1;
-            public string ContrastMethod = "";
-            public string IlluminationType = "";
-            public int bitsPerPixel;
-
-            public IntRange range;
-            public int Index
-            {
-                get
-                {
-                    return index;
-                }
-                set
-                {
-                    index = value;
-                }
-
-            }
-            public int Max
-            {
-                get
-                {
-                    return range.Max;
-                }
-                set
-                {
-                    range.Max = value;
-                }
-            }
-            public int Min
-            {
-                get
-                {
-                    return range.Min;
-                }
-                set
-                {
-                    range.Min = value;
-                }
-            }
-            public RGB rgb = RGB.R;
-            public Channel(int ind, int bitsPerPixel)
-            {
-                if (bitsPerPixel == 16)
-                    Max = 65535;
-                if (bitsPerPixel == 14)
-                    Max = 16383;
-                if (bitsPerPixel == 12)
-                    Max = 4096;
-                if (bitsPerPixel == 10)
-                    Max = 1024;
-                if (bitsPerPixel == 8)
-                    Max = byte.MaxValue;
-                range = new IntRange(0, Max);
-                Min = 0;
-                index = ind;
-            }
-            public Channel Copy()
-            {
-                Channel c = new Channel(index, bitsPerPixel);
-                c.Name = Name;
-                c.ID = ID;
-                c.range = range;
-                c.color = color;
-                c.Fluor = Fluor;
-                c.SamplesPerPixel = SamplesPerPixel;
-                c.Emission = Emission;
-                c.Excitation = Excitation;
-                c.Exposure = Exposure;
-                c.LightSource = LightSource;
-                c.LightSourceIntensity = LightSourceIntensity;
-                c.LightSourceWavelength = LightSourceWavelength;
-                c.ContrastMethod = ContrastMethod;
-                c.IlluminationType = IlluminationType;
-                return c;
-            }
-            public override string ToString()
-            {
-                if (Name == "")
-                    return index.ToString();
-                else
-                    return index + ", " + Name;
-            }
-        }
-        public struct BufferInfo
-        {
-            public static LevelsLinear filter8 = new LevelsLinear();
-            public static LevelsLinear16bpp filter16 = new LevelsLinear16bpp();
-            public string stringId;
-            public int HashID
-            {
-                get
-                {
-                    return stringId.GetHashCode();
-                }
-            }
-            public bool littleEndian;
-            public bool ConvertToLittleEndian;
-            public bool RedGreenFlipped;
-            public int length;
-            public int SizeX, SizeY;
-            public int stride;
-            public int RGBChannelsCount;
-            public int bitsPerPixel;
-            public PixelFormat pixelFormat;
-            public BioImage.SZCT Coordinate;
-
-            public BufferInfo(string filepath, int len, int w, int h, int strid, int RGBChsCount, int bitsPerPx, PixelFormat px, BioImage.SZCT coord, int index, bool litleEnd, bool convertToLittleEndian)
-            {
-                stringId = CreateID(filepath, coord.S, index);
-                littleEndian = litleEnd;
-                ConvertToLittleEndian = convertToLittleEndian;
-                RedGreenFlipped = false;
-                length = len;
-                SizeX = w;
-                SizeY = h;
-                stride = strid;
-                RGBChannelsCount = RGBChsCount;
-                bitsPerPixel = bitsPerPx;
-                pixelFormat = px;
-                Coordinate = coord;
-            }
-
-            public override string ToString()
-            {
-                return stringId;
-            }
-
-        }
-        public class Buf
-        {
-            public bool mapped = false;
-            public BufferInfo info;
-            public MemoryMappedFile file;
-            public MemoryMappedViewStream mapstream;
-            public MemoryStream stream;
-            public BinaryWriter writer;
-            public BinaryReader read;
-            public byte[] bytes
-            {
-                get
-                {
-                    return GetAllBytes();
-                }
-                set
-                {
-                    SetAllBytes(value);
-                }
-            }
-            public Buf(BufferInfo inf, byte[] bts)
-            {
-                info = inf;
-                file = MemoryMappedFile.CreateOrOpen(info.ToString(), inf.length);
-                mapstream = file.CreateViewStream(0, inf.length, MemoryMappedFileAccess.ReadWrite);
-                read = new BinaryReader(mapstream);
-                writer = new BinaryWriter(mapstream);
-                bytes = bts;
-                if (info.RGBChannelsCount == 3 && info.RedGreenFlipped == false)
-                {
-                    info.RedGreenFlipped = true;
-                    //RGB Channels are stored in BGR so we switch them to RGB
-                    SetBuffer(switchRedBlue(GetBitmap()));
-                    //Then turn the 48bpp buffers to 3 RGB 16bpp buffers
-                }
-                if (!info.littleEndian && info.ConvertToLittleEndian == true)
-                {
-                    info.ConvertToLittleEndian = true;
-                    //We need to convert this buffer to little endian.
-                    ToLittleEndian();
-                }
-
-            }
-            public static Buf GetFromID(string bid)
-            {
-                return Table.GetBuffer(bid);
-            }
-            public Buf BufFromHash(int hash)
-            {
-                return Table.GetBufferByHash(hash);
-            }
-            public Buf BufFromID(string id)
-            {
-                int hash = id.GetHashCode();
-                return BufFromHash(hash);
-            }
-            public static Buf Copy(Buf b, string file, int index)
-            {
-                byte[] bts = new byte[b.info.length];
-                Buffer.BlockCopy(b.bytes, 0, bts, 0, b.bytes.Length);
-                BufferInfo bi = b.info;
-                bi.stringId = CreateID(file, b.info.Coordinate.S, index);
-                Buf bf = new Buf(bi, bts);
-                return bf;
-            }
-            public static Buf Copy(Buf b)
-            {
-                return new Buf(b.info, b.bytes);
-            }
-
-            public override string ToString()
-            {
-                return info.stringId;
-            }
-
-            public byte[] GetAllBytes()
-            {
-                read.BaseStream.Position = 0;
-                return read.ReadBytes(info.length);
-            }
-            public byte[] GetBytes(int start, int count)
-            {
-                read.BaseStream.Position = start;
-                return read.ReadBytes(count);
-            }
-            public void Seek0()
-            {
-                read.BaseStream.Position = 0;
-            }
-            public void SetAllBytes(byte[] bytes)
-            {
-                writer.Seek(0, SeekOrigin.Begin);
-                writer.Write(bytes, 0, info.length);
-            }
-            public void SetByte(byte bt, int ind)
-            {
-                writer.Seek(ind, SeekOrigin.Begin);
-                writer.Write(bt);
-            }
-            public void SetBytes(byte[] bytes, int ind)
-            {
-                writer.Seek(ind, SeekOrigin.Begin);
-                writer.Write(bytes, ind, bytes.Length);
-            }
-            public void SetShorts(ushort[] shorts, int ind)
-            {
-                byte[] target = new byte[shorts.Length * 2];
-                Buffer.BlockCopy(shorts, 0, target, ind, shorts.Length * 2);
-            }
-            public void SetBuffer(Bitmap bitmap)
-            {
-                BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, info.SizeX, info.SizeY), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-                info.pixelFormat = data.PixelFormat;
-                IntPtr ptr = data.Scan0;
-                int length = data.Stride * bitmap.Height;
-                byte[] bytes = new byte[length];
-                Marshal.Copy(ptr, bytes, 0, length);
-                SetAllBytes(bytes);
-                bitmap.UnlockBits(data);
-                bitmap.Dispose();
-            }
-
-            public void Flush()
-            {
-                //Here we write any changes made to the 
-                writer.Flush();
-            }
-            public unsafe Bitmap GetBitmap()
-            {
-                fixed (byte* ptr = GetAllBytes())
-                {
-                   return new Bitmap(info.SizeX, info.SizeY, info.stride, info.pixelFormat, new IntPtr(ptr));
-                }
-            }
-
-            public static unsafe Bitmap GetBitmap(byte[] bts, int SizeX, int SizeY, int stride, PixelFormat pixel)
-            {
-                fixed (byte* ptr = bts)
-                {
-                    return new Bitmap(SizeX, SizeY, stride, pixel, new IntPtr(ptr));
-                }
-            }
-
-            public static byte[] GetBuffer(Bitmap bitmap)
-            {
-                bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-                IntPtr ptr = data.Scan0;
-                int stride = 0;
-                if(bitmap.PixelFormat == PixelFormat.Format8bppIndexed)
-                {
-                    stride = bitmap.Width;
-                }
-                else
-                if(bitmap.PixelFormat == PixelFormat.Format16bppGrayScale)
-                {
-                    stride = bitmap.Width * 2;
-                }
-                else
-                if(bitmap.PixelFormat == PixelFormat.Format24bppRgb)
-                {
-                    stride = bitmap.Width * 3;
-                }
-                else
-                if (bitmap.PixelFormat == PixelFormat.Format48bppRgb)
-                {
-                    stride = bitmap.Width * 3 * 2;
-                }
-                int length = stride * bitmap.Height;
-                byte[] bytes = new byte[length];
-                Marshal.Copy(ptr, bytes, 0, length);
-                Array.Reverse(bytes);
-                bitmap.UnlockBits(data);
-                return bytes;
-            }
-
-            public unsafe void ToLittleEndian()
-            {
-                //Here we convert this buffer to little endian.
-                byte[] bts = GetAllBytes();
-                Bitmap bitmap;
-                Array.Reverse(bts);
-                fixed (byte* ptr = bts)
-                {
-                    bitmap = new Bitmap(info.SizeX, info.SizeY, info.stride, info.pixelFormat, new IntPtr(ptr));
-                    bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                }
-                SetBuffer(bitmap);
-                info.ConvertToLittleEndian = true;
-                info.littleEndian = true;
-            }
-
-            public unsafe void ToBigEndian()
-            {
-                //Here we convert this buffer to big endian.
-                byte[] bytes = GetAllBytes();
-                Array.Reverse(bytes);
-                Bitmap bitmap;
-                fixed (byte* ptr = bytes)
-                {
-                    bitmap = new Bitmap(info.SizeX, info.SizeY, info.stride, info.pixelFormat, new IntPtr(ptr));
-                    bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                }
-                SetBuffer(bitmap);
-                bitmap.Dispose();
-            }
-
-            public byte[] GetSaveBytes()
-            {
-                Bitmap bitmap;
-                if (info.RGBChannelsCount == 1)
-                    bitmap = GetBitmap();
-                else
-                    bitmap = switchRedBlue(GetBitmap());
-                bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, info.SizeX, info.SizeY), ImageLockMode.ReadWrite, info.pixelFormat);
-                IntPtr ptr = data.Scan0;
-                int length = this.bytes.Length;
-                byte[] bytes = new byte[length];
-                Marshal.Copy(ptr, bytes, 0, length);
-                Array.Reverse(bytes);
-                bitmap.UnlockBits(data);
-                bitmap.Dispose();
-                return bytes;
-            }
-
-            public Bitmap GetFiltered(IntRange range)
-            {
-                if (info.bitsPerPixel > 8)
-                {
-                    // set ranges
-                    filter16.InRed = range;
-                    filter16.InGreen = range;
-                    filter16.InBlue = range;
-                    return filter16.Apply(GetBitmap());
-                }
-                else
-                {
-                    // set ranges
-                    filter8.InRed = range;
-                    filter8.InGreen = range;
-                    filter8.InBlue = range;
-                    return filter8.Apply(GetBitmap());
-                }
-            }
-            public Bitmap GetFiltered(IntRange r, IntRange g, IntRange b)
-            {
-                if (info.bitsPerPixel > 8)
-                {
-                    // set ranges
-                    filter16.InRed = r;
-                    filter16.InGreen = g;
-                    filter16.InBlue = b;
-                    return filter16.Apply(GetBitmap());
-                }
-                else
-                {
-                    // set ranges
-                    filter8.InRed = r;
-                    filter8.InGreen = g;
-                    filter8.InBlue = b;
-                    return filter8.Apply(GetBitmap());
-                } 
-            }
-            public Bitmap switchRedBlue(Bitmap image)
-            {
-                ExtractChannel cr = new ExtractChannel(AForge.Imaging.RGB.R);
-                ExtractChannel cb = new ExtractChannel(AForge.Imaging.RGB.B);
-                // apply the filter
-                Bitmap rImage = cr.Apply(image);
-                Bitmap bImage = cb.Apply(image);
-
-                ReplaceChannel replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, bImage);
-                replaceRFilter.ApplyInPlace(image);
-
-                ReplaceChannel replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, rImage);
-                replaceBFilter.ApplyInPlace(image);
-                rImage.Dispose();
-                bImage.Dispose();
-                return image;
-            }
-            public int GetIndex(int ix, int iy)
-            {
-                int stridex = info.SizeX;
-                int x = ix;
-                int y = iy;
-                if (!info.littleEndian)
-                {
-                    x = (info.SizeX - 1) - x;
-                    y = (info.SizeY - 1) - y;
-                    if (info.bitsPerPixel > 8)
-                    {
-                        return (y * stridex + x) * 2;
-                    }
-                    else
-                    {
-                        return (y * stridex + x);
-                    }
-                }
-                else
-                {
-                    if (info.bitsPerPixel > 8)
-                    {
-                        return (y * stridex + x) * 2;
-                    }
-                    else
-                    {
-                        return (y * stridex + x);
-                    }
-                }
-            }
-            public int GetIndexRGB(int ix, int iy, int index)
-            {
-                int stridex = info.SizeX;
-                //For 16bit (2*8bit) images we multiply buffer index by 2
-                int x = ix;
-                int y = iy;
-                if (!info.littleEndian)
-                {
-                    x = (info.SizeX - 1) - x;
-                    y = (info.SizeY - 1) - y;
-                    if (info.bitsPerPixel > 8)
-                    {
-                        return (y * stridex + x) * 2 * index;
-                    }
-                    else
-                    {
-                        return (y * stridex + x) * index;
-                    }
-                }
-                else
-                {
-                    if (info.bitsPerPixel > 8)
-                    {
-                        return (y * stridex + x) * 2 * index;
-                    }
-                    else
-                    {
-                        return (y * stridex + x) * index;
-                    }
-                }
-            }
-            public ushort GetValueRGB(int ix, int iy, int index)
-            {
-                int i = -1;
-                int stridex = info.SizeX;
-                //For 16bit (2*8bit) images we multiply buffer index by 2
-                int x = ix;
-                int y = iy;
-                if (!info.littleEndian)
-                {
-                    x = (info.SizeX - 1) - x;
-                    y = (info.SizeY - 1) - y;
-                    if (info.bitsPerPixel > 8)
-                    {
-                        int index2 = (y * stridex + x) * 2 * index;
-                        i = BitConverter.ToUInt16(bytes, index2);
-                        return (ushort)i;
-                    }
-                    else
-                    {
-                        int stride = info.SizeX;
-                        int indexb = (y * stridex + x) * index;
-                        i = bytes[indexb];
-                        return (ushort)i;
-                    }
-                }
-                else
-                {
-                    if (info.bitsPerPixel > 8)
-                    {
-                        int index2 = (y * stridex + x) * 2 * index;
-                        i = BitConverter.ToUInt16(bytes, index2);
-                        return (ushort)i;
-                    }
-                    else
-                    {
-                        int stride = info.SizeX;
-                        int indexb = (y * stridex + x) * index;
-                        i = bytes[indexb];
-                        return (ushort)i;
-                    }
-                }
-            }
-            public ushort GetValue(int ix, int iy)
-            {
-                int i = 0;
-                int stridex = info.SizeX;
-                //For 16bit (2*8bit) images we multiply buffer index by 2
-                int x = ix;
-                int y = iy;
-                if (ix < 0)
-                    x = 0;
-                if (iy < 0)
-                    y = 0;
-                if (ix >= info.SizeX)
-                    x = info.SizeX - 1;
-                if (iy >= info.SizeY)
-                    y = info.SizeY - 1;
-                if (!info.littleEndian)
-                {
-                    x = (info.SizeX - 1) - x;
-                    y = (info.SizeY - 1) - y;
-                    if (info.bitsPerPixel > 8)
-                    {
-                        int index2 = (y * stridex + x) * 2 * info.RGBChannelsCount;
-                        i = BitConverter.ToUInt16(bytes, index2);
-                        return (ushort)i;
-                    }
-                    else
-                    {
-                        int index = (y * stridex + x) * info.RGBChannelsCount;
-                        i = bytes[index];
-                        return (ushort)i;
-                    }
-                }
-                else
-                {
-                    if (info.bitsPerPixel > 8)
-                    {
-                        int index2 = (y * stridex + x) * 2 * info.RGBChannelsCount;
-                        i = BitConverter.ToUInt16(bytes, index2);
-                        return (ushort)i;
-                    }
-                    else
-                    {
-                        int index = (y * stridex + x) * info.RGBChannelsCount;
-                        i = bytes[index];
-                        return (ushort)i;
-                    }
-                }
-            }
-            public void SetValue(int ix, int iy, ushort value)
-            {
-                byte[] bts = bytes;
-                int stridex = info.SizeX;
-                //For 16bit (2*8bit) images we multiply buffer index by 2
-                int x = ix;
-                int y = iy;
-                if (!info.littleEndian)
-                {
-                    x = (info.SizeX - 1) - x;
-                    y = (info.SizeY - 1) - y;
-                    if (info.bitsPerPixel > 8)
-                    {
-                        int index2 = (y * stridex + x) * 2 * info.RGBChannelsCount;
-                        byte upper = (byte)(value >> 8);
-                        byte lower = (byte)(value & 0xff);
-                        SetByte(upper, index2);
-                        SetByte(lower, index2 + 1);
-                    }
-                    else
-                    {
-                        int index = (y * stridex + x) * info.RGBChannelsCount;
-                        SetByte((byte)value, index);
-                    }
-                }
-                else
-                {
-                    if (info.bitsPerPixel > 8)
-                    {
-                        int index2 = ((y * stridex + x) * 2 * info.RGBChannelsCount);
-                        byte upper = (byte)(value >> 8);
-                        byte lower = (byte)(value & 0xff);
-                        SetByte(lower, index2);
-                        SetByte(upper, index2 + 1);
-                    }
-                    else
-                    {
-                        int index = (y * stridex + x) * info.RGBChannelsCount;
-                        SetByte((byte)value, index);
-                    }
-                }
-            }
-            public void SetValueRGB(int ix, int iy, int RGBChannel, ushort value)
-            {
-                //Planes are in BGR order so we invert the RGBChannel parameter.
-                if (RGBChannel == 0)
-                    RGBChannel = 2;
-                else
-                if (RGBChannel == 2)
-                    RGBChannel = 0;
-                int stride = info.SizeX;
-                int x = ix;
-                int y = iy;
-                if (!info.littleEndian)
-                {
-                    x = (info.SizeX - 1) - x;
-                    y = (info.SizeY - 1) - y;
-                    if (info.bitsPerPixel > 8)
-                    {
-                        int index2 = ((y * stride + x) * 2 * info.RGBChannelsCount) + (RGBChannel);
-                        byte upper = (byte)(value >> 8);
-                        byte lower = (byte)(value & 0xff);
-                        SetByte(upper, index2);
-                        SetByte(lower, index2 + 1);
-                    }
-                    else
-                    {
-                        int index = ((y * stride + x) * info.RGBChannelsCount) + (RGBChannel);
-                        bytes[index] = (byte)value;
-                    }
-                }
-                else
-                {
-                    if (info.bitsPerPixel > 8)
-                    {
-                        int index2 = ((y * stride + x) * 2 * info.RGBChannelsCount);
-                        byte upper = (byte)(value >> 8);
-                        byte lower = (byte)(value & 0xff);
-                        SetByte(lower, index2);
-                        SetByte(upper, index2 + 1);
-                    }
-                    else
-                    {
-                        int index = ((y * stride + x) * info.RGBChannelsCount) + (RGBChannel);
-                        bytes[index] = (byte)value;
-                    }
-                }
-            }
-            public ushort[,] GetBlock(int ix, int iy, int iw, int ih)
-            {
-                byte[] bt = new byte[2];
-                ushort[,] sh = new ushort[iw,ih];
-                for (int y = iy; y < iy + ih; y++)
-                {
-                    for (int x = ix; x < ix + iw; x++)
-                    {
-                        int l = GetIndex(x, y);
-                        if (info.bitsPerPixel > 8)
-                        {
-                            sh[x,y] = BitConverter.ToUInt16(bytes, l);
-                        }
-                        else
-                            sh[x,y] = (ushort)bytes[l];
-                    }
-                }
-                return sh;
-            }
-            public void SetBlock(int ix, int iy, int iw, int ih, ushort[,] sh)
-            {
-                int xx = ix;
-                int yy = iy;
-                for (int y = 0; y < ih; y++)
-                {
-                    for (int x = 0; x <iw; x++)
-                    {
-                        if (info.bitsPerPixel > 8)
-                        {
-                            if (info.littleEndian)
-                            {
-                                SetValue(x+ix,y+iy, sh[x,y]);
-                                //SetByte(bt[0],l);
-                                //SetByte(bt[1],l+1);
-                            }
-                            else
-                            {
-                                SetValue(x, y, sh[x, y]);
-                                //SetByte(bt[0], l);
-                                //SetByte(bt[1], l+1);
-                            }
-                        }
-                        else
-                        {
-                            if (info.littleEndian)
-                            {
-                                //SetByte(bt[0], l);
-                            }
-                            else
-                            {
-                                //SetByte(bt[0], l);
-                            }
-                        }
-                       xx++;
-                    }
-                    yy++;
-                } 
-                
-            }
-            public void Dispose()
-            {
-                file.Dispose();
-                mapstream.Dispose();
-                writer.Dispose();
-                read.Dispose();
-            }
         }
         public ushort[,] GetBlock(int s, int z, int c, int t, int x, int y, int w, int h)
         {
@@ -3141,7 +3165,7 @@ namespace BioImage
                 for (int sc = 0; sc < scount; sc++)
                 {
                     string type = meta.getShapeType(i, sc);
-                    BioImage.Annotation an = new Annotation();
+                    Annotation an = new Annotation();
                     an.roiID = roiID;
                     an.roiName = roiName;
                     an.shapeIndex = sc;
@@ -3622,7 +3646,7 @@ namespace BioImage
                 for (int sc = 0; sc < scount; sc++)
                 {
                     string type = meta.getShapeType(i, sc);
-                    BioImage.Annotation an = new Annotation();
+                    Annotation an = new Annotation();
                     an.roiID = roiID;
                     an.roiName = roiName;
                     an.shapeIndex = sc;
@@ -3949,8 +3973,7 @@ namespace BioImage
         }
         public static string ROItoString(Annotation an)
         {
-            string s = "";
-            BioImage.PointD[] points = an.GetPoints();
+            PointD[] points = an.GetPoints();
             string pts = "";
             for (int j = 0; j < points.Length; j++)
             {
@@ -3977,7 +4000,7 @@ namespace BioImage
         }
         public static Annotation StringToROI(string sts)
         {
-                BioImage.Annotation an = new BioImage.Annotation();
+                Annotation an = new Annotation();
                 string val = "";
                 bool inSep = false;
                 int col = 0;
@@ -4019,7 +4042,7 @@ namespace BioImage
                         if (col == 2)
                         {
                             //TYPE
-                            an.type = (BioImage.Annotation.Type)Enum.Parse(typeof(BioImage.Annotation.Type), val);
+                            an.type = (Annotation.Type)Enum.Parse(typeof(Annotation.Type), val);
                         }
                         else
                         if (col == 3)
@@ -4084,7 +4107,7 @@ namespace BioImage
                         {
                             //POINTS
                             an.AddPoints(an.stringToPoints(val));
-                            an.Rect = new BioImage.RectangleD(x, y, w, h);
+                            an.Rect = new RectangleD(x, y, w, h);
                         }
                         else
                         if (col == 15)

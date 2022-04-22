@@ -22,7 +22,7 @@ namespace BioImage
         public static bool bEnabled = true;
         public static Rectangle selectionRectangle;
         public static Hashtable tools = new Hashtable();
-        public class Tool : Control
+        public class Tool
         {
             public enum ToolType
             {
@@ -49,7 +49,8 @@ namespace BioImage
                 freeform,
                 rectSel,
                 pointSel,
-                pan
+                pan,
+                script,
             }
 
             public static void Init()
@@ -58,16 +59,16 @@ namespace BioImage
                 {
                     foreach (Tool.Type tool in (Tool.Type[])Enum.GetValues(typeof(Tool.Type)))
                     {
-                        tools.Add(tool.ToString(), new Tool(tool, new BioImage.ColorS(0, 0, 0), 1));
+                        tools.Add(tool.ToString(), new Tool(tool, new ColorS(0, 0, 0), 1));
                     }
                 }
             }
 
-            public BioImage.ColorS Color;
+            public ColorS Color;
             public List<Point> Points;
             public ToolType toolType;
-            private BioImage.RectangleD rect;
-            public BioImage.RectangleD Rectangle
+            private RectangleD rect;
+            public RectangleD Rectangle
             {
                 get { return rect; }
                 set { rect = value; }
@@ -77,7 +78,7 @@ namespace BioImage
                 get { return new RectangleF((float)rect.X, (float)rect.Y, (float)rect.W, (float)rect.H); }
             }
             public double width = 1;
-            public Scripting.Script script;
+            public string script;
             public Type type;
             public Tool()
             {
@@ -86,21 +87,26 @@ namespace BioImage
             {
                 type = t;
             }
-            public Tool(Type t, BioImage.ColorS col)
+            public Tool(Type t, ColorS col)
             {
                 type = t;
                 Color = col;
             }
-            public Tool(Type t, BioImage.ColorS col, double w)
+            public Tool(Type t, ColorS col, double w)
             {
                 type = t;
                 Color = col;
                 width = w;
             }
-            public Tool(Type t, BioImage.RectangleD r)
+            public Tool(Type t, RectangleD r)
             {
                 type = t;
                 rect = r;
+            }
+            public Tool(Type t, string sc)
+            {
+                type = t;
+                script = sc;
             }
 
             public ushort R
@@ -125,13 +131,14 @@ namespace BioImage
         }
 
         public static Tool currentTool;
-        public static BioImage.RectangleD selectionRect;
+        
+        public static RectangleD selectionRect;
         public Font font;
         public Tools()
         {
             InitializeComponent();
             Tool.Init();
-            BioImage.ColorS col = new BioImage.ColorS(ushort.MaxValue);
+            ColorS col = new ColorS(ushort.MaxValue);
             //We initialize the tools
             currentTool = GetTool(Tool.Type.move);
         }
@@ -160,21 +167,22 @@ namespace BioImage
             }
         }
 
-        BioImage.Annotation anno = new BioImage.Annotation();
+        Annotation anno = new Annotation();
         public void ToolDown(PointF e, MouseButtons buts)
         {
             if (ImageView.viewer == null)
                 return;
             if (currentTool == null)
                 return;
+            Scripting.UpdateState(Scripting.State.GetDown(e, buts));
             if (currentTool.type == Tool.Type.line)
             {
                 if (anno.GetPointCount() == 0)
                 {
-                    anno = new BioImage.Annotation();
-                    anno.type = BioImage.Annotation.Type.Line;
-                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
-                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                    anno = new Annotation();
+                    anno.type = Annotation.Type.Line;
+                    anno.AddPoint(new PointD(e.X, e.Y));
+                    anno.AddPoint(new PointD(e.X, e.Y));
                     anno.coord = ImageView.viewer.GetCoordinate();
                     ImageView.selectedImage.Annotations.Add(anno);
                     UpdateOverlay();
@@ -185,24 +193,24 @@ namespace BioImage
             {
                 if (anno.GetPointCount() == 0)
                 {
-                    anno = new BioImage.Annotation();
-                    anno.type = BioImage.Annotation.Type.Polygon;
-                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                    anno = new Annotation();
+                    anno.type = Annotation.Type.Polygon;
+                    anno.AddPoint(new PointD(e.X, e.Y));
                     anno.coord = ImageView.viewer.GetCoordinate();
                     ImageView.selectedImage.Annotations.Add(anno);
                 }
                 else
                 {
                     //If we click on a point 1 we close this polygon
-                    BioImage.RectangleD d = new BioImage.RectangleD(e.X, e.Y, anno.selectBoxSize, anno.selectBoxSize);
+                    RectangleD d = new RectangleD(e.X, e.Y, anno.selectBoxSize, anno.selectBoxSize);
                     if (d.IntersectsWith(anno.Point))
                     {
                         anno.closed = true;
-                        anno = new BioImage.Annotation();
+                        anno = new Annotation();
                     }
                     else
                     {
-                        anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                        anno.AddPoint(new PointD(e.X, e.Y));
                     }
                 }
                 UpdateOverlay();
@@ -212,38 +220,38 @@ namespace BioImage
             {
                 if (anno.GetPointCount() == 0)
                 {
-                    anno = new BioImage.Annotation();
-                    anno.type = BioImage.Annotation.Type.Freeform;
-                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                    anno = new Annotation();
+                    anno.type = Annotation.Type.Freeform;
+                    anno.AddPoint(new PointD(e.X, e.Y));
                     anno.coord = ImageView.viewer.GetCoordinate();
                     anno.closed = true;
                     ImageView.selectedImage.Annotations.Add(anno);
                 }
                 else
                 {
-                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                    anno.AddPoint(new PointD(e.X, e.Y));
                 }
             }
             else
             if (currentTool.type == Tool.Type.rect)
             {
-                anno.type = BioImage.Annotation.Type.Rectangle;
-                anno.Rect = new BioImage.RectangleD(e.X, e.Y, 1, 1);
+                anno.type = Annotation.Type.Rectangle;
+                anno.Rect = new RectangleD(e.X, e.Y, 1, 1);
                 anno.coord = ImageView.viewer.GetCoordinate();
                 ImageView.selectedImage.Annotations.Add(anno);
             }
             else
             if (currentTool.type == Tool.Type.ellipse)
             {
-                anno.type = BioImage.Annotation.Type.Ellipse;
-                anno.Rect = new BioImage.RectangleD(e.X, e.Y, 1, 1);
+                anno.type = Annotation.Type.Ellipse;
+                anno.Rect = new RectangleD(e.X, e.Y, 1, 1);
                 anno.coord = ImageView.viewer.GetCoordinate();
                 ImageView.selectedImage.Annotations.Add(anno);
             }
             else
             if(currentTool.type == Tool.Type.delete || Win32.GetKeyState(Keys.Delete))
             {
-                foreach (BioImage.Annotation an in ImageView.selectedAnnotations)
+                foreach (Annotation an in ImageView.selectedAnnotations)
                 {
                     if(an != null)
                     {
@@ -253,9 +261,9 @@ namespace BioImage
                         }
                         else
                         {
-                            if (an.type == BioImage.Annotation.Type.Polygon ||
-                                an.type == BioImage.Annotation.Type.Polyline ||
-                                an.type == BioImage.Annotation.Type.Freeform)
+                            if (an.type == Annotation.Type.Polygon ||
+                                an.type == Annotation.Type.Polyline ||
+                                an.type == Annotation.Type.Freeform)
                             {
                                 an.closed = false;
                                 an.RemovePoints(an.selectedPoints.ToArray());
@@ -267,9 +275,9 @@ namespace BioImage
             else
             if (currentTool.type == Tool.Type.text)
             {
-                BioImage.Annotation an = new BioImage.Annotation();
-                an.type = BioImage.Annotation.Type.Label;
-                an.AddPoint(new BioImage.PointD(e.X, e.Y));
+                Annotation an = new Annotation();
+                an.type = Annotation.Type.Label;
+                an.AddPoint(new PointD(e.X, e.Y));
                 an.coord = ImageView.viewer.GetCoordinate();
                 TextInput ti = new TextInput("");
                 if (ti.ShowDialog() != DialogResult.OK)
@@ -286,7 +294,6 @@ namespace BioImage
                 panPanel.BackColor = Color.LightGray;
                 Cursor.Current = Cursors.Hand;
             }
-            UpdateOverlay();
         }
         
         public void ToolUp(PointF e, MouseButtons buts)
@@ -297,52 +304,53 @@ namespace BioImage
                 return;
             if (anno == null)
                 return;
+            Scripting.UpdateState(Scripting.State.GetUp(e, buts));
             if (currentTool.type == Tool.Type.point)    
             {
-                BioImage.Annotation an = new BioImage.Annotation();
-                an.AddPoint(new BioImage.PointD(e.X, e.Y));
-                an.type = BioImage.Annotation.Type.Point;
+                Annotation an = new Annotation();
+                an.AddPoint(new PointD(e.X, e.Y));
+                an.type = Annotation.Type.Point;
                 an.coord = ImageView.viewer.GetCoordinate();
                 ImageView.selectedImage.Annotations.Add(an);
                 UpdateOverlay();
             }
             else
-            if (currentTool.type == Tool.Type.line && anno.type == BioImage.Annotation.Type.Line)
+            if (currentTool.type == Tool.Type.line && anno.type == Annotation.Type.Line)
             {
                 if (anno.GetPointCount() > 0)
                 {
-                    anno.UpdatePoint(new BioImage.PointD(e.X, e.Y), 1);
-                    anno = new BioImage.Annotation();
+                    anno.UpdatePoint(new PointD(e.X, e.Y), 1);
+                    anno = new Annotation();
                     UpdateOverlay();
                 }
             }
             else
-            if (currentTool.type == Tool.Type.rect && anno.type == BioImage.Annotation.Type.Rectangle)
+            if (currentTool.type == Tool.Type.rect && anno.type == Annotation.Type.Rectangle)
             {
                 if (anno.GetPointCount() == 4)
                 {
-                    anno = new BioImage.Annotation();
+                    anno = new Annotation();
                 }
             }
             else
-            if (currentTool.type == Tool.Type.ellipse && anno.type == BioImage.Annotation.Type.Ellipse)
+            if (currentTool.type == Tool.Type.ellipse && anno.type == Annotation.Type.Ellipse)
             {
                 if (anno.GetPointCount() == 4)
                 {
-                    anno = new BioImage.Annotation();
+                    anno = new Annotation();
                 }
             }
             else
-            if (currentTool.type == Tool.Type.freeform && anno.type == BioImage.Annotation.Type.Freeform)
+            if (currentTool.type == Tool.Type.freeform && anno.type == Annotation.Type.Freeform)
             {
-                anno = new BioImage.Annotation();
+                anno = new Annotation();
             }
             else
             if (currentTool.type == Tool.Type.rectSel)
             {
                 ImageView.selectedAnnotations.Clear();
                 RectangleF r = GetTool(Tool.Type.rectSel).RectangleF;
-                foreach (BioImage.Annotation an in ImageView.viewer.AnnotationsRGB)
+                foreach (Annotation an in ImageView.viewer.AnnotationsRGB)
                 {
                     if (an.GetSelectBound().ToRectangleF().IntersectsWith(r))
                     {
@@ -360,7 +368,7 @@ namespace BioImage
                     else
                         an.selected = false;
                 }
-                Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new BioImage.RectangleD(0, 0, 0, 0);
+                Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(0, 0, 0, 0);
                 UpdateOverlay();
             }
 
@@ -375,9 +383,10 @@ namespace BioImage
         {
             if (ImageView.viewer == null)
                 return;
+            Scripting.UpdateState(Scripting.State.GetMove(e, buts));
             if (currentTool.type == Tool.Type.line && ImageView.down)
             {
-                anno.UpdatePoint(new BioImage.PointD(e.X, e.Y), 1);
+                anno.UpdatePoint(new PointD(e.X, e.Y), 1);
                 UpdateOverlay();
             }
             else
@@ -385,43 +394,43 @@ namespace BioImage
             {
                 if (anno.GetPointCount() == 0)
                 {
-                    anno.type = BioImage.Annotation.Type.Freeform;
-                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                    anno.type = Annotation.Type.Freeform;
+                    anno.AddPoint(new PointD(e.X, e.Y));
                     anno.coord = ImageView.viewer.GetCoordinate();
                     anno.closed = true;
                     ImageView.selectedImage.Annotations.Add(anno);
                 }
                 else
                 {
-                    anno.AddPoint(new BioImage.PointD(e.X, e.Y));
+                    anno.AddPoint(new PointD(e.X, e.Y));
                 }
                 UpdateOverlay();
             }
             else
-            if (currentTool.type == Tool.Type.rect && anno.type == BioImage.Annotation.Type.Rectangle)
+            if (currentTool.type == Tool.Type.rect && anno.type == Annotation.Type.Rectangle)
             {
                 if (anno.GetPointCount() == 4)
                 {
-                    anno.Rect = new BioImage.RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
+                    anno.Rect = new RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
                     UpdateOverlay();
                 }
             }
             else
-            if (currentTool.type == Tool.Type.ellipse && anno.type == BioImage.Annotation.Type.Ellipse)
+            if (currentTool.type == Tool.Type.ellipse && anno.type == Annotation.Type.Ellipse)
             {
                 if (anno.GetPointCount() == 4)
                 {
-                    anno.Rect = new BioImage.RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
+                    anno.Rect = new RectangleD(anno.X, anno.Y, e.X - anno.X, e.Y - anno.Y);
                     UpdateOverlay();
                 }
             }
             else
             if (currentTool.type == Tool.Type.rectSel && buts == MouseButtons.Left && ImageView.down)
             {
-                BioImage.PointD d = new BioImage.PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
-                Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new BioImage.RectangleD(ImageView.mouseDown.X, ImageView.mouseDown.Y, d.X, d.Y);
+                PointD d = new PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
+                Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(ImageView.mouseDown.X, ImageView.mouseDown.Y, d.X, d.Y);
                 RectangleF r = Tools.GetTool(Tools.Tool.Type.rectSel).RectangleF;
-                foreach (BioImage.Annotation an in ImageView.viewer.AnnotationsRGB)
+                foreach (Annotation an in ImageView.viewer.AnnotationsRGB)
                 {
                     if (an.GetSelectBound().ToRectangleF().IntersectsWith(r))
                     {
@@ -444,12 +453,12 @@ namespace BioImage
             else
             if (currentTool.type == Tool.Type.rectSel && ImageView.up)
             {
-                Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new BioImage.RectangleD(0, 0, 0, 0);
+                Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(0, 0, 0, 0);
             }
             else
             if (Win32.GetKeyState(Keys.Delete))
             {
-                foreach (BioImage.Annotation an in ImageView.selectedAnnotations)
+                foreach (Annotation an in ImageView.selectedAnnotations)
                 {
                     if (an != null)
                     {
@@ -460,9 +469,9 @@ namespace BioImage
                         }
                         else
                         {
-                            if (an.type == BioImage.Annotation.Type.Polygon ||
-                                an.type == BioImage.Annotation.Type.Polyline ||
-                                an.type == BioImage.Annotation.Type.Freeform)
+                            if (an.type == Annotation.Type.Polygon ||
+                                an.type == Annotation.Type.Polyline ||
+                                an.type == Annotation.Type.Freeform)
                             {
                                 an.closed = false;
                                 an.RemovePoints(an.selectedPoints.ToArray());
@@ -488,7 +497,7 @@ namespace BioImage
             
         }
         
-        public static void SetColor(BioImage.ColorS col)
+        public static void SetColor(ColorS col)
         {
             currentTool.Color = col;
         }

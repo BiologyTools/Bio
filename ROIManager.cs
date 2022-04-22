@@ -15,7 +15,7 @@ namespace BioImage
         public ROIManager()
         {
             InitializeComponent();
-            foreach (BioImage.Annotation.Type item in Enum.GetValues(typeof(BioImage.Annotation.Type)))
+            foreach (Annotation.Type item in Enum.GetValues(typeof(Annotation.Type)))
             {
                 typeBox.Items.Add(item);
             }
@@ -26,7 +26,7 @@ namespace BioImage
             if (ImageView.selectedImage == null)
                 return;
             roiView.Items.Clear();
-            foreach (BioImage.Annotation an in ImageView.selectedImage.Annotations)
+            foreach (Annotation an in ImageView.selectedImage.Annotations)
             {
                 ListViewItem it = new ListViewItem();
                 it.Tag = an;
@@ -40,7 +40,7 @@ namespace BioImage
             if(ImageView.viewer != null)
                 ImageView.viewer.UpdateOverlay();
         }
-        public void updateROI(int index, BioImage.Annotation an)
+        public void updateROI(int index, Annotation an)
         {
             if (ImageView.selectedImage == null)
                 return;
@@ -67,7 +67,7 @@ namespace BioImage
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
-            if(anno.type == BioImage.Annotation.Type.Rectangle || anno.type == BioImage.Annotation.Type.Ellipse)
+            if(anno.type == Annotation.Type.Rectangle || anno.type == Annotation.Type.Ellipse)
                 anno.W = (double)wBox.Value;
             UpdateOverlay();
         }
@@ -76,7 +76,7 @@ namespace BioImage
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
-            if (anno.type == BioImage.Annotation.Type.Rectangle || anno.type == BioImage.Annotation.Type.Ellipse)
+            if (anno.type == Annotation.Type.Rectangle || anno.type == Annotation.Type.Ellipse)
                 anno.H = (double)hBox.Value;
             UpdateOverlay();
         }
@@ -137,7 +137,7 @@ namespace BioImage
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
-            anno.type = (BioImage.Annotation.Type)typeBox.SelectedItem;
+            anno.type = (Annotation.Type)typeBox.SelectedItem;
             UpdateOverlay();
         }
 
@@ -166,17 +166,17 @@ namespace BioImage
                 imageNameLabel.Text = n;
             GetROIsFromImage();
         }
-        public BioImage.Annotation anno = new BioImage.Annotation();
+        public Annotation anno = new Annotation();
         private void roiView_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
             ListViewItem it = roiView.SelectedItems[0];
-            anno = (BioImage.Annotation)it.Tag;
+            anno = (Annotation)it.Tag;
             if(ImageView.viewer!=null)
             ImageView.viewer.SetCoordinate(anno.coord.S, anno.coord.Z, anno.coord.C, anno.coord.T);
-            if(anno.type == BioImage.Annotation.Type.Line || anno.type == BioImage.Annotation.Type.Polygon ||
-               anno.type == BioImage.Annotation.Type.Polyline)
+            if(anno.type == Annotation.Type.Line || anno.type == Annotation.Type.Polygon ||
+               anno.type == Annotation.Type.Polyline)
             {
                 xBox.Enabled = false;
                 yBox.Enabled = false;
@@ -190,7 +190,7 @@ namespace BioImage
                 wBox.Enabled = true;
                 hBox.Enabled = true;
             }
-            if(anno.type == BioImage.Annotation.Type.Rectangle || anno.type == BioImage.Annotation.Type.Ellipse)
+            if(anno.type == Annotation.Type.Rectangle || anno.type == Annotation.Type.Ellipse)
             {
                 pointIndexBox.Enabled = false;
                 pointXBox.Enabled = false;
@@ -256,9 +256,9 @@ namespace BioImage
         {
             if (anno == null)
                 return;
-            if (anno.type == BioImage.Annotation.Type.Rectangle || anno.type == BioImage.Annotation.Type.Ellipse)
+            if (anno.type == Annotation.Type.Rectangle || anno.type == Annotation.Type.Ellipse)
                 return;
-            anno.UpdatePoint(new BioImage.PointD((double)pointXBox.Value, (double)pointYBox.Value),(int)pointIndexBox.Value);
+            anno.UpdatePoint(new PointD((double)pointXBox.Value, (double)pointYBox.Value),(int)pointIndexBox.Value);
             UpdateOverlay();
         }
 
@@ -266,9 +266,9 @@ namespace BioImage
         {
             if (anno == null)
                 return;
-            if (anno.type == BioImage.Annotation.Type.Rectangle || anno.type == BioImage.Annotation.Type.Ellipse)
+            if (anno.type == Annotation.Type.Rectangle || anno.type == Annotation.Type.Ellipse)
                 return;
-            anno.UpdatePoint(new BioImage.PointD((double)pointXBox.Value, (double)pointYBox.Value), (int)pointIndexBox.Value);
+            anno.UpdatePoint(new PointD((double)pointXBox.Value, (double)pointYBox.Value), (int)pointIndexBox.Value);
             UpdateOverlay();
         }
 
@@ -278,7 +278,7 @@ namespace BioImage
         {
             if (anno == null)
                 return;
-            BioImage.PointD d = anno.GetPoint((int)pointIndexBox.Value);
+            PointD d = anno.GetPoint((int)pointIndexBox.Value);
             pointXBox.Value = (int)d.X;
             pointYBox.Value = (int)d.Y;
         }
@@ -332,6 +332,12 @@ namespace BioImage
                 return;
             ImageView.viewer.showBROIs = bChBox.Checked;
             UpdateOverlay();
+        }
+
+        private void ROIManager_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            this.WindowState = FormWindowState.Minimized;
         }
     }
 }
