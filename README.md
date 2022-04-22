@@ -62,7 +62,8 @@ Bitmap filt = image.GetImageFiltered(0,0,0,0);
 image.SaveSeries("16bitTestSaveStack.ome.tif", 0);
 
 ## Scripting
--  Save scripts into "StartupPath/Scripts" with ".cs" ending. Open script editor & script runner from menu
+-  Save scripts into "StartupPath/Scripts" with ".cs" ending.
+-  Open script editor and recorder from menu.
 -  Double click on script name in Script runner to run script.
 -  Scripts saved in Scripts folder will be loaded into script runner.
 -  Program installer include sample script "Sample.cs" which gets & sets pixels and saves resulting image.
