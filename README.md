@@ -7,7 +7,10 @@ Best for working with ROI's in OME format & CSV.
 
 ## Features
 
-- Exporting ROI's to CSV files for easy analysis in statistics programs.
+
+- Open & Save ImageJ Tiff files and embed ROI's in image Description tag.
+
+- C# Scripting with sample tool script and regular scripts in "/Scripts/" folder.
 
 - Viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
 
@@ -18,8 +21,7 @@ Best for working with ROI's in OME format & CSV.
 - Exporting ROI's from each OME image in a folder of images to CSV.
 
 - Select multiple points by holding down left control key for move & delete tools. Delete button for delete.
-- Open & Save ImageJ Tiff files and embed ROI's in image Description tag.
-- C# Scripting with sample tool script and regular scripts in "/Scripts/" folder.
+
 
 ## Dependencies
 - [BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
