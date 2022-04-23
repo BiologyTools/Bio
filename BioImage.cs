@@ -262,13 +262,10 @@ namespace BioImage
         {
             return X.ToString() + ", " + Y.ToString();
         }
-        // this is first one '=='
         public static bool operator ==(PointD p1, PointD p2)
         {
             return (p1.X == p2.X && p1.Y == p2.Y);
         }
-
-        // this is second one '!='
         public static bool operator !=(PointD p1, PointD p2)
         {
             return (p1.X != p2.X && p1.Y != p2.Y);

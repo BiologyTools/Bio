@@ -52,11 +52,16 @@
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.stopBut = new System.Windows.Forms.Button();
+            this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.contextMenuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.outputTab.SuspendLayout();
             this.error.SuspendLayout();
             this.logTabPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
+            this.splitContainer.Panel1.SuspendLayout();
+            this.splitContainer.Panel2.SuspendLayout();
+            this.splitContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // scriptView
@@ -119,24 +124,25 @@
             this.textBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox.Location = new System.Drawing.Point(185, 27);
+            this.textBox.Location = new System.Drawing.Point(3, 3);
             this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(361, 226);
+            this.textBox.Size = new System.Drawing.Size(355, 206);
             this.textBox.TabIndex = 2;
             this.textBox.TabStop = false;
             this.textBox.Text = "";
             // 
             // tabControl
             // 
-            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.outputTab);
             this.tabControl.Controls.Add(this.error);
             this.tabControl.Controls.Add(this.logTabPage);
-            this.tabControl.Location = new System.Drawing.Point(185, 259);
+            this.tabControl.Location = new System.Drawing.Point(3, 4);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(361, 133);
+            this.tabControl.Size = new System.Drawing.Size(355, 147);
             this.tabControl.TabIndex = 8;
             this.tabControl.TabStop = false;
             // 
@@ -146,7 +152,7 @@
             this.outputTab.Location = new System.Drawing.Point(4, 22);
             this.outputTab.Name = "outputTab";
             this.outputTab.Padding = new System.Windows.Forms.Padding(3);
-            this.outputTab.Size = new System.Drawing.Size(353, 107);
+            this.outputTab.Size = new System.Drawing.Size(347, 121);
             this.outputTab.TabIndex = 1;
             this.outputTab.Text = "Output";
             this.outputTab.UseVisualStyleBackColor = true;
@@ -157,7 +163,7 @@
             this.outputBox.Location = new System.Drawing.Point(3, 3);
             this.outputBox.Multiline = true;
             this.outputBox.Name = "outputBox";
-            this.outputBox.Size = new System.Drawing.Size(347, 101);
+            this.outputBox.Size = new System.Drawing.Size(341, 115);
             this.outputBox.TabIndex = 2;
             this.outputBox.TabStop = false;
             // 
@@ -279,20 +285,39 @@
             this.stopBut.UseVisualStyleBackColor = true;
             this.stopBut.Click += new System.EventHandler(this.stopBut_Click);
             // 
+            // splitContainer
+            // 
+            this.splitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer.Location = new System.Drawing.Point(185, 25);
+            this.splitContainer.Name = "splitContainer";
+            this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer.Panel1
+            // 
+            this.splitContainer.Panel1.Controls.Add(this.textBox);
+            // 
+            // splitContainer.Panel2
+            // 
+            this.splitContainer.Panel2.Controls.Add(this.tabControl);
+            this.splitContainer.Size = new System.Drawing.Size(361, 367);
+            this.splitContainer.SplitterDistance = 212;
+            this.splitContainer.TabIndex = 15;
+            // 
             // Scripting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.ClientSize = new System.Drawing.Size(552, 428);
+            this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.stopBut);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.scriptLoadBut);
             this.Controls.Add(this.runButton);
             this.Controls.Add(this.scriptLabel);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.tabControl);
-            this.Controls.Add(this.textBox);
             this.Controls.Add(this.scriptView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Scripting";
@@ -306,6 +331,10 @@
             this.error.PerformLayout();
             this.logTabPage.ResumeLayout(false);
             this.logTabPage.PerformLayout();
+            this.splitContainer.Panel1.ResumeLayout(false);
+            this.splitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
+            this.splitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -335,5 +364,6 @@
         private System.Windows.Forms.TabPage logTabPage;
         private System.Windows.Forms.TextBox logBox;
         private System.Windows.Forms.Button stopBut;
+        private System.Windows.Forms.SplitContainer splitContainer;
     }
 }

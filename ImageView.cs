@@ -1115,6 +1115,7 @@ namespace BioImage
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
             DrawOverlay(g);
+            ImageViewer.graphics = g;
             if (Tools.currentTool.type == Tools.Tool.Type.rectSel && down)
             {
                 RectangleF[] fs = new RectangleF[1];
@@ -1133,6 +1134,7 @@ namespace BioImage
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
             PointF ss = GetImageSize();
+            
             g.DrawImage(bitmap,pp.X, pp.Y, ss.X, ss.Y);
         }
 
@@ -1600,6 +1602,32 @@ namespace BioImage
                 if (key == Keys.Delete)
                 {
                     Tools.currentTool = Tools.GetTool(Tools.Tool.Type.delete);
+                    foreach (Annotation an in ImageView.selectedAnnotations)
+                    {
+                        if (an != null)
+                        {
+                            if (an.selectedPoints.Count == 0)
+                            {
+                                ImageView.selectedImage.Annotations.Remove(an);
+                            }
+                            else
+                            if(an.selectedPoints.Count == 1 && !(an.type == Annotation.Type.Polygon || an.type == Annotation.Type.Polyline || an.type == Annotation.Type.Freeform))
+                            {
+                                ImageView.selectedImage.Annotations.Remove(an);
+                            }
+                            else
+                            {
+                                if (an.type == Annotation.Type.Polygon ||
+                                    an.type == Annotation.Type.Polyline ||
+                                    an.type == Annotation.Type.Freeform)
+                                {
+                                    an.closed = false;
+                                    an.RemovePoints(an.selectedPoints.ToArray());
+                                }
+                            }
+                        }
+                    }
+                    UpdateOverlay();
                     return true;
                 }
                 if (key.HasFlag(Keys.C) && Ctrl && Tools.currentTool.type == Tools.Tool.Type.move)

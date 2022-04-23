@@ -93,19 +93,10 @@ namespace BioImage
             {
                 if (thread != null)
                 {
-                    if (thread.ThreadState == ThreadState.Running)
-                        return name.ToString() + ", Running";
-                    else
-                    if (thread.ThreadState == ThreadState.Stopped && ex == null && output != "")
-                        return name.ToString() + ", Output: " + output;
-                    else
-                    if (thread.ThreadState == ThreadState.Stopped && ex != null)
-                        return name.ToString() + ", Exception: " + ex.ToString();
-                    else
-                    if (thread.ThreadState == ThreadState.Stopped && ex == null)
-                        return name.ToString() + ", Exception: " + ex.ToString();
+                    return name.ToString() + ", " + thread.ThreadState.ToString();
                 }
-                return name.ToString();
+                else
+                    return name.ToString();
             }
         }
         public class State
@@ -135,9 +126,18 @@ namespace BioImage
                 st.buts = mb;
                 return st;
             }
+            public static State GetNone()
+            {
+                State st = new State();
+                st.type = Event.None;
+                st.p = new PointF();
+                st.buts = MouseButtons.None;
+                return st;
+            }
+
             public PointF p;
             public MouseButtons buts;
-            //public bool processed = false;
+            public bool processed = false;
             public override string ToString()
             {
                 return type.ToString() + " ,(" + p.X.ToString() + ", " + p.Y.ToString() + "), " + buts.ToString();
@@ -158,8 +158,17 @@ namespace BioImage
         }
         public static void UpdateState(State s)
         {
-            if(s!=null)
+            if (s == null)
+                return;
+            if (state == null)
                 state = s;
+            if (s.p.X == state.p.X && s.p.Y == state.p.Y && s.type == state.type)
+            {
+                state.processed = true;
+
+            }
+            else
+            state = s;
         }
         public void RefreshItems()
         {
@@ -218,7 +227,9 @@ namespace BioImage
         }
         public void Run()
         {
+            log = "";
             outputBox.Text = "";
+            logBox.Text = "";
             errorBox.Text = "";
             if (scriptView.SelectedItems.Count == 0)
                     return;

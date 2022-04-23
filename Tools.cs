@@ -249,13 +249,18 @@ namespace BioImage
                 ImageView.selectedImage.Annotations.Add(anno);
             }
             else
-            if(currentTool.type == Tool.Type.delete || Win32.GetKeyState(Keys.Delete))
+            if(currentTool.type == Tool.Type.delete)
             {
                 foreach (Annotation an in ImageView.selectedAnnotations)
                 {
-                    if(an != null)
+                    if (an != null)
                     {
                         if (an.selectedPoints.Count == 0)
+                        {
+                            ImageView.selectedImage.Annotations.Remove(an);
+                        }
+                        else
+                        if (an.selectedPoints.Count == 1 && !(an.type == Annotation.Type.Polygon || an.type == Annotation.Type.Polyline || an.type == Annotation.Type.Freeform))
                         {
                             ImageView.selectedImage.Annotations.Remove(an);
                         }
@@ -388,6 +393,7 @@ namespace BioImage
             {
                 anno.UpdatePoint(new PointD(e.X, e.Y), 1);
                 UpdateOverlay();
+                
             }
             else
             if (currentTool.type == Tool.Type.freeform && buts == MouseButtons.Left && ImageView.down)
