@@ -901,8 +901,6 @@ namespace BioImage
                         }
                         else
                         g.DrawPolygon(pen, an.GetPointsF());
-                        if (an.selected)
-                            g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     else
                     if (an.type == Annotation.Type.Freeform && !an.closed)
@@ -915,8 +913,6 @@ namespace BioImage
                         }
                         else
                             g.DrawLines(pen, points);
-                        if (an.selected)
-                            g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     if (an.type == Annotation.Type.Label)
                     {
@@ -1035,8 +1031,6 @@ namespace BioImage
                             }
                             else
                                 g.DrawPolygon(pen, an.GetPointsF());
-                        if (an.selected)
-                            g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     else
                     if (an.type == Annotation.Type.Freeform && !an.closed)
@@ -1049,8 +1043,6 @@ namespace BioImage
                             }
                             else
                                 g.DrawLines(pen, points);
-                        if (an.selected)
-                            g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                     }
                     if (an.type == Annotation.Type.Label)
                     {

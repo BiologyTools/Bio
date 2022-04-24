@@ -153,7 +153,7 @@ namespace BioImage
             // setToolToolStripMenuItem
             // 
             this.setToolToolStripMenuItem.Name = "setToolToolStripMenuItem";
-            this.setToolToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.setToolToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.setToolToolStripMenuItem.Text = "Set Tool";
             this.setToolToolStripMenuItem.Click += new System.EventHandler(this.setToolToolStripMenuItem_Click);
             // 
@@ -208,14 +208,14 @@ namespace BioImage
             // autoThresholdToolStripMenuItem
             // 
             this.autoThresholdToolStripMenuItem.Name = "autoThresholdToolStripMenuItem";
-            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.autoThresholdToolStripMenuItem.Text = "Auto Threshold All";
             this.autoThresholdToolStripMenuItem.Click += new System.EventHandler(this.autoThresholdToolStripMenuItem_Click);
             // 
             // channelsToolToolStripMenuItem1
             // 
             this.channelsToolToolStripMenuItem1.Name = "channelsToolToolStripMenuItem1";
-            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(172, 22);
+            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.channelsToolToolStripMenuItem1.Text = "Channels Tool";
             this.channelsToolToolStripMenuItem1.Click += new System.EventHandler(this.channelsToolToolStripMenuItem_Click);
             // 

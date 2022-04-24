@@ -48,7 +48,7 @@ namespace BioImage
         }
         public static ImageViewer FromID(string id)
         {
-            if(Table.bioimages.ContainsKey(id))
+            if(Table.images.ContainsKey(id))
             return new ImageViewer(Table.GetImage(id));
             else
             {

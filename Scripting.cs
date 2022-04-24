@@ -225,6 +225,12 @@ namespace BioImage
                 if(s.ex!=null)
                 errorBox.Text = s.ex.Message.ToString();
             }
+            foreach (ListViewItem item in scriptView.SelectedItems)
+            {
+                Script s = (Script)item.Tag;
+                //We update item text to show Script status.
+                item.Text = s.ToString();
+            }
             logBox.Text = log;
             //We scroll to end of text so we see latest log output.
             if (logBox.SelectionStart != logBox.Text.Length)

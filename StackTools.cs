@@ -22,7 +22,7 @@ namespace BioImage
         {
             stackABox.Items.Clear();
             stackBBox.Items.Clear();    
-            foreach (BioImage b in Table.bioimages.Values)
+            foreach (BioImage b in Table.images.Values)
             {
                 stackABox.Items.Add(b);
                 stackBBox.Items.Add(b);

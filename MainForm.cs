@@ -76,7 +76,7 @@ namespace BioImage
             TreeNode images = new TreeNode();
             images.Text = "BioImages";
             images.ForeColor = Color.White;
-            foreach (BioImage item in Table.bioimages.Values)
+            foreach (BioImage item in Table.images.Values)
             {
                 //TreeNode node = new TreeNode();
                 Node tree = new Node(item, Node.DataType.image);
@@ -106,9 +106,46 @@ namespace BioImage
             treeView.Nodes.Add(images);
         }
 
+        public void UpdateNodes()
+        {
+            if (Table.images.Count != treeView.Nodes[0].Nodes.Count)
+            {
+                //If image count is not same as node count we refresh whole tree.
+                InitNodes();
+                return;
+            }
+            TreeNode images = treeView.Nodes[0];
+            foreach (TreeNode item in images.Nodes)
+            {
+                //TreeNode node = new TreeNode();
+                Node node = (Node)item.Tag;
+                BioImage im = (BioImage)node.Object;
+
+                TreeNode rois = node.node.Nodes[1];
+                if(im.Annotations.Count != rois.Nodes.Count)
+                {
+                    //If ROI count is not same as node count we refresh annotations.
+                    rois.Nodes.Clear();
+                    foreach (Annotation an in im.Annotations)
+                    {
+                        Node roi = new Node(an, Node.DataType.roi);
+                        rois.Nodes.Add(roi.node);
+                    }
+                }
+                else
+                for (int i = 0; i < im.Annotations.Count; i++)
+                {
+                    TreeNode roi = rois.Nodes[i];
+                    Node n = (Node)roi.Tag;  
+                    Annotation an = (Annotation)n.Object;
+                    roi.Text = an.ToString();
+                }
+            }
+        }
+
         private void MainForm_Activated(object sender, EventArgs e)
         {
-            InitNodes();
+            UpdateNodes();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)

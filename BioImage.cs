@@ -22,7 +22,7 @@ namespace BioImage
     {
         public static Hashtable hashID = new Hashtable();
         public static Hashtable buffers = new Hashtable();
-        public static Hashtable bioimages = new Hashtable();
+        public static Hashtable images = new Hashtable();
         public static Hashtable viewers  = new Hashtable();
         public static object GetObj(int hashid)
         {
@@ -31,11 +31,11 @@ namespace BioImage
         public static BioImage GetImage(string ids)
         {
             int hash = ids.GetHashCode();
-            return (BioImage)bioimages[hash];
+            return (BioImage)images[hash];
         }
         public static BioImage GetImageByHash(int hash, SZCT coord)
         {
-            return (BioImage)bioimages[hash];
+            return (BioImage)images[hash];
         }
         public static Buf GetBufferByHash(int hashid)
         {
@@ -62,16 +62,16 @@ namespace BioImage
         public static void AddImage(BioImage im)
         {
             int hash = im.HashID;
-            if (!bioimages.ContainsKey(im.HashID))
+            if (!images.ContainsKey(im.HashID))
             {
-                bioimages.Add(im.HashID, im);
+                images.Add(im.HashID, im);
             }
         }
         public static int GetImageCount(string s)
         {
             int i = 0;
             string f = Path.GetFileNameWithoutExtension(s);
-            foreach (BioImage im in bioimages.Values)
+            foreach (BioImage im in images.Values)
             {
                 if (im.IdString.StartsWith(f))
                     i++;
@@ -114,7 +114,7 @@ namespace BioImage
             BioImage im = GetImage(id);
             if (im == null)
                 return;
-            bioimages.Remove(im.HashID);
+            images.Remove(im.HashID);
             foreach (Buf item in im.Buffers)
             {
                 if (buffers.Contains(item))
@@ -856,7 +856,6 @@ namespace BioImage
                 return index + ", " + Name;
         }
     }
-
     public struct BufferInfo
     {
         public static int CreateHash(string filepath, int ser, int index)
@@ -1798,6 +1797,15 @@ namespace BioImage
             Recorder.AddLine("BioImage.MergeChannels(" + '"' + bname + '"' + "," + '"' + b2name + '"' + ");");
             return MergeChannels(b, b2);
         }
+        
+        public BioImage Substack(int ser, int zs, int ze, int cs, int ce, int ts, int te)
+        {
+            return new BioImage(this, ser, zs, ze, cs, ce, ts, te);
+        }
+        public static BioImage Substack(BioImage orig, int ser, int zs, int ze, int cs, int ce, int ts, int te)
+        {
+            return new BioImage(orig, ser, zs, ze, cs, ce, ts, te);
+        }
         public void SplitChannels(bool showDialog)
         {
             Recorder.AddLine("BioImage.SplitChannels(" + '"' + IdString + '"' + "," + showDialog + ");");
@@ -2157,17 +2165,14 @@ namespace BioImage
                 replaceRFilter.ChannelImage.Dispose();
                 replaceRFilter.ChannelImage = Buffers[ri + RChannel.Index].GetFiltered(rf, gf, bf);
                 replaceRFilter.ApplyInPlace(rgbBitmap16);
-                Clipboard.SetImage(rgbBitmap16);
 
                 replaceGFilter.ChannelImage.Dispose();
                 replaceGFilter.ChannelImage = Buffers[ri + GChannel.Index].GetFiltered(rf, gf, bf);
                 replaceGFilter.ApplyInPlace(rgbBitmap16);
-                Clipboard.SetImage(rgbBitmap16);
 
                 replaceBFilter.ChannelImage.Dispose();
                 replaceBFilter.ChannelImage = Buffers[ri + BChannel.Index].GetFiltered(rf, gf, bf);
                 replaceBFilter.ApplyInPlace(rgbBitmap16);
-                Clipboard.SetImage(rgbBitmap16);
             }
             else
             {

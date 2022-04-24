@@ -40,8 +40,8 @@
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.contextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -55,7 +55,7 @@
             this.treeView.ContextMenuStrip = this.contextMenuStrip;
             this.treeView.Location = new System.Drawing.Point(-1, 27);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(335, 219);
+            this.treeView.Size = new System.Drawing.Size(311, 219);
             this.treeView.TabIndex = 2;
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             // 
@@ -81,7 +81,7 @@
             this.scriptToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(334, 24);
+            this.menuStrip.Size = new System.Drawing.Size(310, 24);
             this.menuStrip.TabIndex = 3;
             // 
             // fileToolStripMenuItem
@@ -130,11 +130,6 @@
             this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
             this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click_1);
             // 
-            // openFilesDialog
-            // 
-            this.openFilesDialog.Multiselect = true;
-            this.openFilesDialog.Title = "Open Images";
-            // 
             // scriptRecorderToolStripMenuItem
             // 
             this.scriptRecorderToolStripMenuItem.Name = "scriptRecorderToolStripMenuItem";
@@ -142,11 +137,16 @@
             this.scriptRecorderToolStripMenuItem.Text = "Script Recorder";
             this.scriptRecorderToolStripMenuItem.Click += new System.EventHandler(this.scriptRecorderToolStripMenuItem_Click);
             // 
+            // openFilesDialog
+            // 
+            this.openFilesDialog.Multiselect = true;
+            this.openFilesDialog.Title = "Open Images";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(334, 246);
+            this.ClientSize = new System.Drawing.Size(310, 246);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.treeView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
