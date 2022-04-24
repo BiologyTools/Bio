@@ -42,6 +42,8 @@
             this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
+            this.setTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.setIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -62,14 +64,16 @@
             // contextMenuStrip
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteToolStripMenuItem});
+            this.deleteToolStripMenuItem,
+            this.setTextToolStripMenuItem,
+            this.setIDToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(108, 26);
+            this.contextMenuStrip.Size = new System.Drawing.Size(137, 70);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
@@ -126,14 +130,14 @@
             // scriptRunnerToolStripMenuItem
             // 
             this.scriptRunnerToolStripMenuItem.Name = "scriptRunnerToolStripMenuItem";
-            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
             this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click_1);
             // 
             // scriptRecorderToolStripMenuItem
             // 
             this.scriptRecorderToolStripMenuItem.Name = "scriptRecorderToolStripMenuItem";
-            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.scriptRecorderToolStripMenuItem.Text = "Script Recorder";
             this.scriptRecorderToolStripMenuItem.Click += new System.EventHandler(this.scriptRecorderToolStripMenuItem_Click);
             // 
@@ -141,6 +145,20 @@
             // 
             this.openFilesDialog.Multiselect = true;
             this.openFilesDialog.Title = "Open Images";
+            // 
+            // setTextToolStripMenuItem
+            // 
+            this.setTextToolStripMenuItem.Name = "setTextToolStripMenuItem";
+            this.setTextToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.setTextToolStripMenuItem.Text = "Set ROI Text";
+            this.setTextToolStripMenuItem.Click += new System.EventHandler(this.setTextToolStripMenuItem_Click);
+            // 
+            // setIDToolStripMenuItem
+            // 
+            this.setIDToolStripMenuItem.Name = "setIDToolStripMenuItem";
+            this.setIDToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
+            this.setIDToolStripMenuItem.Text = "Set ROI ID";
+            this.setIDToolStripMenuItem.Click += new System.EventHandler(this.setIDToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -175,5 +193,7 @@
         private System.Windows.Forms.ToolStripMenuItem scriptToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scriptRunnerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scriptRecorderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setTextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setIDToolStripMenuItem;
     }
 }

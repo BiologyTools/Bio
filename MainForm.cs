@@ -170,7 +170,6 @@ namespace BioImage
         {
             if (treeView.SelectedNode == null)
                 return;
-
             Node node = (Node)treeView.SelectedNode.Tag;
             if(node!=null)
             if(node.Type == Node.DataType.buf)
@@ -211,12 +210,46 @@ namespace BioImage
                 BioImage im = (BioImage)nod.Object;
                 im.Annotations.Remove(an);
             }
+            UpdateNodes();
         }
 
         private void scriptRecorderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            recorder.WindowState = FormWindowState.Maximized;
             recorder.Show();
+        }
+
+        private void setTextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Node node = (Node)treeView.SelectedNode.Tag;
+            if (node.Type == Node.DataType.roi)
+            {
+                Annotation an = (Annotation)node.Object;
+                Node nod = (Node)treeView.SelectedNode.Parent.Tag;
+                BioImage im = (BioImage)nod.Object;
+                TextInput input = new TextInput(an.Text);
+                if (input.ShowDialog() != DialogResult.OK)
+                    return;
+                an.Text = input.textInput;
+                an.font = input.font;
+                an.strokeColor = input.color;
+            }
+            UpdateNodes();
+        }
+
+        private void setIDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Node node = (Node)treeView.SelectedNode.Tag;
+            if (node.Type == Node.DataType.roi)
+            {
+                Annotation an = (Annotation)node.Object;
+                Node nod = (Node)treeView.SelectedNode.Parent.Tag;
+                BioImage im = (BioImage)nod.Object;
+                TextInput input = new TextInput(an.id);
+                if (input.ShowDialog() != DialogResult.OK)
+                    return;
+                an.id = input.textInput;
+            }
+            UpdateNodes();
         }
     }
 }

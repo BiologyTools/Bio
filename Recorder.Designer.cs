@@ -28,11 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Recorder));
             this.clearBut = new System.Windows.Forms.Button();
             this.textBox = new System.Windows.Forms.TextBox();
             this.delLineBut = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.timer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // clearBut
@@ -56,6 +58,7 @@
             this.textBox.Location = new System.Drawing.Point(12, 28);
             this.textBox.Multiline = true;
             this.textBox.Name = "textBox";
+            this.textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox.Size = new System.Drawing.Size(527, 242);
             this.textBox.TabIndex = 4;
             // 
@@ -82,6 +85,11 @@
             this.label1.Text = "Use these lines in a script by pasting these lines in script editor\'s \"Load\" meth" +
     "od.";
             // 
+            // timer
+            // 
+            this.timer.Interval = 1500;
+            this.timer.Tick += new System.EventHandler(this.timer_Tick);
+            // 
             // Recorder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -106,5 +114,6 @@
         private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.Button delLineBut;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Timer timer;
     }
 }

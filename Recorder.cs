@@ -12,21 +12,15 @@ namespace BioImage
 {
     public partial class Recorder : Form
     {
+        public static string log;
+        public static void AddLine(string s)
+        {
+            log += s + Environment.NewLine;
+        }
         public static Recorder recorder = null;
         public Recorder()
         {
             InitializeComponent();
-        }
-        public static void AddLine(string line)
-        {
-            if(recorder.Visible)
-            if (recorder.textBox.Lines.Length > 0)
-            {
-                recorder.textBox.Text += Environment.NewLine;
-                recorder.textBox.Text += line;
-            }
-            else
-                recorder.textBox.Text += line;
         }
 
         private void clearBut_Click(object sender, EventArgs e)
@@ -49,6 +43,11 @@ namespace BioImage
         {
             e.Cancel = true;
             this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            textBox.Text = log;
         }
     }
 }

@@ -719,8 +719,7 @@ namespace BioImage
             {
                 selectBoxs.Add(new RectangleF((float)Points[i].X - f, (float)Points[i].Y - f, selectBoxSize, selectBoxSize));
             }
-        }
-            
+        }   
         public void UpdateBoundingBox()
         {
             if (type == Type.Label)
@@ -756,7 +755,7 @@ namespace BioImage
         }
         public override string ToString()
         {
-            return type.ToString() + ", " + Text + "(" + Point.X + ", " + Point.Y + ") " + coord.ToString();
+            return type.ToString() + ", " + Text + " (" + Point.X + ", " + Point.Y + ") " + coord.ToString();
         }
     }
     public class Channel
@@ -1676,21 +1675,27 @@ namespace BioImage
             Table.AddImage(this);
             rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
             rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
+            Recorder.AddLine("BioImage.Substack(" + orig.IdString + "," + ser + "," + "," + zs + "," + ze + "," + cs + "," + ce + "," + ts + "," + te + ");");
         }
         public BioImage(string file,int ser)
         {
             Filename = Table.GetImageName(file);
             serie = ser;
             if (file.EndsWith("ome.tif"))
+            {
                 OpenOME(file, ser);
+                Recorder.AddLine("BioImage.OpenOME(" + file + "," + ser + ");");
+            }
             else
             if (file.EndsWith("tif"))
             {
                 Open(file);
+                Recorder.AddLine("BioImage.Open(" + file + ");");
             }
             else
             {
                 OpenOME(file, ser);
+                Recorder.AddLine("BioImage.OpenOME(" + file + "," + ser + ");");
             }
             rgbChannels[0] = 0;
             rgbChannels[1] = 0;
@@ -1821,12 +1826,10 @@ namespace BioImage
         }
         public static void SplitChannels(BioImage bb, bool showDialog)
         {
-            Recorder.AddLine("BioImage.SplitChannels(" + '"' + bb.IdString + '"' + "," + showDialog + ");");
             bb.SplitChannels(showDialog);
         }
         public static void SplitChannels(string name, bool showDialog)
         {
-            Recorder.AddLine("BioImage.SplitChannels(" + '"' + name + '"' + "," + showDialog + ");");
             SplitChannels(Table.GetImage(name), showDialog);
         }
         public Channel RChannel
@@ -2644,8 +2647,8 @@ namespace BioImage
                 Application.DoEvents();
             } while (!done);
             pr.Close();
+            
         }
-
         private static void Save()
         {
             string file = threadFile;
