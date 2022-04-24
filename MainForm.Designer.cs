@@ -38,9 +38,10 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.scriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
+            this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -70,6 +71,7 @@
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // menuStrip
             // 
@@ -94,14 +96,14 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.openToolStripMenuItem.Text = "Open Files";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.newToolStripMenuItem.Text = "New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -112,15 +114,11 @@
             this.refreshToolStripMenuItem.Text = "Refresh";
             this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click_1);
             // 
-            // openFilesDialog
-            // 
-            this.openFilesDialog.Multiselect = true;
-            this.openFilesDialog.Title = "Open Images";
-            // 
             // scriptToolStripMenuItem
             // 
             this.scriptToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.scriptRunnerToolStripMenuItem});
+            this.scriptRunnerToolStripMenuItem,
+            this.scriptRecorderToolStripMenuItem});
             this.scriptToolStripMenuItem.Name = "scriptToolStripMenuItem";
             this.scriptToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.scriptToolStripMenuItem.Text = "Script";
@@ -131,6 +129,18 @@
             this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
             this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click_1);
+            // 
+            // openFilesDialog
+            // 
+            this.openFilesDialog.Multiselect = true;
+            this.openFilesDialog.Title = "Open Images";
+            // 
+            // scriptRecorderToolStripMenuItem
+            // 
+            this.scriptRecorderToolStripMenuItem.Name = "scriptRecorderToolStripMenuItem";
+            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.scriptRecorderToolStripMenuItem.Text = "Script Recorder";
+            this.scriptRecorderToolStripMenuItem.Click += new System.EventHandler(this.scriptRecorderToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -164,5 +174,6 @@
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scriptToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scriptRunnerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scriptRecorderToolStripMenuItem;
     }
 }

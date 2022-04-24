@@ -394,6 +394,12 @@ namespace BioImage
 
         private void setToolToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            SetTool tool = new SetTool();
+            tool.Show();
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
 
         }
     }

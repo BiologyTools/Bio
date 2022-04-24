@@ -18,8 +18,6 @@ namespace BioImage
 {
     public partial class Scripting : Form
     {
-        public static Scripting runner;
-
         public static string log;
         
         public static void LogLine(string s)
@@ -39,6 +37,7 @@ namespace BioImage
             public bool done = false;
             public Exception ex = null;
             public Thread thread;
+            public ScriptType type = ScriptType.script;
             public Script(string file, string scriptStr)
             {
                 name = Path.GetFileName(file);
@@ -151,6 +150,13 @@ namespace BioImage
             Move,
             None
         }
+
+        public enum ScriptType
+        {
+            tool,
+            script
+        }
+
         private static State state;
         public static State GetState()
         {
@@ -165,13 +171,13 @@ namespace BioImage
             if (s.p.X == state.p.X && s.p.Y == state.p.Y && s.type == state.type)
             {
                 state.processed = true;
-
             }
             else
             state = s;
         }
         public void RefreshItems()
         {
+            Scripts.Clear();
             string dir = Application.StartupPath + "//" + "Scripts";
             foreach (string file in Directory.GetFiles(dir))
             {
@@ -181,6 +187,24 @@ namespace BioImage
                     {
                         //This is a script file.
                         Script sc = new Script(file, File.ReadAllText(file));
+                        ListViewItem lv = new ListViewItem();
+                        lv.Tag = sc;
+                        lv.Text = sc.ToString();
+                        scriptView.Items.Add(lv);
+                        Scripts.Add(lv.Text, sc);
+                    }
+                }
+            }
+            string tls = Application.StartupPath + "//" + "Tools";
+            foreach (string file in Directory.GetFiles(tls))
+            {
+                if (file.EndsWith(".cs"))
+                {
+                    if (!Scripts.ContainsKey(Path.GetFileName(file)))
+                    {
+                        //This is a script file.
+                        Script sc = new Script(file, File.ReadAllText(file));
+                        sc.type = ScriptType.tool;
                         ListViewItem lv = new ListViewItem();
                         lv.Tag = sc;
                         lv.Text = sc.ToString();
@@ -213,7 +237,6 @@ namespace BioImage
         {
             InitializeComponent();
             scriptView.MultiSelect = false;
-            runner = this;
             RefreshItems();
             timer.Start();
         }

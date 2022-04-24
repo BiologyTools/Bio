@@ -775,16 +775,15 @@ namespace BioImage
         }
 
         public bool showRROIs = true;
-        public bool showGROIs = false;
-        public bool showBROIs = false;
+        public bool showGROIs = true;
+        public bool showBROIs = true;
 
         private List<Annotation> annotationsR = new List<Annotation>();
         public List<Annotation> AnnotationsR
         {
             get
             {
-                SZCT coord = coordinate;
-                return image.GetAnnotations(coord.S, coord.Z, image.RChannel.Index, coord.T);
+                return image.GetAnnotations(coordinate.S, coordinate.Z, image.RChannel.Index, coordinate.T);
             }
         }
         private List<Annotation> annotationsG = new List<Annotation>();
@@ -792,8 +791,7 @@ namespace BioImage
         {
             get
             {
-                SZCT coord = coordinate;
-                return image.GetAnnotations(coord.S, coord.Z, image.GChannel.Index, coord.T);
+                return image.GetAnnotations(coordinate.S, coordinate.Z, image.GChannel.Index, coordinate.T);
             }
         }
         private List<Annotation> annotationsB = new List<Annotation>();
@@ -801,8 +799,7 @@ namespace BioImage
         {
             get
             {
-                SZCT coord = coordinate;
-                return image.GetAnnotations(coord.S, coord.Z, image.BChannel.Index, coord.T);
+                return image.GetAnnotations(coordinate.S, coordinate.Z, image.BChannel.Index, coordinate.T);
             }
         }
 
@@ -810,14 +807,18 @@ namespace BioImage
         {
             get
             {
-                SZCT coord = coordinate;
                 List<Annotation> ans = new List<Annotation>();
-                if(showRROIs)
-                    ans.AddRange(AnnotationsR);
-                if (showGROIs)
-                    ans.AddRange(AnnotationsG);
-                if (showRROIs)
-                    ans.AddRange(AnnotationsB);
+                if (Mode == ViewMode.RGBImage)
+                {
+                    if (showRROIs)
+                        ans.AddRange(AnnotationsR);
+                    if (showGROIs)
+                        ans.AddRange(AnnotationsG);
+                    if (showBROIs)
+                        ans.AddRange(AnnotationsB);
+                }
+                else
+                    ans.AddRange(image.GetAnnotations(coordinate));
                 return ans;
             }
         }
@@ -1393,12 +1394,12 @@ namespace BioImage
             {
                 foreach (Annotation an in AnnotationsRGB)
                 {
-                    if (an.GetSelectBound().IntersectsWith(p.X,p.Y))
+                    if (an.GetSelectBound().IntersectsWith(p.X, p.Y))
                     {
                         selectedAnnotations.Add(an);
                         an.selected = true;
-                        
-                        RectangleF r = new RectangleF(p.X, p.Y, 2, 2);
+
+                        RectangleF r = new RectangleF(p.X, p.Y, 1, 1);
                         for (int i = 0; i < an.selectBoxs.Count; i++)
                         {
                             if (an.selectBoxs[i].IntersectsWith(r))
@@ -1408,7 +1409,7 @@ namespace BioImage
                         }
                     }
                     else
-                        if(!Ctrl)
+                        if (!Ctrl)
                         an.selected = false;
                 }
                 UpdateOverlay();

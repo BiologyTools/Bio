@@ -28,76 +28,76 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SetTool));
-            this.button1 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.toolsBox = new System.Windows.Forms.ComboBox();
+            this.toolView = new System.Windows.Forms.ListView();
+            this.timer = new System.Windows.Forms.Timer(this.components);
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button1
+            // toolView
             // 
-            this.button1.Location = new System.Drawing.Point(140, 33);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Set Tool";
-            this.button1.UseVisualStyleBackColor = true;
+            this.toolView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.toolView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.toolView.ContextMenuStrip = this.contextMenuStrip;
+            this.toolView.ForeColor = System.Drawing.Color.White;
+            this.toolView.HideSelection = false;
+            this.toolView.Location = new System.Drawing.Point(3, 3);
+            this.toolView.MultiSelect = false;
+            this.toolView.Name = "toolView";
+            this.toolView.Size = new System.Drawing.Size(112, 219);
+            this.toolView.TabIndex = 5;
+            this.toolView.UseCompatibleStateImageBehavior = false;
+            this.toolView.View = System.Windows.Forms.View.List;
+            this.toolView.SelectedIndexChanged += new System.EventHandler(this.toolView_SelectedIndexChanged);
             // 
-            // label1
+            // timer
             // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(28, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Tool";
+            this.timer.Interval = 1000;
+            this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
-            // button2
+            // contextMenuStrip
             // 
-            this.button2.Location = new System.Drawing.Point(59, 33);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Cancel";
-            this.button2.UseVisualStyleBackColor = true;
+            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.stopToolStripMenuItem});
+            this.contextMenuStrip.Name = "contextMenuStrip";
+            this.contextMenuStrip.Size = new System.Drawing.Size(99, 26);
             // 
-            // toolsBox
+            // stopToolStripMenuItem
             // 
-            this.toolsBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.toolsBox.ForeColor = System.Drawing.Color.White;
-            this.toolsBox.FormattingEnabled = true;
-            this.toolsBox.Location = new System.Drawing.Point(59, 6);
-            this.toolsBox.Name = "toolsBox";
-            this.toolsBox.Size = new System.Drawing.Size(156, 21);
-            this.toolsBox.TabIndex = 3;
-            this.toolsBox.SelectedIndexChanged += new System.EventHandler(this.toolsBox_SelectedIndexChanged);
+            this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
+            this.stopToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.stopToolStripMenuItem.Text = "Stop";
+            this.stopToolStripMenuItem.Click += new System.EventHandler(this.stopToolStripMenuItem_Click);
             // 
             // SetTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(228, 69);
-            this.Controls.Add(this.toolsBox);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.button1);
+            this.ClientSize = new System.Drawing.Size(119, 225);
+            this.Controls.Add(this.toolView);
             this.ForeColor = System.Drawing.Color.Black;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "SetTool";
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.Text = "Set Tool";
+            this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ComboBox toolsBox;
+        private System.Windows.Forms.ListView toolView;
+        private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem stopToolStripMenuItem;
     }
 }

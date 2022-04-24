@@ -40,7 +40,7 @@ namespace BioImage
         {
             if (stackABox.SelectedIndex == -1)
                 return;
-            BioImage b = new BioImage(ImageA, ImageA.Filename, 0, (int)zStartBox.Value, (int)zEndBox.Value, (int)cStartBox.Value, (int)cEndBox.Value, (int)tStartBox.Value, (int)tEndBox.Value);
+            BioImage b = new BioImage(ImageA, 0, (int)zStartBox.Value, (int)zEndBox.Value, (int)cStartBox.Value, (int)cEndBox.Value, (int)tStartBox.Value, (int)tEndBox.Value);
             ImageViewer iv = new ImageViewer(b);
             iv.Show();
             UpdateStacks();

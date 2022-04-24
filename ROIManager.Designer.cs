@@ -689,6 +689,8 @@
             // 
             this.gChBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.gChBox.AutoSize = true;
+            this.gChBox.Checked = true;
+            this.gChBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.gChBox.ForeColor = System.Drawing.Color.White;
             this.gChBox.Location = new System.Drawing.Point(280, 381);
             this.gChBox.Name = "gChBox";
@@ -702,6 +704,8 @@
             // 
             this.bChBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.bChBox.AutoSize = true;
+            this.bChBox.Checked = true;
+            this.bChBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.bChBox.ForeColor = System.Drawing.Color.White;
             this.bChBox.Location = new System.Drawing.Point(331, 381);
             this.bChBox.Name = "bChBox";

@@ -382,6 +382,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PlaySpeed.resx">
       <DependentUpon>PlaySpeed.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Progress.resx">
       <DependentUpon>Progress.cs</DependentUpon>
@@ -392,6 +393,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="RangeTool.resx">
       <DependentUpon>RangeTool.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Recorder.resx">
       <DependentUpon>Recorder.cs</DependentUpon>

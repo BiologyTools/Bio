@@ -16,19 +16,46 @@ namespace BioImage
         public SetTool()
         {
             InitializeComponent();
-            if(Tools.tools.Count == 0)
-            foreach (Tools.Tool tool in Tools.tools)
+            timer.Start();
+            foreach (Scripting.Script tool in Scripting.Scripts.Values)
             {
-                toolsBox.Items.Add(tool);
+                if (tool.type == Scripting.ScriptType.tool)
+                {
+                    ListViewItem item = new ListViewItem();
+                    item.Text = tool.name;
+                    item.Tag = tool;
+                    toolView.Items.Add(item);
+                }
             }
         }
-        public Tools.Tool Tool
+        public Scripting.Script Script
         {
-            get { return (Tools.Tool)Tools.tools[toolsBox.SelectedIndex]; }
+            get { return (Scripting.Script)toolView.SelectedItems[0].Tag;}
         }
-        private void toolsBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void setToolBut_Click(object sender, EventArgs e)
         {
-            
+            DialogResult = DialogResult.OK;
+
+        }
+        private void toolView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (Script.thread != null)
+                Script.Stop();
+            Script.Run();
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            foreach (ListViewItem item in toolView.Items)
+            {
+                item.Text = ((Scripting.Script)item.Tag).ToString();
+            }
+        }
+
+        private void stopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Script.thread != null)
+                Script.Stop();
         }
     }
 }

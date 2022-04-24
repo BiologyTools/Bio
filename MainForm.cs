@@ -14,6 +14,7 @@ namespace BioImage
     public partial class MainForm : Form
     {
         public static Scripting runner = null;
+        public static Recorder recorder = null;
         public class Node
         {
             public TreeNode node;
@@ -55,7 +56,7 @@ namespace BioImage
         {
             InitializeComponent();
             Init();
-            UpdateNodes();
+            InitNodes();
             if (args.Length > 0)
             {
                 ImageViewer viewer = new ImageViewer(args[0]);
@@ -66,10 +67,11 @@ namespace BioImage
         private static void Init()
         {
             runner = new Scripting();
+            recorder = new Recorder();
         }
-        public void UpdateNodes()
+
+        public void InitNodes()
         {
-            
             treeView.Nodes.Clear();
             TreeNode images = new TreeNode();
             images.Text = "BioImages";
@@ -78,8 +80,6 @@ namespace BioImage
             {
                 //TreeNode node = new TreeNode();
                 Node tree = new Node(item, Node.DataType.image);
-
-
                 Node implanes = new Node(item, Node.DataType.text);
                 implanes.Text = "Planes";
 
@@ -108,7 +108,7 @@ namespace BioImage
 
         private void MainForm_Activated(object sender, EventArgs e)
         {
-            UpdateNodes();
+            InitNodes();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -120,7 +120,7 @@ namespace BioImage
         }
         private void refreshToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            UpdateNodes();
+            InitNodes();
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -162,6 +162,24 @@ namespace BioImage
         {
             runner.WindowState = FormWindowState.Normal;
             runner.Show();
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Node node = (Node)treeView.SelectedNode.Tag;
+            if(node.Type == Node.DataType.roi)
+            {
+                Annotation an = (Annotation)node.Object;
+                Node nod = (Node)treeView.SelectedNode.Parent.Tag;
+                BioImage im = (BioImage)nod.Object;
+                im.Annotations.Remove(an);
+            }
+        }
+
+        private void scriptRecorderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            recorder.WindowState = FormWindowState.Maximized;
+            recorder.Show();
         }
     }
 }
