@@ -7,19 +7,22 @@ Best for working with ROI's in OME format & CSV.
 
 ## Features
 
-- Exporting ROI's to CSV files for easy analysis in statistics programs.
 
-- Great at viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
+- Open & Save ImageJ Tiff files and embed ROI's in image Description tag.
+
+- C# scripting with sample tool-script and other sample scripts in "/Scripts/" folder. [See samples](https://github.com/BioMicroscopy/BioImage-Scripts)
 
 - RGB image viewing mode which automatically combines 3 channels into RGB image & shows ROI from each channel which can be configured in ROI Manager.
 
+- Viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
+
 - Editing & saving ROI's in images to OME format image stacks.
 
-- Exporting ROI's from each image in a folder of images to CSV. For further quick & easy analysis of images.
+- Copy & Paste to quickly annotate images and name them easily by right click.
 
-- Exports bounding boxes of ROI's in CSV format.
+- Select multiple points by holding down control key, for delete & move tools. 
 
-- Select multiple points by holding down left control key for move & delete tools.
+- Exporting ROI's from each OME image in a folder of images to CSV.
 
 ## Dependencies
 - [BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
@@ -59,7 +62,8 @@ Bitmap filt = image.GetImageFiltered(0,0,0,0);
 image.SaveSeries("16bitTestSaveStack.ome.tif", 0);
 
 ## Scripting
--  Save scripts into "StartupPath/Scripts" with ".cs" ending. Open script editor & script runner from menu
+-  Save scripts into "StartupPath/Scripts" with ".cs" ending.
+-  Open script editor and recorder from menu.
 -  Double click on script name in Script runner to run script.
 -  Scripts saved in Scripts folder will be loaded into script runner.
 -  Program installer include sample script "Sample.cs" which gets & sets pixels and saves resulting image.
@@ -100,64 +104,54 @@ public class Loader
 //css_reference BioImage.dll;
 
 using System;
-
 using System.Windows.Forms;
-
 using System.Drawing;
-
 using BioImage;
+using System.Threading;
 
 public class Loader
 {
 
+	//Point ROI Tool Example
 	public string Load()
 	{
+		int ind = 1;
 		do
 		{
 			BioImage.Scripting.State s = BioImage.Scripting.GetState();
 			if (s != null)
 			{
-				if (s.p.X < 10 && s.p.Y < 10)
+				if (!s.processed)
 				{
-					return "Corner (" + s.p.X + ", " + s.p.Y + ")";
-
-				}
-				if (s.type == BioImage.Scripting.Event.Move)
-				{
-					string st = "Move (" + s.p.X + ", " + s.p.Y + ")";
-					if (s.p.X < 25 && s.p.Y < 25)
+					if (s.type == BioImage.Scripting.Event.Up && s.buts == MouseButtons.Left)
 					{
-						return st;
+						SZCT cord = ImageView.viewer.GetCoordinate();
+						Annotation an = Annotation.CreatePoint(cord, s.p.X, s.p.Y);
+						ImageView.viewer.image.Annotations.Add(an);
+						an.Text = "Point" + ind;
+						ind++;
+						BioImage.Scripting.LogLine(s.ToString());
+						ImageView.viewer.UpdateOverlay();
 					}
-					BioImage.Scripting.LogLine(st);
-				}
-				else
-				if (s.type == BioImage.Scripting.Event.Up)
-				{
-					string st = "Up (" + s.p.X + ", " + s.p.Y + ")";
-					if (s.p.X < 50 && s.p.Y < 50)
+					else
+					if (s.type == BioImage.Scripting.Event.Down)
 					{
-						return st;
+						BioImage.Scripting.LogLine(s.ToString());
 					}
-					BioImage.Scripting.LogLine(st);
-				}
-				else
-				if (s.type == BioImage.Scripting.Event.Down)
-				{
-					string st = "Down (" + s.p.X + ", " + s.p.Y + ")";
-					if (s.p.X < 75 && s.p.Y < 75)
+					else
+					if (s.type == BioImage.Scripting.Event.Move)
 					{
-						return st;
+						BioImage.Scripting.LogLine(s.ToString());
 					}
-					BioImage.Scripting.LogLine(st);
+				}
+				{
+					s.processed = true;
 				}
 			}
 		} while (true);
-
 		return "Done";
 	}
 }
-
 
 
 
