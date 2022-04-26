@@ -2127,7 +2127,7 @@ namespace BioImage
             }
             else
             {
-                return GetBitmap8(coord);
+                return GetRGBBitmap8(coord);
             }
         }
         public Bitmap GetImageRaw(SZCT coord)
@@ -2138,7 +2138,7 @@ namespace BioImage
             }
             else
             {
-                return GetBitmap8(coord);
+                return GetRGBBitmap8(coord);
             }
         }
 
@@ -2192,7 +2192,7 @@ namespace BioImage
         {
             watch.Restart();
             int ri = Coords[serie, coord.Z, coord.C, coord.T];
-            
+            rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
             if (RGBChannelCount == 1)
             {
                 if (replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
@@ -2211,40 +2211,6 @@ namespace BioImage
 
                 replaceBFilter.ChannelImage.Dispose();
                 replaceBFilter.ChannelImage = Buffers[ri + BChannel.Index].GetBitmap();
-                replaceBFilter.ApplyInPlace(rgbBitmap8);
-            }
-            else
-            {
-                rgbBitmap8 = Buffers[ri].GetBitmap();
-            }
-            watch.Stop();
-            loadTimeMS = watch.ElapsedMilliseconds;
-            loadTimeTicks = watch.ElapsedTicks;
-            return rgbBitmap8;
-        }
-        public Bitmap GetBitmap8(SZCT coord)
-        {
-            watch.Restart();
-            int ri = Coords[serie, coord.Z, coord.C, coord.T];
-            
-            if (RGBChannelCount == 1)
-            {
-                if (replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
-                {
-                    replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, Buffers[ri].GetBitmap());
-                    replaceGFilter = new ReplaceChannel(AForge.Imaging.RGB.G, Buffers[ri].GetBitmap());
-                    replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, Buffers[ri].GetBitmap());
-                }
-                replaceRFilter.ChannelImage.Dispose();
-                replaceRFilter.ChannelImage = Buffers[ri].GetBitmap();
-                replaceRFilter.ApplyInPlace(rgbBitmap8);
-
-                replaceGFilter.ChannelImage.Dispose();
-                replaceGFilter.ChannelImage = Buffers[ri].GetBitmap();
-                replaceGFilter.ApplyInPlace(rgbBitmap8);
-
-                replaceBFilter.ChannelImage.Dispose();
-                replaceBFilter.ChannelImage = Buffers[ri].GetBitmap();
                 replaceBFilter.ApplyInPlace(rgbBitmap8);
             }
             else
