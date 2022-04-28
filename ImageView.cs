@@ -1109,7 +1109,7 @@ namespace BioImage
             g.ScaleTransform(scale.Width, scale.Height);
             DrawOverlay(g);
             ImageViewer.graphics = g;
-            if (Tools.currentTool.type == Tools.Tool.Type.rectSel && down)
+            if ((Tools.currentTool.type == Tools.Tool.Type.rectSel && down) || (Tools.currentTool.type == Tools.Tool.Type.magic && down))
             {
                 RectangleF[] fs = new RectangleF[1];
                 fs[0] = Tools.GetTool(Tools.Tool.Type.rectSel).RectangleF;

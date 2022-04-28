@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace BioImage
 {
-    public partial class MagickSelect : Form
+    public partial class MagicSelect : Form
     {
-        public MagickSelect(int index)
+        public MagicSelect(int index)
         {
             InitializeComponent();
             thBox.SelectedIndex = index;

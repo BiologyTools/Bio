@@ -1,6 +1,6 @@
 ﻿namespace BioImage
 {
-    partial class MagickSelect
+    partial class MagicSelect
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MagickSelect));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MagicSelect));
             this.label1 = new System.Windows.Forms.Label();
             this.thBox = new System.Windows.Forms.ComboBox();
             this.numBox = new System.Windows.Forms.NumericUpDown();

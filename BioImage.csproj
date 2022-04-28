@@ -284,11 +284,11 @@
     <Compile Include="ImageViewer.designer.cs">
       <DependentUpon>ImageViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="MagickSelect.cs">
+    <Compile Include="MagicSelect.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MagickSelect.Designer.cs">
-      <DependentUpon>MagickSelect.cs</DependentUpon>
+    <Compile Include="MagicSelect.Designer.cs">
+      <DependentUpon>MagicSelect.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -386,8 +386,8 @@
     <EmbeddedResource Include="ImageViewer.resx">
       <DependentUpon>ImageViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MagickSelect.resx">
-      <DependentUpon>MagickSelect.cs</DependentUpon>
+    <EmbeddedResource Include="MagicSelect.resx">
+      <DependentUpon>MagicSelect.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

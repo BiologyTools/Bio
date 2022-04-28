@@ -390,8 +390,9 @@ namespace BioImage
             }
             if (Tools.currentTool.type == Tools.Tool.Type.magic)
             {
-                SZCT coord = ImageView.viewer.GetCoordinate();
                 PointF pf = new PointF(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
+                SZCT coord = ImageView.viewer.GetCoordinate();
+               
                 Rectangle r = new Rectangle((int)ImageView.mouseDown.X, (int)ImageView.mouseDown.Y, (int)(ImageView.mouseUp.X - ImageView.mouseDown.X), (int)(ImageView.mouseUp.Y - ImageView.mouseDown.Y));
                
                 Bitmap image = ImageView.viewer.image.GetBitmap(coord);
@@ -458,6 +459,7 @@ namespace BioImage
         }
         public void ToolMove(PointF e, MouseButtons buts)
         {
+
             if (ImageView.viewer == null)
                 return;
             Scripting.UpdateState(Scripting.State.GetMove(e, buts));
@@ -558,6 +560,14 @@ namespace BioImage
                         }
                     }
                 }
+            }
+
+            if (Tools.currentTool.type == Tools.Tool.Type.magic && buts == MouseButtons.Left)
+            {
+                //First we draw the selection rectangle
+                PointD d = new PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
+                Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(ImageView.mouseDown.X, ImageView.mouseDown.Y, d.X, d.Y);
+                UpdateOverlay();
             }
             if (Tools.currentTool.type == Tools.Tool.Type.pan && (buts == MouseButtons.Middle || buts == MouseButtons.Left))
             {
@@ -701,7 +711,7 @@ namespace BioImage
             Cursor.Current = Cursors.Arrow;
         }
 
-        MagickSelect magicSel = new MagickSelect(2);
+        MagicSelect magicSel = new MagicSelect(2);
         private void magicPanel_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             if (magicSel.ShowDialog() != DialogResult.OK)
