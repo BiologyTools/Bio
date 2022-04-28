@@ -24,6 +24,8 @@ Best for working with ROI's in OME format & CSV.
 
 - Exporting ROI's from each OME image in a folder of images to CSV.
 
+- Easy freeform annotation with magic select tool which selects based on blob detection. 
+
 ## Dependencies
 - [BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
 - [IKVM](http://www.ikvm.net/)
