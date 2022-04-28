@@ -201,11 +201,11 @@ namespace BioImage
         }
     }
     public enum RGB
-        {
-            R,
-            G,
-            B
-        }
+    {
+        R,
+        G,
+        B
+    }
     public class ColorS
     {
         public ushort R = 0;

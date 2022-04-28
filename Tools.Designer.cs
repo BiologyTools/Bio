@@ -50,6 +50,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.rectSelPanel = new System.Windows.Forms.Panel();
             this.panPanel = new System.Windows.Forms.Panel();
+            this.magicPanel = new System.Windows.Forms.Panel();
             this.movePanel.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.polyPanel.SuspendLayout();
@@ -248,13 +249,26 @@
             this.panPanel.TabIndex = 3;
             this.panPanel.Click += new System.EventHandler(this.panPanel_Click);
             // 
+            // magicPanel
+            // 
+            this.magicPanel.BackColor = System.Drawing.Color.White;
+            this.magicPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("magicPanel.BackgroundImage")));
+            this.magicPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.magicPanel.Location = new System.Drawing.Point(1, 180);
+            this.magicPanel.Name = "magicPanel";
+            this.magicPanel.Size = new System.Drawing.Size(30, 30);
+            this.magicPanel.TabIndex = 8;
+            this.magicPanel.Click += new System.EventHandler(this.magicPanel_Click);
+            this.magicPanel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.magicPanel_MouseDoubleClick);
+            // 
             // Tools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(60, 181);
+            this.ClientSize = new System.Drawing.Size(61, 210);
             this.ContextMenuStrip = this.contextMenuStrip;
+            this.Controls.Add(this.magicPanel);
             this.Controls.Add(this.panPanel);
             this.Controls.Add(this.rectPanel);
             this.Controls.Add(this.deletePanel);
@@ -306,5 +320,6 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel rectSelPanel;
         private System.Windows.Forms.Panel panPanel;
+        private System.Windows.Forms.Panel magicPanel;
     }
 }

@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using BioImage;
 using System.IO;
+using AForge.Imaging.Filters;
+using AForge.Imaging;
+using AForge.Math.Geometry;
+using AForge;
 
 namespace BioImage
 {
@@ -50,6 +54,7 @@ namespace BioImage
                 rectSel,
                 pointSel,
                 pan,
+                magic,
                 script,
             }
 
@@ -65,7 +70,7 @@ namespace BioImage
             }
 
             public ColorS Color;
-            public List<Point> Points;
+            public List<System.Drawing.Point> Points;
             public ToolType toolType;
             private RectangleD rect;
             public RectangleD Rectangle
@@ -383,6 +388,73 @@ namespace BioImage
                 ImageView.viewer.Origin = new PointF(ImageView.viewer.Origin.X + pf.X, ImageView.viewer.Origin.Y + pf.Y);
                 UpdateView();
             }
+            if (Tools.currentTool.type == Tools.Tool.Type.magic)
+            {
+                SZCT coord = ImageView.viewer.GetCoordinate();
+                PointF pf = new PointF(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
+                Rectangle r = new Rectangle((int)ImageView.mouseDown.X, (int)ImageView.mouseDown.Y, (int)(ImageView.mouseUp.X - ImageView.mouseDown.X), (int)(ImageView.mouseUp.Y - ImageView.mouseDown.Y));
+               
+                Bitmap image = ImageView.viewer.image.GetBitmap(coord);
+                Crop c = new Crop(r);
+                Bitmap crop = c.Apply(image);
+
+                Bitmap gray = null;
+                if (ImageView.viewer.image.bitsPerPixel > 8)
+                    gray = AForge.Imaging.Image.Convert16bppTo8bpp(crop);
+                else
+                    gray = crop;
+                AForge.Imaging.ImageStatistics st = new AForge.Imaging.ImageStatistics(gray);
+                Threshold th = null;
+                if(magicSel.Numeric)
+                {
+                    th = new Threshold(magicSel.Threshold);
+                }
+                else
+                if(magicSel.Index == 2)
+                    th = new Threshold(st.Gray.Median - st.Gray.Min);
+                else
+                if(magicSel.Index == 1)
+                    th = new Threshold(st.Gray.Median);
+                else
+                    th = new Threshold(st.Gray.Median);
+
+                th.ApplyInPlace(gray);
+
+                Invert inv = new Invert();
+                inv.ApplyInPlace(gray);
+
+                BlobCounter blobCounter = new BlobCounter();
+                blobCounter.ProcessImage(gray);
+                Blob[] blobs = blobCounter.GetObjectsInformation();
+                // create convex hull searching algorithm
+                GrahamConvexHull hullFinder = new GrahamConvexHull();
+                // lock image to draw on it
+                // process each blob
+                
+                foreach (Blob blob in blobs)
+                {
+                    List<IntPoint> leftPoints = new List<IntPoint>();
+                    List<IntPoint> rightPoints = new List<IntPoint>();
+                    List<IntPoint> edgePoints = new List<IntPoint>();
+                    List<IntPoint> hull = new List<IntPoint>();
+                    // get blob's edge points
+                    blobCounter.GetBlobsLeftAndRightEdges(blob,
+                        out leftPoints, out rightPoints);
+                    edgePoints.AddRange(leftPoints);
+                    edgePoints.AddRange(rightPoints);
+                    // blob's convex hull
+                    hull = hullFinder.FindHull(edgePoints);
+                    PointD[] pfs = new PointD[hull.Count];
+                    for (int i = 0; i < hull.Count; i++)
+                    {
+                        pfs[i] = new PointD(r.X + hull[i].X,r.Y + hull[i].Y);
+                    }
+                    Annotation an = Annotation.CreateFreeform(coord, pfs);
+                    ImageView.viewer.image.Annotations.Add(an);
+                    UpdateOverlay();
+                }
+                
+            }
         }
         public void ToolMove(PointF e, MouseButtons buts)
         {
@@ -619,6 +691,22 @@ namespace BioImage
             UpdateSelected();
             panPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Hand;
+        }
+
+        private void magicPanel_Click(object sender, EventArgs e)
+        {
+            currentTool = GetTool(Tool.Type.magic);
+            UpdateSelected();
+            magicPanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
+        }
+
+        MagickSelect magicSel = new MagickSelect(2);
+        private void magicPanel_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (magicSel.ShowDialog() != DialogResult.OK)
+                return;
+
         }
     }
 }
