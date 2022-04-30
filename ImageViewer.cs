@@ -13,9 +13,10 @@ namespace BioImage
         public static ROIManager manager = null;
         public static bool init = false;
         public static ImageViewer app = null;
+        public Filter filters = null;
         public ImageView viewer = null;
         public StackTools stackTools = null;
-        public static Graphics graphics = null;  
+        public static Graphics graphics = null;
         
         public ImageViewer(BioImage arg)
         {
@@ -24,6 +25,7 @@ namespace BioImage
             Init();
             tools = new Tools();
             stackTools = new StackTools();
+            filters = new Filter();
             app = this;
             SetImage(arg);
             Table.AddViewer(this);
@@ -35,6 +37,7 @@ namespace BioImage
             Init();
             tools = new Tools();
             manager = new ROIManager();
+            filters = new Filter();
             app = this;
             stackTools = new StackTools();
             if (arg.Length == 0)
@@ -75,6 +78,7 @@ namespace BioImage
             manager = new ROIManager();
             app = this;
             stackTools = new StackTools();
+            filters = new Filter();
             if (arg.Length == 0)
                 return;
             else
@@ -131,10 +135,10 @@ namespace BioImage
                 viewer = new ImageView(b);
             }
             viewer.serie = b.serie;
-            viewer.filepath = b.Filename;
+            viewer.filepath = b.ID;
             viewer.Dock = DockStyle.Fill;
             panel.Controls.Add(viewer);
-            this.Text = b.IdString;
+            this.Text = b.Filename;
 
             viewer.UpdateView();
             System.Drawing.Size s = new System.Drawing.Size(viewer.image.SizeX + 20, viewer.image.SizeY + 165);
@@ -360,7 +364,7 @@ namespace BioImage
             {
                 //If this is not a dialog we dispose of the image.
                 Recorder.AddLine("Table.RemoveImage(" + '"' + this.Text + '"' + ");");
-                Table.RemoveImage(this.Image.IdString);
+                Table.RemoveImage(this.Image.Filename);
                 this.Image.Dispose();
             }
             Table.RemoveViewer(this);
@@ -401,6 +405,11 @@ namespace BioImage
         private void timer_Tick(object sender, EventArgs e)
         {
 
+        }
+
+        private void filtersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            filters.Show();
         }
     }
 }

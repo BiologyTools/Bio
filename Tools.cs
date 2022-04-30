@@ -394,7 +394,8 @@ namespace BioImage
                 SZCT coord = ImageView.viewer.GetCoordinate();
                
                 Rectangle r = new Rectangle((int)ImageView.mouseDown.X, (int)ImageView.mouseDown.Y, (int)(ImageView.mouseUp.X - ImageView.mouseDown.X), (int)(ImageView.mouseUp.Y - ImageView.mouseDown.Y));
-               
+                if (r.Width <= 2 && r.Height <= 2)
+                    return;
                 Bitmap image = ImageView.viewer.image.GetBitmap(coord);
                 Crop c = new Crop(r);
                 Bitmap crop = c.Apply(image);
@@ -417,7 +418,7 @@ namespace BioImage
                 if(magicSel.Index == 1)
                     th = new Threshold(st.Gray.Median);
                 else
-                    th = new Threshold(st.Gray.Median);
+                    th = new Threshold(st.Gray.Min);
 
                 th.ApplyInPlace(gray);
 
@@ -451,10 +452,9 @@ namespace BioImage
                         pfs[i] = new PointD(r.X + hull[i].X,r.Y + hull[i].Y);
                     }
                     Annotation an = Annotation.CreateFreeform(coord, pfs);
-                    ImageView.viewer.image.Annotations.Add(an);
-                    UpdateOverlay();
+                    ImageView.viewer.image.Annotations.Add(an); 
                 }
-                
+                UpdateOverlay();
             }
         }
         public void ToolMove(PointF e, MouseButtons buts)
@@ -717,6 +717,12 @@ namespace BioImage
             if (magicSel.ShowDialog() != DialogResult.OK)
                 return;
 
+        }
+
+        private void Tools_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            this.Hide();
         }
     }
 }

@@ -51,6 +51,7 @@ namespace BioImage
             this.autoThresholdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.channelsToolToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.stackToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.filtersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveOMEFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.panel = new System.Windows.Forms.Panel();
@@ -70,10 +71,11 @@ namespace BioImage
             this.toolboxToolStripMenuItem,
             this.rOIToolStripMenuItem,
             this.channelsToolToolStripMenuItem,
-            this.stackToolsToolStripMenuItem});
+            this.stackToolsToolStripMenuItem,
+            this.filtersToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(334, 24);
+            this.menuStrip.Size = new System.Drawing.Size(359, 24);
             this.menuStrip.TabIndex = 0;
             // 
             // fileToolStripMenuItem
@@ -208,14 +210,14 @@ namespace BioImage
             // autoThresholdToolStripMenuItem
             // 
             this.autoThresholdToolStripMenuItem.Name = "autoThresholdToolStripMenuItem";
-            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.autoThresholdToolStripMenuItem.Text = "Auto Threshold All";
             this.autoThresholdToolStripMenuItem.Click += new System.EventHandler(this.autoThresholdToolStripMenuItem_Click);
             // 
             // channelsToolToolStripMenuItem1
             // 
             this.channelsToolToolStripMenuItem1.Name = "channelsToolToolStripMenuItem1";
-            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(172, 22);
             this.channelsToolToolStripMenuItem1.Text = "Channels Tool";
             this.channelsToolToolStripMenuItem1.Click += new System.EventHandler(this.channelsToolToolStripMenuItem_Click);
             // 
@@ -225,6 +227,13 @@ namespace BioImage
             this.stackToolsToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.stackToolsToolStripMenuItem.Text = "Stacks";
             this.stackToolsToolStripMenuItem.Click += new System.EventHandler(this.stackToolsToolStripMenuItem_Click);
+            // 
+            // filtersToolStripMenuItem
+            // 
+            this.filtersToolStripMenuItem.Name = "filtersToolStripMenuItem";
+            this.filtersToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+            this.filtersToolStripMenuItem.Text = "Filters";
+            this.filtersToolStripMenuItem.Click += new System.EventHandler(this.filtersToolStripMenuItem_Click);
             // 
             // openFilesDialog
             // 
@@ -244,7 +253,7 @@ namespace BioImage
             this.panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel.Location = new System.Drawing.Point(0, 24);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(334, 287);
+            this.panel.Size = new System.Drawing.Size(359, 287);
             this.panel.TabIndex = 1;
             this.panel.Click += new System.EventHandler(this.panel_Click);
             // 
@@ -277,13 +286,13 @@ namespace BioImage
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(77)))), ((int)(((byte)(98)))));
-            this.ClientSize = new System.Drawing.Size(334, 311);
+            this.ClientSize = new System.Drawing.Size(359, 311);
             this.Controls.Add(this.panel);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip;
-            this.MinimumSize = new System.Drawing.Size(350, 350);
+            this.MinimumSize = new System.Drawing.Size(375, 350);
             this.Name = "ImageViewer";
             this.Text = "BioImage";
             this.Activated += new System.EventHandler(this.ImageViewer_Activated);
@@ -328,5 +337,6 @@ namespace BioImage
         private System.Windows.Forms.ToolStripMenuItem stackToolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setToolToolStripMenuItem;
         private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.ToolStripMenuItem filtersToolStripMenuItem;
     }
 }

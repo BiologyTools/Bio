@@ -48,7 +48,7 @@ namespace BioImage
         }
         public ImageView(BioImage im)
         {
-            string file = im.Filename.Replace("\\", "/");
+            string file = im.ID.Replace("\\", "/");
             InitializeComponent();
             serie = im.serie;
             image = im;
@@ -100,6 +100,14 @@ namespace BioImage
         public SZCT GetCoordinate()
         {
             return coordinate;
+        }
+
+        public int Index
+        {
+            get
+            {
+                return image.Coords[coordinate.S, coordinate.Z, coordinate.C, coordinate.T];
+            }
         }
 
         public int minSizeX = 50;
@@ -322,7 +330,7 @@ namespace BioImage
                 ticksLabel.Text = " Ticks: " + image.loadTimeTicks;
                 if (timeEnabled)
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mousePoint + mouseColor;
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " + image.PixelFormat.ToString();
                 }
                 else
                 {
@@ -334,11 +342,11 @@ namespace BioImage
             {
                 if (timeEnabled)
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mousePoint + mouseColor;
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " + image.PixelFormat.ToString();
                 }
                 else
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint + mouseColor;
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " + image.PixelFormat.ToString();
                 }
             }
         }
@@ -1127,8 +1135,14 @@ namespace BioImage
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
             PointF ss = GetImageSize();
-            
-            g.DrawImage(bitmap,pp.X, pp.Y, ss.X, ss.Y);
+            try
+            {
+                g.DrawImage(bitmap,pp.X, pp.Y, ss.X, ss.Y);
+            }
+            catch (Exception)
+            {
+
+            }
         }
 
         public static List<Annotation> selectedAnnotations = new List<Annotation>();
@@ -1604,7 +1618,7 @@ namespace BioImage
                                 ImageView.selectedImage.Annotations.Remove(an);
                             }
                             else
-                            if(an.selectedPoints.Count == 1 && !(an.type == Annotation.Type.Polygon || an.type == Annotation.Type.Polyline || an.type == Annotation.Type.Freeform))
+                            if(!(an.type == Annotation.Type.Polygon || an.type == Annotation.Type.Polyline || an.type == Annotation.Type.Freeform))
                             {
                                 ImageView.selectedImage.Annotations.Remove(an);
                             }

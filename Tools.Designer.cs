@@ -289,6 +289,7 @@
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Tools";
             this.TopMost = true;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Tools_FormClosing);
             this.movePanel.ResumeLayout(false);
             this.contextMenuStrip.ResumeLayout(false);
             this.polyPanel.ResumeLayout(false);

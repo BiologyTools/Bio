@@ -56,6 +56,7 @@ namespace BioImage
         {
             InitializeComponent();
             Init();
+            Filters.Init();
             InitNodes();
             if (args.Length > 0)
             {

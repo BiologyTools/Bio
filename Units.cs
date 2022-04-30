@@ -8,7 +8,7 @@ using System.Globalization;
 
 namespace BioImage
 {    
-    public class Point2D
+    public struct Point2D
     {
         private static double minX = -80000;
         private static double minY = -58000;
@@ -132,10 +132,10 @@ namespace BioImage
             }
         }
 
-        public Point2D(double x, double y)
+        public Point2D(double xx, double yy)
         {
-            X = x;
-            Y = y;
+            x = xx;
+            y = yy;
         }
 
         public static Point2D Parse(string s)
@@ -152,7 +152,7 @@ namespace BioImage
         }
     }
 
-    public class Point3D
+    public struct Point3D
     {
         private static double minX = -80000;
         private static double minY = -58000;
@@ -309,16 +309,16 @@ namespace BioImage
 
         public Point3D(double xd, double yd,double zd)
         {
-            X = xd;
-            Y = yd;
-            Z = zd;
+            x = xd;
+            y = yd;
+            z = zd;
         }
 
         public Point3D(double xd, double yd, double zd,string f)
         {
-            X = xd;
-            Y = yd;
-            Z = zd;
+            x = xd;
+            y = yd;
+            z = zd;
             File = f;
         }
 
@@ -350,12 +350,12 @@ namespace BioImage
 
     }
 
-    public class VolumeD
+    public struct VolumeD
     {
-        public VolumeD(Point3D loc, Point3D size)
+        public VolumeD(Point3D loc, Point3D s)
         {
-            Location = loc;
-            Size = size;
+            location = loc;
+            size = s;
         }
 
         private Point3D location;
