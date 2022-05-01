@@ -81,6 +81,7 @@ namespace BioImage
             {
                 //TreeNode node = new TreeNode();
                 Node tree = new Node(item, Node.DataType.image);
+
                 Node implanes = new Node(item, Node.DataType.text);
                 implanes.Text = "Planes";
 

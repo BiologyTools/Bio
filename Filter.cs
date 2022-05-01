@@ -12,7 +12,6 @@ namespace BioImage
 {
     public partial class Filter : Form
     {
-
         public Filter()
         {
             InitializeComponent();
@@ -59,18 +58,35 @@ namespace BioImage
             if (filterView.SelectedNode==null)
                 return;
             Node n = (Node)filterView.SelectedNode.Tag;
+            if (n.filt.type == Filt.Type.Base)
+            {
+                Filters.Apply(ImageView.viewer.image.ID, n.filt.name);
+                Recorder.AddLine("Filters.Apply(" + '"' + ImageView.viewer.image.ID + '"' + "," + '"' + n.filt.name + '"');
+            }
+            if (n.filt.type == Filt.Type.Base2)
+            {
+                ApplyTwo two = new ApplyTwo();
+                if (two.ShowDialog() != DialogResult.OK)
+                    return;
+                Filters.Apply2(two.ImageA.ID, two.ImageB.ID, n.filt.name);
+                Recorder.AddLine("Filters.Apply2(" + '"' + two.ImageA.ID + '"' + "," + '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"');
+            }
+            else
+            if (n.filt.type == Filt.Type.InPlace2)
+            {
+                ApplyTwo two = new ApplyTwo();
+                if (two.ShowDialog() != DialogResult.OK)
+                    return;
+                Filters.Apply2(two.ImageA.ID, two.ImageB.ID, n.filt.name);
+                Recorder.AddLine("Filters.Apply2(" + '"' + two.ImageA.ID + '"' + "," + '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"');
+            }
+            else
+            if (n.filt.type == Filt.Type.InPlace)
+            {
+                Filters.Apply(ImageView.viewer.image.ID, n.filt.name);
+                Recorder.AddLine("Filters.InPlace(" + '"' + ImageView.viewer.image.ID + '"' + "," + '"' + n.filt.name + '"');
+            }
 
-            Filters.Apply(ImageView.viewer.image,n.filt.name);
-            Recorder.AddLine("Filters.Apply(" + '"' + ImageView.viewer.image.ID + '"' + "," + '"' + n.filt.name + '"' + ", false, ImageView.viewer.Index");
-            UpdateView();
-        }
-        private void applyStackToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (filterView.SelectedNode == null)
-                return;
-            Node n = (Node)filterView.SelectedNode.Tag;
-            Filters.Apply(ImageView.viewer.image, n.filt.name);
-            Recorder.AddLine("Filters.Apply(" + '"' + ImageView.viewer.image.ID + '"' + "," + '"' + n.filt.name + '"' + ", false, ImageView.viewer.Index");
             UpdateView();
         }
     }

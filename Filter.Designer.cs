@@ -32,10 +32,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Filter));
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.applyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.applyStackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filterView = new System.Windows.Forms.TreeView();
             this.applyRGBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.applyStackRGBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -43,11 +41,9 @@
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.applyToolStripMenuItem,
-            this.applyStackToolStripMenuItem,
-            this.applyRGBToolStripMenuItem,
-            this.applyStackRGBToolStripMenuItem});
+            this.applyRGBToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(181, 114);
+            this.contextMenuStrip.Size = new System.Drawing.Size(181, 70);
             // 
             // applyToolStripMenuItem
             // 
@@ -55,13 +51,6 @@
             this.applyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.applyToolStripMenuItem.Text = "Apply";
             this.applyToolStripMenuItem.Click += new System.EventHandler(this.applyToolStripMenuItem_Click);
-            // 
-            // applyStackToolStripMenuItem
-            // 
-            this.applyStackToolStripMenuItem.Name = "applyStackToolStripMenuItem";
-            this.applyStackToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.applyStackToolStripMenuItem.Text = "Apply Stack";
-            this.applyStackToolStripMenuItem.Click += new System.EventHandler(this.applyStackToolStripMenuItem_Click);
             // 
             // filterView
             // 
@@ -79,12 +68,6 @@
             this.applyRGBToolStripMenuItem.Name = "applyRGBToolStripMenuItem";
             this.applyRGBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.applyRGBToolStripMenuItem.Text = "Apply RGB";
-            // 
-            // applyStackRGBToolStripMenuItem
-            // 
-            this.applyStackRGBToolStripMenuItem.Name = "applyStackRGBToolStripMenuItem";
-            this.applyStackRGBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.applyStackRGBToolStripMenuItem.Text = "Apply Stack RGB";
             // 
             // Filter
             // 
@@ -105,9 +88,7 @@
         #endregion
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem applyToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem applyStackToolStripMenuItem;
         private System.Windows.Forms.TreeView filterView;
         private System.Windows.Forms.ToolStripMenuItem applyRGBToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem applyStackRGBToolStripMenuItem;
     }
 }

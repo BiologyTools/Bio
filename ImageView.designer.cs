@@ -39,6 +39,8 @@ namespace BioImage
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteROIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.renameSelectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyROIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pasteROIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyViewToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zPlayMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.playZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,8 +77,6 @@ namespace BioImage
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.panel = new System.Windows.Forms.Panel();
             this.showControlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyROIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pasteROIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.zPlayMenuStrip.SuspendLayout();
@@ -153,7 +153,7 @@ namespace BioImage
             this.pasteROIToolStripMenuItem,
             this.copyViewToClipboardToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(200, 136);
+            this.contextMenuStrip.Size = new System.Drawing.Size(200, 114);
             // 
             // deleteROIToolStripMenuItem
             // 
@@ -168,6 +168,20 @@ namespace BioImage
             this.renameSelectionToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.renameSelectionToolStripMenuItem.Text = "Set ROI Text";
             this.renameSelectionToolStripMenuItem.Click += new System.EventHandler(this.setTextSelectionToolStripMenuItem_Click);
+            // 
+            // copyROIToolStripMenuItem
+            // 
+            this.copyROIToolStripMenuItem.Name = "copyROIToolStripMenuItem";
+            this.copyROIToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.copyROIToolStripMenuItem.Text = "Copy ROI";
+            this.copyROIToolStripMenuItem.Click += new System.EventHandler(this.copyROIToolStripMenuItem_Click);
+            // 
+            // pasteROIToolStripMenuItem
+            // 
+            this.pasteROIToolStripMenuItem.Name = "pasteROIToolStripMenuItem";
+            this.pasteROIToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.pasteROIToolStripMenuItem.Text = "Paste ROI";
+            this.pasteROIToolStripMenuItem.Click += new System.EventHandler(this.pasteROIToolStripMenuItem_Click);
             // 
             // copyViewToClipboardToolStripMenuItem
             // 
@@ -541,20 +555,6 @@ namespace BioImage
             this.showControlsToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.showControlsToolStripMenuItem.Text = "Hide Controls";
             this.showControlsToolStripMenuItem.Click += new System.EventHandler(this.showControlsToolStripMenuItem_Click);
-            // 
-            // copyROIToolStripMenuItem
-            // 
-            this.copyROIToolStripMenuItem.Name = "copyROIToolStripMenuItem";
-            this.copyROIToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.copyROIToolStripMenuItem.Text = "Copy ROI";
-            this.copyROIToolStripMenuItem.Click += new System.EventHandler(this.copyROIToolStripMenuItem_Click);
-            // 
-            // pasteROIToolStripMenuItem
-            // 
-            this.pasteROIToolStripMenuItem.Name = "pasteROIToolStripMenuItem";
-            this.pasteROIToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.pasteROIToolStripMenuItem.Text = "Paste ROI";
-            this.pasteROIToolStripMenuItem.Click += new System.EventHandler(this.pasteROIToolStripMenuItem_Click);
             // 
             // ImageView
             // 

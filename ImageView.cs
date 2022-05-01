@@ -393,7 +393,21 @@ namespace BioImage
                 }
                 else
                 {
-                    bitmap = image.GetImageRGB(GetCoordinate(), RChannel.range, GChannel.range, BChannel.range);
+                    if (image.bitsPerPixel > 8)
+                    {
+                        if (image.SizeC == 1)
+                        {
+                            bitmap = image.GetImageRGB(GetCoordinate(), RChannel.range, RChannel.range, RChannel.range);
+                        }
+                        else
+                        {
+                            bitmap = image.GetImageRGB(GetCoordinate(), RChannel.range, GChannel.range, BChannel.range);
+                        }
+                    }
+                    else
+                    {
+                        bitmap = image.GetImageRGB(GetCoordinate());
+                    }
                 }
             }
             pictureBox.Invalidate();

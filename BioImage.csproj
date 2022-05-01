@@ -356,6 +356,12 @@
     <Compile Include="Slider.Designer.cs">
       <DependentUpon>Slider.cs</DependentUpon>
     </Compile>
+    <Compile Include="ApplyTwo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ApplyTwo.Designer.cs">
+      <DependentUpon>ApplyTwo.cs</DependentUpon>
+    </Compile>
     <Compile Include="StackTools.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -430,6 +436,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Slider.resx">
       <DependentUpon>Slider.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ApplyTwo.resx">
+      <DependentUpon>ApplyTwo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="StackTools.resx">
       <DependentUpon>StackTools.cs</DependentUpon>

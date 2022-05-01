@@ -29,6 +29,9 @@ namespace BioImage
             app = this;
             SetImage(arg);
             Table.AddViewer(this);
+            #if !DEBUG
+                        filtersToolStripMenuItem.Visible = false;
+            #endif
         }
         public ImageViewer(string arg)
         {
@@ -46,8 +49,10 @@ namespace BioImage
             {
                 SetFile(arg, 0);
             }
-
             Table.AddViewer(this);
+            #if !DEBUG
+                        filtersToolStripMenuItem.Visible = false;
+            #endif
         }
         public static ImageViewer FromID(string id)
         {
@@ -358,15 +363,9 @@ namespace BioImage
         }
         private void ImageViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Image == null)
-                return;
-            if (!Modal)
-            {
-                //If this is not a dialog we dispose of the image.
-                Recorder.AddLine("Table.RemoveImage(" + '"' + this.Text + '"' + ");");
-                Table.RemoveImage(this.Image.Filename);
-                this.Image.Dispose();
-            }
+            Recorder.AddLine("Table.RemoveImage(" + '"' + this.Text + '"' + ");");
+            Table.RemoveImage(this.Image.Filename);
+            this.Image.Dispose();
             Table.RemoveViewer(this);
             Recorder.AddLine("Table.RemoveViewer(" + '"' + this.Text + '"' + ");");
         }
