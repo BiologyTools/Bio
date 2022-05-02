@@ -1325,6 +1325,12 @@ namespace BioImage
             read = new BinaryReader(mapstream);
             writer = new BinaryWriter(mapstream);
            
+            if(inf.PixelFormat == PixelFormat.Format24bppRgb)
+            {
+                bts = Convert24BitTo32Bit(bts, info.SizeX, info.SizeY);
+                inf.PixelFormat = PixelFormat.Format32bppArgb;
+            }
+
             bytes = bts;
             if (info.RGBChannelsCount == 3 && info.RedGreenFlipped == false)
             {
@@ -1340,12 +1346,35 @@ namespace BioImage
                 ToLittleEndian();
             }
         }
-        public static Bitmap To32Bit(Bitmap b)
+        public static Bitmap Convert24BitTo32Bit(Bitmap b)
         {
             //This image has padding.
             Bitmap bm = new Bitmap(b.Width, b.Height, PixelFormat.Format32bppArgb);
             Graphics.FromImage(bm).DrawImage(b,new System.Drawing.Point(0,0));
             return bm;
+        }
+        public static byte[] Convert24BitTo32Bit(byte[] b, int Width, int Height)
+        {
+            //This byte[] needs padding.
+            int stride = Width * 3;
+            int newstride = Width * 4;
+            byte[] nb = new byte[newstride * Height];
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < stride; x+=3)
+                {
+                    int index = x + (stride * y);
+                    nb[index] = b[index];
+                    nb[index+1] = b[index+1];
+                    nb[index+2] = b[index+2];
+                    nb[index+3] = 0;
+                }
+            }
+            return nb;
+        }
+        public byte[] Convert24BitTo32Bit()
+        {
+            return Convert24BitTo32Bit(bytes, info.SizeX, info.SizeY);
         }
         public Bitmap Get8BitChannels(Bitmap bmp)
         {
@@ -2136,8 +2165,6 @@ namespace BioImage
             set { rGBChannelCount = value; }
         }
         public int bitsPerPixel;
-        private PixelFormat pixelFormat;
-        
         public int serie = 0;
         public int imagesPerSeries = 0;
         public int seriesCount = 1;
@@ -2182,11 +2209,10 @@ namespace BioImage
             bi.frameInterval = b.frameInterval;
             bi.littleEndian = b.littleEndian;
             bi.isGroup = b.isGroup;
-            bi.pixelFormat = b.pixelFormat;
             bi.sizeInfo = b.sizeInfo.Copy();
             bi.bitsPerPixel = b.bitsPerPixel;
-            bi.rgbBitmap16 = new Bitmap(b.SizeX, b.SizeY, PixelFormat.Format48bppRgb);
-            bi.rgbBitmap8 = new Bitmap(b.SizeX, b.SizeY, PixelFormat.Format24bppRgb);
+            bi.rgbBitmap16 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
+            bi.rgbBitmap8 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             return bi;
         }
         public static BioImage CopyInfo(BioImage b)
@@ -2213,11 +2239,10 @@ namespace BioImage
             bi.frameInterval = b.frameInterval;
             bi.littleEndian = b.littleEndian;
             bi.isGroup = b.isGroup;
-            bi.pixelFormat = b.pixelFormat;
             bi.sizeInfo = b.sizeInfo.Copy();
             bi.bitsPerPixel = b.bitsPerPixel;
-            bi.rgbBitmap16 = new Bitmap(b.SizeX, b.SizeY, PixelFormat.Format48bppRgb);
-            bi.rgbBitmap8 = new Bitmap(b.SizeX, b.SizeY, PixelFormat.Format24bppRgb);
+            bi.rgbBitmap16 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
+            bi.rgbBitmap8 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             return bi;
         }
         public string ID
@@ -2280,8 +2305,8 @@ namespace BioImage
             rgbChannels[0] = 0;
             rgbChannels[1] = 0;
             rgbChannels[2] = 0;
-            rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
-            rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
+            rgbBitmap16 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
+            rgbBitmap8 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             Table.AddImage(this);
         }
         public BioImage(BioImage orig, int ser, int zs, int ze, int cs, int ce, int ts, int te)
@@ -2304,21 +2329,7 @@ namespace BioImage
             seriesCount = orig.seriesCount;
             imagesPerSeries = ImageCount / seriesCount;
             Coords = new int[seriesCount, SizeZ, SizeC, SizeT];
-            if (RGBChannelCount == 1)
-            {
-                if (bitsPerPixel > 8)
-                    pixelFormat = PixelFormat.Format16bppGrayScale;
-                else
-                    pixelFormat = PixelFormat.Format8bppIndexed;
-            }
-            else
-            {
-                if (bitsPerPixel > 8)
-                    pixelFormat = PixelFormat.Format48bppRgb;
-                else
-                    pixelFormat = PixelFormat.Format24bppRgb;
-            }
-
+            
             fileHashTable.Add(Filename, Filename.GetHashCode());
             int i = 0;
             for (int ti = 0; ti < SizeT; ti++)
@@ -2348,8 +2359,8 @@ namespace BioImage
                 Channels.Add(orig.Channels[ci].Copy());
             }
             Table.AddImage(this);
-            rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
-            rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
+            rgbBitmap16 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
+            rgbBitmap8 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             Recorder.AddLine("BioImage.Substack(" + orig.Filename + "," + ser + "," + "," + zs + "," + ze + "," + cs + "," + ce + "," + ts + "," + te + ");");
         }
         public BioImage(string file, int ser)
@@ -2375,8 +2386,8 @@ namespace BioImage
             rgbChannels[0] = 0;
             rgbChannels[1] = 0;
             rgbChannels[2] = 0;
-            rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
-            rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
+            rgbBitmap16 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
+            rgbBitmap8 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             Table.AddImage(this);
         }
         public static BioImage MergeChannels(BioImage b2, BioImage b)
@@ -2403,8 +2414,6 @@ namespace BioImage
             res.imagesPerSeries = res.ImageCount / res.seriesCount;
             res.Coords = new int[res.seriesCount, res.SizeZ, res.SizeC, res.SizeT];
             //res.IdString = Path.GetFileNameWithoutExtension(b2.filename) + "-1" + Path.GetExtension();
-
-            res.pixelFormat = b2.pixelFormat;
 
             res.fileHashTable.Add(res.Filename, res.Filename.GetHashCode());
             int i = 0;
@@ -2676,8 +2685,10 @@ namespace BioImage
             {
                 if (Initialized)
                     return Buffers[0].info.PixelFormat;
-                return pixelFormat;
+                else
+                    return PixelFormat.Undefined;
             }
+            
         }
         public bool isRGB
         {
@@ -2783,7 +2794,7 @@ namespace BioImage
             else
             {
                 Bitmap b = GetBitmap(coord);
-                if (b.PixelFormat == PixelFormat.Format24bppRgb || b.PixelFormat == PixelFormat.Format32bppRgb || b.PixelFormat == PixelFormat.Format32bppArgb)
+                if (b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb || b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppRgb || b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
                     return b;
                 GrayscaleToRGB rgb = new GrayscaleToRGB();
                 return rgb.Apply(b);
@@ -2798,7 +2809,7 @@ namespace BioImage
             else
             {
                 Bitmap b = GetBitmap(coord);
-                if (b.PixelFormat == PixelFormat.Format24bppRgb || b.PixelFormat == PixelFormat.Format32bppRgb || b.PixelFormat == PixelFormat.Format32bppArgb)
+                if (b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb || b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppRgb || b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
                     return b;
                 GrayscaleToRGB rgb = new GrayscaleToRGB();
                 return rgb.Apply(b);
@@ -2851,7 +2862,7 @@ namespace BioImage
         {
             watch.Restart();
             int ri = Coords[serie, coord.Z, coord.C, coord.T];
-            rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
+            rgbBitmap8 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             if (RGBChannelCount == 1)
             {
                 if (replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
@@ -3462,16 +3473,17 @@ namespace BioImage
 
                 }
                 int stride = 0;
+                PixelFormat pixelFormat;
                 if (b.RGBChannelCount == 1)
                 {
                     if (b.bitsPerPixel > 8)
                     {
-                        b.pixelFormat = PixelFormat.Format16bppGrayScale;
+                        pixelFormat = PixelFormat.Format16bppGrayScale;
                         stride = b.SizeX * 2;
                     }
                     else
                     {
-                        b.pixelFormat = PixelFormat.Format8bppIndexed;
+                        pixelFormat = PixelFormat.Format8bppIndexed;
                         stride = b.SizeX;
                     }
                 }
@@ -3480,17 +3492,17 @@ namespace BioImage
                 {
                     if (b.bitsPerPixel > 8)
                     {
-                        b.pixelFormat = PixelFormat.Format48bppRgb;
+                        pixelFormat = PixelFormat.Format48bppRgb;
                         stride = b.SizeX * 2 * 3;
                     }
                     else
                     {
-                        b.pixelFormat = PixelFormat.Format24bppRgb;
+                        pixelFormat = PixelFormat.Format24bppRgb;
                         stride = b.SizeX * 3;
                     }
                 }
                 else
-                    b.pixelFormat = PixelFormat.Format32bppRgb;
+                    pixelFormat = PixelFormat.Format32bppArgb;
                 b.Coords = new int[1, b.SizeZ, b.SizeC, b.SizeT];
                 for (int i = 0; i < b.SizeC; i++)
                 {
@@ -3500,12 +3512,11 @@ namespace BioImage
                 int z = 0;
                 int c = 0;
                 int t = 0;
-                PixelFormat pxx = b.pixelFormat;
                 if (b.ImageCount == 1 && b.RGBChannelCount > 1 && b.bitsPerPixel == 8)
                 {
                     Bitmap bmp = new Bitmap(file);
-                    if (bmp.PixelFormat == PixelFormat.Format24bppRgb)
-                        bmp = Buf.To32Bit(bmp);
+                    if (bmp.PixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb)
+                        bmp = Buf.Convert24BitTo32Bit(bmp);
                     BufferInfo infob = new BufferInfo(file, b.SizeX, b.SizeY, bmp.PixelFormat, new SZCT(b.serie, z, c, t), 2, b.littleEndian, false);
                     Buf bfb = new Buf(infob,Buf.GetBuffer(bmp));
                     b.Buffers.Add(bfb);
@@ -3524,16 +3535,16 @@ namespace BioImage
                         image.ReadScanline(bytes, offset, i, 0);
                         offset += stride;
                     }
-                    if (pxx == PixelFormat.Format48bppRgb)
+                    if (pixelFormat == PixelFormat.Format48bppRgb)
                     {
-                        //We split the RGB channels to 3 seperate planes.
-                        //The planes are in BGR order.
-                        BufferInfo info = new BufferInfo(file, b.SizeX, b.SizeY, b.pixelFormat, new SZCT(b.serie, z, c, t), im, b.littleEndian, false);
-                        Buf bf = new Buf(info, bytes);
-                        Bitmap bitmap = bf.GetBitmap();
-                        Bitmap rbi = extractR.Apply(bitmap);
-                        Bitmap gbi = extractG.Apply(bitmap);
-                        Bitmap bbi = extractB.Apply(bitmap);                  
+                            //We split the RGB channels to 3 seperate planes.
+                            //The planes are in BGR order.
+                            BufferInfo info = new BufferInfo(file, b.SizeX, b.SizeY, PixelFormat.Format48bppRgb, new SZCT(b.serie, z, c, t), im, b.littleEndian, false);
+                            Buf bf = new Buf(info, bytes);
+                            Bitmap bitmap = bf.GetBitmap();
+                            Bitmap rbi = extractR.Apply(bitmap);
+                            Bitmap gbi = extractG.Apply(bitmap);
+                            Bitmap bbi = extractB.Apply(bitmap);                  
                         
                         byte[] rb = Buf.GetBuffer(bbi);
                         byte[] gb = Buf.GetBuffer(gbi);
@@ -3542,31 +3553,31 @@ namespace BioImage
                         int lenbuf = rb.Length;
                         
                         b.Coords[b.serie, z, c, t] = ic;
-                        BufferInfo rfi = new BufferInfo(file, rbi.Width, rbi.Height, pxx, new SZCT(b.serie,z,c,t), ic, b.littleEndian, true);
-                        Buf rbuf = new Buf(rfi, rb);
+                            BufferInfo rfi = new BufferInfo(file, rbi.Width, rbi.Height, PixelFormat.Format16bppGrayScale, new SZCT(b.serie, z, c, t), ic, b.littleEndian, true);
+                            Buf rbuf = new Buf(rfi, rb);
                         b.Buffers.Add(rbuf);
-                        Table.AddBuffer(rbuf);
+                            Table.AddBuffer(rbuf);
                         ic++;
                         c++;
                         lenbuf = gb.Length;
                         b.Coords[b.serie, z, c, t] = ic;
-                        BufferInfo gfi = new BufferInfo(file, b.SizeX, b.SizeY, pxx, new SZCT(b.serie, z, c, t), ic, b.littleEndian, true);
-                        Buf gbuf = new Buf(gfi, gb);
+                            BufferInfo gfi = new BufferInfo(file, b.SizeX, b.SizeY, PixelFormat.Format16bppGrayScale, new SZCT(b.serie, z, c, t), ic, b.littleEndian, true);
+                            Buf gbuf = new Buf(gfi, gb);
                         b.Buffers.Add(gbuf);
-                        Table.AddBuffer(gbuf);
+                            Table.AddBuffer(gbuf);
                         ic++;
                         c++;
                         lenbuf = bb.Length;
                         b.Coords[b.serie, z, c, t] = ic;
-                        BufferInfo bfi = new BufferInfo(file, b.SizeX, b.SizeY, pxx, new SZCT(b.serie, z, c, t), ic, b.littleEndian, true);
-                        Buf bbuf = new Buf(bfi, bb);
+                            BufferInfo bfi = new BufferInfo(file, b.SizeX, b.SizeY, PixelFormat.Format16bppGrayScale, new SZCT(b.serie, z, c, t), ic, b.littleEndian, true);
+                            Buf bbuf = new Buf(bfi, bb);
                         b.Buffers.Add(bbuf);
-                        Table.AddBuffer(bbuf);
+                            Table.AddBuffer(bbuf);
 
                     }
                     else
                     {
-                        BufferInfo info = new BufferInfo(file, b.SizeX, b.SizeY, b.pixelFormat, new SZCT(b.serie, z, c, t), im, b.littleEndian, false);
+                        BufferInfo info = new BufferInfo(file, b.SizeX, b.SizeY, pixelFormat, new SZCT(b.serie, z, c, t), im, b.littleEndian, false);
                         Buf bf = new Buf(info, bytes);
                         b.Buffers.Add(bf);
                     }
@@ -3589,9 +3600,8 @@ namespace BioImage
                     threadProgress = ((float)im / (float)b.ImageCount) * 100;
                 }
                 
-                if (pxx == PixelFormat.Format48bppRgb)
+                if (pixelFormat == System.Drawing.Imaging.PixelFormat.Format48bppRgb)
                 {
-                    b.pixelFormat = PixelFormat.Format16bppGrayScale;
                     b.RGBChannelCount = 1;
                 }
                 
@@ -3644,24 +3654,24 @@ namespace BioImage
             seriesCount = reader.getSeriesCount();
             imagesPerSeries = ImageCount / seriesCount;
             Coords = new int[seriesCount, SizeZ, SizeC, SizeT];
-
+            PixelFormat PixelFormat;
             if (RGBChannelCount == 1)
             {
                 if (bitsPerPixel > 8)
                 {
-                    pixelFormat = PixelFormat.Format16bppGrayScale;
+                    PixelFormat = PixelFormat.Format16bppGrayScale;
                 }
                 else
                 {
-                    pixelFormat = PixelFormat.Format8bppIndexed;
+                    PixelFormat = PixelFormat.Format8bppIndexed;
                 }
             }
             else
             {
                 if (bitsPerPixel > 8)
-                    pixelFormat = PixelFormat.Format48bppRgb;
+                    PixelFormat = PixelFormat.Format48bppRgb;
                 else
-                    pixelFormat = PixelFormat.Format24bppRgb;
+                    PixelFormat = PixelFormat.Format24bppRgb;
             }
 
             Progress pr = new Progress(threadFile, "Opening");
@@ -4088,7 +4098,7 @@ namespace BioImage
                 int z = ints[0];
                 int c = ints[1];
                 int t = ints[2];
-                if (pixelFormat == PixelFormat.Format48bppRgb)
+                if (PixelFormat == PixelFormat.Format48bppRgb)
                 {
                     //We split the RGB channels to 3 seperate planes.
                     //The planes are in BGR order.
@@ -4131,7 +4141,7 @@ namespace BioImage
                 {
                     int lenbuf = bytes.Length;
                     Coords[ser, z, c, t] = i;
-                    BufferInfo fi = new BufferInfo(file, SizeX, SizeY, pixelFormat, new SZCT(ser, z, c, t), i, littleEndian, true);
+                    BufferInfo fi = new BufferInfo(file, SizeX, SizeY, PixelFormat, new SZCT(ser, z, c, t), i, littleEndian, true);
                     Buf buf = new Buf(fi, bytes);
                     Buffers.Add(buf);
                     Table.AddBuffer(buf);
