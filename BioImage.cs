@@ -2373,7 +2373,7 @@ namespace BioImage
                 Recorder.AddLine("BioImage.OpenOME(" + file + "," + ser + ");");
             }
             else
-            if (file.EndsWith("tif"))
+            if (file.EndsWith("tif") || file.EndsWith("tiff"))
             {
                 Open(file);
                 Recorder.AddLine("BioImage.Open(" + file + ");");
