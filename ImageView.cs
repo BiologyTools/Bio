@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace BioImage
 {
@@ -318,6 +320,9 @@ namespace BioImage
 
         public void UpdateOverlay()
         {
+            if(image.PixelFormat == PixelFormat.Format24bppRgb)
+            UpdateView();
+            else
             overlayPictureBox.Invalidate();
         }
 
@@ -410,6 +415,7 @@ namespace BioImage
                     }
                 }
             }
+            //this.InvokePaint(this, new PaintEventArgs(this.CreateGraphics(), this.DisplayRectangle));
             pictureBox.Invalidate();
             UpdateStatus();
         }
@@ -1141,15 +1147,15 @@ namespace BioImage
         }
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
-            if (bitmap == null)
-                return;
-            PointF pp = GetImagePoint();
-            Graphics g = e.Graphics;
-            g.TranslateTransform(origin.X, origin.Y);
-            g.ScaleTransform(scale.Width, scale.Height);
-            PointF ss = GetImageSize();
             try
             {
+                PointF pp = GetImagePoint();
+                Graphics g = e.Graphics;
+                g.TranslateTransform(origin.X, origin.Y);
+                g.ScaleTransform(scale.Width, scale.Height);
+                PointF ss = GetImageSize();
+                if (bitmap == null)
+                return;
                 g.DrawImage(bitmap,pp.X, pp.Y, ss.X, ss.Y);
             }
             catch (Exception)
@@ -1290,7 +1296,7 @@ namespace BioImage
                     int zc = coordinate.Z;
                     int cc = coordinate.C;
                     int tc = coordinate.T;
-                    if (Mode == ViewMode.RGBImage)
+                    if (Mode == ViewMode.RGBImage || image.PixelFormat == PixelFormat.Format24bppRgb || image.PixelFormat == PixelFormat.Format32bppArgb)
                     {
                         int r = image.GetValue(sc, zc, RChannel.Index, tc, (int)p.X, (int)p.Y);
                         int g = image.GetValue(sc, zc, GChannel.Index, tc, (int)p.X, (int)p.Y);
