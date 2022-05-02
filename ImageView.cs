@@ -411,7 +411,6 @@ namespace BioImage
                 }
             }
             pictureBox.Invalidate();
-            overlayPictureBox.Invalidate();
             UpdateStatus();
         }
 

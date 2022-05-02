@@ -906,7 +906,7 @@ namespace BioImage
         {
             get
             {
-                return Stride * Length;
+                return Stride * SizeY;
             }
         }
         public int RGBChannelsCount
@@ -1325,10 +1325,9 @@ namespace BioImage
             read = new BinaryReader(mapstream);
             writer = new BinaryWriter(mapstream);
            
-            if(inf.PixelFormat == PixelFormat.Format24bppRgb)
+            if(info.PixelFormat == PixelFormat.Format24bppRgb)
             {
                 bts = Convert24BitTo32Bit(bts, info.SizeX, info.SizeY);
-                inf.PixelFormat = PixelFormat.Format32bppArgb;
             }
 
             bytes = bts;
@@ -1547,14 +1546,17 @@ namespace BioImage
 
         public static byte[] GetBuffer(Bitmap bitmap)
         {
-            //bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
             IntPtr ptr = data.Scan0;
             int length = data.Stride * bitmap.Height;
             byte[] bytes = new byte[length];
             Marshal.Copy(ptr, bytes, 0, length);
-            //Array.Reverse(bytes);
+            Array.Reverse(bytes);
             bitmap.UnlockBits(data);
+            //If data is RGB we pad the data
+            if(bitmap.PixelFormat == PixelFormat.Format24bppRgb)
+                return Convert24BitTo32Bit(bytes, bitmap.Width, bitmap.Height);
             return bytes;
         }
         #region Filters
@@ -2794,7 +2796,7 @@ namespace BioImage
             else
             {
                 Bitmap b = GetBitmap(coord);
-                if (b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb || b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppRgb || b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                if (b.PixelFormat == PixelFormat.Format24bppRgb || b.PixelFormat == PixelFormat.Format32bppRgb || b.PixelFormat == PixelFormat.Format32bppArgb)
                     return b;
                 GrayscaleToRGB rgb = new GrayscaleToRGB();
                 return rgb.Apply(b);
@@ -2809,7 +2811,7 @@ namespace BioImage
             else
             {
                 Bitmap b = GetBitmap(coord);
-                if (b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb || b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppRgb || b.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
+                if (b.PixelFormat == PixelFormat.Format24bppRgb || b.PixelFormat == PixelFormat.Format32bppRgb || b.PixelFormat == PixelFormat.Format32bppArgb)
                     return b;
                 GrayscaleToRGB rgb = new GrayscaleToRGB();
                 return rgb.Apply(b);
@@ -2862,7 +2864,7 @@ namespace BioImage
         {
             watch.Restart();
             int ri = Coords[serie, coord.Z, coord.C, coord.T];
-            rgbBitmap8 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
             if (RGBChannelCount == 1)
             {
                 if (replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
@@ -3517,7 +3519,7 @@ namespace BioImage
                     Bitmap bmp = new Bitmap(file);
                     if (bmp.PixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb)
                         bmp = Buf.Convert24BitTo32Bit(bmp);
-                    BufferInfo infob = new BufferInfo(file, b.SizeX, b.SizeY, bmp.PixelFormat, new SZCT(b.serie, z, c, t), 2, b.littleEndian, false);
+                    BufferInfo infob = new BufferInfo(file, b.SizeX, b.SizeY, bmp.PixelFormat, new SZCT(b.serie, z, c, t), 0, b.littleEndian, false);
                     Buf bfb = new Buf(infob,Buf.GetBuffer(bmp));
                     b.Buffers.Add(bfb);
                     Table.AddBuffer(bfb);
@@ -3600,7 +3602,7 @@ namespace BioImage
                     threadProgress = ((float)im / (float)b.ImageCount) * 100;
                 }
                 
-                if (pixelFormat == System.Drawing.Imaging.PixelFormat.Format48bppRgb)
+                if (pixelFormat == PixelFormat.Format48bppRgb)
                 {
                     b.RGBChannelCount = 1;
                 }
