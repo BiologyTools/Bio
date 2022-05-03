@@ -88,7 +88,7 @@ namespace BioImage
                 foreach (Buf buf in item.Buffers)
                 {
                     Node plane = new Node(buf, Node.DataType.buf);
-                    plane.Text = buf.info.stringId;
+                    plane.Text = buf.info.stringId + ", " + buf.info.Coordinate.ToString();
                    
                     implanes.node.Nodes.Add(plane.node);
                 }
@@ -252,6 +252,12 @@ namespace BioImage
                 an.id = input.textInput;
             }
             UpdateNodes();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            About about = new About();
+            about.Show();
         }
     }
 }

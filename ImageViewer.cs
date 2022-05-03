@@ -139,7 +139,7 @@ namespace BioImage
             {
                 viewer = new ImageView(b);
             }
-            viewer.serie = b.serie;
+            viewer.serie = b.Serie;
             viewer.filepath = b.ID;
             viewer.Dock = DockStyle.Fill;
             panel.Controls.Add(viewer);
@@ -387,7 +387,7 @@ namespace BioImage
                 return;
             if (saveOMEFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            Image.SaveOME(saveOMEFileDialog.FileName, Image.serie);
+            Image.SaveOME(saveOMEFileDialog.FileName, Image.Serie);
         }
 
         private void copyToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
@@ -405,10 +405,20 @@ namespace BioImage
         {
 
         }
-
-        private void filtersToolStripMenuItem_Click(object sender, EventArgs e)
+        private void filtersToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             filters.Show();
         }
+
+        private void to8BitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Image.To8bit();
+        }
+
+        private void to16BitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Image.To16bit();
+        }
+
     }
 }

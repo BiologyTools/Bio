@@ -52,7 +52,7 @@ namespace BioImage
         {
             string file = im.ID.Replace("\\", "/");
             InitializeComponent();
-            serie = im.serie;
+            serie = im.Serie;
             image = im;
             tools = new Tools();
             if (file == "" || file == null)
@@ -207,6 +207,7 @@ namespace BioImage
                 image.rgbChannels[2] = 0;
             else
                 image.rgbChannels[2] = channelBoxB.SelectedIndex;
+            
         }
 
         private bool timeEnabled = false;
@@ -364,23 +365,23 @@ namespace BioImage
 
             if (Mode == ViewMode.Raw)
             {
-                SetCoordinate(image.serie, zBar.Value, cBar.Value, timeBar.Value);
+                SetCoordinate(image.Serie, zBar.Value, cBar.Value, timeBar.Value);
                 bitmap = image.GetImageRaw(GetCoordinate());
             }
             else
             if (Mode == ViewMode.Filtered)
             {
-                SetCoordinate(image.serie, zBar.Value, cBar.Value, timeBar.Value);
+                SetCoordinate(image.Serie, zBar.Value, cBar.Value, timeBar.Value);
                 bitmap = image.GetImageFiltered(GetCoordinate(), image.Channels[cBar.Value].range);
             }
             else
             if (Mode == ViewMode.RGBImage)
             {
-                SetCoordinate(image.serie, zBar.Value, 0, timeBar.Value);
+                SetCoordinate(image.Serie, zBar.Value, 0, timeBar.Value);
                 UpdateRGBChannels();
                 if (image.RGBChannelCount == 1)
                 {
-                    if (image.bitsPerPixel > 8)
+                    if (image.BitsPerPixel > 8)
                     {
                         if (image.SizeC == 1)
                         {
@@ -398,7 +399,7 @@ namespace BioImage
                 }
                 else
                 {
-                    if (image.bitsPerPixel > 8)
+                    if (image.BitsPerPixel > 8)
                     {
                         if (image.SizeC == 1)
                         {
