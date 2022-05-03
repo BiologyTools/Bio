@@ -1331,7 +1331,7 @@ namespace BioImage
             writer = new BinaryWriter(mapstream);
 
             bytes = bts;
-            if (info.RGBChannelsCount == 3 && info.RedBlueFlipped)
+            if (info.RGBChannelsCount == 3)
             {
                 info.RedBlueFlipped = true;
                 //RGB Channels are stored in BGR so we switch them to RGB
