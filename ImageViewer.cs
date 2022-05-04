@@ -407,17 +407,14 @@ namespace BioImage
         }
         private void filtersToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            filters.Show();
         }
 
         private void to8BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Image.To8bit();
         }
 
         private void to16BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Image.To16bit();
         }
 
     }

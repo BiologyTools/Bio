@@ -85,10 +85,10 @@ namespace BioImage
                 Node implanes = new Node(item, Node.DataType.text);
                 implanes.Text = "Planes";
 
-                foreach (Buf buf in item.Buffers)
+                foreach (BufferInfo buf in item.Buffers)
                 {
                     Node plane = new Node(buf, Node.DataType.buf);
-                    plane.Text = buf.info.stringId + ", " + buf.info.Coordinate.ToString();
+                    plane.Text = buf.stringId + ", " + buf.Coordinate.ToString();
                    
                     implanes.node.Nodes.Add(plane.node);
                 }
@@ -176,14 +176,14 @@ namespace BioImage
             if(node!=null)
             if(node.Type == Node.DataType.buf)
             {
-                Buf buf = (Buf)node.Object;
+                BufferInfo buf = (BufferInfo)node.Object;
                 int ind = int.Parse(Path.GetFileName(buf.ToString()));
                 string name = buf.ToString();
                 int inds = name.IndexOf("/s");
                 string filename = name.Substring(0, inds);
                 ImageViewer v = Table.GetViewer(Path.GetFileName(filename));
                 if(v!=null)
-                    v.viewer.SetCoordinate(buf.info.Coordinate.S, buf.info.Coordinate.Z, buf.info.Coordinate.C, buf.info.Coordinate.T);
+                    v.viewer.SetCoordinate(buf.Coordinate.S, buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
             }
             else
             if(node.Type == Node.DataType.roi)

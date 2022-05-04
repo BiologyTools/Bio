@@ -401,7 +401,7 @@ namespace BioImage
                 Bitmap crop = c.Apply(image);
 
                 Bitmap gray = null;
-                if (ImageView.viewer.image.BitsPerPixel > 8)
+                if (ImageView.viewer.image.bitsPerPixel > 8)
                     gray = AForge.Imaging.Image.Convert16bppTo8bpp(crop);
                 else
                     gray = crop;
