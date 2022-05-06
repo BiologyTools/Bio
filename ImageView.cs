@@ -122,7 +122,7 @@ namespace BioImage
             Filtered,
             RGBImage
         }
-        private ViewMode viewMode = ViewMode.Filtered;
+        private ViewMode viewMode = ViewMode.Raw;
         public ViewMode Mode
         {
             get
@@ -284,7 +284,6 @@ namespace BioImage
                 channelBoxG.Items.Add(ch);
                 channelBoxB.Items.Add(ch);
             }
-
             if (image.Channels.Count > 2)
             {
                 channelBoxR.SelectedIndex = 0;
@@ -302,7 +301,6 @@ namespace BioImage
             else
             {
                 channelBoxR.SelectedIndex = 0;
-                Mode = ViewMode.Filtered;
             }
             UpdateRGBChannels();
             //We threshold the image so that the max threshold value is the max pixel value in image. 
@@ -320,7 +318,7 @@ namespace BioImage
 
         public void UpdateOverlay()
         {
-            if(image.PixelFormat == PixelFormat.Format24bppRgb)
+            if(image.Buffers[0].PixelFormat == PixelFormat.Format24bppRgb)
             UpdateView();
             else
             overlayPictureBox.Invalidate();
@@ -333,9 +331,10 @@ namespace BioImage
                 //Since combining 3 planes to one image takes time we show the image load time.
                 float ms = image.loadTimeMS;
                 ticksLabel.Text = " Ticks: " + image.loadTimeTicks;
+
                 if (timeEnabled)
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " + image.PixelFormat.ToString();
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " + image.Buffers[0].PixelFormat.ToString();
                 }
                 else
                 {
@@ -347,11 +346,11 @@ namespace BioImage
             {
                 if (timeEnabled)
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " + image.PixelFormat.ToString();
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + (timeBar.Value + 1) + "/" + (timeBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " + image.Buffers[0].PixelFormat.ToString();
                 }
                 else
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " + image.PixelFormat.ToString();
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " + image.Buffers[0].PixelFormat.ToString();
                 }
             }
         }
@@ -1090,8 +1089,32 @@ namespace BioImage
         }
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
+            SZCT coords = new SZCT(image.Serie, zBar.Value, cBar.Value, timeBar.Value);
             int index = image.Coords[image.Serie, zBar.Value, cBar.Value, timeBar.Value];
-            Image im = (Bitmap)image.images[index];
+            Image im = null;
+            if (Mode == ViewMode.Filtered)
+            {
+                im = image.GetFiltered(coords, RChannel.range, BChannel.range, GChannel.range);
+            }
+            else if (Mode == ViewMode.RGBImage)
+            {
+                PixelFormat px = image.Buffers[index].PixelFormat;
+                if (px == PixelFormat.Format8bppIndexed || px == PixelFormat.Format16bppGrayScale)
+                {
+                    im = image.GetRGBBitmap(coords, RChannel.range, BChannel.range, GChannel.range);
+
+                }
+                else if (px == PixelFormat.Format24bppRgb || px == PixelFormat.Format32bppRgb || px == PixelFormat.Format32bppArgb)
+                {
+                    im = image.Images[index];
+                }
+            }
+            else
+            {
+                im = image.Images[index];
+            }
+            if (im.PixelFormat == PixelFormat.Format16bppGrayScale || im.PixelFormat == PixelFormat.Format48bppRgb)
+                im = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)im);
             PointF pp = GetImagePoint();
             Graphics g = e.Graphics;
             g.TranslateTransform(origin.X, origin.Y);
@@ -1231,7 +1254,7 @@ namespace BioImage
                     int zc = coordinate.Z;
                     int cc = coordinate.C;
                     int tc = coordinate.T;
-                    if (Mode == ViewMode.RGBImage || image.PixelFormat == PixelFormat.Format24bppRgb || image.PixelFormat == PixelFormat.Format32bppRgb)
+                    if (Mode == ViewMode.RGBImage || image.Buffers[0].PixelFormat == PixelFormat.Format24bppRgb || image.Buffers[0].PixelFormat == PixelFormat.Format32bppRgb)
                     {
                         int r = image.GetValue(sc, zc, RChannel.Index, tc, (int)p.X, (int)p.Y);
                         int g = image.GetValue(sc, zc, GChannel.Index, tc, (int)p.X, (int)p.Y);
