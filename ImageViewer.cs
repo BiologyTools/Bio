@@ -411,11 +411,12 @@ namespace BioImage
 
         private void to8BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-           
+            Image.To8Bit();
         }
 
         private void to16BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Image.To16Bit();
         }
 
     }

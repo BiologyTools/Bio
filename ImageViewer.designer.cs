@@ -127,7 +127,7 @@ namespace BioImage
             // 
             this.rGBToolStripMenuItem.CheckOnClick = true;
             this.rGBToolStripMenuItem.Name = "rGBToolStripMenuItem";
-            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.rGBToolStripMenuItem.Text = "RGB";
             this.rGBToolStripMenuItem.Click += new System.EventHandler(this.rGBToolStripMenuItem_Click);
             // 
@@ -135,7 +135,7 @@ namespace BioImage
             // 
             this.filteredToolStripMenuItem.CheckOnClick = true;
             this.filteredToolStripMenuItem.Name = "filteredToolStripMenuItem";
-            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.filteredToolStripMenuItem.Text = "Filtered";
             this.filteredToolStripMenuItem.Click += new System.EventHandler(this.filteredToolStripMenuItem_Click);
             // 
@@ -143,7 +143,7 @@ namespace BioImage
             // 
             this.rawToolStripMenuItem.CheckOnClick = true;
             this.rawToolStripMenuItem.Name = "rawToolStripMenuItem";
-            this.rawToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rawToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.rawToolStripMenuItem.Text = "Raw";
             this.rawToolStripMenuItem.Click += new System.EventHandler(this.rawToolStripMenuItem_Click);
             // 
@@ -251,14 +251,14 @@ namespace BioImage
             // to8BitToolStripMenuItem
             // 
             this.to8BitToolStripMenuItem.Name = "to8BitToolStripMenuItem";
-            this.to8BitToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.to8BitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.to8BitToolStripMenuItem.Text = "To 8 Bit";
             this.to8BitToolStripMenuItem.Click += new System.EventHandler(this.to8BitToolStripMenuItem_Click);
             // 
             // to16BitToolStripMenuItem
             // 
             this.to16BitToolStripMenuItem.Name = "to16BitToolStripMenuItem";
-            this.to16BitToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.to16BitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.to16BitToolStripMenuItem.Text = "To 16 Bit";
             this.to16BitToolStripMenuItem.Click += new System.EventHandler(this.to16BitToolStripMenuItem_Click);
             // 

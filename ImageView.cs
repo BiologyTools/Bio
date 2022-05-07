@@ -183,7 +183,6 @@ namespace BioImage
                 UpdateOverlay();
                 if (viewMode == ViewMode.RGBImage)
                 {
-                    
                     rgbBoxsPanel.BringToFront();
                     cBar.SendToBack();
                     cLabel.SendToBack();
@@ -329,14 +328,14 @@ namespace BioImage
                 channelBoxG.Items.Add(ch);
                 channelBoxB.Items.Add(ch);
             }
-            if (image.Channels.Count > 2)
+            if (image.SizeC > 2)
             {
                 channelBoxR.SelectedIndex = 0;
                 channelBoxG.SelectedIndex = 1;
                 channelBoxB.SelectedIndex = 2;
             }
             else
-            if (image.Channels.Count == 2)
+            if (image.SizeC == 2)
             {
                 channelBoxR.SelectedIndex = 0;
                 channelBoxG.SelectedIndex = 1;
