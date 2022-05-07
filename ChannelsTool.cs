@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace BioImage
 {
@@ -82,6 +84,17 @@ namespace BioImage
                 c.Min = (int)minBox.Value;
             }
             UpdateChannels();
+        }
+
+        private void ChannelsTool_Activated(object sender, EventArgs e)
+        {
+            if (channelsBox.SelectedItem == null)
+                return;
+            Channel c = (Channel)channelsBox.SelectedItem;
+            SZCT coord = ImageView.viewer.GetCoordinate();
+            ImageView.viewer.image.GetBitmap(coord);
+            Bitmap b = ImageView.viewer.image.GetBitmap(coord);
+
         }
     }
 }

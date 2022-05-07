@@ -88,7 +88,7 @@ namespace BioImage
                 foreach (BufferInfo buf in item.Buffers)
                 {
                     Node plane = new Node(buf, Node.DataType.buf);
-                    plane.Text = buf.stringId + ", " + buf.Coordinate.ToString();
+                    plane.Text = buf.ID + ", " + buf.Coordinate.ToString();
                    
                     implanes.node.Nodes.Add(plane.node);
                 }

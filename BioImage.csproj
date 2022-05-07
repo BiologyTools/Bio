@@ -285,6 +285,12 @@
     <Compile Include="Filter.Designer.cs">
       <DependentUpon>Filter.cs</DependentUpon>
     </Compile>
+    <Compile Include="HistogramControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="HistogramControl.Designer.cs">
+      <DependentUpon>HistogramControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ImageView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -403,6 +409,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Filter.resx">
       <DependentUpon>Filter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HistogramControl.resx">
+      <DependentUpon>HistogramControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ImageView.resx">
       <DependentUpon>ImageView.cs</DependentUpon>

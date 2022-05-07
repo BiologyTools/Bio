@@ -100,7 +100,52 @@ namespace BioImage
         }
         public SZCT GetCoordinate()
         {
-            return coordinate;
+            return new SZCT(image.Serie,zBar.Value,cBar.Value,timeBar.Value);
+        }
+        public bool ShowControls
+        {
+            get { return trackBarPanel.Visible; }
+            set 
+            {
+                if (value)
+                {
+                    trackBarPanel.Hide();
+                    overlayPictureBox.Height += 75;
+                    pictureBox.Height += 75;
+                    showControlToolStripMenuItem.Visible = true;
+                }
+                else
+                {
+                    overlayPictureBox.Height -= 75;
+                    pictureBox.Height -= 75;
+                    trackBarPanel.Show();
+                    showControlToolStripMenuItem.Visible = false;
+                }
+            }
+        }
+        
+        public bool ShowStatus
+        {
+            get { return statusPanel.Visible; }
+            set 
+            {
+                if (!value)
+                {
+                    statusPanel.Hide();
+                    statusPanel.Visible = value;
+                    statusPanel.Height = 0;
+                    pictureBox.Location = new Point(0, 0);
+                    showStatusToolStripMenuItem.Visible = true;
+                }
+                else
+                {
+                    statusPanel.Show();
+                    statusPanel.Visible = value;
+                    pictureBox.Top = 0;
+                    showStatusToolStripMenuItem.Visible = false;
+                    statusPanel.Height = 25;
+                }
+            }
         }
 
         public int Index
@@ -289,14 +334,12 @@ namespace BioImage
                 channelBoxR.SelectedIndex = 0;
                 channelBoxG.SelectedIndex = 1;
                 channelBoxB.SelectedIndex = 2;
-                Mode = ViewMode.RGBImage;
             }
             else
             if (image.Channels.Count == 2)
             {
                 channelBoxR.SelectedIndex = 0;
                 channelBoxG.SelectedIndex = 1;
-                Mode = ViewMode.Filtered;
             }
             else
             {
@@ -1102,16 +1145,15 @@ namespace BioImage
                 if (px == PixelFormat.Format8bppIndexed || px == PixelFormat.Format16bppGrayScale)
                 {
                     im = image.GetRGBBitmap(coords, RChannel.range, BChannel.range, GChannel.range);
-
                 }
                 else if (px == PixelFormat.Format24bppRgb || px == PixelFormat.Format32bppRgb || px == PixelFormat.Format32bppArgb)
                 {
-                    im = image.Images[index];
+                    im = image.Buffers[index].Image;
                 }
             }
             else
             {
-                im = image.Images[index];
+                im = image.Buffers[index].Image;
             }
             if (im.PixelFormat == PixelFormat.Format16bppGrayScale || im.PixelFormat == PixelFormat.Format48bppRgb)
                 im = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)im);
@@ -1629,6 +1671,26 @@ namespace BioImage
                 }
             }
             return base.ProcessCmdKey(ref msg, key);
+        }
+
+        private void hideControlsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowControls = false;
+        }
+
+        private void showControlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowControls = true;
+        }
+
+        private void HideStatusMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowStatus = false;
+        }
+
+        private void showStatusToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowStatus = true;
         }
     }
 }

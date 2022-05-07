@@ -141,9 +141,7 @@ namespace BioImage
             // 
             // rawToolStripMenuItem
             // 
-            this.rawToolStripMenuItem.Checked = true;
             this.rawToolStripMenuItem.CheckOnClick = true;
-            this.rawToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.rawToolStripMenuItem.Name = "rawToolStripMenuItem";
             this.rawToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.rawToolStripMenuItem.Text = "Raw";
