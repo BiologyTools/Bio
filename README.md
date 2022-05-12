@@ -127,7 +127,7 @@ public class Loader
 				{
 					if (s.type == BioImage.Scripting.Event.Up && s.buts == MouseButtons.Left)
 					{
-						SZCT cord = ImageView.viewer.GetCoordinate();
+						ZCT cord = ImageView.viewer.GetCoordinate();
 						Annotation an = Annotation.CreatePoint(cord, s.p.X, s.p.Y);
 						ImageView.viewer.image.Annotations.Add(an);
 						an.Text = "Point" + ind;
