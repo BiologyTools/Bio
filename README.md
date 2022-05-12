@@ -89,9 +89,9 @@ public class Loader
 		//We create a substack of BioImage b.
 		BioImage.BioImage bio = new BioImage.BioImage(b,"subStack.ome.tif", 0, 0, 3, 0, 3, 0, 2);
 		//SetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex, ushort value)
-		b.SetValueRGB(0,0,0,0,0,0,0,15000);
+		b.SetValueRGB(0,0,0,0,0,0,15000);
 		//GetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex);
-		ushort val = b.GetValueRGB(0,0,0,0,0,0,1);
+		ushort val = b.GetValueRGB(0,0,0,0,0,1);
 		b.SaveSeries("E://TESTIMAGES//save.ome.tif",0);
 		bio.SaveSeries("E://TESTIMAGES//subStack.ome.tif",0);
 		ImageViewer iv = new ImageViewer(bio);
