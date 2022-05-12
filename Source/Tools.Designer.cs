@@ -32,7 +32,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Tools));
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.fontDialog = new System.Windows.Forms.FontDialog();
-            this.pencilPanel = new System.Windows.Forms.Panel();
             this.textPanel = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
             this.movePanel = new System.Windows.Forms.Panel();
@@ -63,24 +62,12 @@
             this.colorDialog.Color = System.Drawing.Color.White;
             this.colorDialog.SolidColorOnly = true;
             // 
-            // pencilPanel
-            // 
-            this.pencilPanel.BackColor = System.Drawing.Color.White;
-            this.pencilPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pencilPanel.BackgroundImage")));
-            this.pencilPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.pencilPanel.Location = new System.Drawing.Point(0, 0);
-            this.pencilPanel.Name = "pencilPanel";
-            this.pencilPanel.Size = new System.Drawing.Size(30, 30);
-            this.pencilPanel.TabIndex = 0;
-            this.pencilPanel.Click += new System.EventHandler(this.pencilPanel_Click);
-            this.pencilPanel.DoubleClick += new System.EventHandler(this.pencilPanel_DoubleClick);
-            // 
             // textPanel
             // 
             this.textPanel.BackColor = System.Drawing.Color.White;
             this.textPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("textPanel.BackgroundImage")));
             this.textPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.textPanel.Location = new System.Drawing.Point(1, 150);
+            this.textPanel.Location = new System.Drawing.Point(0, 120);
             this.textPanel.Name = "textPanel";
             this.textPanel.Size = new System.Drawing.Size(30, 30);
             this.textPanel.TabIndex = 3;
@@ -147,7 +134,7 @@
             this.ellipsePanel.BackColor = System.Drawing.Color.White;
             this.ellipsePanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("ellipsePanel.BackgroundImage")));
             this.ellipsePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ellipsePanel.Location = new System.Drawing.Point(1, 60);
+            this.ellipsePanel.Location = new System.Drawing.Point(0, 30);
             this.ellipsePanel.Name = "ellipsePanel";
             this.ellipsePanel.Size = new System.Drawing.Size(30, 30);
             this.ellipsePanel.TabIndex = 8;
@@ -170,7 +157,7 @@
             this.polyPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("polyPanel.BackgroundImage")));
             this.polyPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.polyPanel.Controls.Add(this.panel11);
-            this.polyPanel.Location = new System.Drawing.Point(1, 120);
+            this.polyPanel.Location = new System.Drawing.Point(0, 90);
             this.polyPanel.Name = "polyPanel";
             this.polyPanel.Size = new System.Drawing.Size(30, 30);
             this.polyPanel.TabIndex = 4;
@@ -191,7 +178,7 @@
             this.pointPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pointPanel.BackgroundImage")));
             this.pointPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pointPanel.Controls.Add(this.panel13);
-            this.pointPanel.Location = new System.Drawing.Point(1, 90);
+            this.pointPanel.Location = new System.Drawing.Point(0, 60);
             this.pointPanel.Name = "pointPanel";
             this.pointPanel.Size = new System.Drawing.Size(30, 30);
             this.pointPanel.TabIndex = 5;
@@ -232,7 +219,7 @@
             this.rectSelPanel.BackColor = System.Drawing.Color.White;
             this.rectSelPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("rectSelPanel.BackgroundImage")));
             this.rectSelPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.rectSelPanel.Location = new System.Drawing.Point(0, 30);
+            this.rectSelPanel.Location = new System.Drawing.Point(-1, 0);
             this.rectSelPanel.Name = "rectSelPanel";
             this.rectSelPanel.Size = new System.Drawing.Size(30, 30);
             this.rectSelPanel.TabIndex = 9;
@@ -254,7 +241,7 @@
             this.magicPanel.BackColor = System.Drawing.Color.White;
             this.magicPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("magicPanel.BackgroundImage")));
             this.magicPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.magicPanel.Location = new System.Drawing.Point(1, 180);
+            this.magicPanel.Location = new System.Drawing.Point(0, 150);
             this.magicPanel.Name = "magicPanel";
             this.magicPanel.Size = new System.Drawing.Size(30, 30);
             this.magicPanel.TabIndex = 8;
@@ -266,7 +253,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(61, 210);
+            this.ClientSize = new System.Drawing.Size(61, 180);
             this.ContextMenuStrip = this.contextMenuStrip;
             this.Controls.Add(this.magicPanel);
             this.Controls.Add(this.panPanel);
@@ -280,7 +267,6 @@
             this.Controls.Add(this.polyPanel);
             this.Controls.Add(this.ellipsePanel);
             this.Controls.Add(this.movePanel);
-            this.Controls.Add(this.pencilPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -303,7 +289,6 @@
 
         private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.FontDialog fontDialog;
-        private System.Windows.Forms.Panel pencilPanel;
         private System.Windows.Forms.Panel textPanel;
         private System.Windows.Forms.Panel panel7;
         private System.Windows.Forms.Panel movePanel;

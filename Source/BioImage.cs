@@ -3409,7 +3409,6 @@ namespace BioImage
         public static BioImage Open(string file, int ser)
         {
             BioImage res = new BioImage(file, ser);
-
             return res;
         }
         public void OpenOME(string file, int ser)

@@ -40,7 +40,6 @@ namespace BioImage
             this.maxUintBox = new System.Windows.Forms.ComboBox();
             this.setMaxAllBut = new System.Windows.Forms.Button();
             this.setMinAllBut = new System.Windows.Forms.Button();
-            this.histPanel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.minBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxBox)).BeginInit();
             this.SuspendLayout();
@@ -70,6 +69,11 @@ namespace BioImage
             // 
             this.minBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.minBox.ForeColor = System.Drawing.Color.White;
+            this.minBox.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             this.minBox.Location = new System.Drawing.Point(41, 77);
             this.minBox.Maximum = new decimal(new int[] {
             65535,
@@ -86,7 +90,7 @@ namespace BioImage
             this.maxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.maxBox.ForeColor = System.Drawing.Color.White;
             this.maxBox.Increment = new decimal(new int[] {
-            100,
+            10,
             0,
             0,
             0});
@@ -179,24 +183,12 @@ namespace BioImage
             this.setMinAllBut.UseVisualStyleBackColor = false;
             this.setMinAllBut.Click += new System.EventHandler(this.setMinAllBut_Click);
             // 
-            // histPanel
-            // 
-            this.histPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.histPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.histPanel.Location = new System.Drawing.Point(15, 132);
-            this.histPanel.Name = "histPanel";
-            this.histPanel.Size = new System.Drawing.Size(223, 127);
-            this.histPanel.TabIndex = 10;
-            // 
             // ChannelsTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(253, 271);
-            this.Controls.Add(this.histPanel);
+            this.ClientSize = new System.Drawing.Size(253, 141);
             this.Controls.Add(this.setMinAllBut);
             this.Controls.Add(this.setMaxAllBut);
             this.Controls.Add(this.maxUintBox);
@@ -235,6 +227,5 @@ namespace BioImage
         private System.Windows.Forms.ComboBox maxUintBox;
         private System.Windows.Forms.Button setMaxAllBut;
         private System.Windows.Forms.Button setMinAllBut;
-        private System.Windows.Forms.Panel histPanel;
     }
 }

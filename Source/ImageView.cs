@@ -1285,31 +1285,6 @@ namespace BioImage
                 UpdateOverlay();
             }
 
-            if (e.Button == MouseButtons.Left)
-            { 
-                mouseColor = "";
-                Point s = GetImageSize();
-                if ((p.X < s.X && p.Y < s.Y) || (p.X >= 0 && p.Y > 0))
-                {
-                    int zc = coordinate.Z;
-                    int cc = coordinate.C;
-                    int tc = coordinate.T;
-                    if (Mode == ViewMode.RGBImage || image.Buffers[0].PixelFormat == PixelFormat.Format24bppRgb || image.Buffers[0].PixelFormat == PixelFormat.Format32bppRgb)
-                    {
-                        int r = image.GetValue(zc, RChannel.Index, tc, (int)p.X, (int)p.Y);
-                        int g = image.GetValue(zc, GChannel.Index, tc, (int)p.X, (int)p.Y);
-                        int b = image.GetValue(zc, BChannel.Index, tc, (int)p.X, (int)p.Y);
-                        mouseColor = ", " + r.ToString() + ", " + g.ToString() + ", " + b.ToString();
-                    }
-                    else
-                    if (Mode == ViewMode.Filtered || Mode == ViewMode.Raw)
-                    {
-                        int r = image.GetValue(zc, RChannel.Index, tc, (int)p.X, (int)p.Y);
-                        mouseColor = ", " + r.ToString();
-                    }
-                }
-            }
-
             //Pencil tool
             if (Tools.currentTool != null)
             if(Tools.currentTool.type == Tools.Tool.Type.pencil && e.Button == MouseButtons.Left)
@@ -1448,35 +1423,19 @@ namespace BioImage
                     int zc = coordinate.Z;
                     int cc = coordinate.C;
                     int tc = coordinate.T;
-                    if (Mode == ViewMode.RGBImage)
-                    {
-                        
-                        if (image.RGBChannelCount == 1)
-                        {
-                            int r = image.GetValue(zc, RChannel.Index, tc, (int)p.X, (int)p.Y);
-                            int g = image.GetValue(zc, GChannel.Index, tc, (int)p.X, (int)p.Y);
-                            int b = image.GetValue(zc, BChannel.Index, tc, (int)p.X, (int)p.Y);
-                            mouseColor = ", " + r + "," + g + "," + b;
-                        }
-                        else
-                        {
-                            int r = image.GetValueRGB(zc, RChannel.Index, tc, (int)p.X, (int)p.Y, 0);
-                            int g = image.GetValueRGB(zc, GChannel.Index, tc, (int)p.X, (int)p.Y, 1);
-                            int b = image.GetValueRGB(zc, BChannel.Index, tc, (int)p.X, (int)p.Y, 2);
-                            mouseColor = ", " + r + "," + g + "," + b;
-                        }
-                    }
-                    else
-                    if (Mode == ViewMode.Filtered)
+                    if (image.RGBChannelCount == 1)
                     {
                         int r = image.GetValue(zc, RChannel.Index, tc, (int)p.X, (int)p.Y);
-                        mouseColor = ", " + r.ToString();
+                        int g = image.GetValue(zc, GChannel.Index, tc, (int)p.X, (int)p.Y);
+                        int b = image.GetValue(zc, BChannel.Index, tc, (int)p.X, (int)p.Y);
+                        mouseColor = ", " + r + "," + g + "," + b;
                     }
                     else
-                    if (Mode == ViewMode.Raw)
                     {
-                        int r = image.GetValue(zc, RChannel.Index, tc, (int)p.X, (int)p.Y);
-                        mouseColor = ", " + r.ToString();
+                        int r = image.GetValueRGB(zc, RChannel.Index, tc, (int)p.X, (int)p.Y, 0);
+                        int g = image.GetValueRGB(zc, GChannel.Index, tc, (int)p.X, (int)p.Y, 1);
+                        int b = image.GetValueRGB(zc, BChannel.Index, tc, (int)p.X, (int)p.Y, 2);
+                        mouseColor = ", " + r + "," + g + "," + b;
                     }
                 }
             }
