@@ -88,10 +88,10 @@ public class Loader
 		BioImage.BioImage b =  new BioImage.BioImage("E://TESTIMAGES//text.ome.tif",0);
 		//We create a substack of BioImage b.
 		BioImage.BioImage bio = new BioImage.BioImage(b,"subStack.ome.tif", 0, 0, 3, 0, 3, 0, 2);
-		//SetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex, ushort value)
-		b.SetValueRGB(0,0,0,0,0,0,0,15000);
-		//GetValueRGB(int s, int z, int c, int t, int x, int y, int RGBindex);
-		ushort val = b.GetValueRGB(0,0,0,0,0,0,1);
+		//SetValueRGB(int z, int c, int t, int x, int y, int RGBindex, ushort value)
+		b.SetValueRGB(0,0,0,0,0,0,15000);
+		//GetValueRGB(int z, int c, int t, int x, int y, int RGBindex);
+		ushort val = b.GetValueRGB(0,0,0,0,0,1);
 		b.SaveSeries("E://TESTIMAGES//save.ome.tif",0);
 		bio.SaveSeries("E://TESTIMAGES//subStack.ome.tif",0);
 		ImageViewer iv = new ImageViewer(bio);
@@ -127,7 +127,7 @@ public class Loader
 				{
 					if (s.type == BioImage.Scripting.Event.Up && s.buts == MouseButtons.Left)
 					{
-						SZCT cord = ImageView.viewer.GetCoordinate();
+						ZCT cord = ImageView.viewer.GetCoordinate();
 						Annotation an = Annotation.CreatePoint(cord, s.p.X, s.p.Y);
 						ImageView.viewer.image.Annotations.Add(an);
 						an.Text = "Point" + ind;
