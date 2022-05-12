@@ -63,6 +63,7 @@ namespace BioImage
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveTiffFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.timer = new System.Windows.Forms.Timer(this.components);
+            this.openOMEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,6 +87,7 @@ namespace BioImage
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
+            this.openOMEToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.saveOMEToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -95,21 +97,21 @@ namespace BioImage
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open Files";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "Save Tiff";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveOMEToolStripMenuItem
             // 
             this.saveOMEToolStripMenuItem.Name = "saveOMEToolStripMenuItem";
-            this.saveOMEToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.saveOMEToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveOMEToolStripMenuItem.Text = "Save OME";
             this.saveOMEToolStripMenuItem.Click += new System.EventHandler(this.saveOMEToolStripMenuItem_Click);
             // 
@@ -270,7 +272,7 @@ namespace BioImage
             // saveOMEFileDialog
             // 
             this.saveOMEFileDialog.DefaultExt = "ome.tif";
-            this.saveOMEFileDialog.Filter = "\"OME TIFF Files (*.ome.tif)|*.ome.tif|All files (*.*)|*.*\"";
+            this.saveOMEFileDialog.Filter = "OME TIFF Files (*.ome.tif)|*.ome.tif|All files (*.*)|*.*";
             this.saveOMEFileDialog.SupportMultiDottedExtensions = true;
             this.saveOMEFileDialog.Title = "Save Image";
             // 
@@ -287,19 +289,19 @@ namespace BioImage
             // saveCSVFileDialog
             // 
             this.saveCSVFileDialog.DefaultExt = "csv";
-            this.saveCSVFileDialog.Filter = "\"CSV Files (*.csv)|*.csv|All files (*.*)|*.*\"";
+            this.saveCSVFileDialog.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
             this.saveCSVFileDialog.Title = "Save ROIs to CSV";
             // 
             // openCSVFileDialog
             // 
             this.openCSVFileDialog.DefaultExt = "csv";
-            this.openCSVFileDialog.Filter = "\"CSV Files (*.csv)|*.csv|All files (*.*)|*.*\"";
+            this.openCSVFileDialog.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
             this.openCSVFileDialog.Title = "Import ROI from CSV";
             // 
             // saveTiffFileDialog
             // 
             this.saveTiffFileDialog.DefaultExt = "ome.tif";
-            this.saveTiffFileDialog.Filter = "\"TIFF Files (*.tif)|*.tif\"";
+            this.saveTiffFileDialog.Filter = "TIFF Files (*.tif)|*.tif";
             this.saveTiffFileDialog.SupportMultiDottedExtensions = true;
             this.saveTiffFileDialog.Title = "Save Image";
             // 
@@ -307,6 +309,12 @@ namespace BioImage
             // 
             this.timer.Interval = 1000;
             this.timer.Tick += new System.EventHandler(this.timer_Tick);
+            // 
+            // openOMEToolStripMenuItem
+            // 
+            this.openOMEToolStripMenuItem.Name = "openOMEToolStripMenuItem";
+            this.openOMEToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openOMEToolStripMenuItem.Text = "Open OME";
             // 
             // ImageViewer
             // 
@@ -367,5 +375,6 @@ namespace BioImage
         private System.Windows.Forms.ToolStripMenuItem formatToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem to8BitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem to16BitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openOMEToolStripMenuItem;
     }
 }

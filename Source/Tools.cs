@@ -391,7 +391,7 @@ namespace BioImage
             if (Tools.currentTool.type == Tools.Tool.Type.magic)
             {
                 PointF pf = new PointF(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
-                SZCT coord = ImageView.viewer.GetCoordinate();
+                ZCT coord = ImageView.viewer.GetCoordinate();
                
                 Rectangle r = new Rectangle((int)ImageView.mouseDown.X, (int)ImageView.mouseDown.Y, (int)(ImageView.mouseUp.X - ImageView.mouseDown.X), (int)(ImageView.mouseUp.Y - ImageView.mouseDown.Y));
                 if (r.Width <= 2 && r.Height <= 2)
@@ -592,6 +592,7 @@ namespace BioImage
 
         private void pencilPanel_DoubleClick(object sender, EventArgs e)
         {
+            colorTool = new ColorTool();
             colorTool.Show();
             currentTool = GetTool(Tool.Type.pencil);
             UpdateSelected();

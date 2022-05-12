@@ -260,71 +260,71 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="About.cs">
+    <Compile Include="Source\About.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="About.Designer.cs">
+    <Compile Include="Source\About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
-    <Compile Include="BioImage.cs" />
-    <Compile Include="ChannelsTool.cs">
+    <Compile Include="Source\BioImage.cs" />
+    <Compile Include="Source\ChannelsTool.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ChannelsTool.designer.cs">
+    <Compile Include="Source\ChannelsTool.designer.cs">
       <DependentUpon>ChannelsTool.cs</DependentUpon>
     </Compile>
-    <Compile Include="ColorTool.cs">
+    <Compile Include="Source\ColorTool.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ColorTool.Designer.cs">
+    <Compile Include="Source\ColorTool.Designer.cs">
       <DependentUpon>ColorTool.cs</DependentUpon>
     </Compile>
-    <Compile Include="Filter.cs">
+    <Compile Include="Source\Filter.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Filter.Designer.cs">
+    <Compile Include="Source\Filter.Designer.cs">
       <DependentUpon>Filter.cs</DependentUpon>
     </Compile>
-    <Compile Include="HistogramControl.cs">
+    <Compile Include="Source\HistogramControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="HistogramControl.Designer.cs">
+    <Compile Include="Source\HistogramControl.Designer.cs">
       <DependentUpon>HistogramControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageView.cs">
+    <Compile Include="Source\ImageView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ImageView.designer.cs">
+    <Compile Include="Source\ImageView.designer.cs">
       <DependentUpon>ImageView.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageViewer.cs">
+    <Compile Include="Source\ImageViewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ImageViewer.designer.cs">
+    <Compile Include="Source\ImageViewer.designer.cs">
       <DependentUpon>ImageViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="MagicSelect.cs">
+    <Compile Include="Source\MagicSelect.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MagicSelect.Designer.cs">
+    <Compile Include="Source\MagicSelect.Designer.cs">
       <DependentUpon>MagicSelect.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainForm.cs">
+    <Compile Include="Source\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Source\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="PlaySpeed.cs">
+    <Compile Include="Source\PlaySpeed.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PlaySpeed.designer.cs">
+    <Compile Include="Source\PlaySpeed.designer.cs">
       <DependentUpon>PlaySpeed.cs</DependentUpon>
     </Compile>
-    <Compile Include="Progress.cs">
+    <Compile Include="Source\Progress.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Progress.Designer.cs">
+    <Compile Include="Source\Progress.Designer.cs">
       <DependentUpon>Progress.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -333,139 +333,130 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="RangeTool.cs">
+    <Compile Include="Source\RangeTool.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RangeTool.designer.cs">
+    <Compile Include="Source\RangeTool.designer.cs">
       <DependentUpon>RangeTool.cs</DependentUpon>
     </Compile>
-    <Compile Include="Recorder.cs">
+    <Compile Include="Source\Recorder.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Recorder.Designer.cs">
+    <Compile Include="Source\Recorder.Designer.cs">
       <DependentUpon>Recorder.cs</DependentUpon>
     </Compile>
-    <Compile Include="ROIManager.cs">
+    <Compile Include="Source\ROIManager.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ROIManager.Designer.cs">
+    <Compile Include="Source\ROIManager.Designer.cs">
       <DependentUpon>ROIManager.cs</DependentUpon>
     </Compile>
-    <Compile Include="Scripting.cs">
+    <Compile Include="Source\Scripting.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Scripting.Designer.cs">
+    <Compile Include="Source\Scripting.Designer.cs">
       <DependentUpon>Scripting.cs</DependentUpon>
     </Compile>
-    <Compile Include="SetTool.cs">
+    <Compile Include="Source\SetTool.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SetTool.Designer.cs">
+    <Compile Include="Source\SetTool.Designer.cs">
       <DependentUpon>SetTool.cs</DependentUpon>
     </Compile>
-    <Compile Include="Slider.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Slider.Designer.cs">
-      <DependentUpon>Slider.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ApplyTwo.cs">
+    <Compile Include="Source\ApplyTwo.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ApplyTwo.Designer.cs">
+    <Compile Include="Source\ApplyTwo.Designer.cs">
       <DependentUpon>ApplyTwo.cs</DependentUpon>
     </Compile>
-    <Compile Include="StackTools.cs">
+    <Compile Include="Source\StackTools.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="StackTools.Designer.cs">
+    <Compile Include="Source\StackTools.Designer.cs">
       <DependentUpon>StackTools.cs</DependentUpon>
     </Compile>
-    <Compile Include="TextInput.cs">
+    <Compile Include="Source\TextInput.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TextInput.Designer.cs">
+    <Compile Include="Source\TextInput.Designer.cs">
       <DependentUpon>TextInput.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tools.cs">
+    <Compile Include="Source\Tools.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Tools.Designer.cs">
+    <Compile Include="Source\Tools.Designer.cs">
       <DependentUpon>Tools.cs</DependentUpon>
     </Compile>
-    <Compile Include="Units.cs" />
-    <Compile Include="Win32.cs" />
+    <Compile Include="Source\Units.cs" />
+    <Compile Include="Source\Win32.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="About.resx">
+    <EmbeddedResource Include="Source\About.resx">
       <DependentUpon>About.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ChannelsTool.resx">
+    <EmbeddedResource Include="Source\ChannelsTool.resx">
       <DependentUpon>ChannelsTool.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ColorTool.resx">
+    <EmbeddedResource Include="Source\ColorTool.resx">
       <DependentUpon>ColorTool.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Filter.resx">
+    <EmbeddedResource Include="Source\Filter.resx">
       <DependentUpon>Filter.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HistogramControl.resx">
+    <EmbeddedResource Include="Source\HistogramControl.resx">
       <DependentUpon>HistogramControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImageView.resx">
+    <EmbeddedResource Include="Source\ImageView.resx">
       <DependentUpon>ImageView.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="ImageViewer.resx">
+    <EmbeddedResource Include="Source\ImageViewer.resx">
       <DependentUpon>ImageViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MagicSelect.resx">
+    <EmbeddedResource Include="Source\MagicSelect.resx">
       <DependentUpon>MagicSelect.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="Source\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PlaySpeed.resx">
+    <EmbeddedResource Include="Source\PlaySpeed.resx">
       <DependentUpon>PlaySpeed.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Progress.resx">
+    <EmbeddedResource Include="Source\Progress.resx">
       <DependentUpon>Progress.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="RangeTool.resx">
+    <EmbeddedResource Include="Source\RangeTool.resx">
       <DependentUpon>RangeTool.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Recorder.resx">
+    <EmbeddedResource Include="Source\Recorder.resx">
       <DependentUpon>Recorder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ROIManager.resx">
+    <EmbeddedResource Include="Source\ROIManager.resx">
       <DependentUpon>ROIManager.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Scripting.resx">
+    <EmbeddedResource Include="Source\Scripting.resx">
       <DependentUpon>Scripting.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SetTool.resx">
+    <EmbeddedResource Include="Source\SetTool.resx">
       <DependentUpon>SetTool.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Slider.resx">
-      <DependentUpon>Slider.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ApplyTwo.resx">
+    <EmbeddedResource Include="Source\ApplyTwo.resx">
       <DependentUpon>ApplyTwo.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="StackTools.resx">
+    <EmbeddedResource Include="Source\StackTools.resx">
       <DependentUpon>StackTools.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TextInput.resx">
+    <EmbeddedResource Include="Source\TextInput.resx">
       <DependentUpon>TextInput.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tools.resx">
+    <EmbeddedResource Include="Source\Tools.resx">
       <DependentUpon>Tools.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

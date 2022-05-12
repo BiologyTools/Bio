@@ -139,7 +139,7 @@ namespace BioImage
             {
                 viewer = new ImageView(b);
             }
-            viewer.serie = b.Serie;
+            viewer.serie = b.serie;
             viewer.filepath = b.ID;
             viewer.Dock = DockStyle.Fill;
             panel.Controls.Add(viewer);
@@ -387,7 +387,7 @@ namespace BioImage
                 return;
             if (saveOMEFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            Image.SaveOME(saveOMEFileDialog.FileName, Image.Serie);
+            Image.SaveOME(saveOMEFileDialog.FileName, Image.serie);
         }
 
         private void copyToClipboardToolStripMenuItem_Click(object sender, EventArgs e)

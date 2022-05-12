@@ -40,7 +40,7 @@ namespace BioImage
             this.maxUintBox = new System.Windows.Forms.ComboBox();
             this.setMaxAllBut = new System.Windows.Forms.Button();
             this.setMinAllBut = new System.Windows.Forms.Button();
-            this.histogram = new AForge.Controls.Histogram();
+            this.histPanel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.minBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxBox)).BeginInit();
             this.SuspendLayout();
@@ -143,7 +143,7 @@ namespace BioImage
             this.maxUintBox.ForeColor = System.Drawing.Color.White;
             this.maxUintBox.FormattingEnabled = true;
             this.maxUintBox.Items.AddRange(new object[] {
-            "256",
+            "255",
             "1023",
             "4096",
             "16383",
@@ -179,17 +179,16 @@ namespace BioImage
             this.setMinAllBut.UseVisualStyleBackColor = false;
             this.setMinAllBut.Click += new System.EventHandler(this.setMinAllBut_Click);
             // 
-            // histogram
+            // histPanel
             // 
-            this.histogram.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.histPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.histogram.Location = new System.Drawing.Point(15, 132);
-            this.histogram.Name = "histogram";
-            this.histogram.Size = new System.Drawing.Size(223, 127);
-            this.histogram.TabIndex = 10;
-            this.histogram.Text = "histogram1";
-            this.histogram.Values = null;
+            this.histPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.histPanel.Location = new System.Drawing.Point(15, 132);
+            this.histPanel.Name = "histPanel";
+            this.histPanel.Size = new System.Drawing.Size(223, 127);
+            this.histPanel.TabIndex = 10;
             // 
             // ChannelsTool
             // 
@@ -197,7 +196,7 @@ namespace BioImage
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.ClientSize = new System.Drawing.Size(253, 271);
-            this.Controls.Add(this.histogram);
+            this.Controls.Add(this.histPanel);
             this.Controls.Add(this.setMinAllBut);
             this.Controls.Add(this.setMaxAllBut);
             this.Controls.Add(this.maxUintBox);
@@ -236,6 +235,6 @@ namespace BioImage
         private System.Windows.Forms.ComboBox maxUintBox;
         private System.Windows.Forms.Button setMaxAllBut;
         private System.Windows.Forms.Button setMinAllBut;
-        private AForge.Controls.Histogram histogram;
+        private System.Windows.Forms.Panel histPanel;
     }
 }

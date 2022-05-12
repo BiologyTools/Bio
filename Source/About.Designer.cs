@@ -42,9 +42,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(9, 145);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(69, 13);
+            this.label1.Size = new System.Drawing.Size(60, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Version 1.7.1";
+            this.label1.Text = "Version 1.8";
             // 
             // label2
             // 
@@ -60,7 +60,7 @@
             // 
             this.linkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.linkLabel.AutoSize = true;
-            this.linkLabel.Location = new System.Drawing.Point(56, 167);
+            this.linkLabel.Location = new System.Drawing.Point(49, 167);
             this.linkLabel.Name = "linkLabel";
             this.linkLabel.Size = new System.Drawing.Size(51, 13);
             this.linkLabel.TabIndex = 2;

@@ -60,8 +60,6 @@
             this.imageNameLabel = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.idBox = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.sBox = new System.Windows.Forms.NumericUpDown();
             this.pointYBox = new System.Windows.Forms.NumericUpDown();
             this.pointXBox = new System.Windows.Forms.NumericUpDown();
             this.pointIndexBox = new System.Windows.Forms.NumericUpDown();
@@ -73,12 +71,12 @@
             this.fontDialog = new System.Windows.Forms.FontDialog();
             this.strokeWBox = new System.Windows.Forms.NumericUpDown();
             this.label13 = new System.Windows.Forms.Label();
-            this.selectBoxSize = new System.Windows.Forms.NumericUpDown();
-            this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.rChBox = new System.Windows.Forms.CheckBox();
             this.gChBox = new System.Windows.Forms.CheckBox();
             this.bChBox = new System.Windows.Forms.CheckBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.selectBoxSize = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.rBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bBox)).BeginInit();
@@ -90,7 +88,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.hBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.wBox)).BeginInit();
             this.contextMenuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.sBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointYBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointXBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointIndexBox)).BeginInit();
@@ -465,33 +462,6 @@
             this.idBox.TabIndex = 25;
             this.idBox.TextChanged += new System.EventHandler(this.idBox_TextChanged);
             // 
-            // label9
-            // 
-            this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label9.AutoSize = true;
-            this.label9.ForeColor = System.Drawing.Color.White;
-            this.label9.Location = new System.Drawing.Point(309, 9);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(39, 13);
-            this.label9.TabIndex = 27;
-            this.label9.Text = "Series:";
-            // 
-            // sBox
-            // 
-            this.sBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.sBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.sBox.ForeColor = System.Drawing.Color.White;
-            this.sBox.Location = new System.Drawing.Point(349, 7);
-            this.sBox.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.sBox.Name = "sBox";
-            this.sBox.Size = new System.Drawing.Size(35, 20);
-            this.sBox.TabIndex = 26;
-            this.sBox.ValueChanged += new System.EventHandler(this.sBox_ValueChanged);
-            // 
             // pointYBox
             // 
             this.pointYBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -622,43 +592,6 @@
             this.label13.TabIndex = 39;
             this.label13.Text = "Stroke Width";
             // 
-            // selectBoxSize
-            // 
-            this.selectBoxSize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.selectBoxSize.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.selectBoxSize.ForeColor = System.Drawing.Color.White;
-            this.selectBoxSize.Location = new System.Drawing.Point(314, 420);
-            this.selectBoxSize.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.selectBoxSize.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.selectBoxSize.Name = "selectBoxSize";
-            this.selectBoxSize.Size = new System.Drawing.Size(48, 20);
-            this.selectBoxSize.TabIndex = 41;
-            this.selectBoxSize.Value = new decimal(new int[] {
-            4,
-            0,
-            0,
-            0});
-            this.selectBoxSize.ValueChanged += new System.EventHandler(this.selectBoxSize_ValueChanged);
-            // 
-            // label14
-            // 
-            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label14.AutoSize = true;
-            this.label14.ForeColor = System.Drawing.Color.White;
-            this.label14.Location = new System.Drawing.Point(311, 401);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(81, 13);
-            this.label14.TabIndex = 40;
-            this.label14.Text = "Select Box Size";
-            // 
             // label15
             // 
             this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -715,6 +648,43 @@
             this.bChBox.UseVisualStyleBackColor = true;
             this.bChBox.CheckedChanged += new System.EventHandler(this.bChBox_CheckedChanged);
             // 
+            // label14
+            // 
+            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label14.AutoSize = true;
+            this.label14.ForeColor = System.Drawing.Color.White;
+            this.label14.Location = new System.Drawing.Point(311, 401);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(81, 13);
+            this.label14.TabIndex = 40;
+            this.label14.Text = "Select Box Size";
+            // 
+            // selectBoxSize
+            // 
+            this.selectBoxSize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.selectBoxSize.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.selectBoxSize.ForeColor = System.Drawing.Color.White;
+            this.selectBoxSize.Location = new System.Drawing.Point(314, 420);
+            this.selectBoxSize.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.selectBoxSize.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.selectBoxSize.Name = "selectBoxSize";
+            this.selectBoxSize.Size = new System.Drawing.Size(48, 20);
+            this.selectBoxSize.TabIndex = 41;
+            this.selectBoxSize.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.selectBoxSize.ValueChanged += new System.EventHandler(this.selectBoxSize_ValueChanged);
+            // 
             // ROIManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -737,8 +707,6 @@
             this.Controls.Add(this.pointYBox);
             this.Controls.Add(this.pointXBox);
             this.Controls.Add(this.duplicateBut);
-            this.Controls.Add(this.label9);
-            this.Controls.Add(this.sBox);
             this.Controls.Add(this.idBox);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.imageNameLabel);
@@ -780,7 +748,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.hBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.wBox)).EndInit();
             this.contextMenuStrip.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.sBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointYBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointXBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointIndexBox)).EndInit();
@@ -821,8 +788,6 @@
         private System.Windows.Forms.Label imageNameLabel;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox idBox;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.NumericUpDown sBox;
         private System.Windows.Forms.ToolStripMenuItem exportToCSVToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportAllToCSVToolStripMenuItem;
         private System.Windows.Forms.NumericUpDown pointYBox;
@@ -836,11 +801,11 @@
         private System.Windows.Forms.FontDialog fontDialog;
         private System.Windows.Forms.NumericUpDown strokeWBox;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.NumericUpDown selectBoxSize;
-        private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.CheckBox rChBox;
         private System.Windows.Forms.CheckBox gChBox;
         private System.Windows.Forms.CheckBox bChBox;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.NumericUpDown selectBoxSize;
     }
 }

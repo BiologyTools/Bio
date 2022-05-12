@@ -183,7 +183,7 @@ namespace BioImage
                 string filename = name.Substring(0, inds);
                 ImageViewer v = Table.GetViewer(Path.GetFileName(filename));
                 if(v!=null)
-                    v.viewer.SetCoordinate(buf.Coordinate.S, buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
+                    v.viewer.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
             }
             else
             if(node.Type == Node.DataType.roi)
@@ -192,7 +192,7 @@ namespace BioImage
                 string name = node.node.Parent.Parent.Text;
                 ImageViewer v = Table.GetViewer(name);
                 if (v != null)
-                    v.viewer.SetCoordinate(an.coord.S, an.coord.Z, an.coord.C, an.coord.T);
+                    v.viewer.SetCoordinate(an.coord.Z, an.coord.C, an.coord.T);
             }
         }
 

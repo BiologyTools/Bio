@@ -91,7 +91,7 @@ namespace BioImage
             if (channelsBox.SelectedItem == null)
                 return;
             Channel c = (Channel)channelsBox.SelectedItem;
-            SZCT coord = ImageView.viewer.GetCoordinate();
+            ZCT coord = ImageView.viewer.GetCoordinate();
             ImageView.viewer.image.GetBitmap(coord);
             Bitmap b = ImageView.viewer.image.GetBitmap(coord);
 
