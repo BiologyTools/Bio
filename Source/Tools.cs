@@ -459,7 +459,6 @@ namespace BioImage
         }
         public void ToolMove(PointF e, MouseButtons buts)
         {
-
             if (ImageView.viewer == null)
                 return;
             Scripting.UpdateState(Scripting.State.GetMove(e, buts));
@@ -577,37 +576,6 @@ namespace BioImage
             }
 
         }
-
-        public void ToolDoubleClick(PointF e, MouseButtons buts)
-        {
-            if (currentTool == null)
-                return;
-            
-        }
-        
-        public static void SetColor(ColorS col)
-        {
-            currentTool.Color = col;
-        }
-
-        private void pencilPanel_DoubleClick(object sender, EventArgs e)
-        {
-            colorTool = new ColorTool();
-            colorTool.Show();
-            currentTool = GetTool(Tool.Type.pencil);
-            UpdateSelected();
-            pencilPanel.BackColor = Color.DarkGray;
-            Cursor.Current = Cursors.Arrow;
-        }
-
-        private void pencilPanel_Click(object sender, EventArgs e)
-        {
-            currentTool = GetTool(Tool.Type.pencil);
-            UpdateSelected();
-            pencilPanel.BackColor = Color.LightGray;
-            Cursor.Current = Cursors.Arrow;
-        }
-
         private void movePanel_Click(object sender, EventArgs e)
         {
             currentTool = GetTool(Tool.Type.move);
