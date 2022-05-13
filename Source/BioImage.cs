@@ -2418,39 +2418,27 @@ namespace BioImage
             //For 16bit (2*8bit) images we multiply buffer index by 2
             int x = ix;
             int y = iy;
-            if (!littleEndian)
+            if (bitsPerPixel > 8)
             {
-                x = (SizeX - 1) - x;
-                y = (SizeY - 1) - y;
-                if (bitsPerPixel > 8)
-                {
-                    int index2 = (y * stridex + x) * 2 * index;
-                    i = BitConverter.ToUInt16(bytes, index2);
-                    return (ushort)i;
-                }
-                else
-                {
-                    int stride = SizeX;
-                    int indexb = (y * stridex + x) * index;
-                    i = bytes[indexb];
-                    return (ushort)i;
-                }
+                int index2 = (y * stridex + x) * 2 * index;
+                i = BitConverter.ToUInt16(bytes, index2);
+                return (ushort)i;
             }
             else
             {
-                if (bitsPerPixel > 8)
-                {
-                    int index2 = (y * stridex + x) * 2 * index;
-                    i = BitConverter.ToUInt16(bytes, index2);
-                    return (ushort)i;
-                }
+                
+                int stride = SizeX;
+                System.Drawing.Color c = ((Bitmap)Buffers[index].Image).GetPixel(ix, iy);
+                if (index == 0)
+                    return c.R;
                 else
-                {
-                    int stride = SizeX;
-                    int indexb = (y * stridex + x) * index;
-                    i = bytes[indexb];
-                    return (ushort)i;
-                }
+                if (index == 1)
+                    return c.G;
+                else
+                if (index == 2)
+                    return c.B;
+                else
+                    return c.A;
             }
         }
         public ushort GetValue(ZCTXY coord,int ix, int iy)
@@ -2470,37 +2458,17 @@ namespace BioImage
                 x = SizeX - 1;
             if (iy >= SizeY)
                 y = SizeY - 1;
-            if (!littleEndian)
+            if (bitsPerPixel > 8)
             {
-                x = (SizeX - 1) - x;
-                y = (SizeY - 1) - y;
-                if (bitsPerPixel > 8)
-                {
-                    int index2 = (y * stridex + x) * 2 * RGBChannelCount;
-                    i = BitConverter.ToUInt16(bytes, index2);
-                    return (ushort)i;
-                }
-                else
-                {
-                    int index = (y * stridex + x) * RGBChannelCount;
-                    i = bytes[index];
-                    return (ushort)i;
-                }
+                int index2 = (y * stridex + x) * 2 * RGBChannelCount;
+                i = BitConverter.ToUInt16(bytes, index2);
+                return (ushort)i;
             }
             else
             {
-                if (bitsPerPixel > 8)
-                {
-                    int index2 = (y * stridex + x) * 2 * RGBChannelCount;
-                    i = BitConverter.ToUInt16(bytes, index2);
-                    return (ushort)i;
-                }
-                else
-                {
-                    int index = (y * stridex + x) * RGBChannelCount;
-                    i = bytes[index];
-                    return (ushort)i;
-                }
+                int stride = SizeX;
+                System.Drawing.Color c = ((Bitmap)Buffers[ind].Image).GetPixel(ix, iy);
+                return c.R;
             }
         }
         public ushort GetValue( int z, int c, int t, int x, int y)
