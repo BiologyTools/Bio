@@ -1600,7 +1600,6 @@ namespace BioImage
         }
 
     }
-
     public class Histogram
     {
         private int[] values;
@@ -1649,7 +1648,6 @@ namespace BioImage
             return histogram;
         }
     }
-
     public class SizeInfo
     {
         bool HasPhysicalXY = false;
