@@ -1184,38 +1184,6 @@ namespace BioImage
             Coordinate = coord;
             bytes = bts;
         }
-        public void SwitchRedBlue()
-        {
-            if(RGBChannelsCount == 3)
-            for (int y = 0; y < SizeY; y++)
-            {
-                int p = 0;
-                for (int x = 0; x < SizeX; x++)
-                {
-                    int r = y * Stride + p;
-                    int g = y * Stride + p++;
-                    int b = y * Stride + p++;
-                    byte bb = bytes[r];
-                    bytes[r] = bytes[b];
-                    bytes[r] = bb;
-                }
-            }
-            else
-                for (int y = 0; y < SizeY; y++)
-                {
-                    int p = 0;
-                    for (int x = 0; x < SizeX; x++)
-                    {
-                        int r = y * Stride + p;
-                        int g = y * Stride + p++;
-                        int b = y * Stride + p++;
-                        p++;
-                        byte bb = bytes[r];
-                        bytes[r] = bytes[b];
-                        bytes[r] = bb;
-                    }
-                }
-        }
         public static BufferInfo SwitchRedBlue(BufferInfo b)
         {
             if (b.PixelFormat == PixelFormat.Format8bppIndexed || b.PixelFormat == PixelFormat.Format16bppGrayScale)
@@ -1254,7 +1222,7 @@ namespace BioImage
         {
             Bitmap bitmap;
             if (RGBChannelsCount == 1)
-                bitmap = (Bitmap)Image;
+                return Bytes;
             bitmap = SwitchRedBlue((Bitmap)Image);
             bitmap = SwitchRedBlue((Bitmap)Image);
             bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
@@ -1592,7 +1560,6 @@ namespace BioImage
         }
 
     }
-
     public class Histogram
     {
         private int[] values;
@@ -1641,7 +1608,6 @@ namespace BioImage
             return histogram;
         }
     }
-
     public class SizeInfo
     {
         bool HasPhysicalXY = false;
