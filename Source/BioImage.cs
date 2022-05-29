@@ -957,12 +957,6 @@ namespace BioImage
                 bytes[index] = (byte)value;
             }
         }
-        public static int CreateHash(string filepath, int ser, int index)
-        {
-            filepath = filepath.Replace("\\", "/");
-            string ids = CreateID(filepath, index);
-            return ids.GetHashCode();
-        }
         public static string CreateID(string filepath, int index)
         {
             const char sep = '/';
@@ -1093,7 +1087,6 @@ namespace BioImage
                 bytes = GetBuffer((Bitmap)value);
             }
         }
-
         private static int GetStridePadded(int stride)
         {
             if (stride % 4 == 0)
@@ -1109,7 +1102,6 @@ namespace BioImage
                 throw new InvalidOperationException("Stride padding failed");
             return newstride;
         }
-
         private static byte[] GetPaddedBuffer(byte[] bts,int w, int h, int stride)
         {
             int newstride = GetStridePadded(stride);
@@ -1263,8 +1255,8 @@ namespace BioImage
             Bitmap bitmap;
             if (RGBChannelsCount == 1)
                 bitmap = (Bitmap)Image;
-            else
-                bitmap = SwitchRedBlue((Bitmap)Image);
+            bitmap = SwitchRedBlue((Bitmap)Image);
+            bitmap = SwitchRedBlue((Bitmap)Image);
             bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat);
             IntPtr ptr = data.Scan0;
@@ -2334,29 +2326,13 @@ namespace BioImage
             int stridex = SizeX;
             int x = ix;
             int y = iy;
-            if (!littleEndian)
+            if (bitsPerPixel > 8)
             {
-                x = (SizeX - 1) - x;
-                y = (SizeY - 1) - y;
-                if (bitsPerPixel > 8)
-                {
-                    return (y * stridex + x) * 2;
-                }
-                else
-                {
-                    return (y * stridex + x);
-                }
+                return (y * stridex + x) * 2;
             }
             else
             {
-                if (bitsPerPixel > 8)
-                {
-                    return (y * stridex + x) * 2;
-                }
-                else
-                {
-                    return (y * stridex + x);
-                }
+                return (y * stridex + x);
             }
         }
         public int GetIndexRGB(int ix, int iy, int index)
@@ -2365,29 +2341,13 @@ namespace BioImage
             //For 16bit (2*8bit) images we multiply buffer index by 2
             int x = ix;
             int y = iy;
-            if (!littleEndian)
+            if (bitsPerPixel > 8)
             {
-                x = (SizeX - 1) - x;
-                y = (SizeY - 1) - y;
-                if (bitsPerPixel > 8)
-                {
-                    return (y * stridex + x) * 2 * index;
-                }
-                else
-                {
-                    return (y * stridex + x) * index;
-                }
+                return (y * stridex + x) * 2 * index;
             }
             else
             {
-                if (bitsPerPixel > 8)
-                {
-                    return (y * stridex + x) * 2 * index;
-                }
-                else
-                {
-                    return (y * stridex + x) * index;
-                }
+                return (y * stridex + x) * index;
             }
         }
         public ushort GetValue(ZCTXY coord)
@@ -3114,7 +3074,7 @@ namespace BioImage
                             image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                             // specify the page number
                             Image ima = b.Buffers[im].Image;
-                            byte[] buffer = BufferInfo.GetBuffer((Bitmap)ima);
+                            byte[] buffer = b.Buffers[im].GetSaveBytes();
                             image.SetField(TiffTag.PAGENUMBER, c, b.Buffers.Count);
                             for (int i = 0, offset = 0; i < b.SizeY; i++)
                             {
