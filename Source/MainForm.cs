@@ -65,6 +65,14 @@ namespace BioImage
             }
         }
 
+        public MainForm()
+        {
+            InitializeComponent();
+            Init();
+            Filters.Init();
+            InitNodes();
+        }
+
         private static void Init()
         {
             runner = new Scripting();
