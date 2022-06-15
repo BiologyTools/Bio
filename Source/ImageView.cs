@@ -733,33 +733,17 @@ namespace BioImage
                 }
             }
         }
-
-        private int zBarCoord = 0;
-        private int tBarCoord = 0;
-        private int cBarCoord = 0;
         private void zBar_ValueChanged(object sender, EventArgs e)
         {
-            if (zBarCoord != zBar.Value)
-            {
-                UpdateView();
-                zBarCoord = zBar.Value;
-            }
+            UpdateView();
         }
         private void timeBar_ValueChanged(object sender, EventArgs e)
         {
-            if (tBarCoord != timeBar.Value)
-            {
-                UpdateView();
-                tBarCoord = timeBar.Value;
-            }
+            UpdateView();
         }
         private void cBar_ValueChanged(object sender, EventArgs e)
         {
-            if (cBarCoord != cBar.Value)
-            {
-                UpdateView();
-                cBarCoord = cBar.Value;
-            }
+            UpdateView();
         }
 
         private void loopTimeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1558,7 +1542,6 @@ namespace BioImage
             PasteSelection();
         }
 
-
         private enum KeyMessages
         {
             WM_KEYFIRST = 0x100,
@@ -1574,7 +1557,19 @@ namespace BioImage
             int moveAmount = 5;
             if (viewer != null && msg.Msg == (int)KeyMessages.WM_KEYDOWN)
             {
-                if(key == Keys.W)
+                if(key == Keys.Subtract)
+                {
+                    scale.Width -= 0.1f;
+                    scale.Height -= 0.1f;
+                    UpdateOverlay();
+                }
+                if (key == Keys.Add)
+                {
+                    scale.Width += 0.1f;
+                    scale.Height += 0.1f;
+                    UpdateOverlay();
+                }
+                if (key == Keys.W)
                 {
                     viewer.Origin = new System.Drawing.PointF(viewer.Origin.X, viewer.Origin.Y + moveAmount);
                     return true;

@@ -42,6 +42,8 @@ namespace BioImage
             this.copyROIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pasteROIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyViewToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showControlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showStatusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zPlayMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.playZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,6 +58,8 @@ namespace BioImage
             this.statusLabel = new System.Windows.Forms.Label();
             this.tLabel = new System.Windows.Forms.Label();
             this.timeBar = new System.Windows.Forms.TrackBar();
+            this.controlsMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.hideControlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cPlayMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.playCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,17 +81,14 @@ namespace BioImage
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.panel = new System.Windows.Forms.Panel();
             this.showControlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.controlsMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.hideControlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showControlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.HideStatusMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showStatusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.zPlayMenuStrip.SuspendLayout();
             this.rgbBoxsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.timeBar)).BeginInit();
+            this.controlsMenuStrip.SuspendLayout();
             this.cPlayMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cBar)).BeginInit();
@@ -96,7 +97,6 @@ namespace BioImage
             ((System.ComponentModel.ISupportInitialize)(this.overlayPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.panel.SuspendLayout();
-            this.controlsMenuStrip.SuspendLayout();
             this.statusMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -163,7 +163,7 @@ namespace BioImage
             this.showControlToolStripMenuItem,
             this.showStatusToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(200, 180);
+            this.contextMenuStrip.Size = new System.Drawing.Size(200, 158);
             // 
             // deleteROIToolStripMenuItem
             // 
@@ -199,6 +199,21 @@ namespace BioImage
             this.copyViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.copyViewToClipboardToolStripMenuItem.Text = "Copy View to Clipboard";
             this.copyViewToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyViewToClipboardToolStripMenuItem_Click);
+            // 
+            // showControlToolStripMenuItem
+            // 
+            this.showControlToolStripMenuItem.Name = "showControlToolStripMenuItem";
+            this.showControlToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.showControlToolStripMenuItem.Text = "Show Controls";
+            this.showControlToolStripMenuItem.Visible = false;
+            this.showControlToolStripMenuItem.Click += new System.EventHandler(this.showControlToolStripMenuItem_Click);
+            // 
+            // showStatusToolStripMenuItem
+            // 
+            this.showStatusToolStripMenuItem.Name = "showStatusToolStripMenuItem";
+            this.showStatusToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.showStatusToolStripMenuItem.Text = "Hide Status";
+            this.showStatusToolStripMenuItem.Click += new System.EventHandler(this.showStatusToolStripMenuItem_Click);
             // 
             // zPlayMenuStrip
             // 
@@ -342,7 +357,7 @@ namespace BioImage
             | System.Windows.Forms.AnchorStyles.Right)));
             this.timeBar.AutoSize = false;
             this.timeBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.timeBar.ContextMenuStrip = this.controlsMenuStrip;
+            this.timeBar.ContextMenuStrip = this.timePlayMenuStrip;
             this.timeBar.LargeChange = 1;
             this.timeBar.Location = new System.Drawing.Point(15, 25);
             this.timeBar.Margin = new System.Windows.Forms.Padding(0);
@@ -350,6 +365,20 @@ namespace BioImage
             this.timeBar.Size = new System.Drawing.Size(410, 25);
             this.timeBar.TabIndex = 16;
             this.timeBar.ValueChanged += new System.EventHandler(this.timeBar_ValueChanged);
+            // 
+            // controlsMenuStrip
+            // 
+            this.controlsMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.hideControlsToolStripMenuItem});
+            this.controlsMenuStrip.Name = "controlsMenuStrip";
+            this.controlsMenuStrip.Size = new System.Drawing.Size(148, 26);
+            // 
+            // hideControlsToolStripMenuItem
+            // 
+            this.hideControlsToolStripMenuItem.Name = "hideControlsToolStripMenuItem";
+            this.hideControlsToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.hideControlsToolStripMenuItem.Text = "Hide Controls";
+            this.hideControlsToolStripMenuItem.Click += new System.EventHandler(this.hideControlsToolStripMenuItem_Click);
             // 
             // cPlayMenuStrip
             // 
@@ -409,7 +438,7 @@ namespace BioImage
             | System.Windows.Forms.AnchorStyles.Right)));
             this.zBar.AutoSize = false;
             this.zBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.zBar.ContextMenuStrip = this.controlsMenuStrip;
+            this.zBar.ContextMenuStrip = this.zPlayMenuStrip;
             this.zBar.LargeChange = 1;
             this.zBar.Location = new System.Drawing.Point(15, 0);
             this.zBar.Margin = new System.Windows.Forms.Padding(0);
@@ -437,7 +466,7 @@ namespace BioImage
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cBar.AutoSize = false;
             this.cBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.cBar.ContextMenuStrip = this.controlsMenuStrip;
+            this.cBar.ContextMenuStrip = this.cPlayMenuStrip;
             this.cBar.LargeChange = 1;
             this.cBar.Location = new System.Drawing.Point(15, 50);
             this.cBar.Margin = new System.Windows.Forms.Padding(0);
@@ -567,28 +596,6 @@ namespace BioImage
             this.showControlsToolStripMenuItem.Text = "Hide Controls";
             this.showControlsToolStripMenuItem.Click += new System.EventHandler(this.showControlsToolStripMenuItem_Click);
             // 
-            // controlsMenuStrip
-            // 
-            this.controlsMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.hideControlsToolStripMenuItem});
-            this.controlsMenuStrip.Name = "controlsMenuStrip";
-            this.controlsMenuStrip.Size = new System.Drawing.Size(148, 26);
-            // 
-            // hideControlsToolStripMenuItem
-            // 
-            this.hideControlsToolStripMenuItem.Name = "hideControlsToolStripMenuItem";
-            this.hideControlsToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
-            this.hideControlsToolStripMenuItem.Text = "Hide Controls";
-            this.hideControlsToolStripMenuItem.Click += new System.EventHandler(this.hideControlsToolStripMenuItem_Click);
-            // 
-            // showControlToolStripMenuItem
-            // 
-            this.showControlToolStripMenuItem.Name = "showControlToolStripMenuItem";
-            this.showControlToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.showControlToolStripMenuItem.Text = "Show Controls";
-            this.showControlToolStripMenuItem.Visible = false;
-            this.showControlToolStripMenuItem.Click += new System.EventHandler(this.showControlToolStripMenuItem_Click);
-            // 
             // statusMenuStrip
             // 
             this.statusMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -602,13 +609,6 @@ namespace BioImage
             this.HideStatusMenuItem.Size = new System.Drawing.Size(134, 22);
             this.HideStatusMenuItem.Text = "Hide Status";
             this.HideStatusMenuItem.Click += new System.EventHandler(this.HideStatusMenuItem_Click);
-            // 
-            // showStatusToolStripMenuItem
-            // 
-            this.showStatusToolStripMenuItem.Name = "showStatusToolStripMenuItem";
-            this.showStatusToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.showStatusToolStripMenuItem.Text = "Hide Status";
-            this.showStatusToolStripMenuItem.Click += new System.EventHandler(this.showStatusToolStripMenuItem_Click);
             // 
             // ImageView
             // 
@@ -631,6 +631,7 @@ namespace BioImage
             this.rgbBoxsPanel.ResumeLayout(false);
             this.rgbBoxsPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.timeBar)).EndInit();
+            this.controlsMenuStrip.ResumeLayout(false);
             this.cPlayMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.zBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cBar)).EndInit();
@@ -641,7 +642,6 @@ namespace BioImage
             ((System.ComponentModel.ISupportInitialize)(this.overlayPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.panel.ResumeLayout(false);
-            this.controlsMenuStrip.ResumeLayout(false);
             this.statusMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
 
