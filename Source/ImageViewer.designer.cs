@@ -31,9 +31,17 @@ namespace BioImage
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ImageViewer));
-            this.menuStrip = new System.Windows.Forms.MenuStrip();
+            this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
+            this.saveOMEFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.panel = new System.Windows.Forms.Panel();
+            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.saveTiffFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.timer = new System.Windows.Forms.Timer(this.components);
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openOMEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveOMEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sizeModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -51,37 +59,55 @@ namespace BioImage
             this.autoThresholdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.channelsToolToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.stackToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.filtersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.formatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.to8BitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.to16BitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
-            this.saveOMEFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.panel = new System.Windows.Forms.Panel();
-            this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.saveTiffFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.timer = new System.Windows.Forms.Timer(this.components);
-            this.openOMEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
-            // menuStrip
+            // openFilesDialog
             // 
-            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
-            this.sizeModeToolStripMenuItem,
-            this.toolboxToolStripMenuItem,
-            this.rOIToolStripMenuItem,
-            this.channelsToolToolStripMenuItem,
-            this.stackToolsToolStripMenuItem,
-            this.filtersToolStripMenuItem,
-            this.formatToolStripMenuItem});
-            this.menuStrip.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(403, 24);
-            this.menuStrip.TabIndex = 0;
+            this.openFilesDialog.Multiselect = true;
+            this.openFilesDialog.Title = "Open Images";
+            // 
+            // saveOMEFileDialog
+            // 
+            this.saveOMEFileDialog.DefaultExt = "ome.tif";
+            this.saveOMEFileDialog.Filter = "OME TIFF Files (*.ome.tif)|*.ome.tif|All files (*.*)|*.*";
+            this.saveOMEFileDialog.SupportMultiDottedExtensions = true;
+            this.saveOMEFileDialog.Title = "Save Image";
+            // 
+            // panel
+            // 
+            this.panel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.panel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel.Location = new System.Drawing.Point(0, 24);
+            this.panel.Name = "panel";
+            this.panel.Size = new System.Drawing.Size(403, 287);
+            this.panel.TabIndex = 1;
+            this.panel.Click += new System.EventHandler(this.panel_Click);
+            // 
+            // saveCSVFileDialog
+            // 
+            this.saveCSVFileDialog.DefaultExt = "csv";
+            this.saveCSVFileDialog.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
+            this.saveCSVFileDialog.Title = "Save ROIs to CSV";
+            // 
+            // openCSVFileDialog
+            // 
+            this.openCSVFileDialog.DefaultExt = "csv";
+            this.openCSVFileDialog.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
+            this.openCSVFileDialog.Title = "Import ROI from CSV";
+            // 
+            // saveTiffFileDialog
+            // 
+            this.saveTiffFileDialog.DefaultExt = "ome.tif";
+            this.saveTiffFileDialog.Filter = "TIFF Files (*.tif)|*.tif";
+            this.saveTiffFileDialog.SupportMultiDottedExtensions = true;
+            this.saveTiffFileDialog.Title = "Save Image";
+            // 
+            // timer
+            // 
+            this.timer.Interval = 1000;
+            this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // fileToolStripMenuItem
             // 
@@ -100,6 +126,12 @@ namespace BioImage
             this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open Files";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // openOMEToolStripMenuItem
+            // 
+            this.openOMEToolStripMenuItem.Name = "openOMEToolStripMenuItem";
+            this.openOMEToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openOMEToolStripMenuItem.Text = "Open OME";
             // 
             // saveToolStripMenuItem
             // 
@@ -234,87 +266,19 @@ namespace BioImage
             this.stackToolsToolStripMenuItem.Text = "Stacks";
             this.stackToolsToolStripMenuItem.Click += new System.EventHandler(this.stackToolsToolStripMenuItem_Click);
             // 
-            // filtersToolStripMenuItem
+            // menuStrip
             // 
-            this.filtersToolStripMenuItem.Name = "filtersToolStripMenuItem";
-            this.filtersToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
-            this.filtersToolStripMenuItem.Text = "Filters";
-            this.filtersToolStripMenuItem.Click += new System.EventHandler(this.filtersToolStripMenuItem_Click_1);
-            // 
-            // formatToolStripMenuItem
-            // 
-            this.formatToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.to8BitToolStripMenuItem,
-            this.to16BitToolStripMenuItem});
-            this.formatToolStripMenuItem.Name = "formatToolStripMenuItem";
-            this.formatToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
-            this.formatToolStripMenuItem.Text = "Format";
-            // 
-            // to8BitToolStripMenuItem
-            // 
-            this.to8BitToolStripMenuItem.Name = "to8BitToolStripMenuItem";
-            this.to8BitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.to8BitToolStripMenuItem.Text = "To 8 Bit";
-            this.to8BitToolStripMenuItem.Click += new System.EventHandler(this.to8BitToolStripMenuItem_Click);
-            // 
-            // to16BitToolStripMenuItem
-            // 
-            this.to16BitToolStripMenuItem.Name = "to16BitToolStripMenuItem";
-            this.to16BitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.to16BitToolStripMenuItem.Text = "To 16 Bit";
-            this.to16BitToolStripMenuItem.Click += new System.EventHandler(this.to16BitToolStripMenuItem_Click);
-            // 
-            // openFilesDialog
-            // 
-            this.openFilesDialog.Multiselect = true;
-            this.openFilesDialog.Title = "Open Images";
-            // 
-            // saveOMEFileDialog
-            // 
-            this.saveOMEFileDialog.DefaultExt = "ome.tif";
-            this.saveOMEFileDialog.Filter = "OME TIFF Files (*.ome.tif)|*.ome.tif|All files (*.*)|*.*";
-            this.saveOMEFileDialog.SupportMultiDottedExtensions = true;
-            this.saveOMEFileDialog.Title = "Save Image";
-            // 
-            // panel
-            // 
-            this.panel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.panel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel.Location = new System.Drawing.Point(0, 24);
-            this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(403, 287);
-            this.panel.TabIndex = 1;
-            this.panel.Click += new System.EventHandler(this.panel_Click);
-            // 
-            // saveCSVFileDialog
-            // 
-            this.saveCSVFileDialog.DefaultExt = "csv";
-            this.saveCSVFileDialog.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
-            this.saveCSVFileDialog.Title = "Save ROIs to CSV";
-            // 
-            // openCSVFileDialog
-            // 
-            this.openCSVFileDialog.DefaultExt = "csv";
-            this.openCSVFileDialog.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
-            this.openCSVFileDialog.Title = "Import ROI from CSV";
-            // 
-            // saveTiffFileDialog
-            // 
-            this.saveTiffFileDialog.DefaultExt = "ome.tif";
-            this.saveTiffFileDialog.Filter = "TIFF Files (*.tif)|*.tif";
-            this.saveTiffFileDialog.SupportMultiDottedExtensions = true;
-            this.saveTiffFileDialog.Title = "Save Image";
-            // 
-            // timer
-            // 
-            this.timer.Interval = 1000;
-            this.timer.Tick += new System.EventHandler(this.timer_Tick);
-            // 
-            // openOMEToolStripMenuItem
-            // 
-            this.openOMEToolStripMenuItem.Name = "openOMEToolStripMenuItem";
-            this.openOMEToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openOMEToolStripMenuItem.Text = "Open OME";
+            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.sizeModeToolStripMenuItem,
+            this.toolboxToolStripMenuItem,
+            this.rOIToolStripMenuItem,
+            this.channelsToolToolStripMenuItem,
+            this.stackToolsToolStripMenuItem});
+            this.menuStrip.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip.Name = "menuStrip";
+            this.menuStrip.Size = new System.Drawing.Size(403, 24);
+            this.menuStrip.TabIndex = 0;
             // 
             // ImageViewer
             // 
@@ -342,39 +306,34 @@ namespace BioImage
         }
 
         #endregion
-
-        private System.Windows.Forms.MenuStrip menuStrip;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openFilesDialog;
-        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveOMEFileDialog;
         private System.Windows.Forms.Panel panel;
-        private System.Windows.Forms.ToolStripMenuItem toolboxToolStripMenuItem;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
-        private System.Windows.Forms.ToolStripMenuItem rOIToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportCSVToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveCSVFileDialog;
         private System.Windows.Forms.OpenFileDialog openCSVFileDialog;
-        private System.Windows.Forms.ToolStripMenuItem importCSVToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportROIsOfFolderOfImagesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem rOIManagerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem channelsToolToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog saveTiffFileDialog;
+        private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openOMEToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveOMEToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sizeModeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rGBToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem filteredToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rawToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolboxToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem setToolToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rOIToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rOIManagerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportCSVToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importCSVToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportROIsOfFolderOfImagesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem channelsToolToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem autoThresholdToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem channelsToolToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem saveOMEToolStripMenuItem;
-        private System.Windows.Forms.SaveFileDialog saveTiffFileDialog;
         private System.Windows.Forms.ToolStripMenuItem stackToolsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem setToolToolStripMenuItem;
-        private System.Windows.Forms.Timer timer;
-        private System.Windows.Forms.ToolStripMenuItem filtersToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem formatToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem to8BitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem to16BitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openOMEToolStripMenuItem;
+        private System.Windows.Forms.MenuStrip menuStrip;
     }
 }

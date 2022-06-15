@@ -29,9 +29,7 @@ namespace BioImage
             app = this;
             SetImage(arg);
             Table.AddViewer(this);
-            #if !DEBUG
-                        filtersToolStripMenuItem.Visible = false;
-            #endif
+            
         }
         public ImageViewer(string arg)
         {
@@ -50,9 +48,6 @@ namespace BioImage
                 SetFile(arg, 0);
             }
             Table.AddViewer(this);
-            #if !DEBUG
-                        filtersToolStripMenuItem.Visible = false;
-            #endif
         }
         public static ImageViewer FromID(string id)
         {
@@ -411,12 +406,12 @@ namespace BioImage
 
         private void to8BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Image.To8Bit();
+            //Image.To8Bit();
         }
 
         private void to16BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Image.To16Bit();
+            //Image.To16Bit();
         }
 
     }
