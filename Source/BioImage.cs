@@ -1762,7 +1762,7 @@ namespace BioImage
         private Bitmap rgbBitmap8 = null;
         private Bitmap rgbBitmap16 = null;
         SizeInfo sizeInfo = new SizeInfo();
-        
+        /*
         public void To8Bit()
         {
 
@@ -1783,6 +1783,7 @@ namespace BioImage
         {
 
         }
+        */
         public static BioImage Copy(BioImage b)
         {
             BioImage bi = new BioImage(b.ID);
