@@ -1914,7 +1914,7 @@ namespace BioImage
                 c.Max = 255;
             }
             bitsPerPixel = 8;
-            
+            Recorder.AddLine("To8Bit();");
         }
         public void To16Bit()
         {
@@ -1932,31 +1932,42 @@ namespace BioImage
                 c.Max = ushort.MaxValue;
             }
             bitsPerPixel = 16;
+            AutoThreshold();
+            Recorder.AddLine("To16Bit();");
         }
         public void To24Bit()
         {
-            BioImage bi = CopyInfo(this);
-            bi.sizeC = 1;
-            int index = 0;
-            bi.Coords = new int[sizeZ, 1, SizeT];
-            for (int i = 0; i < Buffers.Count; i+=3)
+            try
             {
-                Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
-                if (bitsPerPixel > 8)
-                    b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
-                b.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                b = BufferInfo.SwitchRedBlue(b);
-                BufferInfo bf = new BufferInfo(Table.GetImageName(ID),b, Buffers[i].Coordinate, index);
-                bi.Buffers.Add(bf);
-                bi.Coords[Buffers[i].Coordinate.Z, 0, Buffers[i].Coordinate.T] = index;
-                index++;
+                BioImage bi = CopyInfo(this);
+                bi.sizeC = 1;
+                int index = 0;
+                bi.Coords = new int[sizeZ, 1, SizeT];
+                for (int i = 0; i < Buffers.Count; i += 3)
+                {
+                    Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
+                    if (bitsPerPixel > 8)
+                        b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
+                    b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    b = BufferInfo.SwitchRedBlue(b);
+                    BufferInfo bf = new BufferInfo(Table.GetImageName(ID), b, Buffers[i].Coordinate, index);
+                    bi.Buffers.Add(bf);
+                    bi.Coords[Buffers[i].Coordinate.Z, 0, Buffers[i].Coordinate.T] = index;
+                    index++;
+                }
+                foreach (Channel c in bi.Channels)
+                {
+                    c.Max = 255;
+                }
+                bi.bitsPerPixel = 8;
+                Table.AddViewer(bi);
+                Recorder.AddLine("To24Bit();");
             }
-            foreach (Channel c in bi.Channels)
+            catch (Exception e)
             {
-                c.Max = 255;
+                MessageBox.Show("24 bit RGB conversion requires an image with 3 channels. Use substack to create 3 channel image.");
             }
-            bi.bitsPerPixel = 8;
-            Table.AddViewer(bi);
+            
         }
         public BioImage(string id)
         {

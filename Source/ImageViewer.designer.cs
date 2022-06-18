@@ -280,8 +280,8 @@ namespace BioImage
             this.rOIToolStripMenuItem,
             this.channelsToolToolStripMenuItem,
             this.stackToolsToolStripMenuItem,
-            this.filtersToolStripMenuItem,
-            this.formatToolStripMenuItem});
+            this.formatToolStripMenuItem,
+            this.filtersToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(403, 24);
@@ -306,24 +306,22 @@ namespace BioImage
             // 
             // bit8ToolStripMenuItem
             // 
-            this.bit8ToolStripMenuItem.CheckOnClick = true;
             this.bit8ToolStripMenuItem.Name = "bit8ToolStripMenuItem";
-            this.bit8ToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.bit8ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.bit8ToolStripMenuItem.Text = "To 8 Bit";
             this.bit8ToolStripMenuItem.Click += new System.EventHandler(this.bit8ToolStripMenuItem_Click);
             // 
             // bit16ToolStripMenuItem
             // 
-            this.bit16ToolStripMenuItem.CheckOnClick = true;
             this.bit16ToolStripMenuItem.Name = "bit16ToolStripMenuItem";
-            this.bit16ToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.bit16ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.bit16ToolStripMenuItem.Text = "To 16 Bit";
             this.bit16ToolStripMenuItem.Click += new System.EventHandler(this.bit16ToolStripMenuItem_Click);
             // 
             // to24BitToolStripMenuItem
             // 
             this.to24BitToolStripMenuItem.Name = "to24BitToolStripMenuItem";
-            this.to24BitToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.to24BitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.to24BitToolStripMenuItem.Text = "To 24 Bit";
             this.to24BitToolStripMenuItem.Click += new System.EventHandler(this.to24BitToolStripMenuItem_Click);
             // 
