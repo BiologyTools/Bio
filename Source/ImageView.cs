@@ -167,7 +167,7 @@ namespace BioImage
             Filtered,
             RGBImage
         }
-        private ViewMode viewMode = ViewMode.Raw;
+        private ViewMode viewMode = ViewMode.Filtered;
         public ViewMode Mode
         {
             get
@@ -1129,7 +1129,7 @@ namespace BioImage
                 {
                     im = image.GetRGBBitmap(coords, RChannel.range, BChannel.range, GChannel.range);
                 }
-                else if (px == PixelFormat.Format24bppRgb || px == PixelFormat.Format32bppRgb || px == PixelFormat.Format32bppArgb)
+                else
                 {
                     im = image.Buffers[index].Image;
                 }
@@ -1278,13 +1278,14 @@ namespace BioImage
                 ZCT co = ImageView.Coordinate;
                 if (b.RGBChannelCount > 1)
                 {
+                    ZCTXY cor = new ZCTXY(co.Z,co.C,co.T,(int)p.X,(int)p.Y);
                     Tools.Tool tool = Tools.currentTool;
                     if (Tools.rEnabled)
-                    b.SetValueRGB(co.Z,co.C,co.T, (int)p.X, (int)p.Y, 0, tool.Color.R);
+                    b.SetValueRGB(cor, 0, tool.Color.R);
                     if (Tools.gEnabled)
-                    b.SetValueRGB(co.Z, co.C, co.T, (int)p.X, (int)p.Y, 0, tool.Color.G);
+                    b.SetValueRGB(cor, 0, tool.Color.G);
                     if (Tools.bEnabled)
-                    b.SetValueRGB(co.Z, co.C, co.T, (int)p.X, (int)p.Y, 0, tool.Color.B);
+                    b.SetValueRGB(cor, 0, tool.Color.B);
                 }
                 else
                 if (Mode == ViewMode.RGBImage)
@@ -1557,34 +1558,34 @@ namespace BioImage
             int moveAmount = 5;
             if (viewer != null && msg.Msg == (int)KeyMessages.WM_KEYDOWN)
             {
-                if(key == Keys.Subtract)
+                if(key == Keys.Subtract || key == Keys.NumPad7)
                 {
                     scale.Width -= 0.1f;
                     scale.Height -= 0.1f;
                     UpdateOverlay();
                 }
-                if (key == Keys.Add)
+                if (key == Keys.Add || key == Keys.NumPad9)
                 {
                     scale.Width += 0.1f;
                     scale.Height += 0.1f;
                     UpdateOverlay();
                 }
-                if (key == Keys.W)
+                if (key == Keys.W || key == Keys.NumPad8)
                 {
                     viewer.Origin = new System.Drawing.PointF(viewer.Origin.X, viewer.Origin.Y + moveAmount);
                     return true;
                 }
-                if (key == Keys.S)
+                if (key == Keys.S || key == Keys.NumPad2)
                 {
                     viewer.Origin = new System.Drawing.PointF(viewer.Origin.X, viewer.Origin.Y - moveAmount);
                     return true;
                 }
-                if (key == Keys.A)
+                if (key == Keys.A || key == Keys.NumPad4)
                 {
                     viewer.Origin = new System.Drawing.PointF(viewer.Origin.X + moveAmount, viewer.Origin.Y);
                     return true;
                 }
-                if (key == Keys.D)
+                if (key == Keys.D || key == Keys.NumPad6)
                 {
                     viewer.Origin = new System.Drawing.PointF(viewer.Origin.X - moveAmount, viewer.Origin.Y);
                     return true;

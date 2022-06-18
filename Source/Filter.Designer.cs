@@ -32,8 +32,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Filter));
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.applyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.filterView = new System.Windows.Forms.TreeView();
             this.applyRGBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.filterView = new System.Windows.Forms.TreeView();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -43,14 +43,20 @@
             this.applyToolStripMenuItem,
             this.applyRGBToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(181, 70);
+            this.contextMenuStrip.Size = new System.Drawing.Size(131, 48);
             // 
             // applyToolStripMenuItem
             // 
             this.applyToolStripMenuItem.Name = "applyToolStripMenuItem";
-            this.applyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.applyToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.applyToolStripMenuItem.Text = "Apply";
             this.applyToolStripMenuItem.Click += new System.EventHandler(this.applyToolStripMenuItem_Click);
+            // 
+            // applyRGBToolStripMenuItem
+            // 
+            this.applyRGBToolStripMenuItem.Name = "applyRGBToolStripMenuItem";
+            this.applyRGBToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.applyRGBToolStripMenuItem.Text = "Apply RGB";
             // 
             // filterView
             // 
@@ -60,21 +66,15 @@
             this.filterView.ForeColor = System.Drawing.Color.White;
             this.filterView.Location = new System.Drawing.Point(0, 0);
             this.filterView.Name = "filterView";
-            this.filterView.Size = new System.Drawing.Size(163, 242);
+            this.filterView.Size = new System.Drawing.Size(201, 242);
             this.filterView.TabIndex = 8;
-            // 
-            // applyRGBToolStripMenuItem
-            // 
-            this.applyRGBToolStripMenuItem.Name = "applyRGBToolStripMenuItem";
-            this.applyRGBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.applyRGBToolStripMenuItem.Text = "Apply RGB";
             // 
             // Filter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(163, 242);
+            this.ClientSize = new System.Drawing.Size(201, 242);
             this.Controls.Add(this.filterView);
             this.ForeColor = System.Drawing.Color.White;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
