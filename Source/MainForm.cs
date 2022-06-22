@@ -75,6 +75,7 @@ namespace BioImage
 
         private static void Init()
         {
+            BioImage.Initialize();
             runner = new Scripting();
             recorder = new Recorder();
         }

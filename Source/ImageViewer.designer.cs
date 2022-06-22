@@ -60,11 +60,13 @@ namespace BioImage
             this.channelsToolToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.stackToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
-            this.filtersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.formatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bit8ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bit16ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.to24BitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.filtersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.to36BitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.to48BitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -287,19 +289,14 @@ namespace BioImage
             this.menuStrip.Size = new System.Drawing.Size(403, 24);
             this.menuStrip.TabIndex = 0;
             // 
-            // filtersToolStripMenuItem
-            // 
-            this.filtersToolStripMenuItem.Name = "filtersToolStripMenuItem";
-            this.filtersToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
-            this.filtersToolStripMenuItem.Text = "Filters";
-            this.filtersToolStripMenuItem.Click += new System.EventHandler(this.filtersToolStripMenuItem_Click);
-            // 
             // formatToolStripMenuItem
             // 
             this.formatToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bit8ToolStripMenuItem,
             this.bit16ToolStripMenuItem,
-            this.to24BitToolStripMenuItem});
+            this.to24BitToolStripMenuItem,
+            this.to36BitToolStripMenuItem,
+            this.to48BitToolStripMenuItem});
             this.formatToolStripMenuItem.Name = "formatToolStripMenuItem";
             this.formatToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.formatToolStripMenuItem.Text = "Format";
@@ -324,6 +321,26 @@ namespace BioImage
             this.to24BitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.to24BitToolStripMenuItem.Text = "To 24 Bit";
             this.to24BitToolStripMenuItem.Click += new System.EventHandler(this.to24BitToolStripMenuItem_Click);
+            // 
+            // filtersToolStripMenuItem
+            // 
+            this.filtersToolStripMenuItem.Name = "filtersToolStripMenuItem";
+            this.filtersToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+            this.filtersToolStripMenuItem.Text = "Filters";
+            this.filtersToolStripMenuItem.Click += new System.EventHandler(this.filtersToolStripMenuItem_Click);
+            // 
+            // to36BitToolStripMenuItem
+            // 
+            this.to36BitToolStripMenuItem.Name = "to36BitToolStripMenuItem";
+            this.to36BitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.to36BitToolStripMenuItem.Text = "To 32 Bit";
+            // 
+            // to48BitToolStripMenuItem
+            // 
+            this.to48BitToolStripMenuItem.Name = "to48BitToolStripMenuItem";
+            this.to48BitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.to48BitToolStripMenuItem.Text = "To 48 Bit";
+            this.to48BitToolStripMenuItem.Click += new System.EventHandler(this.to48BitToolStripMenuItem_Click);
             // 
             // ImageViewer
             // 
@@ -385,5 +402,7 @@ namespace BioImage
         private System.Windows.Forms.ToolStripMenuItem bit8ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bit16ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem to24BitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem to36BitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem to48BitToolStripMenuItem;
     }
 }

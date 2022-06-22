@@ -50,7 +50,7 @@ namespace BioImage
         {
             string file = im.ID.Replace("\\", "/");
             InitializeComponent();
-            serie = im.serie;
+            serie = im.series;
             image = im;
             tools = new Tools();
             if (file == "" || file == null)
