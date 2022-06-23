@@ -1079,20 +1079,24 @@ namespace BioImage
         {
             get
             { 
+                /*
                 if(PixelFormat == PixelFormat.Format24bppRgb)
                 {
                     Stream stream = new MemoryStream(Bytes);
                     return Image.FromStream(stream);
                 }
                 else
+                    */
                 return GetBitmap(SizeX, SizeY, Stride, PixelFormat, Bytes);
             }
             set
             {
+                Bitmap b = (Bitmap)value;
+                b.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 PixelFormat = value.PixelFormat;
                 SizeX = value.Width;
                 SizeY = value.Height;
-                bytes = GetBuffer((Bitmap)value);
+                bytes = GetBuffer((Bitmap)b);
             }
         }
         private PixelFormat pixelFormat;
@@ -1236,19 +1240,48 @@ namespace BioImage
         }
         public void SwitchRedBlue()
         {
+            
+            if (PixelFormat == PixelFormat.Format8bppIndexed || PixelFormat == PixelFormat.Format16bppGrayScale)
+                throw new ArgumentException("Can't switch Red & Blue in non RGB image");
+            //BufferInfo bf = new BufferInfo(SizeX, SizeY,PixelFormat, bytes, Coordinate, ID);
+            if(PixelFormat == PixelFormat.Format24bppRgb)
+            for (int y = 0; y < SizeY; y++)
+            {
+                for (int x = 0; x < Stride; x += 3)
+                {
+                    int i = y * Stride + x;
+                    byte bb = bytes[i + 2];
+                    bytes[i + 2] = bytes[i];
+                    bytes[i] = bb;
+                }
+            }
+            if (PixelFormat == PixelFormat.Format32bppArgb)
+                for (int y = 0; y < SizeY; y++)
+                {
+                    for (int x = 0; x < Stride; x += 4)
+                    {
+                        int i = y * Stride + x;
+                        byte bb = bytes[i + 2];
+                        bytes[i + 2] = bytes[i];
+                        bytes[i] = bb;
+                    }
+                }
+            /*
+            Bitmap b = (Bitmap)Image;
             ExtractChannel cr = new ExtractChannel(AForge.Imaging.RGB.R);
             ExtractChannel cb = new ExtractChannel(AForge.Imaging.RGB.B);
             // apply the filter
-            Bitmap rImage = cr.Apply((Bitmap)Image);
-            Bitmap bImage = cb.Apply((Bitmap)Image);
+            Bitmap rImage = cr.Apply(b);
+            Bitmap bImage = cb.Apply(b);
 
             ReplaceChannel replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, bImage);
-            replaceRFilter.ApplyInPlace((Bitmap)Image);
+            replaceRFilter.ApplyInPlace(b);
 
             ReplaceChannel replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, rImage);
-            replaceBFilter.ApplyInPlace((Bitmap)Image);
+            replaceBFilter.ApplyInPlace(b);
             rImage.Dispose();
             bImage.Dispose();
+            */
         }
         public byte[] GetSaveBytes()
         {
@@ -1439,7 +1472,8 @@ namespace BioImage
             Recorder.AddLine("Filters.Apply(" + '"' + ImageView.viewer.image.ID + '"' + "," + '"' + name + '"' + ", false, ImageView.viewer.Index");
             return img;
         }
-        public static BioImage Apply2(string id, string id2, string name)
+
+        public static BioImage BaseFilter2(string id, string id2, string name, bool inPlace)
         {
             BioImage c = Table.GetImage(id);
             BioImage c2 = Table.GetImage(id2);
@@ -1451,7 +1485,7 @@ namespace BioImage
                 {
                     BaseFilter2 fi = (BaseFilter2)f.filt;
                     fi.OverlayImage = (Bitmap)c2.Buffers[i].Image;
-                    img.Buffers[i].Image = f.filt.Apply((Bitmap)img.Buffers[i].Image);
+                    img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
                 }
             }
             catch (Exception e)
@@ -1465,6 +1499,68 @@ namespace BioImage
             Recorder.AddLine("Filters.Apply2(" + '"' + id + '"' + "," + '"' + id2 + '"' + "," + '"' + name + '"' + ", false, ImageView.viewer.Index");
             return img;
         }
+        public static BioImage BaseInPlaceFilter(string id, string id2, string name, bool inPlace)
+        {
+            BioImage c = Table.GetImage(id);
+            BioImage c2 = Table.GetImage(id2);
+            BioImage img = null;
+            if (inPlace)
+                img = BioImage.Copy(c);
+            try
+            {
+                Filt f = filters[name];
+                for (int i = 0; i < img.Buffers.Count; i++)
+                {
+                    BaseInPlaceFilter fi = (BaseInPlaceFilter)f.filt;
+                    if (inPlace)
+                    {
+                        fi.ApplyInPlace((Bitmap)img.Buffers[i].Image);
+                    }
+                    else
+                    {
+                        img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
+                        Table.AddImage(img);
+                        ImageViewer iv = new ImageViewer(img);
+                        Table.AddViewer(iv);
+                        iv.Show();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Filter Error");
+            }
+            Recorder.AddLine("Filters.Apply2(" + '"' + id + '"' + "," + '"' + id2 + '"' + "," + '"' + name + '"' + ", false, ImageView.viewer.Index");
+            return img;
+        }
+        public static BioImage BaseInPlaceFilter2(string id, string id2, string name, bool inPlace)
+        {
+            BioImage c = Table.GetImage(id);
+            BioImage c2 = Table.GetImage(id2);
+            BioImage img = null;
+            img = BioImage.Copy(c);
+            try
+            {
+                Filt f = filters[name];
+                for (int i = 0; i < img.Buffers.Count; i++)
+                {
+                    BaseInPlaceFilter2 fi = (BaseInPlaceFilter2)f.filt;
+                    fi.OverlayImage = (Bitmap)c2.Buffers[i].Image;
+                    img.Buffers[i].Image = fi.Apply((Bitmap)c.Buffers[i].Image);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Filter Error");
+            }
+            Table.AddImage(img);
+            ImageViewer iv = new ImageViewer(img);
+            Table.AddViewer(iv);
+            iv.Show();
+            Recorder.AddLine("Filters.Apply2(" + '"' + id + '"' + "," + '"' + id2 + '"' + "," + '"' + name + '"' + ", false, ImageView.viewer.Index");
+            return img;
+        }
+
         public static void Init()
         {
             //Base Filters
@@ -1537,7 +1633,6 @@ namespace BioImage
             //filters.Add(f.name, f);
 
             //BaseInPlacePartialFilter
-
             f = new Filt("AdditiveNoise", new AdditiveNoise(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
             //f = new Filt("ApplyMask", new ApplyMask(), Filt.Type.InPlace2);
@@ -2010,7 +2105,7 @@ namespace BioImage
             {
                 Bitmap b = GetFiltered(i, RChannel.range, GChannel.range, BChannel.range);
                 b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
-                b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                //b.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 Buffers[i].Image = b;
             }
             foreach (Channel c in Channels)
@@ -2043,35 +2138,58 @@ namespace BioImage
         }
         public void To24Bit()
         {
-            if (SizeC != 3)
+            if (SizeC == 1)
             {
-                MessageBox.Show("24 bit RGB conversion requires an image with 3, 8 bit channels. Use stack tools to create 3 channel image.");
+                for (int i = 0; i < Buffers.Count; i++)
+                {
+                    Bitmap b = BufferInfo.RGBTo24Bit((Bitmap)Buffers[i].Image);
+                    //b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    b = BufferInfo.SwitchRedBlue(b);
+                    Buffers[i].Image = b;
+                }
             }
-            BioImage bi = CopyInfo(this);
-            bi.sizeC = 1;
-            int index = 0;
-            bi.Coords = new int[sizeZ, 1, SizeT];
-            for (int i = 0; i < Buffers.Count; i += 3)
+            else
             {
-                Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
-                if (bitsPerPixel > 8)
-                    b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
-                b.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                b = BufferInfo.SwitchRedBlue(b);
-                BufferInfo bf = new BufferInfo(Table.GetImageName(ID), b, Buffers[i].Coordinate, index);
-                bi.Buffers.Add(bf);
-                bi.Coords[Buffers[i].Coordinate.Z, 0, Buffers[i].Coordinate.T] = index;
-                index++;
+                if (SizeC != 3)
+                {
+                    MessageBox.Show("24 bit RGB conversion requires an image with 3, 8 bit channels. Use stack tools to create 3 channel image.");
+                }
+                BioImage bi = CopyInfo(this);
+                bi.sizeC = 1;
+                int index = 0;
+                bi.Coords = new int[sizeZ, 1, SizeT];
+                for (int i = 0; i < Buffers.Count; i += 3)
+                {
+                    Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
+                    if (bitsPerPixel > 8)
+                        b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
+                    //b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    b = BufferInfo.SwitchRedBlue(b);
+                    BufferInfo bf = new BufferInfo(Table.GetImageName(ID), b, Buffers[i].Coordinate, index);
+                    bi.Buffers.Add(bf);
+                    bi.Coords[Buffers[i].Coordinate.Z, 0, Buffers[i].Coordinate.T] = index;
+                    index++;
+                }
+                foreach (Channel c in bi.Channels)
+                {
+                    c.Max = 255;
+                }
+                bi.bitsPerPixel = 8;
             }
-            foreach (Channel c in bi.Channels)
-            {
-                c.Max = 255;
-            }
-            bi.bitsPerPixel = 8;
-            AutoThreshold();
-            Table.AddViewer(bi);
+            //Table.AddViewer(bi);
             Recorder.AddLine("To24Bit();");
-
+        }
+        public void To32Bit()
+        {
+            if (bitsPerPixel > 8)
+                return;
+            for (int i = 0; i < Buffers.Count; i++)
+            {
+                Bitmap b = BufferInfo.RGBTo32Bit((Bitmap)Buffers[i].Image);
+                Clipboard.SetImage(b);
+                Buffers[i].Image = b;
+            }
+            Recorder.AddLine("To32Bit();");
         }
         public void To48Bit()
         {
@@ -2079,7 +2197,6 @@ namespace BioImage
             {
                 MessageBox.Show("48 bit RGB conversion requires an image with 3, 16 bit channels. Use stack tools to create 3 channel image.");
             }
-
             BioImage bi = CopyInfo(this);
             bi.sizeC = 1;
             int index = 0;
@@ -3359,6 +3476,13 @@ namespace BioImage
                     else
                         b.physicalSizeZ = 1;
                 }
+                else
+                {
+                    //This is a non ImageJ image.
+                    b.sizeC = 1;
+                    b.sizeT = 1;
+                    b.sizeZ = 1;
+                 }
                 string[] sts = desc.Split('\n');
                 bool start = false;
                 for (int i = 0; i < sts.Length; i++)
@@ -3445,7 +3569,7 @@ namespace BioImage
                 int c = 0;
                 int t = 0;
                 b.Buffers = new List<BufferInfo>();
-                
+                /*
                 if (PixelFormat == PixelFormat.Format24bppRgb)
                 {
                     Bitmap bitmap = (Bitmap)Image.FromFile(file);
@@ -3466,7 +3590,7 @@ namespace BioImage
                 }
                 else
                 {
-                    
+                    */
                     int numberOfStrips = image.NumberOfStrips();
                     int pages = image.NumberOfDirectories();
                     for (int p = 0; p < pages; p++)
@@ -3484,7 +3608,7 @@ namespace BioImage
                         b.Buffers.Add(inf);
                         threadProgress = (int)((double)p / (double)pages)*100;
                     }
-                }
+                //}
                 for (int im = 0; im < b.Buffers.Count; im++)
                 {
                     ZCT co = new ZCT(z, c, t);
@@ -3523,7 +3647,6 @@ namespace BioImage
                 b.Channels.Add(ch);
                 b.Coords = new int[b.SizeZ, b.SizeC, b.sizeT];
             }
-            Table.AddViewer(b);
             done = true;
         }
         public static void SaveOME()
@@ -3576,23 +3699,9 @@ namespace BioImage
         }
         public static void OpenOME()
         {
-            if(Initializing)
-            {
-                int wait = 0;
-                do
-                {
-                    System.Threading.Thread.Sleep(1000);
-                    wait += 1;
-                } while (wait < 20 || Initialized);
-                if(!(wait < 20))
-                {
-                    MessageBox.Show("OME reader did not initialize in expected time.");
-                    return;
-                }
-            }
             if(!Initialized)
             {
-                MessageBox.Show("OME reader not initialized. Call BioImage.Initialize(); first");
+                MessageBox.Show("OME reader not initialized. Call BioImage.Initialize(); first.");
                 return;
             }
             st.Start();
@@ -4159,7 +4268,6 @@ namespace BioImage
             reader.close();
             //pr.Close();
             Recorder.AddLine("BioImage.OpenOME(" + '"' + file + '"' + "," + b.series + ");");
-            Table.AddViewer(b);
             done = true;
             //return b;
         }

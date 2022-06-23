@@ -68,7 +68,7 @@ namespace BioImage
                 ApplyTwo two = new ApplyTwo();
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.Apply2(two.ImageA.ID, two.ImageB.ID, n.filt.name);
+                Filters.BaseFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name,false);
                 Recorder.AddLine("Filters.Apply2(" + '"' + two.ImageA.ID + '"' + "," + '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"');
             }
             else
@@ -77,7 +77,7 @@ namespace BioImage
                 ApplyTwo two = new ApplyTwo();
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.Apply2(two.ImageA.ID, two.ImageB.ID, n.filt.name);
+                Filters.BaseInPlaceFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, true);
                 Recorder.AddLine("Filters.Apply2(" + '"' + two.ImageA.ID + '"' + "," + '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"');
             }
             else

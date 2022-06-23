@@ -441,5 +441,10 @@ namespace BioImage
         {
             Image.To48Bit();
         }
+
+        private void to32BitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Image.To32Bit();
+        }
     }
 }
