@@ -1008,7 +1008,6 @@ namespace BioImage
                     s = SizeX * 4;
                 else
                     s = SizeX * 3 * 2;
-
                 return s;
             }
         }
@@ -1096,6 +1095,7 @@ namespace BioImage
                 PixelFormat = value.PixelFormat;
                 SizeX = value.Width;
                 SizeY = value.Height;
+                b = BufferInfo.SwitchRedBlue(b);
                 bytes = GetBuffer((Bitmap)b);
             }
         }
@@ -1123,19 +1123,34 @@ namespace BioImage
                 throw new InvalidOperationException("Stride padding failed");
             return newstride;
         }
-        private static byte[] GetPaddedBuffer(byte[] bts, int w, int h, int stride)
+        private static byte[] GetPaddedBuffer(byte[] bts, int w, int h, int stride, PixelFormat px)
         {
             int newstride = GetStridePadded(stride);
             if (newstride == stride)
                 return bts;
             byte[] newbts = new byte[newstride * h];
-            for (int y = 0; y < h; ++y)
+            if (px == PixelFormat.Format24bppRgb || px == PixelFormat.Format32bppArgb)
             {
-                for (int x = 0; x < w; ++x)
+                for (int y = 0; y < h; ++y)
                 {
-                    int index = (y * stride) + x;
-                    int index2 = (y * newstride) + x;
-                    newbts[index2] = bts[index];
+                    for (int x = 0; x < w; ++x)
+                    {
+                        int index = (y * stride) + x;
+                        int index2 = (y * newstride) + x;
+                        newbts[index2] = bts[index];
+                    }
+                }
+            }
+            else
+            {
+                for (int y = 0; y < h; ++y)
+                {
+                    for (int x = 0; x < w * 2; ++x)
+                    {
+                        int index = (y * stride) + x;
+                        int index2 = (y * newstride) + x;
+                        newbts[index2] = bts[index];
+                    }
                 }
             }
             return newbts;
@@ -1147,7 +1162,7 @@ namespace BioImage
                 if (stride % 4 == 0)
                     return new Bitmap(w, h, stride, px, new IntPtr((void*)numPtr1));
                 int newstride = GetStridePadded(stride);
-                byte[] newbts = GetPaddedBuffer(bts, w, h, stride);
+                byte[] newbts = GetPaddedBuffer(bts, w, h, stride,px);
                 fixed (byte* numPtr2 = newbts)
                 {
                     return new Bitmap(w, h, newstride, px, new IntPtr((void*)numPtr2));
@@ -1204,23 +1219,6 @@ namespace BioImage
             statistics = Statistics.FromBytes(bytes, SizeX, SizeY, RGBChannelsCount, BitsPerPixel, Stride);
             return statistics;
         }
-        public static BufferInfo SwitchRedBlue(BufferInfo b)
-        {
-            if (b.PixelFormat == PixelFormat.Format8bppIndexed || b.PixelFormat == PixelFormat.Format16bppGrayScale)
-                throw new ArgumentException("Can't switch Red & Blue in non RGB image");
-            BufferInfo bf = new BufferInfo(b.SizeX, b.SizeY, b.PixelFormat, b.bytes, b.Coordinate, b.ID);
-            for (int y = 0; y < b.SizeY; y++)
-            {
-                for (int x = 0; x < b.Stride; x += 3)
-                {
-                    int i = y * b.Stride + x;
-                    byte bb = b.bytes[i + 2];
-                    b.bytes[i + 2] = b.bytes[i];
-                    b.bytes[i] = bb;
-                }
-            }
-            return bf;
-        }
         public static Bitmap SwitchRedBlue(Bitmap image)
         {
             ExtractChannel cr = new ExtractChannel(AForge.Imaging.RGB.R);
@@ -1240,7 +1238,6 @@ namespace BioImage
         }
         public void SwitchRedBlue()
         {
-            
             if (PixelFormat == PixelFormat.Format8bppIndexed || PixelFormat == PixelFormat.Format16bppGrayScale)
                 throw new ArgumentException("Can't switch Red & Blue in non RGB image");
             //BufferInfo bf = new BufferInfo(SizeX, SizeY,PixelFormat, bytes, Coordinate, ID);
@@ -1769,8 +1766,8 @@ namespace BioImage
         {
             if (bit16)
             {
-                meanvalues = new double[ushort.MaxValue];
-                values = new int[ushort.MaxValue];
+                meanvalues = new double[ushort.MaxValue+1];
+                values = new int[ushort.MaxValue+1];
                 bitsPerPixel = 16;
             }
             else
@@ -2125,7 +2122,7 @@ namespace BioImage
             {
                 Bitmap b = GetFiltered(i, RChannel.range, GChannel.range, BChannel.range);
                 b = AForge.Imaging.Image.Convert8bppTo16bpp(b);
-                b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                //b.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 Buffers[i].Image = b;
             }
             foreach (Channel c in Channels)
@@ -2143,8 +2140,6 @@ namespace BioImage
                 for (int i = 0; i < Buffers.Count; i++)
                 {
                     Bitmap b = BufferInfo.RGBTo24Bit((Bitmap)Buffers[i].Image);
-                    //b.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                    b = BufferInfo.SwitchRedBlue(b);
                     Buffers[i].Image = b;
                 }
             }
@@ -2163,8 +2158,6 @@ namespace BioImage
                     Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
                     if (bitsPerPixel > 8)
                         b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
-                    //b.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                    b = BufferInfo.SwitchRedBlue(b);
                     BufferInfo bf = new BufferInfo(Table.GetImageName(ID), b, Buffers[i].Coordinate, index);
                     bi.Buffers.Add(bf);
                     bi.Coords[Buffers[i].Coordinate.Z, 0, Buffers[i].Coordinate.T] = index;
@@ -2186,7 +2179,6 @@ namespace BioImage
             for (int i = 0; i < Buffers.Count; i++)
             {
                 Bitmap b = BufferInfo.RGBTo32Bit((Bitmap)Buffers[i].Image);
-                Clipboard.SetImage(b);
                 Buffers[i].Image = b;
             }
             Recorder.AddLine("To32Bit();");
@@ -2200,21 +2192,21 @@ namespace BioImage
             BioImage bi = CopyInfo(this);
             bi.sizeC = 1;
             int index = 0;
-            bi.Coords = new int[sizeZ, 1, SizeT];
+            bi.Coords = new int[SizeZ, 3, SizeT];
             for (int i = 0; i < Buffers.Count; i += 3)
             {
                 Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
-                b.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                b = BufferInfo.SwitchRedBlue(b);
                 BufferInfo bf = new BufferInfo(Table.GetImageName(ID), b, Buffers[i].Coordinate, index);
                 bi.Buffers.Add(bf);
-                bi.Coords[Buffers[i].Coordinate.Z, 0, Buffers[i].Coordinate.T] = index;
+                bi.Coords[Buffers[i].Coordinate.Z, Buffers[i].Coordinate.C, Buffers[i].Coordinate.T] = index;
                 index++;
             }
+            /*
             foreach (Channel c in bi.Channels)
             {
                 c.Max = 255;
             }
+            */
             bi.bitsPerPixel = 16;
             AutoThreshold();
             Table.AddViewer(bi);
@@ -3604,7 +3596,6 @@ namespace BioImage
                             offset += image.ScanlineSize();
                         }
                         BufferInfo inf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), p);
-                        
                         b.Buffers.Add(inf);
                         threadProgress = (int)((double)p / (double)pages)*100;
                     }
