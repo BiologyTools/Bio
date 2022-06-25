@@ -53,41 +53,95 @@ namespace BioImage
             }
         }
 
-        private void applyToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ApplyFilter(bool inPlace)
         {
             if (filterView.SelectedNode==null)
                 return;
             Node n = (Node)filterView.SelectedNode.Tag;
             if (n.filt.type == Filt.Type.Base)
             {
-                Filters.Apply(ImageView.viewer.image.ID, n.filt.name);
-                Recorder.AddLine("Filters.Apply(" + '"' + ImageView.viewer.image.ID + '"' + "," + '"' + n.filt.name + '"');
+                Filters.BaseFilter(ImageView.viewer.image.ID, n.filt.name, false);
+                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
             }
             if (n.filt.type == Filt.Type.Base2)
             {
-                ApplyTwo two = new ApplyTwo();
+                ApplyFilter two = new ApplyFilter(true);
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.BaseFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name,false);
-                Recorder.AddLine("Filters.Apply2(" + '"' + two.ImageA.ID + '"' + "," + '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"');
-            }
-            else
-            if (n.filt.type == Filt.Type.InPlace2)
-            {
-                ApplyTwo two = new ApplyTwo();
-                if (two.ShowDialog() != DialogResult.OK)
-                    return;
-                Filters.BaseInPlaceFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, true);
-                Recorder.AddLine("Filters.Apply2(" + '"' + two.ImageA.ID + '"' + "," + '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"');
+                Filters.BaseFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
+                Filters.BaseInPlaceFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
+                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + two.ImageA.ID + '"' + "," +
+                   '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
             }
             else
             if (n.filt.type == Filt.Type.InPlace)
             {
-                Filters.Apply(ImageView.viewer.image.ID, n.filt.name);
-                Recorder.AddLine("Filters.InPlace(" + '"' + ImageView.viewer.image.ID + '"' + "," + '"' + n.filt.name + '"');
+                Filters.BaseInPlaceFilter(ImageView.viewer.image.ID, n.filt.name, false);
+                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
             }
-
+            else
+            if (n.filt.type == Filt.Type.InPlace2)
+            {
+                ApplyFilter two = new ApplyFilter(true);
+                if (two.ShowDialog() != DialogResult.OK)
+                    return;
+                Filters.BaseInPlaceFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
+                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + two.ImageA.ID + '"' + "," +
+                   '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+            }
+            else
+            if (n.filt.type == Filt.Type.InPlacePartial)
+            {
+                Filters.BaseInPlacePartialFilter(ImageView.viewer.image.ID, n.filt.name, false);
+                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+            }
+            else
+            if (n.filt.type == Filt.Type.Resize)
+            {
+                ApplyFilter two = new ApplyFilter(false);
+                Filters.BaseResizeFilter(ImageView.viewer.image.ID, n.filt.name, false, two.W,two.H);
+                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+            }
+            else
+            if (n.filt.type == Filt.Type.Rotate)
+            {
+                ApplyFilter two = new ApplyFilter(false);
+                Filters.BaseRotateFilter(ImageView.viewer.image.ID, n.filt.name, false, two.Angle, two.Color);
+                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+            }
+            else
+            if (n.filt.type == Filt.Type.Transformation)
+            {
+                ApplyFilter two = new ApplyFilter(false);
+                if (two.ShowDialog() != DialogResult.OK)
+                    return;
+                if (n.filt.name == "Crop")
+                {
+                    Filters.Crop(two.ImageA.ID, two.Rectangle);
+                }
+                else
+                {
+                    Filters.BaseTransformationFilter(ImageView.viewer.image.ID, n.filt.name, false, two.Angle);
+                    Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                        '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+                }
+            }
             UpdateView();
+        }
+
+        private void applyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ApplyFilter(false);
+        }
+
+        private void applyRGBToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ApplyFilter(true);
         }
     }
 }

@@ -10,22 +10,29 @@ using System.Windows.Forms;
 
 namespace BioImage
 {
-    public partial class ApplyTwo : Form
+    public partial class ApplyFilter : Form
     {
-        public ApplyTwo()
+        public ApplyFilter(bool two)
         {
             InitializeComponent();
             UpdateStacks();
+            if(!two)
+            stackBBox.Enabled = false;
         }
 
         public void UpdateStacks()
         {
-            stackABox.Items.Clear();
-            stackBBox.Items.Clear();    
-            foreach (BioImage b in Table.images.Values)
+            if (Table.images.Count != stackABox.Items.Count)
             {
-                stackABox.Items.Add(b);
-                stackBBox.Items.Add(b);
+                stackABox.Items.Clear();
+                stackBBox.Items.Clear();
+                foreach (BioImage b in Table.images.Values)
+                {
+                    stackABox.Items.Add(b);
+                    stackBBox.Items.Add(b);
+                }
+                if (stackABox.Items.Count == 1)
+                    stackABox.SelectedIndex = 0;
             }
         }
         public BioImage ImageA
@@ -36,10 +43,50 @@ namespace BioImage
         {
             get { return (BioImage)stackBBox.SelectedItem; }
         }
+        public Rectangle Rectangle
+        {
+            get
+            {
+                if (roiBox.SelectedIndex != -1)
+                    return ((Annotation)roiBox.SelectedItem).BoundingBox.ToRectangleInt();
+                else
+                    return new Rectangle((int)xBox.Value, (int)yBox.Value, (int)wBox.Value, (int)hBox.Value);
+            }
+        }
+        public int Angle
+        {
+            get
+            {
+                return (int)angleBox.Value;
+            }
+        }
+        public Color Color
+        {
+            get
+            {
+                return colorDialog.Color;
+            }
+        }
+        public int W
+        {
+            get
+            {
+                return (int)wBox.Value;
+            }
+        }
+        public int H
+        {
+            get
+            {
+                return (int)hBox.Value;
+            }
+        }
         private void stackABox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (stackABox.SelectedIndex == -1)
                 return;
+            roiBox.Items.Clear();
+            roiBox.Items.AddRange(ImageA.Annotations.ToArray());
             if (stackBBox.SelectedIndex == -1)
                 return;
             if(stackABox.SelectedItem == stackBBox.SelectedItem)
@@ -77,6 +124,16 @@ namespace BioImage
         private void cancelBut_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
+        }
+
+        private void setColorBut_Click(object sender, EventArgs e)
+        {
+            colorDialog.ShowDialog();
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            roiBox.SelectedIndex = -1;
         }
     }
 }

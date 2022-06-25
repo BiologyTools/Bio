@@ -134,7 +134,6 @@ namespace BioImage
                 return type.ToString();
             }
         }
-
         public static Tool currentTool;
         
         public static RectangleD selectionRect;
@@ -304,8 +303,7 @@ namespace BioImage
                 panPanel.BackColor = Color.LightGray;
                 Cursor.Current = Cursors.Hand;
             }
-        }
-        
+        }        
         public void ToolUp(PointF e, MouseButtons buts)
         {
             if (ImageView.viewer == null)
@@ -381,13 +379,17 @@ namespace BioImage
                 Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(0, 0, 0, 0);
                 UpdateOverlay();
             }
-
+            /*
             if (Tools.currentTool.type == Tools.Tool.Type.pan)
             {
                 PointF pf = new PointF(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
-                ImageView.viewer.Origin = new PointF(ImageView.viewer.Origin.X + pf.X, ImageView.viewer.Origin.Y + pf.Y);
-                UpdateView();
+                if (pf.X < 500 && pf.Y < 500)
+                {
+                    ImageView.viewer.Origin = new PointF(ImageView.viewer.Origin.X + pf.X, ImageView.viewer.Origin.Y + pf.Y);
+                    UpdateView();
+                }
             }
+            */
             if (Tools.currentTool.type == Tools.Tool.Type.magic)
             {
                 PointF pf = new PointF(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
@@ -571,11 +573,14 @@ namespace BioImage
             if (Tools.currentTool.type == Tools.Tool.Type.pan && (buts == MouseButtons.Middle || buts == MouseButtons.Left))
             {
                 PointF pf = new PointF(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
+                if (pf.X > 10 && pf.Y > 10)
+                    return;
                 ImageView.viewer.Origin = new PointF(ImageView.viewer.Origin.X + pf.X, ImageView.viewer.Origin.Y + pf.Y);
                 UpdateView();
             }
 
         }
+
         private void movePanel_Click(object sender, EventArgs e)
         {
             currentTool = GetTool(Tool.Type.move);
@@ -583,7 +588,6 @@ namespace BioImage
             movePanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
         }
-
         private void textPanel_Click(object sender, EventArgs e)
         {
             currentTool = GetTool(Tool.Type.text);
@@ -591,7 +595,6 @@ namespace BioImage
             textPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
         }
-
         private void textPanel_DoubleClick(object sender, EventArgs e)
         {
             currentTool = GetTool(Tool.Type.text);
@@ -631,7 +634,6 @@ namespace BioImage
             ellipsePanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
         }
-
         private void polyPanel_Click(object sender, EventArgs e)
         {
             currentTool = GetTool(Tool.Type.polygon);
@@ -639,7 +641,6 @@ namespace BioImage
             polyPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
         }
-
         private void deletePanel_Click(object sender, EventArgs e)
         {
             currentTool = GetTool(Tool.Type.delete);
@@ -647,7 +648,6 @@ namespace BioImage
             deletePanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
         }
-
         private void freeformPanel_Click(object sender, EventArgs e)
         {
             currentTool = GetTool(Tool.Type.freeform);
@@ -655,7 +655,6 @@ namespace BioImage
             freeformPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
         }
-
         private void rectSelPanel_Click(object sender, EventArgs e)
         {
             currentTool = GetTool(Tool.Type.rectSel);
@@ -663,7 +662,6 @@ namespace BioImage
             rectSelPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
         }
-
         private void panPanel_Click(object sender, EventArgs e)
         {
             currentTool = GetTool(Tool.Type.pan);
@@ -671,7 +669,6 @@ namespace BioImage
             panPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Hand;
         }
-
         private void magicPanel_Click(object sender, EventArgs e)
         {
             currentTool = GetTool(Tool.Type.magic);
@@ -685,9 +682,7 @@ namespace BioImage
         {
             if (magicSel.ShowDialog() != DialogResult.OK)
                 return;
-
         }
-
         private void Tools_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;

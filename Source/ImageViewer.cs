@@ -361,9 +361,8 @@ namespace BioImage
             if (this.Image == null)
                 return;
             Recorder.AddLine("Table.RemoveImage(" + '"' + this.Text + '"' + ");");
-            Table.RemoveImage(this.Image.Filename);
-            this.Image.Dispose();
             Table.RemoveViewer(this);
+            this.Image.Dispose();
             Recorder.AddLine("Table.RemoveViewer(" + '"' + this.Text + '"' + ");");
         }
 
@@ -408,12 +407,12 @@ namespace BioImage
 
         private void to8BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //Image.To8Bit();
+            Image.To8Bit();
         }
 
         private void to16BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //Image.To16Bit();
+            Image.To16Bit();
         }
 
         private void filtersToolStripMenuItem_Click(object sender, EventArgs e)

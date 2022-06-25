@@ -63,6 +63,7 @@ namespace BioImage
         public static void RemoveImage(BioImage im)
         {
             RemoveImage(im.ID);
+
         }
         public static void RemoveImage(string id)
         {
@@ -70,6 +71,7 @@ namespace BioImage
             if (im == null)
                 return;
             images.Remove(im.HashID);
+
         }
         public static void AddViewer(ImageViewer v)
         {
@@ -874,7 +876,7 @@ namespace BioImage
                 return index + ", " + Name;
         }
     }
-    public class BufferInfo
+    public class BufferInfo : IDisposable
     {
         public ushort GetValueRGB(int ix, int iy, int index)
         {
@@ -967,6 +969,17 @@ namespace BioImage
                 bytes[index] = (byte)value;
             }
         }
+        public long GetIndex(int x, int y)
+        {
+            if (BitsPerPixel > 8)
+            {
+                return (y * Stride + x) * 2 * RGBChannelsCount;
+            }
+            else
+            {
+                return (y * Stride + x) * RGBChannelsCount;
+            }
+        }
         public static string CreateID(string filepath, int index)
         {
             const char sep = '/';
@@ -974,8 +987,6 @@ namespace BioImage
             string s = filepath + sep + 'i' + sep + index;
             return s;
         }
-        public static LevelsLinear filter8 = new LevelsLinear();
-        public static LevelsLinear16bpp filter16 = new LevelsLinear16bpp();
         public string ID;
         public string File
         {
@@ -1074,19 +1085,13 @@ namespace BioImage
             get { return bytes; }
             set { bytes = value; }
         }
+        private Bitmap bitmap = null;
         public Image Image
         {
             get
             { 
-                /*
-                if(PixelFormat == PixelFormat.Format24bppRgb)
-                {
-                    Stream stream = new MemoryStream(Bytes);
-                    return Image.FromStream(stream);
-                }
-                else
-                    */
-                return GetBitmap(SizeX, SizeY, Stride, PixelFormat, Bytes);
+                bitmap = GetBitmap(SizeX, SizeY, Stride, PixelFormat, Bytes);
+                return bitmap;
             }
             set
             {
@@ -1095,6 +1100,7 @@ namespace BioImage
                 PixelFormat = value.PixelFormat;
                 SizeX = value.Width;
                 SizeY = value.Height;
+                if(isRGB)
                 b = BufferInfo.SwitchRedBlue(b);
                 bytes = GetBuffer((Bitmap)b);
             }
@@ -1107,6 +1113,7 @@ namespace BioImage
         private Statistics statistics;
         private byte[] bytes;
         private string file;
+
 
         private static int GetStridePadded(int stride)
         {
@@ -1160,7 +1167,9 @@ namespace BioImage
             fixed (byte* numPtr1 = bts)
             {
                 if (stride % 4 == 0)
+                { 
                     return new Bitmap(w, h, stride, px, new IntPtr((void*)numPtr1));
+                }
                 int newstride = GetStridePadded(stride);
                 byte[] newbts = GetPaddedBuffer(bts, w, h, stride,px);
                 fixed (byte* numPtr2 = newbts)
@@ -1168,7 +1177,41 @@ namespace BioImage
                     return new Bitmap(w, h, newstride, px, new IntPtr((void*)numPtr2));
                 }
             }
-            //}
+        }
+        public void SetImageRaw(Bitmap b)
+        {
+            b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            PixelFormat = b.PixelFormat;
+            SizeX = b.Width;
+            SizeY = b.Height;
+            b = BufferInfo.SwitchRedBlue(b);
+            bytes = GetBuffer((Bitmap)b);
+        }
+        public void Crop(Rectangle r)
+        {
+            byte[] bts = null;
+            int bytesPer = 3;
+            if (BitsPerPixel > 8)
+            {
+                bytesPer = 2;
+            }
+            int stridenew = r.Width * bytesPer;
+            int strideold = Stride;
+            bts = new byte[(stridenew * r.Height)];
+            
+            for (int y = 0; y < r.Height; y++)
+            {
+                for (int x = 0; x < stridenew; x+= bytesPer)
+                {
+                    int indexnew = (y * stridenew + x) * RGBChannelsCount;
+                    int indexold = (((y + r.Y) * strideold + (x + (r.X * 2))) * RGBChannelsCount);// + r.X;
+                    bts[indexnew] = bytes[indexold];
+                    bts[indexnew+1] = bytes[indexold+1];
+                }
+            }
+            bytes = bts;
+            SizeX = r.Width;
+            SizeY = r.Height;
         }
         public BufferInfo(string file, int w, int h, PixelFormat px, byte[] bts, ZCT coord, int index)
         {
@@ -1189,17 +1232,6 @@ namespace BioImage
             pixelFormat = im.PixelFormat;
             Coordinate = coord;
             Image = im;
-            if (isRGB)
-                SwitchRedBlue();
-        }
-        public BufferInfo(string file, int w, int h, PixelFormat px, byte[] bts, ZCT coord, string id)
-        {
-            ID = id;
-            SizeX = w;
-            SizeY = h;
-            pixelFormat = px;
-            Coordinate = coord;
-            bytes = bts;
             if (isRGB)
                 SwitchRedBlue();
         }
@@ -1371,7 +1403,7 @@ namespace BioImage
             {
                 bt[i] = bytes[i];
             }
-            BufferInfo bf = new BufferInfo(ID, SizeX, SizeY, PixelFormat, bt, Coordinate, ID);
+            BufferInfo bf = new BufferInfo(SizeX, SizeY, PixelFormat, bt, Coordinate,ID);
             return bf;
         }
         public void To8Bit()
@@ -1399,6 +1431,12 @@ namespace BioImage
         public override string ToString()
         {
             return ID;
+        }
+        public void Dispose()
+        {
+            bytes = null;
+            if(bitmap!=null)
+            bitmap.Dispose();
         }
     }
     public class Filt
@@ -1428,6 +1466,7 @@ namespace BioImage
     public static class Filters
     {
         public static Dictionary<string, Filt> filters = new Dictionary<string, Filt>();
+        /*
         public static string ApplyInPlace(BioImage im, string name)
         {
             try
@@ -1469,101 +1508,281 @@ namespace BioImage
             Recorder.AddLine("Filters.Apply(" + '"' + ImageView.viewer.image.ID + '"' + "," + '"' + name + '"' + ", false, ImageView.viewer.Index");
             return img;
         }
-
-        public static BioImage BaseFilter2(string id, string id2, string name, bool inPlace)
+        */
+        public static BioImage BaseFilter(string id, string name, bool inPlace)
         {
-            BioImage c = Table.GetImage(id);
-            BioImage c2 = Table.GetImage(id2);
-            BioImage img = BioImage.Copy(c);
+            BioImage img = Table.GetImage(id);
+            if (!inPlace)
+                img = BioImage.Copy(img);
             try
             {
                 Filt f = filters[name];
+                BaseFilter fi = (BaseFilter)f.filt;
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
-                    BaseFilter2 fi = (BaseFilter2)f.filt;
+                    img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
+                }
+                if (!inPlace)
+                {
+                    Table.AddImage(img);
+                    ImageViewer iv = new ImageViewer(img);
+                    Table.AddViewer(iv);
+                    iv.Show();
+                }
+                //Recorder.AddLine("Filters." + (" + '"' + id + '"' + ", " + '"' + name + '"' + "," + inPlace + ");");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Filter Error");
+            }
+            return img;
+        }
+        public static BioImage BaseFilter2(string id, string id2, string name, bool inPlace)
+        {
+            BioImage c2 = Table.GetImage(id);
+            BioImage img = Table.GetImage(id2);
+            if(!inPlace)
+                img = BioImage.Copy(img);
+            try
+            {
+                Filt f = filters[name];
+                BaseFilter2 fi = (BaseFilter2)f.filt;
+                for (int i = 0; i < img.Buffers.Count; i++)
+                {
                     fi.OverlayImage = (Bitmap)c2.Buffers[i].Image;
                     img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
                 }
+                if (!inPlace)
+                { 
+                    Table.AddImage(img);
+                    ImageViewer iv = new ImageViewer(img);
+                    Table.AddViewer(iv);
+                    iv.Show();
+                }
+                //Recorder.AddLine("Filters.BaseFilter2(" + '"' + id + '"' + "," + '"' + id2 + '"' + ", " +'"' + name + '"' + "," + inPlace + ");");
+                return img;
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString(), "Filter Error");
             }
-            Table.AddImage(img);
-            ImageViewer iv = new ImageViewer(img);
-            Table.AddViewer(iv);
-            iv.Show();
-            Recorder.AddLine("Filters.Apply2(" + '"' + id + '"' + "," + '"' + id2 + '"' + "," + '"' + name + '"' + ", false, ImageView.viewer.Index");
             return img;
         }
-        public static BioImage BaseInPlaceFilter(string id, string id2, string name, bool inPlace)
+        public static BioImage BaseInPlaceFilter(string id, string name, bool inPlace)
         {
-            BioImage c = Table.GetImage(id);
-            BioImage c2 = Table.GetImage(id2);
-            BioImage img = null;
-            if (inPlace)
-                img = BioImage.Copy(c);
+            BioImage img = Table.GetImage(id);
+            if (!inPlace)
+                img = BioImage.Copy(img);
             try
             {
                 Filt f = filters[name];
+                BaseInPlaceFilter fi = (BaseInPlaceFilter)f.filt;
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
-                    BaseInPlaceFilter fi = (BaseInPlaceFilter)f.filt;
-                    if (inPlace)
-                    {
-                        fi.ApplyInPlace((Bitmap)img.Buffers[i].Image);
-                    }
-                    else
-                    {
-                        img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
-                        Table.AddImage(img);
-                        ImageViewer iv = new ImageViewer(img);
-                        Table.AddViewer(iv);
-                        iv.Show();
-                    }
+                    img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
                 }
+                if (!inPlace)
+                {
+                    Table.AddImage(img);
+                    ImageViewer iv = new ImageViewer(img);
+                    Table.AddViewer(iv);
+                    iv.Show();
+                }
+                //Recorder.AddLine("Filters.BaseInPlaceFilter(" + '"' + id + '"' + "," + '"' + name + '"' + "," + inPlace + ");");
+                return img;
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString(), "Filter Error");
             }
-            Recorder.AddLine("Filters.Apply2(" + '"' + id + '"' + "," + '"' + id2 + '"' + "," + '"' + name + '"' + ", false, ImageView.viewer.Index");
             return img;
         }
         public static BioImage BaseInPlaceFilter2(string id, string id2, string name, bool inPlace)
         {
-            BioImage c = Table.GetImage(id);
-            BioImage c2 = Table.GetImage(id2);
-            BioImage img = null;
-            img = BioImage.Copy(c);
+            BioImage c2 = Table.GetImage(id);
+            BioImage img = Table.GetImage(id2);
+            if (!inPlace)
+                img = BioImage.Copy(img);
             try
             {
                 Filt f = filters[name];
+                BaseInPlaceFilter2 fi = (BaseInPlaceFilter2)f.filt;
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
-                    BaseInPlaceFilter2 fi = (BaseInPlaceFilter2)f.filt;
                     fi.OverlayImage = (Bitmap)c2.Buffers[i].Image;
-                    img.Buffers[i].Image = fi.Apply((Bitmap)c.Buffers[i].Image);
+                    img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
                 }
+                if (!inPlace)
+                {
+                    Table.AddImage(img);
+                    ImageViewer iv = new ImageViewer(img);
+                    Table.AddViewer(iv);
+                    iv.Show();
+                }
+                //Recorder.AddLine("Filters.BaseFilter2(" + '"' + id + '"' + "," + '"' + id2 + '"' + ", " + '"' + name + '"' + "," + inPlace + ");");
+                return img;
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.ToString(), "Filter Error");
             }
+            return img;
+        }
+        public static BioImage BaseInPlacePartialFilter(string id, string name, bool inPlace)
+        {
+            BioImage img = Table.GetImage(id);
+            if (!inPlace)
+                img = BioImage.Copy(img);
+            try
+            {
+                Filt f = filters[name];
+                BaseInPlacePartialFilter fi = (BaseInPlacePartialFilter)f.filt;
+                for (int i = 0; i < img.Buffers.Count; i++)
+                {
+                    img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
+                }
+                if (!inPlace)
+                {
+                    Table.AddImage(img);
+                    ImageViewer iv = new ImageViewer(img);
+                    Table.AddViewer(iv);
+                    iv.Show();
+                }
+                //Recorder.AddLine("Filters.BaseInPlaceFilter(" + '"' + id + '"' + "," + '"' + name + '"' + "," + inPlace + ");");
+                return img;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Filter Error");
+            }
+            return img;
+        }
+        public static BioImage BaseResizeFilter(string id, string name, bool inPlace, int w, int h)
+        {
+            BioImage img = Table.GetImage(id);
+            if (!inPlace)
+                img = BioImage.Copy(img);
+            try
+            {
+                Filt f = filters[name];
+                BaseResizeFilter fi = (BaseResizeFilter)f.filt;
+                fi.NewHeight = h;
+                fi.NewWidth = w;
+                for (int i = 0; i < img.Buffers.Count; i++)
+                {
+                    img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
+                }
+                if (!inPlace)
+                {
+                    Table.AddImage(img);
+                    ImageViewer iv = new ImageViewer(img);
+                    Table.AddViewer(iv);
+                    iv.Show();
+                }
+                //Recorder.AddLine("Filters.BaseResizeFilter(" + '"' + id + '"' + ", " + '"' + name + '"' + "," +
+                //    inPlace + "," + w + "," + h + ");");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Filter Error");
+            }
+            return img;
+        }
+        public static BioImage BaseRotateFilter(string id, string name, bool inPlace, float angle, System.Drawing.Color fill)
+        {
+            BioImage img = Table.GetImage(id);
+            if (!inPlace)
+                img = BioImage.Copy(img);
+            try
+            {
+                Filt f = filters[name];
+                BaseRotateFilter fi = (BaseRotateFilter)f.filt;
+                fi.Angle = angle;
+                fi.FillColor = fill;
+                for (int i = 0; i < img.Buffers.Count; i++)
+                {
+                    img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
+                }
+                if (!inPlace)
+                {
+                    Table.AddImage(img);
+                    ImageViewer iv = new ImageViewer(img);
+                    Table.AddViewer(iv);
+                    iv.Show();
+                }
+                //Recorder.AddLine("Filters.BaseResizeFilter(" + '"' + id + '"' + ", " + '"' + name + '"' + "," +
+                //    inPlace + "," + w + "," + h + ");");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Filter Error");
+            }
+            return img;
+
+        }
+        public static BioImage BaseTransformationFilter(string id, string name, bool inPlace, float angle)
+        {
+            BioImage img = Table.GetImage(id);
+            if (!inPlace)
+                img = BioImage.Copy(img);
+            try
+            {
+                Filt f = filters[name];
+                BaseTransformationFilter fi = (BaseTransformationFilter)f.filt;
+                for (int i = 0; i < img.Buffers.Count; i++)
+                {
+                    img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
+                }
+                if (!inPlace)
+                {
+                    Table.AddImage(img);
+                    ImageViewer iv = new ImageViewer(img);
+                    Table.AddViewer(iv);
+                    iv.Show();
+                }
+                //Recorder.AddLine("Filters.BaseResizeFilter(" + '"' + id + '"' + ", " + '"' + name + '"' + "," +
+                //    inPlace + "," + w + "," + h + ");");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Filter Error");
+            }
+            return img;
+        }
+        public static BioImage Crop(string id, int x, int y, int w, int h)
+        {
+            BioImage c = Table.GetImage(id);
+            BioImage img = BioImage.Copy(c);
+            Filt f = filters["Crop"];
+            for (int i = 0; i < img.Buffers.Count; i++)
+            {
+                img.Buffers[i].Crop(new Rectangle(x, y, w, h));
+                //AForge.Imaging.Filters.Crop cr = (Crop)f.filt;
+                //cr.Rectangle = new Rectangle(x,y,w,h);
+                //img.Buffers[i].SetImageRaw(cr.Apply((Bitmap)img.Buffers[i].Image));
+
+            }
             Table.AddImage(img);
             ImageViewer iv = new ImageViewer(img);
             Table.AddViewer(iv);
             iv.Show();
-            Recorder.AddLine("Filters.Apply2(" + '"' + id + '"' + "," + '"' + id2 + '"' + "," + '"' + name + '"' + ", false, ImageView.viewer.Index");
+            Recorder.AddLine("Filters.Crop(" + '"' + id + '"' + "," + x + "," + y + "," + w + "," + h + ");");
             return img;
         }
-
+        public static BioImage Crop(string id, Rectangle r)
+        {
+            return Crop(id, r.X, r.Y, r.Width, r.Height);
+        }
         public static void Init()
         {
             //Base Filters
-            Filt f = new Filt("BayerFilter", new BayerFilter(), Filt.Type.Base);
+            Filt f = new Filt("AdaptiveSmoothing", new AdaptiveSmoothing(), Filt.Type.Base);
+            filters.Add(f.name, f);
+            f = new Filt("BayerFilter", new BayerFilter(), Filt.Type.Base);
             filters.Add(f.name, f);
             f = new Filt("BayerFilterOptimized", new BayerFilterOptimized(), Filt.Type.Base);
+            filters.Add(f.name, f);
+            f = new Filt("BayerDithering", new BayerDithering(), Filt.Type.Base);
             filters.Add(f.name, f);
             f = new Filt("ConnectedComponentsLabeling", new ConnectedComponentsLabeling(), Filt.Type.Base);
             filters.Add(f.name, f);
@@ -1592,19 +1811,19 @@ namespace BioImage
             filters.Add(f.name, f);
             f = new Filt("BlobsFiltering", new BlobsFiltering(), Filt.Type.InPlace);
             filters.Add(f.name, f);
-            f = new Filt("BottomHat", new BackwardQuadrilateralTransformation(), Filt.Type.InPlace);
+            f = new Filt("BottomHat", new BottomHat(), Filt.Type.InPlace);
             filters.Add(f.name, f);
-            f = new Filt("BradleyLocalThresholding", new BackwardQuadrilateralTransformation(), Filt.Type.InPlace);
+            f = new Filt("BradleyLocalThresholding", new BradleyLocalThresholding(), Filt.Type.InPlace);
             filters.Add(f.name, f);
-            f = new Filt("CanvasCrop", new BackwardQuadrilateralTransformation(), Filt.Type.InPlace);
+            f = new Filt("CanvasCrop", new CanvasCrop(Rectangle.Empty), Filt.Type.InPlace);
             filters.Add(f.name, f);
-            f = new Filt("CanvasFill", new BackwardQuadrilateralTransformation(), Filt.Type.InPlace);
+            f = new Filt("CanvasFill", new CanvasFill(Rectangle.Empty), Filt.Type.InPlace);
             filters.Add(f.name, f);
-            f = new Filt("CanvasMove", new BackwardQuadrilateralTransformation(), Filt.Type.InPlace);
+            f = new Filt("CanvasMove", new CanvasMove(new IntPoint()), Filt.Type.InPlace);
             filters.Add(f.name, f);
-            f = new Filt("FillHoles", new BackwardQuadrilateralTransformation(), Filt.Type.InPlace);
+            f = new Filt("FillHoles", new FillHoles(), Filt.Type.InPlace);
             filters.Add(f.name, f);
-            f = new Filt("FlatFieldCorrection", new BackwardQuadrilateralTransformation(), Filt.Type.InPlace);
+            f = new Filt("FlatFieldCorrection", new FlatFieldCorrection(), Filt.Type.InPlace);
             filters.Add(f.name, f);
             f = new Filt("TopHat", new TopHat(), Filt.Type.InPlace);
             filters.Add(f.name, f);
@@ -1632,85 +1851,126 @@ namespace BioImage
             //BaseInPlacePartialFilter
             f = new Filt("AdditiveNoise", new AdditiveNoise(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            //f = new Filt("ApplyMask", new ApplyMask(), Filt.Type.InPlace2);
+
+            //f = new Filt("ApplyMask", new ApplyMask(), Filt.Type.InPlacePartial2);
             //filters.Add(f.name, f);
-            f = new Filt("BrightnessCorrection", new BrightnessCorrection(), Filt.Type.InPlace2);
+            f = new Filt("BrightnessCorrection", new BrightnessCorrection(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("ChannelFiltering", new ChannelFiltering(), Filt.Type.InPlace2);
+            f = new Filt("ChannelFiltering", new ChannelFiltering(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("ColorFiltering", new ColorFiltering(), Filt.Type.InPlace2);
+            f = new Filt("ColorFiltering", new ColorFiltering(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("ColorRemapping", new ColorRemapping(), Filt.Type.InPlace2);
+            f = new Filt("ColorRemapping", new ColorRemapping(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("ContrastCorrection", new ContrastCorrection(), Filt.Type.InPlace2);
+            f = new Filt("ContrastCorrection", new ContrastCorrection(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("ContrastStretch", new ContrastStretch(), Filt.Type.InPlace2);
+            f = new Filt("ContrastStretch", new ContrastStretch(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            //f = new Filt("ErrorDiffusionDithering", new ErrorDiffusionDithering(), Filt.Type.InPlace2);
+            //f = new Filt("ErrorDiffusionDithering", new ErrorDiffusionDithering(), Filt.Type.InPlacePartial);
             //filters.Add(f.name, f);
-            f = new Filt("EuclideanColorFiltering", new EuclideanColorFiltering(), Filt.Type.InPlace2);
+            f = new Filt("EuclideanColorFiltering", new EuclideanColorFiltering(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("GammaCorrection", new GammaCorrection(), Filt.Type.InPlace2);
+            f = new Filt("GammaCorrection", new GammaCorrection(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("HistogramEqualization", new HistogramEqualization(), Filt.Type.InPlace2);
+            f = new Filt("HistogramEqualization", new HistogramEqualization(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("HorizontalRunLengthSmoothing", new HorizontalRunLengthSmoothing(), Filt.Type.InPlace2);
+            f = new Filt("HorizontalRunLengthSmoothing", new HorizontalRunLengthSmoothing(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("HSLFiltering", new HSLFiltering(), Filt.Type.InPlace2);
+            f = new Filt("HSLFiltering", new HSLFiltering(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("HueModifier", new HueModifier(), Filt.Type.InPlace2);
+            f = new Filt("HueModifier", new HueModifier(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("Invert", new Invert(), Filt.Type.InPlace2);
+            f = new Filt("Invert", new Invert(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("LevelsLinear", new LevelsLinear(), Filt.Type.InPlace2);
+            f = new Filt("LevelsLinear", new LevelsLinear(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("LevelsLinear16bpp", new LevelsLinear16bpp(), Filt.Type.InPlace2);
+            f = new Filt("LevelsLinear16bpp", new LevelsLinear16bpp(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            //f = new Filt("MaskedFilter", new MaskedFilter(), Filt.Type.InPlace2);
+            //f = new Filt("MaskedFilter", new MaskedFilter(), Filt.Type.InPlacePartial);
             //filters.Add(f.name, f);
-            //f = new Filt("Mirror", new Mirror(), Filt.Type.InPlace2);
+            //f = new Filt("Mirror", new Mirror(), Filt.Type.InPlacePartial);
             //filters.Add(f.name, f);
-            f = new Filt("OrderedDithering", new OrderedDithering(), Filt.Type.InPlace2);
+            f = new Filt("OrderedDithering", new OrderedDithering(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("OtsuThreshold", new OtsuThreshold(), Filt.Type.InPlace2);
+            f = new Filt("OtsuThreshold", new OtsuThreshold(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("Pixellate", new Pixellate(), Filt.Type.InPlace2);
+            f = new Filt("Pixellate", new Pixellate(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("PointedColorFloodFill", new PointedColorFloodFill(), Filt.Type.InPlace2);
+            f = new Filt("PointedColorFloodFill", new PointedColorFloodFill(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("PointedMeanFloodFill", new PointedMeanFloodFill(), Filt.Type.InPlace2);
+            f = new Filt("PointedMeanFloodFill", new PointedMeanFloodFill(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("ReplaceChannel", new Invert(), Filt.Type.InPlace2);
+            f = new Filt("ReplaceChannel", new Invert(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("RotateChannels", new LevelsLinear(), Filt.Type.InPlace2);
+            f = new Filt("RotateChannels", new LevelsLinear(), Filt.Type.InPlacePartial);
             filters.Add(f.name, f);
-            f = new Filt("SaltAndPepperNoise", new LevelsLinear16bpp(), Filt.Type.InPlace2);
+            f = new Filt("SaltAndPepperNoise", new LevelsLinear16bpp(), Filt.Type.InPlacePartial);
+            filters.Add(f.name, f);
+            f = new Filt("SaturationCorrection", new SaturationCorrection(), Filt.Type.InPlacePartial);
+            filters.Add(f.name, f);
+            f = new Filt("Sepia", new Sepia(), Filt.Type.InPlacePartial);
+            filters.Add(f.name, f);
+            f = new Filt("SimplePosterization", new SimplePosterization(), Filt.Type.InPlacePartial);
+            filters.Add(f.name, f);
+            f = new Filt("SISThreshold", new SISThreshold(), Filt.Type.InPlacePartial);
+            filters.Add(f.name, f);
+            //f = new Filt("Texturer", new Texturer(), Filt.Type.InPlacePartial);
+            //filters.Add(f.name, f);
+            //f = new Filt("Threshold", new Threshold(), Filt.Type.InPlacePartial);
+            //filters.Add(f.name, f);
+            f = new Filt("ThresholdWithCarry", new ThresholdWithCarry(), Filt.Type.InPlacePartial);
+            filters.Add(f.name, f);
+            f = new Filt("VerticalRunLengthSmoothing", new VerticalRunLengthSmoothing(), Filt.Type.InPlacePartial);
+            filters.Add(f.name, f);
+            f = new Filt("YCbCrFiltering", new YCbCrFiltering(), Filt.Type.InPlacePartial);
+            filters.Add(f.name, f);
+            f = new Filt("YCbCrLinear", new YCbCrLinear(), Filt.Type.InPlacePartial);
+            filters.Add(f.name, f);
+            //f = new Filt("YCbCrReplaceChannel", new YCbCrReplaceChannel(), Filt.Type.InPlacePartial);
+            //filters.Add(f.name, f);
+
+            //BaseResizeFilter
+            f = new Filt("ResizeBicubic", new ResizeBicubic(0,0), Filt.Type.Resize);
+            filters.Add(f.name, f);
+            f = new Filt("ResizeBilinear", new ResizeBilinear(0,0), Filt.Type.Resize);
+            filters.Add(f.name, f);
+            f = new Filt("ResizeNearestNeighbor", new ResizeNearestNeighbor(0,0), Filt.Type.Resize);
+            filters.Add(f.name, f);
+            //BaseRotateFilter
+            f = new Filt("RotateBicubic", new RotateBicubic(0), Filt.Type.Rotate);
+            filters.Add(f.name, f);
+            f = new Filt("RotateBilinear", new RotateBilinear(0), Filt.Type.Rotate);
+            filters.Add(f.name, f);
+            f = new Filt("RotateNearestNeighbor", new RotateNearestNeighbor(0), Filt.Type.Rotate);
             filters.Add(f.name, f);
 
-            f = new Filt("SaturationCorrection", new SaturationCorrection(), Filt.Type.InPlace2);
+            //Transformation
+            f = new Filt("Crop", new Crop(Rectangle.Empty), Filt.Type.Transformation);
             filters.Add(f.name, f);
-            f = new Filt("Sepia", new Sepia(), Filt.Type.InPlace2);
-            filters.Add(f.name, f);
-            f = new Filt("SimplePosterization", new SimplePosterization(), Filt.Type.InPlace2);
-            filters.Add(f.name, f);
-            f = new Filt("SISThreshold", new SISThreshold(), Filt.Type.InPlace2);
-            filters.Add(f.name, f);
-            //f = new Filt("Texturer", new Texturer(), Filt.Type.InPlace2);
-            //filters.Add(f.name, f);
-            //f = new Filt("Threshold", new Threshold(), Filt.Type.InPlace2);
-            //filters.Add(f.name, f);
-            f = new Filt("ThresholdWithCarry", new ThresholdWithCarry(), Filt.Type.InPlace2);
-            filters.Add(f.name, f);
-            f = new Filt("VerticalRunLengthSmoothing", new VerticalRunLengthSmoothing(), Filt.Type.InPlace2);
-            filters.Add(f.name, f);
-            f = new Filt("YCbCrFiltering", new YCbCrFiltering(), Filt.Type.InPlace2);
-            filters.Add(f.name, f);
-            f = new Filt("YCbCrLinear", new YCbCrLinear(), Filt.Type.InPlace2);
-            filters.Add(f.name, f);
-            //f = new Filt("YCbCrReplaceChannel", new YCbCrReplaceChannel(), Filt.Type.InPlace2);
-            //filters.Add(f.name, f);
 
+            f = new Filt("QuadrilateralTransformation", new QuadrilateralTransformation(), Filt.Type.Transformation);
+            filters.Add(f.name, f);
+            //f = new Filt("QuadrilateralTransformationBilinear", new QuadrilateralTransformationBilinear(), Filt.Type.Transformation);
+            //filters.Add(f.name, f);
+            //f = new Filt("QuadrilateralTransformationNearestNeighbor", new QuadrilateralTransformationNearestNeighbor(), Filt.Type.Transformation);
+            //filters.Add(f.name, f);
+            f = new Filt("Shrink", new Shrink(), Filt.Type.Transformation);
+            filters.Add(f.name, f);
+            f = new Filt("SimpleQuadrilateralTransformation", new SimpleQuadrilateralTransformation(), Filt.Type.Transformation);
+            filters.Add(f.name, f);
+            f = new Filt("TransformFromPolar", new TransformFromPolar(), Filt.Type.Transformation);
+            filters.Add(f.name, f);
+            f = new Filt("TransformToPolar", new TransformToPolar(), Filt.Type.Transformation);
+            filters.Add(f.name, f);
 
+            //BaseUsingCopyPartialFilter 
+            f = new Filt("BinaryDilatation3x3", new BinaryDilatation3x3(), Filt.Type.Copy);
+            filters.Add(f.name, f);
+            f = new Filt("BilateralSmoothing ", new BilateralSmoothing(), Filt.Type.Copy);
+            filters.Add(f.name, f);
+            f = new Filt("BinaryErosion3x3 ", new BinaryErosion3x3(), Filt.Type.Copy);
+            filters.Add(f.name, f);
+            
         }
     }
     public class Statistics
@@ -1721,7 +1981,6 @@ namespace BioImage
             get { return values; }
             set { values = value; }
         }
-        private RGB type;
         private int bitsPerPixel;
         private int min;
         private int max;
@@ -1750,13 +2009,6 @@ namespace BioImage
         }
         private int count = 0;
         private double meansum = 0;
-        public RGB Type
-        {
-            get
-            {
-                return type;
-            }
-        }
         private double[] meanvalues;
         public double[] MeanValues
         {
@@ -1928,7 +2180,7 @@ namespace BioImage
         }
 
     }
-    public class BioImage
+    public class BioImage : IDisposable
     {
         public int HashID
         {
@@ -2555,11 +2807,21 @@ namespace BioImage
 
         public int SizeX
         {
-            get { return Buffers[0].SizeX; }
+            get 
+            {
+                if (Buffers.Count > 0)
+                    return Buffers[0].SizeX;
+                else return 0;
+            }
         }
         public int SizeY
         {
-            get { return Buffers[0].SizeY; }
+            get
+            {
+                if (Buffers.Count > 0)
+                    return Buffers[0].SizeY;
+                else return 0;
+            }
         }
         public int SizeZ
         {
@@ -3561,45 +3823,21 @@ namespace BioImage
                 int c = 0;
                 int t = 0;
                 b.Buffers = new List<BufferInfo>();
-                /*
-                if (PixelFormat == PixelFormat.Format24bppRgb)
+                int numberOfStrips = image.NumberOfStrips();
+                int pages = image.NumberOfDirectories();
+                for (int p = 0; p < pages; p++)
                 {
-                    Bitmap bitmap = (Bitmap)Image.FromFile(file);
-                    int pages = bitmap.GetFrameCount(FrameDimension.Page);
-                    for (int p = 0; p < pages; p++)
+                    image.SetDirectory((short)p);
+                    byte[] bytes = new byte[image.ScanlineSize() * SizeY];
+                    for (int i = 0, offset = 0; i < SizeY; i++)
                     {
-                        // save each frame to a bytestream
-                        bitmap.SelectActiveFrame(FrameDimension.Page, p);
-                        MemoryStream byteStream = new MemoryStream();
-                        bitmap.Save(byteStream, ImageFormat.Tiff);
-                        Image im = Image.FromStream(byteStream);
-                        im.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                        BufferInfo inf = new BufferInfo(file, SizeX, SizeY,PixelFormat,byteStream.GetBuffer(), new ZCT(0, 0, 0), p);
-                        //inf.SwitchRedBlue();
-                        b.Buffers.Add(inf);
-                        threadProgress = (int)((double)p / (double)pages);
+                        image.ReadScanline(bytes, offset, i, 0);
+                        offset += image.ScanlineSize();
                     }
+                    BufferInfo inf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), p);
+                    b.Buffers.Add(inf);
+                    threadProgress = (int)((double)p / (double)pages)*100;
                 }
-                else
-                {
-                    */
-                    int numberOfStrips = image.NumberOfStrips();
-                    int pages = image.NumberOfDirectories();
-                    for (int p = 0; p < pages; p++)
-                    {
-                        image.SetDirectory((short)p);
-
-                        byte[] bytes = new byte[image.ScanlineSize() * SizeY];
-                        for (int i = 0, offset = 0; i < SizeY; i++)
-                        {
-                            image.ReadScanline(bytes, offset, i, 0);
-                            offset += image.ScanlineSize();
-                        }
-                        BufferInfo inf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), p);
-                        b.Buffers.Add(inf);
-                        threadProgress = (int)((double)p / (double)pages)*100;
-                    }
-                //}
                 for (int im = 0; im < b.Buffers.Count; im++)
                 {
                     ZCT co = new ZCT(z, c, t);
@@ -4882,11 +5120,13 @@ namespace BioImage
         }
         public void Dispose()
         {
-            Table.RemoveImage(this);
+
             for (int i = 0; i < Buffers.Count; i++)
             {
-                Buffers[i].Image.Dispose();
+                Buffers[i].Dispose();
             }
+            Table.RemoveImage(this);
+            GC.Collect();
         }
         public override string ToString()
         {

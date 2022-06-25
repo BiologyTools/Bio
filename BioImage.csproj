@@ -376,11 +376,11 @@
     <Compile Include="Source\SetTool.Designer.cs">
       <DependentUpon>SetTool.cs</DependentUpon>
     </Compile>
-    <Compile Include="Source\ApplyTwo.cs">
+    <Compile Include="Source\ApplyFilter.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Source\ApplyTwo.Designer.cs">
-      <DependentUpon>ApplyTwo.cs</DependentUpon>
+    <Compile Include="Source\ApplyFilter.Designer.cs">
+      <DependentUpon>ApplyFilter.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\StackTools.cs">
       <SubType>Form</SubType>
@@ -460,8 +460,8 @@
     <EmbeddedResource Include="Source\SetTool.resx">
       <DependentUpon>SetTool.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Source\ApplyTwo.resx">
-      <DependentUpon>ApplyTwo.cs</DependentUpon>
+    <EmbeddedResource Include="Source\ApplyFilter.resx">
+      <DependentUpon>ApplyFilter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Source\StackTools.resx">
       <DependentUpon>StackTools.cs</DependentUpon>
