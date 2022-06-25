@@ -107,19 +107,48 @@ namespace BioImage
             get { return trackBarPanel.Visible; }
             set 
             {
-                if (value)
+                if (!value)
                 {
+                    statusPanel.Hide();
                     trackBarPanel.Hide();
-                    overlayPictureBox.Height += 75;
-                    pictureBox.Height += 75;
-                    showControlToolStripMenuItem.Visible = true;
+                    panel.Dock = DockStyle.Fill;
+                    //overlayPictureBox.Anchor = AnchorStyles.None;
+                    //pictureBox.Anchor = AnchorStyles.None;
+                    //trackBarPanel.Hide();
+                    //statusPanel.Hide();
+                    //statusPanel.SendToBack();
+                    overlayPictureBox.Location = new Point(0, 0);
+                    overlayPictureBox.Height = image.SizeY;
+                    pictureBox.Location = new Point(0, 0);
+                    pictureBox.Height = image.SizeY;
+                    showControlToolStripMenuItem.Text = "Show Controls";
+                    //pictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Left;
+                    
                 }
                 else
                 {
-                    overlayPictureBox.Height -= 75;
-                    pictureBox.Height -= 75;
+                    statusPanel.Show();
                     trackBarPanel.Show();
+                    panel.Top = 25;
+                    panel.Height -= 75;
+                    panel.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Left;
+
+                    showControlToolStripMenuItem.Text = "Hide Controls";
+                    /*
+                    overlayPictureBox.Anchor = AnchorStyles.None;
+                    pictureBox.Anchor = AnchorStyles.None;
+                    overlayPictureBox.Location = new Point(0, 25);
+                    pictureBox.Location = new Point(0, 25);
+                    overlayPictureBox.Height = image.SizeY;
+                    pictureBox.Height = image.SizeY;
+                    
+                    pictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Left;
+                    trackBarPanel.Show();
+                    trackBarPanel.BringToFront();
+                    statusPanel.Show();
+                    statusPanel.BringToFront();
                     showControlToolStripMenuItem.Visible = false;
+                    */
                 }
             }
         }
@@ -178,7 +207,7 @@ namespace BioImage
             {
                 viewMode = value;
                 //If view mode is changed we update.
-                ImageViewer.app.UpdateViewMode(viewMode);
+                TabsView.app.UpdateViewMode(viewMode);
                 UpdateView();
                 UpdateOverlay();
                 if (viewMode == ViewMode.RGBImage)
@@ -1103,7 +1132,7 @@ namespace BioImage
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
             DrawOverlay(g);
-            ImageViewer.graphics = g;
+            TabsView.graphics = g;
             if ((Tools.currentTool.type == Tools.Tool.Type.rectSel && down) || (Tools.currentTool.type == Tools.Tool.Type.magic && down))
             {
                 RectangleF[] fs = new RectangleF[1];
@@ -1151,7 +1180,7 @@ namespace BioImage
         public static BioImage selectedImage = null;
 
         public static ImageView viewer = null;
-        public static ImageViewer app = null;
+        public static TabsView app = null;
 
         public static PointF mouseDown;
         public static bool down;
@@ -1642,7 +1671,10 @@ namespace BioImage
 
         private void showControlToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ShowControls = true;
+            if (ShowControls)
+                ShowControls = false;
+            else
+                ShowControls = true;
         }
 
         private void HideStatusMenuItem_Click(object sender, EventArgs e)
@@ -1652,7 +1684,10 @@ namespace BioImage
 
         private void showStatusToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ShowStatus = true;
+            if (ShowStatus)
+                ShowStatus = false;
+            else
+                ShowStatus = true;
         }
     }
 }

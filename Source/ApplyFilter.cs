@@ -19,7 +19,6 @@ namespace BioImage
             if(!two)
             stackBBox.Enabled = false;
         }
-
         public void UpdateStacks()
         {
             if (Table.images.Count != stackABox.Items.Count)
@@ -81,6 +80,7 @@ namespace BioImage
                 return (int)hBox.Value;
             }
         }
+
         private void stackABox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (stackABox.SelectedIndex == -1)
@@ -96,7 +96,6 @@ namespace BioImage
                 stackABox.SelectedIndex = -1;
             }
         }
-
         private void stackBBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (stackABox.SelectedIndex == -1)
@@ -110,27 +109,24 @@ namespace BioImage
                 stackBBox.SelectedIndex = -1;
             }
         }
-
         private void StackTools_Activated(object sender, EventArgs e)
         {
             UpdateStacks();
         }
-
         private void okBut_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
         }
-
         private void cancelBut_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
         }
-
         private void setColorBut_Click(object sender, EventArgs e)
         {
-            colorDialog.ShowDialog();
+            if (colorDialog.ShowDialog() != DialogResult.OK)
+                return;
+            fillPanel.BackColor = colorDialog.Color;
         }
-
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
             roiBox.SelectedIndex = -1;

@@ -73,7 +73,7 @@ namespace BioImage
             images.Remove(im.HashID);
 
         }
-        public static void AddViewer(ImageViewer v)
+        public static void AddViewer(ImageView v)
         {
             if (!viewers.ContainsKey(v.Text))
                 viewers.Add(v.Text, v);
@@ -81,12 +81,12 @@ namespace BioImage
         public static void AddViewer(BioImage b)
         {
             AddImage(b);
-            ImageViewer v = new ImageViewer(b);
+            ImageView v = new ImageView(b);
             if (!viewers.ContainsKey(v.Text))
                 viewers.Add(v.Text, v);
             v.Show();
         }
-        public static void RemoveViewer(ImageViewer v)
+        public static void RemoveViewer(ImageView v)
         {
             viewers.Remove(v.Text);
         }
@@ -94,9 +94,9 @@ namespace BioImage
         {
             viewers.Remove(name);
         }
-        public static ImageViewer GetViewer(string s)
+        public static ImageView GetViewer(string s)
         {
-            return (ImageViewer)viewers[s];
+            return (ImageView)viewers[s];
         }
     }
     public struct ZCT
@@ -1113,8 +1113,6 @@ namespace BioImage
         private Statistics statistics;
         private byte[] bytes;
         private string file;
-
-
         private static int GetStridePadded(int stride)
         {
             if (stride % 4 == 0)
@@ -1189,27 +1187,30 @@ namespace BioImage
         }
         public void Crop(Rectangle r)
         {
-            byte[] bts = null;
-            int bytesPer = 3;
+            //This crop function supports 16 bit images unlike Bitmap class.
             if (BitsPerPixel > 8)
             {
-                bytesPer = 2;
-            }
-            int stridenew = r.Width * bytesPer;
-            int strideold = Stride;
-            bts = new byte[(stridenew * r.Height)];
-            
-            for (int y = 0; y < r.Height; y++)
-            {
-                for (int x = 0; x < stridenew; x+= bytesPer)
+                byte[] bts = null;
+                int bytesPer = 2;
+                int stridenew = r.Width * bytesPer;
+                int strideold = Stride;
+                bts = new byte[(stridenew * r.Height)];
+                for (int y = 0; y < r.Height; y++)
                 {
-                    int indexnew = (y * stridenew + x) * RGBChannelsCount;
-                    int indexold = (((y + r.Y) * strideold + (x + (r.X * 2))) * RGBChannelsCount);// + r.X;
-                    bts[indexnew] = bytes[indexold];
-                    bts[indexnew+1] = bytes[indexold+1];
+                    for (int x = 0; x < stridenew; x += bytesPer)
+                    {
+                        int indexnew = (y * stridenew + x) * RGBChannelsCount;
+                        int indexold = (((y + r.Y) * strideold + (x + (r.X * bytesPer))) * RGBChannelsCount);// + r.X;
+                        bts[indexnew] = bytes[indexold];
+                        bts[indexnew + 1] = bytes[indexold + 1];
+                    }
                 }
+                bytes = bts;
             }
-            bytes = bts;
+            else
+            {
+                Image = ((Bitmap)Image).Clone(r, PixelFormat);
+            }           
             SizeX = r.Width;
             SizeY = r.Height;
         }
@@ -1525,7 +1526,7 @@ namespace BioImage
                 if (!inPlace)
                 {
                     Table.AddImage(img);
-                    ImageViewer iv = new ImageViewer(img);
+                    ImageView iv = new ImageView(img);
                     Table.AddViewer(iv);
                     iv.Show();
                 }
@@ -1555,7 +1556,7 @@ namespace BioImage
                 if (!inPlace)
                 { 
                     Table.AddImage(img);
-                    ImageViewer iv = new ImageViewer(img);
+                    ImageView iv = new ImageView(img);
                     Table.AddViewer(iv);
                     iv.Show();
                 }
@@ -1584,7 +1585,7 @@ namespace BioImage
                 if (!inPlace)
                 {
                     Table.AddImage(img);
-                    ImageViewer iv = new ImageViewer(img);
+                    ImageView iv = new ImageView(img);
                     Table.AddViewer(iv);
                     iv.Show();
                 }
@@ -1615,7 +1616,7 @@ namespace BioImage
                 if (!inPlace)
                 {
                     Table.AddImage(img);
-                    ImageViewer iv = new ImageViewer(img);
+                    ImageView iv = new ImageView(img);
                     Table.AddViewer(iv);
                     iv.Show();
                 }
@@ -1644,7 +1645,7 @@ namespace BioImage
                 if (!inPlace)
                 {
                     Table.AddImage(img);
-                    ImageViewer iv = new ImageViewer(img);
+                    ImageView iv = new ImageView(img);
                     Table.AddViewer(iv);
                     iv.Show();
                 }
@@ -1675,7 +1676,7 @@ namespace BioImage
                 if (!inPlace)
                 {
                     Table.AddImage(img);
-                    ImageViewer iv = new ImageViewer(img);
+                    ImageView iv = new ImageView(img);
                     Table.AddViewer(iv);
                     iv.Show();
                 }
@@ -1706,7 +1707,7 @@ namespace BioImage
                 if (!inPlace)
                 {
                     Table.AddImage(img);
-                    ImageViewer iv = new ImageViewer(img);
+                    ImageView iv = new ImageView(img);
                     Table.AddViewer(iv);
                     iv.Show();
                 }
@@ -1736,7 +1737,7 @@ namespace BioImage
                 if (!inPlace)
                 {
                     Table.AddImage(img);
-                    ImageViewer iv = new ImageViewer(img);
+                    ImageView iv = new ImageView(img);
                     Table.AddViewer(iv);
                     iv.Show();
                 }
@@ -1763,7 +1764,7 @@ namespace BioImage
 
             }
             Table.AddImage(img);
-            ImageViewer iv = new ImageViewer(img);
+            ImageView iv = new ImageView(img);
             Table.AddViewer(iv);
             iv.Show();
             Recorder.AddLine("Filters.Crop(" + '"' + id + '"' + "," + x + "," + y + "," + w + "," + h + ");");
@@ -2354,7 +2355,6 @@ namespace BioImage
             {
                 Bitmap b = GetFiltered(i, RChannel.range, GChannel.range, BChannel.range);
                 b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
-                //b.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 Buffers[i].Image = b;
             }
             foreach (Channel c in Channels)
@@ -2374,7 +2374,6 @@ namespace BioImage
             {
                 Bitmap b = GetFiltered(i, RChannel.range, GChannel.range, BChannel.range);
                 b = AForge.Imaging.Image.Convert8bppTo16bpp(b);
-                //b.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 Buffers[i].Image = b;
             }
             foreach (Channel c in Channels)
@@ -2391,8 +2390,7 @@ namespace BioImage
             {
                 for (int i = 0; i < Buffers.Count; i++)
                 {
-                    Bitmap b = BufferInfo.RGBTo24Bit((Bitmap)Buffers[i].Image);
-                    Buffers[i].Image = b;
+                    Buffers[i].Image = BufferInfo.RGBTo24Bit((Bitmap)Buffers[i].Image);
                 }
             }
             else
@@ -2657,11 +2655,8 @@ namespace BioImage
             for (int c = 0; c < SizeC; c++)
             {
                 BioImage b = new BioImage(this, 0, 0, SizeZ, c, c + 1, 0, SizeT);
-                ImageViewer iv = new ImageViewer(b);
-                if (showDialog)
-                    iv.ShowDialog();
-                else
-                    iv.Show();
+                ImageView iv = new ImageView(b);
+                iv.Show();
             }
         }
         public static void SplitChannels(BioImage bb, bool showDialog)

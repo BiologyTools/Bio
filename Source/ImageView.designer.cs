@@ -77,12 +77,12 @@ namespace BioImage
             this.trackBarPanel = new System.Windows.Forms.Panel();
             this.statusPanel = new System.Windows.Forms.Panel();
             this.ticksLabel = new System.Windows.Forms.Label();
-            this.overlayPictureBox = new System.Windows.Forms.PictureBox();
-            this.pictureBox = new System.Windows.Forms.PictureBox();
-            this.panel = new System.Windows.Forms.Panel();
             this.showControlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.HideStatusMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pictureBox = new System.Windows.Forms.PictureBox();
+            this.overlayPictureBox = new System.Windows.Forms.PictureBox();
+            this.panel = new System.Windows.Forms.Panel();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.zPlayMenuStrip.SuspendLayout();
@@ -94,10 +94,10 @@ namespace BioImage
             ((System.ComponentModel.ISupportInitialize)(this.cBar)).BeginInit();
             this.trackBarPanel.SuspendLayout();
             this.statusPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.overlayPictureBox)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
-            this.panel.SuspendLayout();
             this.statusMenuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.overlayPictureBox)).BeginInit();
+            this.panel.SuspendLayout();
             this.SuspendLayout();
             // 
             // timePlayMenuStrip
@@ -163,7 +163,7 @@ namespace BioImage
             this.showControlToolStripMenuItem,
             this.showStatusToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(200, 158);
+            this.contextMenuStrip.Size = new System.Drawing.Size(200, 180);
             // 
             // deleteROIToolStripMenuItem
             // 
@@ -204,8 +204,7 @@ namespace BioImage
             // 
             this.showControlToolStripMenuItem.Name = "showControlToolStripMenuItem";
             this.showControlToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.showControlToolStripMenuItem.Text = "Show Controls";
-            this.showControlToolStripMenuItem.Visible = false;
+            this.showControlToolStripMenuItem.Text = "Hide Controls";
             this.showControlToolStripMenuItem.Click += new System.EventHandler(this.showControlToolStripMenuItem_Click);
             // 
             // showStatusToolStripMenuItem
@@ -326,7 +325,7 @@ namespace BioImage
             this.rgbBoxsPanel.ForeColor = System.Drawing.Color.White;
             this.rgbBoxsPanel.Location = new System.Drawing.Point(0, 50);
             this.rgbBoxsPanel.Name = "rgbBoxsPanel";
-            this.rgbBoxsPanel.Size = new System.Drawing.Size(425, 25);
+            this.rgbBoxsPanel.Size = new System.Drawing.Size(428, 25);
             this.rgbBoxsPanel.TabIndex = 13;
             // 
             // statusLabel
@@ -362,7 +361,7 @@ namespace BioImage
             this.timeBar.Location = new System.Drawing.Point(15, 25);
             this.timeBar.Margin = new System.Windows.Forms.Padding(0);
             this.timeBar.Name = "timeBar";
-            this.timeBar.Size = new System.Drawing.Size(410, 25);
+            this.timeBar.Size = new System.Drawing.Size(413, 25);
             this.timeBar.TabIndex = 16;
             this.timeBar.ValueChanged += new System.EventHandler(this.timeBar_ValueChanged);
             // 
@@ -443,7 +442,7 @@ namespace BioImage
             this.zBar.Location = new System.Drawing.Point(15, 0);
             this.zBar.Margin = new System.Windows.Forms.Padding(0);
             this.zBar.Name = "zBar";
-            this.zBar.Size = new System.Drawing.Size(410, 25);
+            this.zBar.Size = new System.Drawing.Size(413, 25);
             this.zBar.TabIndex = 12;
             this.zBar.ValueChanged += new System.EventHandler(this.zBar_ValueChanged);
             // 
@@ -471,7 +470,7 @@ namespace BioImage
             this.cBar.Location = new System.Drawing.Point(15, 50);
             this.cBar.Margin = new System.Windows.Forms.Padding(0);
             this.cBar.Name = "cBar";
-            this.cBar.Size = new System.Drawing.Size(410, 25);
+            this.cBar.Size = new System.Drawing.Size(413, 25);
             this.cBar.TabIndex = 15;
             this.cBar.ValueChanged += new System.EventHandler(this.cBar_ValueChanged);
             // 
@@ -518,7 +517,7 @@ namespace BioImage
             this.trackBarPanel.Controls.Add(this.rgbBoxsPanel);
             this.trackBarPanel.Location = new System.Drawing.Point(0, 293);
             this.trackBarPanel.Name = "trackBarPanel";
-            this.trackBarPanel.Size = new System.Drawing.Size(425, 75);
+            this.trackBarPanel.Size = new System.Drawing.Size(428, 75);
             this.trackBarPanel.TabIndex = 17;
             // 
             // statusPanel
@@ -531,7 +530,7 @@ namespace BioImage
             this.statusPanel.Controls.Add(this.statusLabel);
             this.statusPanel.Location = new System.Drawing.Point(0, 0);
             this.statusPanel.Name = "statusPanel";
-            this.statusPanel.Size = new System.Drawing.Size(425, 25);
+            this.statusPanel.Size = new System.Drawing.Size(428, 25);
             this.statusPanel.TabIndex = 18;
             // 
             // ticksLabel
@@ -539,55 +538,10 @@ namespace BioImage
             this.ticksLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ticksLabel.AutoSize = true;
             this.ticksLabel.ForeColor = System.Drawing.Color.White;
-            this.ticksLabel.Location = new System.Drawing.Point(332, 6);
+            this.ticksLabel.Location = new System.Drawing.Point(335, 6);
             this.ticksLabel.Name = "ticksLabel";
             this.ticksLabel.Size = new System.Drawing.Size(0, 13);
             this.ticksLabel.TabIndex = 4;
-            // 
-            // overlayPictureBox
-            // 
-            this.overlayPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.overlayPictureBox.BackColor = System.Drawing.Color.Transparent;
-            this.overlayPictureBox.ContextMenuStrip = this.contextMenuStrip;
-            this.overlayPictureBox.Location = new System.Drawing.Point(0, 0);
-            this.overlayPictureBox.Margin = new System.Windows.Forms.Padding(0);
-            this.overlayPictureBox.Name = "overlayPictureBox";
-            this.overlayPictureBox.Size = new System.Drawing.Size(425, 269);
-            this.overlayPictureBox.TabIndex = 19;
-            this.overlayPictureBox.TabStop = false;
-            this.overlayPictureBox.Click += new System.EventHandler(this.pictureBox_Click);
-            this.overlayPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.overlayPictureBox_Paint);
-            this.overlayPictureBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDoubleClick);
-            this.overlayPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
-            this.overlayPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.rgbPictureBox_MouseMove);
-            this.overlayPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
-            // 
-            // pictureBox
-            // 
-            this.pictureBox.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBox.ContextMenuStrip = this.contextMenuStrip;
-            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox.Margin = new System.Windows.Forms.Padding(0);
-            this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(425, 269);
-            this.pictureBox.TabIndex = 20;
-            this.pictureBox.TabStop = false;
-            this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
-            // 
-            // panel
-            // 
-            this.panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel.Controls.Add(this.overlayPictureBox);
-            this.panel.Controls.Add(this.pictureBox);
-            this.panel.Location = new System.Drawing.Point(0, 25);
-            this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(425, 269);
-            this.panel.TabIndex = 21;
             // 
             // showControlsToolStripMenuItem
             // 
@@ -610,6 +564,49 @@ namespace BioImage
             this.HideStatusMenuItem.Text = "Hide Status";
             this.HideStatusMenuItem.Click += new System.EventHandler(this.HideStatusMenuItem_Click);
             // 
+            // pictureBox
+            // 
+            this.pictureBox.BackColor = System.Drawing.Color.Transparent;
+            this.pictureBox.ContextMenuStrip = this.contextMenuStrip;
+            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureBox.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox.Margin = new System.Windows.Forms.Padding(0);
+            this.pictureBox.Name = "pictureBox";
+            this.pictureBox.Size = new System.Drawing.Size(425, 269);
+            this.pictureBox.TabIndex = 20;
+            this.pictureBox.TabStop = false;
+            this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
+            // 
+            // overlayPictureBox
+            // 
+            this.overlayPictureBox.BackColor = System.Drawing.Color.Transparent;
+            this.overlayPictureBox.ContextMenuStrip = this.contextMenuStrip;
+            this.overlayPictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.overlayPictureBox.Location = new System.Drawing.Point(0, 0);
+            this.overlayPictureBox.Margin = new System.Windows.Forms.Padding(0);
+            this.overlayPictureBox.Name = "overlayPictureBox";
+            this.overlayPictureBox.Size = new System.Drawing.Size(425, 269);
+            this.overlayPictureBox.TabIndex = 19;
+            this.overlayPictureBox.TabStop = false;
+            this.overlayPictureBox.Click += new System.EventHandler(this.pictureBox_Click);
+            this.overlayPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.overlayPictureBox_Paint);
+            this.overlayPictureBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDoubleClick);
+            this.overlayPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
+            this.overlayPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.rgbPictureBox_MouseMove);
+            this.overlayPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
+            // 
+            // panel
+            // 
+            this.panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel.Controls.Add(this.overlayPictureBox);
+            this.panel.Controls.Add(this.pictureBox);
+            this.panel.Location = new System.Drawing.Point(0, 25);
+            this.panel.Name = "panel";
+            this.panel.Size = new System.Drawing.Size(425, 269);
+            this.panel.TabIndex = 21;
+            // 
             // ImageView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -617,13 +614,13 @@ namespace BioImage
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.Controls.Add(this.statusPanel);
             this.Controls.Add(this.trackBarPanel);
+            this.Controls.Add(this.statusPanel);
             this.Controls.Add(this.panel);
             this.Margin = new System.Windows.Forms.Padding(0);
             this.MinimumSize = new System.Drawing.Size(100, 100);
             this.Name = "ImageView";
-            this.Size = new System.Drawing.Size(425, 368);
+            this.Size = new System.Drawing.Size(428, 368);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ImageView_KeyDown);
             this.timePlayMenuStrip.ResumeLayout(false);
             this.contextMenuStrip.ResumeLayout(false);
@@ -639,10 +636,10 @@ namespace BioImage
             this.trackBarPanel.PerformLayout();
             this.statusPanel.ResumeLayout(false);
             this.statusPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.overlayPictureBox)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
-            this.panel.ResumeLayout(false);
             this.statusMenuStrip.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.overlayPictureBox)).EndInit();
+            this.panel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -687,9 +684,6 @@ namespace BioImage
         private System.Windows.Forms.Panel statusPanel;
         private System.Windows.Forms.Label ticksLabel;
         private System.Windows.Forms.ToolStripMenuItem deleteROIToolStripMenuItem;
-        private System.Windows.Forms.PictureBox overlayPictureBox;
-        private System.Windows.Forms.PictureBox pictureBox;
-        private System.Windows.Forms.Panel panel;
         private System.Windows.Forms.ToolStripMenuItem renameSelectionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyViewToClipboardToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showControlsToolStripMenuItem;
@@ -701,5 +695,8 @@ namespace BioImage
         private System.Windows.Forms.ContextMenuStrip statusMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem HideStatusMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showStatusToolStripMenuItem;
+        private System.Windows.Forms.PictureBox pictureBox;
+        private System.Windows.Forms.PictureBox overlayPictureBox;
+        private System.Windows.Forms.Panel panel;
     }
 }

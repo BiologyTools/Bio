@@ -53,6 +53,7 @@
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fillPanel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.hBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.wBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.angleBox)).BeginInit();
@@ -325,14 +326,22 @@
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.clearToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(181, 48);
+            this.contextMenuStrip.Size = new System.Drawing.Size(102, 26);
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
             this.clearToolStripMenuItem.Text = "Clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            // 
+            // fillPanel
+            // 
+            this.fillPanel.BackColor = System.Drawing.Color.Black;
+            this.fillPanel.Location = new System.Drawing.Point(57, 186);
+            this.fillPanel.Name = "fillPanel";
+            this.fillPanel.Size = new System.Drawing.Size(75, 23);
+            this.fillPanel.TabIndex = 41;
             // 
             // ApplyFilter
             // 
@@ -342,6 +351,7 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.CancelButton = this.cancelBut;
             this.ClientSize = new System.Drawing.Size(224, 250);
+            this.Controls.Add(this.fillPanel);
             this.Controls.Add(this.setColorBut);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.roiBox);
@@ -403,5 +413,6 @@
         private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+        private System.Windows.Forms.Panel fillPanel;
     }
 }

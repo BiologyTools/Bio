@@ -205,7 +205,7 @@ namespace BioImage
             this.statsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.statsPanel.Location = new System.Drawing.Point(12, 109);
             this.statsPanel.Name = "statsPanel";
-            this.statsPanel.Size = new System.Drawing.Size(222, 195);
+            this.statsPanel.Size = new System.Drawing.Size(222, 212);
             this.statsPanel.TabIndex = 10;
             // 
             // maxUintBox2
@@ -220,7 +220,7 @@ namespace BioImage
             "4096",
             "16383",
             "65535"});
-            this.maxUintBox2.Location = new System.Drawing.Point(157, 310);
+            this.maxUintBox2.Location = new System.Drawing.Point(157, 327);
             this.maxUintBox2.Name = "maxUintBox2";
             this.maxUintBox2.Size = new System.Drawing.Size(77, 21);
             this.maxUintBox2.TabIndex = 16;
@@ -237,7 +237,7 @@ namespace BioImage
             0,
             0,
             0});
-            this.maxGraphBox.Location = new System.Drawing.Point(157, 335);
+            this.maxGraphBox.Location = new System.Drawing.Point(157, 352);
             this.maxGraphBox.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -263,7 +263,7 @@ namespace BioImage
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label5.AutoSize = true;
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(125, 337);
+            this.label5.Location = new System.Drawing.Point(125, 354);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(27, 13);
             this.label5.TabIndex = 14;
@@ -279,7 +279,7 @@ namespace BioImage
             0,
             0,
             0});
-            this.minGraphBox.Location = new System.Drawing.Point(37, 335);
+            this.minGraphBox.Location = new System.Drawing.Point(37, 352);
             this.minGraphBox.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -295,7 +295,7 @@ namespace BioImage
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label6.AutoSize = true;
             this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(8, 337);
+            this.label6.Location = new System.Drawing.Point(8, 354);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(24, 13);
             this.label6.TabIndex = 12;
@@ -307,7 +307,7 @@ namespace BioImage
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(8, 313);
+            this.label7.Location = new System.Drawing.Point(8, 330);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(118, 13);
             this.label7.TabIndex = 11;
@@ -318,7 +318,7 @@ namespace BioImage
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(245, 361);
+            this.ClientSize = new System.Drawing.Size(245, 378);
             this.Controls.Add(this.maxUintBox2);
             this.Controls.Add(this.maxGraphBox);
             this.Controls.Add(this.label5);

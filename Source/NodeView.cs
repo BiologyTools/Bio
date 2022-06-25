@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
+
 namespace BioImage
 {
-    public partial class MainForm : Form
+    public partial class NodeView : Form
     {
         public static Scripting runner = null;
         public static Recorder recorder = null;
+        public TabsView viewer = null;
         public class Node
         {
             public TreeNode node;
@@ -52,7 +54,7 @@ namespace BioImage
                 set { node.Text = value; }
             }
         }
-        public MainForm(string[] args)
+        public NodeView(string[] args)
         {
             InitializeComponent();
             Init();
@@ -60,12 +62,12 @@ namespace BioImage
             InitNodes();
             if (args.Length > 0)
             {
-                ImageViewer viewer = new ImageViewer(args[0]);
+                viewer = new TabsView(args[0]);
                 viewer.Show();
             }
         }
 
-        public MainForm()
+        public NodeView()
         {
             InitializeComponent();
             Init();
@@ -163,7 +165,7 @@ namespace BioImage
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            ImageViewer iv = new ImageViewer(openFilesDialog.FileNames);
+            TabsView iv = new TabsView(openFilesDialog.FileNames);
             iv.Show();
         }
         private void refreshToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -173,7 +175,7 @@ namespace BioImage
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ImageViewer iv = new ImageViewer("");
+            TabsView iv = new TabsView("");
             iv.Show();
         }
 
@@ -190,18 +192,18 @@ namespace BioImage
                 string name = buf.ToString();
                 int inds = name.IndexOf("/s");
                 string filename = name.Substring(0, inds);
-                ImageViewer v = Table.GetViewer(Path.GetFileName(filename));
+                ImageView v = Table.GetViewer(Path.GetFileName(filename));
                 if(v!=null)
-                    v.viewer.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
+                    v.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
             }
             else
             if(node.Type == Node.DataType.roi)
             {
                 Annotation an = (Annotation)node.Object;
                 string name = node.node.Parent.Parent.Text;
-                ImageViewer v = Table.GetViewer(name);
+                ImageView v = Table.GetViewer(name);
                 if (v != null)
-                    v.viewer.SetCoordinate(an.coord.Z, an.coord.C, an.coord.T);
+                    v.SetCoordinate(an.coord.Z, an.coord.C, an.coord.T);
             }
         }
 
@@ -267,6 +269,21 @@ namespace BioImage
         {
             About about = new About();
             about.Show();
+        }
+
+        private void tabViewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+          
+        }
+
+        private void tabToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            viewer.Show();
+        }
+
+        private void windowsViewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
         }
     }
 }
