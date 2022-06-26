@@ -1173,8 +1173,8 @@ namespace BioImage
             {
                 im = image.Buffers[index].Image;
             }
-            //if (im.PixelFormat == PixelFormat.Format16bppGrayScale || im.PixelFormat == PixelFormat.Format48bppRgb)
-            //    im = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)im);
+            if (im.PixelFormat == PixelFormat.Format16bppGrayScale || im.PixelFormat == PixelFormat.Format48bppRgb)
+                im = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)im);
             PointF pp = GetImagePoint();
             Graphics g = e.Graphics;
             g.TranslateTransform(origin.X, origin.Y);

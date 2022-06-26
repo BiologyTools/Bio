@@ -1160,7 +1160,7 @@ namespace BioImage
             }
             return newbts;
         }
-        public BufferInfo[] RGB48To16(int w, int h, int stride, byte[] bts)
+        public static BufferInfo[] RGB48To16(string file, int w, int h, int stride, byte[] bts, ZCT coord)
         {
             BufferInfo[] bfs = new BufferInfo[3];
             //opening a 8 bit per pixel jpg image
@@ -1170,8 +1170,8 @@ namespace BioImage
             //creating the bitmapdata and lock bits
             System.Drawing.Rectangle rec = new System.Drawing.Rectangle(0, 0, w, h);
             BitmapData bmdr = bmpr.LockBits(rec, ImageLockMode.ReadWrite, bmpr.PixelFormat);
-            BitmapData bmdg = bmpr.LockBits(rec, ImageLockMode.ReadWrite, bmpr.PixelFormat);
-            BitmapData bmdb = bmpr.LockBits(rec, ImageLockMode.ReadWrite, bmpr.PixelFormat);
+            BitmapData bmdg = bmpg.LockBits(rec, ImageLockMode.ReadWrite, bmpg.PixelFormat);
+            BitmapData bmdb = bmpb.LockBits(rec, ImageLockMode.ReadWrite, bmpb.PixelFormat);
             unsafe
             {
                 //iterating through all the pixels in y direction
@@ -1179,25 +1179,34 @@ namespace BioImage
                 {
                     //getting the pixels of current row
                     byte* rowr = (byte*)bmdr.Scan0 + (y * bmdr.Stride);
+                    byte* rowg = (byte*)bmdg.Scan0 + (y * bmdg.Stride);
+                    byte* rowb = (byte*)bmdb.Scan0 + (y * bmdb.Stride);
                     int rowRGB = y * stride;
                     //iterating through all the pixels in x direction
                     for (int x = 0; x < w; x++)
                     {
                         int indexRGB = x * 6;
-                        int indexRGBA = x * 4;
+                        int index16 = x * 2;
                         //R
-                        rowr[indexRGBA] = bts[rowRGB + indexRGB];
-                        rowr[indexRGBA + 1] = bts[rowRGB + indexRGB + 1];
+                        rowr[index16 + 1] = bts[rowRGB + indexRGB];
+                        rowr[index16] = bts[rowRGB + indexRGB + 1];
                         //G
-                        rowr[indexRGBA + 2] = bts[rowRGB + indexRGB + 2];
-                        rowr[indexRGBA + 3] = bts[rowRGB + indexRGB + 3];
+                        rowg[index16 + 1] = bts[rowRGB + indexRGB + 2];
+                        rowg[index16] = bts[rowRGB + indexRGB + 3];
                         //B
-                        rowr[indexRGBA + 4] = bts[rowRGB + indexRGB + 4];
-                        rowr[indexRGBA + 5] = bts[rowRGB + indexRGB + 5];
+                        rowb[index16 + 1] = bts[rowRGB + indexRGB + 4];
+                        rowb[index16] = bts[rowRGB + indexRGB + 5];
 
                     }
                 }
             }
+            bmpr.UnlockBits(bmdr);
+            bmpg.UnlockBits(bmdg);
+            bmpb.UnlockBits(bmdb);
+            bfs[0] = new BufferInfo(file, bmpr, coord, 0);
+            bfs[1] = new BufferInfo(file, bmpg, coord, 0);
+            bfs[2] = new BufferInfo(file, bmpb, coord, 0);
+            return bfs;
         }
         public static unsafe Bitmap GetBitmap(int w, int h, int stride, PixelFormat px, byte[] bts)
         {
@@ -4516,27 +4525,17 @@ namespace BioImage
             for (int p = 0; p < pages; p++)
             {
                 byte[] bytes = reader.openBytes(p);
-                BufferInfo bf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), 0);
-                b.Buffers.Add(bf);
-                /*
-                BufferInfo bts = BufferInfo.RGB48To16(file, SizeX, SizeY, stride, bytes, new ZCT(0, 0, 0), 0);
-                b.Buffers.Add(bts);
-                BufferInfo bts2 = BufferInfo.RGB48To16(file, SizeX, SizeY, stride, bytes, new ZCT(0, 0, 0), 1);
-                b.Buffers.Add(bts2);
-                BufferInfo bts3 = BufferInfo.RGB48To16(file, SizeX, SizeY, stride, bytes, new ZCT(0, 0, 0), 2);
-                b.Buffers.Add(bts3);
-                */
-                /*
                 if (PixelFormat == PixelFormat.Format48bppRgb)
                 {
-                    Bitmap[] bm = BufferInfo.RGB48To16((Bitmap)inf.Image);
-                    BufferInfo inf1 = new BufferInfo(file, bm[0], new ZCT(0, 0, 0), 0);
-                    BufferInfo inf2 = new BufferInfo(file, bm[1], new ZCT(0, 1, 0), 0);
-                    BufferInfo inf3 = new BufferInfo(file, bm[2], new ZCT(0, 2, 0), 0);
-                    
+                    //We convert 48bpp plane to 3 16bpp planes.
+                    BufferInfo[] bfs = BufferInfo.RGB48To16(file, SizeX, SizeY, stride, bytes, new ZCT(0, 0, 0));
+                    b.Buffers.AddRange(bfs);
                 }
                 else
-                    */
+                {
+                    BufferInfo bf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), 0);
+                    b.Buffers.Add(bf);
+                }
                 threadProgress = ((float)p / (float)pages)*100;
 
             }
