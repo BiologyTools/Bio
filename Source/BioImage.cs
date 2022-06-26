@@ -1489,23 +1489,10 @@ namespace BioImage
         }
         public void RGBTo32Bit()
         {
-            
             Bitmap bm = new Bitmap(SizeX, SizeY, PixelFormat.Format32bppRgb);
             Graphics g = Graphics.FromImage(bm);
             g.DrawImage((Bitmap)Image, 0, 0);
             Image = bm;
-            
-        }
-        public static Bitmap[] RGB48To16(Bitmap bm)
-        {
-            Bitmap[] bmps = new Bitmap[3];
-            ExtractChannel cr = new ExtractChannel(AForge.Imaging.RGB.R);
-            ExtractChannel cg = new ExtractChannel(AForge.Imaging.RGB.G);
-            ExtractChannel cb = new ExtractChannel(AForge.Imaging.RGB.B);
-            bmps[0] = cr.Apply(bm);
-            bmps[1] = cr.Apply(bm);
-            bmps[2] = cr.Apply(bm);
-            return bmps;
         }
         public static Bitmap SwitchChannels(Bitmap image, int c1, int c2)
         {
