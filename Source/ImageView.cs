@@ -210,6 +210,7 @@ namespace BioImage
                 TabsView.app.UpdateViewMode(viewMode);
                 UpdateView();
                 UpdateOverlay();
+                UpdateImage();
                 if (viewMode == ViewMode.RGBImage)
                 {
                     cBar.Value = 0;
@@ -374,10 +375,9 @@ namespace BioImage
             {
                 channelBoxR.SelectedIndex = 0;
             }
-            UpdateRGBChannels();
+                UpdateRGBChannels();
             //We threshold the image so that the max threshold value is the max pixel value in image. 
             image.AutoThreshold();
-            
         }
 
         public void UpdateSelectBoxSize(float size)
@@ -432,6 +432,36 @@ namespace BioImage
             SetCoordinate(zBar.Value, cBar.Value, timeBar.Value);
             pictureBox.Invalidate();
             UpdateStatus();
+        }
+
+        public void UpdateImage()
+        {
+            ZCT coords = new ZCT(zBar.Value, cBar.Value, timeBar.Value);
+            int index = image.Coords[zBar.Value, cBar.Value, timeBar.Value];
+            if (Mode == ViewMode.Filtered)
+            {
+                bm = image.GetFiltered(coords, RChannel.range, BChannel.range, GChannel.range);
+            }
+            else if (Mode == ViewMode.RGBImage)
+            {
+                PixelFormat px = image.Buffers[index].PixelFormat;
+                if (px == PixelFormat.Format8bppIndexed || px == PixelFormat.Format16bppGrayScale)
+                {
+                    bm = image.GetRGBBitmap(coords, RChannel.range, BChannel.range, GChannel.range);
+                }
+                else
+                {
+                    bm = (Bitmap)image.Buffers[index].Image;
+                }
+            }
+            else
+            {
+                bm = (Bitmap)image.Buffers[index].Image;
+            }
+            if (bm.PixelFormat == PixelFormat.Format16bppGrayScale || bm.PixelFormat == PixelFormat.Format48bppRgb)
+                bm = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)bm);
+
+            pictureBox.Invalidate();
         }
 
         private void channelBoxR_SelectedIndexChanged(object sender, EventArgs e)
@@ -1143,38 +1173,16 @@ namespace BioImage
             else
                 Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(0, 0, 0, 0);
         }
+        Bitmap bm = null;
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
-            ZCT coords = new ZCT(zBar.Value, cBar.Value, timeBar.Value);
-            int index = image.Coords[zBar.Value, cBar.Value, timeBar.Value];
-            Image im = null;
-            if (Mode == ViewMode.Filtered)
-            {
-                im = image.GetFiltered(coords, RChannel.range, BChannel.range, GChannel.range);
-            }
-            else if (Mode == ViewMode.RGBImage)
-            {
-                PixelFormat px = image.Buffers[index].PixelFormat;
-                if (px == PixelFormat.Format8bppIndexed || px == PixelFormat.Format16bppGrayScale)
-                {
-                    im = image.GetRGBBitmap(coords, RChannel.range, BChannel.range, GChannel.range);
-                }
-                else
-                {
-                    im = image.Buffers[index].Image;
-                }
-            }
-            else
-            {
-                im = image.Buffers[index].Image;
-            }
-            if (im.PixelFormat == PixelFormat.Format16bppGrayScale || im.PixelFormat == PixelFormat.Format48bppRgb)
-                im = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)im);
+            if (bm == null)
+                UpdateImage();
             PointF pp = GetImagePoint();
             Graphics g = e.Graphics;
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
-            g.DrawImage(im,0,0,im.Size.Width,im.Size.Height);
+            g.DrawImage(bm, 0,0, bm.Size.Width, bm.Size.Height);
         }
 
         public static List<Annotation> selectedAnnotations = new List<Annotation>();

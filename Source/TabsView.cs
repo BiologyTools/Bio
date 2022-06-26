@@ -42,6 +42,17 @@ namespace BioImage
             UpdateTabs();
             Init();
         }
+        public TabsView()
+        {
+            InitializeComponent();
+            DialogResult = DialogResult.None;
+            tools = new Tools();
+            stackTools = new StackTools();
+            filters = new Filter();
+            app = this;
+            UpdateTabs();
+            Init();
+        }
         public TabsView(string arg)
         {
             InitializeComponent();
@@ -318,6 +329,7 @@ namespace BioImage
 
         private void ImageViewer_Activated(object sender, EventArgs e)
         {
+            NodeView.viewer = this;
             app = this;
             ImageView.app = this;
             if (this.Viewer != null)

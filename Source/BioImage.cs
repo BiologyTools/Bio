@@ -40,6 +40,7 @@ namespace BioImage
             {
                 images.Add(im.HashID, im);
             }
+            NodeView.viewer.AddTab(im);
         }
         public static int GetImageCount(string s)
         {
@@ -1876,9 +1877,6 @@ namespace BioImage
 
             }
             Table.AddImage(img);
-            ImageView iv = new ImageView(img);
-            Table.AddViewer(iv);
-            iv.Show();
             Recorder.AddLine("Filters.Crop(" + '"' + id + '"' + "," + x + "," + y + "," + w + "," + h + ");");
             return img;
         }
@@ -2579,7 +2577,6 @@ namespace BioImage
             rgbChannels[0] = 0;
             rgbChannels[1] = 0;
             rgbChannels[2] = 0;
-            Table.AddImage(this);
         }
         public BioImage(string id, int SizeX, int SizeY)
         {
@@ -3203,7 +3200,8 @@ namespace BioImage
                 //if (SizeC > 2)
                     replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, GetFiltered(ri + BChannel.Index, rf, gf, bf));
             }
-
+            if (rgbBitmap16.Width != SizeX || rgbBitmap16.Height != SizeY)
+                rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
             if (RGBChannelCount == 1)
             {
                 //if (SizeC > 0)
@@ -3237,6 +3235,8 @@ namespace BioImage
         public Bitmap GetRGBBitmap8(int ri)
         {
             watch.Restart();
+            if (rgbBitmap8.Width != SizeX || rgbBitmap8.Height != SizeY)
+                rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
             if (RGBChannelCount == 1)
             {
                 if (replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
@@ -4060,6 +4060,7 @@ namespace BioImage
             b.Coords = new int[b.SizeZ, b.SizeC, b.SizeT];
             string order = reader.getDimensionOrder();
             PixelFormat PixelFormat;
+            bool bit48 = false;
             int stride = 0;
             if (RGBChannelCount == 1)
             {
@@ -4081,6 +4082,7 @@ namespace BioImage
                 {
                     PixelFormat = PixelFormat.Format48bppRgb;
                     stride = SizeX * 2 * 3;
+                    bit48 = true;
                 }
                 else
                 {
@@ -4528,6 +4530,26 @@ namespace BioImage
             int t = 0;
             //"XYCZT"
             //some images have a different order
+            if(bit48)
+            {
+                for (int im = 0; im < b.Buffers.Count; im+=3)
+                {
+                    b.Coords[z, 0, t] = im;
+                    b.Coords[z, 1, t] = im + 1;
+                    b.Coords[z, 2, t] = im + 2;
+                    if (z < b.SizeZ - 1)
+                        z++;
+                    else
+                    {
+                        z = 0;
+                        if (t < b.SizeT - 1)
+                            t++;
+                        else
+                            t = 0;
+                    }
+                }
+            }
+            else
             for (int im = 0; im < b.Buffers.Count; im++)
             {
                 b.Coords[z, c, t] = im;

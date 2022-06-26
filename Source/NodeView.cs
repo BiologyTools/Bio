@@ -16,7 +16,7 @@ namespace BioImage
     {
         public static Scripting runner = null;
         public static Recorder recorder = null;
-        public TabsView viewer = null;
+        public static TabsView viewer = null;
         public class Node
         {
             public TreeNode node;
@@ -65,6 +65,8 @@ namespace BioImage
                 viewer = new TabsView(args[0]);
                 viewer.Show();
             }
+            else
+                viewer = new TabsView();
         }
 
         public NodeView()
@@ -73,6 +75,7 @@ namespace BioImage
             Init();
             Filters.Init();
             InitNodes();
+            viewer = new TabsView();
         }
 
         private static void Init()
