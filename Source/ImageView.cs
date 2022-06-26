@@ -1150,11 +1150,6 @@ namespace BioImage
             Image im = null;
             if (Mode == ViewMode.Filtered)
             {
-                if(image.Buffers[index].PixelFormat == PixelFormat.Format48bppRgb)
-                {
-                    im = image.Buffers[index].Image;
-                }
-                else
                 im = image.GetFiltered(coords, RChannel.range, BChannel.range, GChannel.range);
             }
             else if (Mode == ViewMode.RGBImage)

@@ -1203,9 +1203,9 @@ namespace BioImage
             bmpr.UnlockBits(bmdr);
             bmpg.UnlockBits(bmdg);
             bmpb.UnlockBits(bmdb);
-            bfs[0] = new BufferInfo(file, bmpr, coord, 0);
-            bfs[1] = new BufferInfo(file, bmpg, coord, 0);
-            bfs[2] = new BufferInfo(file, bmpb, coord, 0);
+            bfs[0] = new BufferInfo(file, bmpr, new ZCT(coord.Z, 0, coord.T), 0);
+            bfs[1] = new BufferInfo(file, bmpg, new ZCT(coord.Z, 0, coord.T), 0);
+            bfs[2] = new BufferInfo(file, bmpb, new ZCT(coord.Z, 0, coord.T), 0);
             return bfs;
         }
         public static unsafe Bitmap GetBitmap(int w, int h, int stride, PixelFormat px, byte[] bts)
@@ -2324,14 +2324,12 @@ namespace BioImage
             }
         }
         public int[] rgbChannels = new int[3];
-        public int rGBChannelCount = 1;
         public int RGBChannelCount
         {
             get
             {
-                return rGBChannelCount;
+                return Buffers[0].RGBChannelsCount;
             }
-            set { rGBChannelCount = value; }
         }
         public int bitsPerPixel;
         public int series = 0;
@@ -2600,7 +2598,6 @@ namespace BioImage
             sizeZ = (int)ze - zs;
             sizeC = (int)ce - cs;
             sizeT = (int)te - ts;
-            RGBChannelCount = orig.RGBChannelCount;
             rgbChannels[0] = 0;
             rgbChannels[1] = 0;
             rgbChannels[2] = 0;
@@ -2678,7 +2675,6 @@ namespace BioImage
             int cOrig = b2.SizeC;
             res.sizeC = b2.SizeC + b.SizeC;
             res.sizeT = b2.SizeT;
-            res.RGBChannelCount = b2.RGBChannelCount;
             res.bitsPerPixel = b2.bitsPerPixel;
 
             res.sizeInfo = b2.sizeInfo;
@@ -3802,7 +3798,7 @@ namespace BioImage
                 int SizeY = image.GetField(TiffTag.IMAGELENGTH)[0].ToInt();
                 b.bitsPerPixel = image.GetField(TiffTag.BITSPERSAMPLE)[0].ToInt();
                 b.littleEndian = image.IsBigEndian();   
-                b.RGBChannelCount = image.GetField(TiffTag.SAMPLESPERPIXEL)[0].ToInt();
+                int RGBChannelCount = image.GetField(TiffTag.SAMPLESPERPIXEL)[0].ToInt();
                 string desc = "";
                 try
                 {
@@ -3861,7 +3857,7 @@ namespace BioImage
                 }
 
                 PixelFormat PixelFormat;
-                if (b.RGBChannelCount == 1)
+                if (RGBChannelCount == 1)
                 {
                     if (b.bitsPerPixel > 8)
                     {
@@ -3873,7 +3869,7 @@ namespace BioImage
                     }
                 }
                 else
-                if (b.RGBChannelCount == 3)
+                if (RGBChannelCount == 3)
                 {
                     if (b.bitsPerPixel > 8)
                     {
@@ -4037,11 +4033,10 @@ namespace BioImage
         }
         public static void OpenOME()
         {
-            if(!Initialized)
+            do
             {
-                MessageBox.Show("OME reader not initialized. Call BioImage.Initialize(); first.");
-                return;
-            }
+                System.Threading.Thread.Sleep(500);
+            } while (!Initialized);
             st.Start();
             done = false;
             string file = threadFile;
@@ -4051,7 +4046,7 @@ namespace BioImage
             // initialize file
             reader.setId(file);
             reader.setSeries(serie);
-            b.RGBChannelCount = reader.getRGBChannelCount();
+            int RGBChannelCount = reader.getRGBChannelCount();
             b.bitsPerPixel = reader.getBitsPerPixel();
             b.id = file;
             int SizeX = reader.getSizeX();
@@ -4066,7 +4061,7 @@ namespace BioImage
             string order = reader.getDimensionOrder();
             PixelFormat PixelFormat;
             int stride = 0;
-            if (b.RGBChannelCount == 1)
+            if (RGBChannelCount == 1)
             {
                 if (b.bitsPerPixel > 8)
                 {
@@ -4080,7 +4075,7 @@ namespace BioImage
                 }
             }
             else
-            if (b.RGBChannelCount == 3)
+            if (RGBChannelCount == 3)
             {
                 if (b.bitsPerPixel > 8)
                 {
@@ -4517,6 +4512,7 @@ namespace BioImage
                     //We convert 48bpp plane to 3 16bpp planes.
                     BufferInfo[] bfs = BufferInfo.RGB48To16(file, SizeX, SizeY, stride, bytes, new ZCT(0, 0, 0));
                     b.Buffers.AddRange(bfs);
+                    
                 }
                 else
                 {
