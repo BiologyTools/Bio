@@ -212,6 +212,7 @@ namespace BioImage
                 UpdateOverlay();
                 if (viewMode == ViewMode.RGBImage)
                 {
+                    cBar.Value = 0;
                     rgbBoxsPanel.BringToFront();
                     cBar.SendToBack();
                     cLabel.SendToBack();
@@ -1149,6 +1150,11 @@ namespace BioImage
             Image im = null;
             if (Mode == ViewMode.Filtered)
             {
+                if(image.Buffers[index].PixelFormat == PixelFormat.Format48bppRgb)
+                {
+                    im = image.Buffers[index].Image;
+                }
+                else
                 im = image.GetFiltered(coords, RChannel.range, BChannel.range, GChannel.range);
             }
             else if (Mode == ViewMode.RGBImage)
@@ -1167,8 +1173,8 @@ namespace BioImage
             {
                 im = image.Buffers[index].Image;
             }
-            if (im.PixelFormat == PixelFormat.Format16bppGrayScale || im.PixelFormat == PixelFormat.Format48bppRgb)
-                im = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)im);
+            //if (im.PixelFormat == PixelFormat.Format16bppGrayScale || im.PixelFormat == PixelFormat.Format48bppRgb)
+            //    im = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)im);
             PointF pp = GetImagePoint();
             Graphics g = e.Graphics;
             g.TranslateTransform(origin.X, origin.Y);
@@ -1457,8 +1463,8 @@ namespace BioImage
                     else
                     {
                         int r = image.GetValueRGB(zc, 0, tc, (int)p.X, (int)p.Y, 0);
-                        int g = image.GetValueRGB(zc, 0, tc, (int)p.X, (int)p.Y, 1);
-                        int b = image.GetValueRGB(zc, 0, tc, (int)p.X, (int)p.Y, 2);
+                        int g = image.GetValueRGB(zc, 1, tc, (int)p.X, (int)p.Y, 1);
+                        int b = image.GetValueRGB(zc, 2, tc, (int)p.X, (int)p.Y, 2);
                         mouseColor = ", " + r + "," + g + "," + b;
                     }
                 }

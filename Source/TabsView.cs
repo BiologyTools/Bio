@@ -502,5 +502,14 @@ namespace BioImage
             else
                 rGBToolStripMenuItem.Checked = false;
         }
+
+        private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (tabControl.SelectedIndex == -1)
+                return;
+            ((ImageView)tabControl.SelectedTab.Controls[0]).Dispose();
+            tabControl.TabPages.RemoveAt(tabControl.SelectedIndex);
+
+        }
     }
 }
