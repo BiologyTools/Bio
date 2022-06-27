@@ -81,7 +81,7 @@ namespace BioImage
         }
         public static void RemoveViewer(ImageView v)
         {
-            viewers.Remove(v.Text);
+            viewers.Remove(v.image.ID);
             v.Dispose();
         }
         public static ImageView GetViewer(string s)

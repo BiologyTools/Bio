@@ -61,7 +61,7 @@ namespace BioImage
             if (n.filt.type == Filt.Type.Base)
             {
                 Filters.BaseFilter(ImageView.viewer.image.ID, n.filt.name, false);
-                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                Recorder.AddLine("Filters.BaseFilter(" + '"' + ImageView.viewer.image.ID +
                     '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
             }
             if (n.filt.type == Filt.Type.Base2)
@@ -70,15 +70,15 @@ namespace BioImage
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
                 Filters.BaseFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
-                Filters.BaseInPlaceFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
-                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + two.ImageA.ID + '"' + "," +
+                //Filters.BaseInPlaceFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
+                Recorder.AddLine("Filters.BaseFilter2(" + '"' + two.ImageA.ID + '"' + "," +
                    '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
             }
             else
             if (n.filt.type == Filt.Type.InPlace)
             {
                 Filters.BaseInPlaceFilter(ImageView.viewer.image.ID, n.filt.name, false);
-                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                Recorder.AddLine("Filters.BaseInPlaceFilter(" + '"' + ImageView.viewer.image.ID +
                     '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
             }
             else
@@ -88,14 +88,14 @@ namespace BioImage
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
                 Filters.BaseInPlaceFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
-                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + two.ImageA.ID + '"' + "," +
+                Recorder.AddLine("Filters.BaseInPlaceFilter2(" + '"' + two.ImageA.ID + '"' + "," +
                    '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
             }
             else
             if (n.filt.type == Filt.Type.InPlacePartial)
             {
                 Filters.BaseInPlacePartialFilter(ImageView.viewer.image.ID, n.filt.name, false);
-                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                Recorder.AddLine("Filters.BaseInPlacePartialFilter(" + '"' + ImageView.viewer.image.ID +
                     '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
             }
             else
@@ -103,7 +103,7 @@ namespace BioImage
             {
                 ApplyFilter two = new ApplyFilter(false);
                 Filters.BaseResizeFilter(ImageView.viewer.image.ID, n.filt.name, false, two.W,two.H);
-                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                Recorder.AddLine("Filters.BaseResizeFilter(" + '"' + ImageView.viewer.image.ID +
                     '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
             }
             else
@@ -111,7 +111,7 @@ namespace BioImage
             {
                 ApplyFilter two = new ApplyFilter(false);
                 Filters.BaseRotateFilter(ImageView.viewer.image.ID, n.filt.name, false, two.Angle, two.Color);
-                Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                Recorder.AddLine("Filters.BaseRotateFilter(" + '"' + ImageView.viewer.image.ID +
                     '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
             }
             else
@@ -127,7 +127,7 @@ namespace BioImage
                 else
                 {
                     Filters.BaseTransformationFilter(ImageView.viewer.image.ID, n.filt.name, false, two.Angle);
-                    Recorder.AddLine("Filters." + n.filt.name + "(" + '"' + ImageView.viewer.image.ID +
+                    Recorder.AddLine("Filters.BaseTransformationFilter(" + '"' + ImageView.viewer.image.ID +
                         '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
                 }
             }

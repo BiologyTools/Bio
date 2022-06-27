@@ -20,7 +20,7 @@ namespace BioImage
             file = file.Replace("\\", "/");
             InitializeComponent();
             serie = ser;
-
+            
             tools = new Tools();
             if (file == "" || file == null)
                 return;
