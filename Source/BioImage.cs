@@ -76,16 +76,8 @@ namespace BioImage
         }
         public static void AddViewer(ImageView v)
         {
-            if (!viewers.ContainsKey(v.Text))
-                viewers.Add(v.Text, v);
-        }
-        public static void AddViewer(BioImage b)
-        {
-            AddImage(b);
-            ImageView v = new ImageView(b);
-            if (!viewers.ContainsKey(v.Text))
-                viewers.Add(v.Text, v);
-            v.Show();
+            if (!viewers.ContainsKey(v.image.ID))
+                viewers.Add(v.image.ID, v);
         }
         public static void RemoveViewer(ImageView v)
         {
@@ -97,7 +89,14 @@ namespace BioImage
         }
         public static ImageView GetViewer(string s)
         {
-            return (ImageView)viewers[s];
+            if (s.Contains("/i/"))
+            {
+                int ind = s.LastIndexOf('/');
+                string sub = s.Substring(0, ind - 2);
+                return (ImageView)viewers[sub];
+            }
+            else
+                return (ImageView)viewers[s];
         }
     }
     public struct ZCT
@@ -154,67 +153,6 @@ namespace BioImage
         public static bool operator !=(ZCTXY c1, ZCTXY c2)
         {
             if (c1.Z != c2.Z || c1.C != c2.C || c1.T != c2.T || c1.X != c2.X || c1.Y != c2.Y)
-                return false;
-            else
-                return true;
-        }
-    }
-    public struct SZCT
-    {
-        public int S, Z, C, T;
-        public SZCT(int s, int z, int c, int t)
-        {
-            S = s;
-            Z = z;
-            C = c;
-            T = t;
-        }
-        public static bool operator ==(SZCT c1, SZCT c2)
-        {
-            if (c1.S == c2.S && c1.Z == c2.Z && c1.C == c2.C && c1.T == c2.T)
-                return true;
-            else
-                return false;
-        }
-        public static bool operator !=(SZCT c1, SZCT c2)
-        {
-            if (c1.S == c2.S || c1.Z != c2.Z || c1.C != c2.C || c1.T != c2.T)
-                return false;
-            else
-                return true;
-        }
-        public override string ToString()
-        {
-            return S + "," + Z + "," + C + "," + T;
-        }
-    }
-    public struct SZCTXY
-    {
-        public int S, Z, C, T, X, Y;
-        public SZCTXY(int s, int z, int c, int t, int x, int y)
-        {
-            S = s;
-            Z = z;
-            C = c;
-            T = t;
-            X = x;
-            Y = y;
-        }
-        public override string ToString()
-        {
-            return S + "," + Z + "," + C + "," + T + "," + X + "," + Y;
-        }
-
-        public static bool operator ==(SZCTXY c1, SZCTXY c2)
-        {
-            if (c1.S == c2.S && c1.Z == c2.Z && c1.C == c2.C && c1.T == c2.T && c1.X == c2.X && c1.Y == c2.Y)
-                return true;
-            else
-                return false;
-        }
-        public static bool operator !=(SZCTXY c1, SZCTXY c2)
-        {
-            if (c1.S != c2.S || c1.Z != c2.Z || c1.C != c2.C || c1.T != c2.T || c1.X != c2.X || c1.Y != c2.Y)
                 return false;
             else
                 return true;
@@ -2567,7 +2505,7 @@ namespace BioImage
             */
             bi.bitsPerPixel = 16;
             AutoThreshold();
-            Table.AddViewer(bi);
+            Table.AddImage(bi);
             Recorder.AddLine("To48Bit();");
 
         }
@@ -3290,8 +3228,7 @@ namespace BioImage
             }
             return annotations;
         }
-        
-
+ 
         private static ImageWriter wr;
         private static string threadFile = "";
         private static int serie;
@@ -3309,9 +3246,10 @@ namespace BioImage
             t.Start();
             Progress pr = new Progress(threadFile, "Saving");
             pr.Show();
+            done = false;
             do
             {
-                pr.UpdateProgress((int)threadProgress);
+                pr.UpdateProgressF(threadProgress);
                 Application.DoEvents();
             } while (!done);
             pr.Close();
@@ -3326,9 +3264,10 @@ namespace BioImage
             t.Start();
             Progress pr = new Progress(threadFile, "Opening");
             pr.Show();
+            done = false;
             do
             {
-                pr.UpdateProgress((int)threadProgress);
+                pr.UpdateProgressF(threadProgress);
                 Application.DoEvents();
             } while (!done);
 
@@ -3345,9 +3284,10 @@ namespace BioImage
             t.Start();
             Progress pr = new Progress(threadFile, "Saving");
             pr.Show();
+            done = false;
             do
             {
-                pr.UpdateProgress((int)threadProgress);
+                pr.UpdateProgressF(threadProgress);
                 Application.DoEvents();
             } while (!done);
             pr.Close();
@@ -3363,17 +3303,31 @@ namespace BioImage
             t.Start();
             Progress pr = new Progress(threadFile, "Opening");
             pr.Show();
+            done = false;
             do
             {
-                pr.UpdateProgress((int)threadProgress);
+                pr.UpdateProgressF(threadProgress);
                 Application.DoEvents();
             } while (!done);
+            t.Abort();
             pr.Close();
         }
         public static void Initialize()
         {
+            //We initialize OME on a seperate thread so the user doesn't have to wait for initialization to
+            //view images. 
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Init));
             t.Start();
+        }
+        private static void Init()
+        {
+            Stopwatch sto = new Stopwatch();
+            sto.Start();
+            factory = new ServiceFactory();
+            service = (OMEXMLService)factory.getInstance(typeof(OMEXMLService));
+            reader = new ImageReader();
+            writer = new ImageWriter();
+            sto.Stop();
         }
         private static void Save()
         {
@@ -3631,6 +3585,7 @@ namespace BioImage
                     ZCT co = new ZCT(z, c, t);
                     int index = b.Coords[z, c, t];
                     b.Coords[co.Z, co.C, co.T] = im;
+                    b.Buffers[im].Coordinate = co;
                     if (c < b.SizeC - 1)
                         c++;
                     else
@@ -4483,6 +4438,7 @@ namespace BioImage
                     b.Coords[z, 0, t] = im;
                     b.Coords[z, 1, t] = im + 1;
                     b.Coords[z, 2, t] = im + 2;
+                    b.Buffers[im].Coordinate = co;
                     if (z < b.SizeZ - 1)
                         z++;
                     else
@@ -4516,10 +4472,7 @@ namespace BioImage
                     }
                 }
             }
-            //pr.UpdateProgressF((float)(im) / (float)images.Count);
-            Application.DoEvents();
-            //threadProgress = ((float)im / (float)b.ImageCount) * 100;
-        
+            
             double stx = 0;
             double sty = 0;
             double stz = 0;
@@ -4563,17 +4516,7 @@ namespace BioImage
             done = true;
             //return b;
         }
-        private static void Init()
-        {
-            Stopwatch sto = new Stopwatch();
-            sto.Start();
-            factory = new ServiceFactory();
-            service = (OMEXMLService)factory.getInstance(typeof(OMEXMLService));
-            reader = new ImageReader();
-            writer = new ImageWriter();
-            sto.Stop();
-        }
-        
+
         private static Stopwatch st = new Stopwatch();
         private static ServiceFactory factory;
         private static OMEXMLService service;
@@ -4591,8 +4534,6 @@ namespace BioImage
                 else return true;
             }
         }
-
-        
 
         public int GetSeriesCount(string file)
         {

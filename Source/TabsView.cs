@@ -185,10 +185,11 @@ namespace BioImage
         }
         public void SetImage(BioImage b)
         {
-            AddTab(b);
+            //AddTab(b);
             Viewer.serie = b.series;
             Viewer.filepath = b.ID;
             Viewer.Dock = DockStyle.Fill;
+            Viewer.image = b;
             this.Text = b.Filename;
             Viewer.UpdateView();
             System.Drawing.Size s = new System.Drawing.Size(Viewer.image.SizeX + 20, Viewer.image.SizeY + 165);
@@ -230,7 +231,7 @@ namespace BioImage
         {
             foreach (string file in files)
             {
-                AddTab(new BioImage(file, 0));
+                BioImage b = new BioImage(file, 0);
             }
         }
 

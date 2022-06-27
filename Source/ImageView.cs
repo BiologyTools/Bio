@@ -97,6 +97,7 @@ namespace BioImage
             zBar.Value = z;
             cBar.Value = c;
             timeBar.Value = t;
+            UpdateImage();
         }
         public ZCT GetCoordinate()
         {
@@ -437,6 +438,8 @@ namespace BioImage
         public void UpdateImage()
         {
             ZCT coords = new ZCT(zBar.Value, cBar.Value, timeBar.Value);
+            if (image == null)
+                return;
             int index = image.Coords[zBar.Value, cBar.Value, timeBar.Value];
             if (Mode == ViewMode.Filtered)
             {
@@ -470,6 +473,7 @@ namespace BioImage
                 return;
             image.rgbChannels[0] = channelBoxR.SelectedIndex;
             UpdateView();
+            UpdateImage();
         }
 
         private void channelBoxG_SelectedIndexChanged(object sender, EventArgs e)
@@ -478,6 +482,7 @@ namespace BioImage
                 return;
             image.rgbChannels[1] = channelBoxG.SelectedIndex;
             UpdateView();
+            UpdateImage();
         }
 
         private void channelBoxB_SelectedIndexChanged(object sender, EventArgs e)
@@ -486,6 +491,7 @@ namespace BioImage
                 return;
             image.rgbChannels[2] = channelBoxB.SelectedIndex;
             UpdateView();
+            UpdateImage();
         }
 
         private void showControlsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -796,14 +802,17 @@ namespace BioImage
         private void zBar_ValueChanged(object sender, EventArgs e)
         {
             UpdateView();
+            UpdateImage();
         }
         private void timeBar_ValueChanged(object sender, EventArgs e)
         {
             UpdateView();
+            UpdateImage();
         }
         private void cBar_ValueChanged(object sender, EventArgs e)
         {
             UpdateView();
+            UpdateImage();
         }
 
         private void loopTimeToolStripMenuItem_Click(object sender, EventArgs e)

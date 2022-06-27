@@ -43,19 +43,19 @@
             this.applyToolStripMenuItem,
             this.applyRGBToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(181, 70);
+            this.contextMenuStrip.Size = new System.Drawing.Size(150, 48);
             // 
             // applyToolStripMenuItem
             // 
             this.applyToolStripMenuItem.Name = "applyToolStripMenuItem";
-            this.applyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.applyToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.applyToolStripMenuItem.Text = "Apply";
             this.applyToolStripMenuItem.Click += new System.EventHandler(this.applyToolStripMenuItem_Click);
             // 
             // applyRGBToolStripMenuItem
             // 
             this.applyRGBToolStripMenuItem.Name = "applyRGBToolStripMenuItem";
-            this.applyRGBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.applyRGBToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
             this.applyRGBToolStripMenuItem.Text = "Apply In Place";
             this.applyRGBToolStripMenuItem.Click += new System.EventHandler(this.applyRGBToolStripMenuItem_Click);
             // 

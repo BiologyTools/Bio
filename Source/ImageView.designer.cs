@@ -163,7 +163,7 @@ namespace BioImage
             this.showControlToolStripMenuItem,
             this.showStatusToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(200, 180);
+            this.contextMenuStrip.Size = new System.Drawing.Size(200, 158);
             // 
             // deleteROIToolStripMenuItem
             // 

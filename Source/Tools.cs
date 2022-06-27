@@ -189,7 +189,6 @@ namespace BioImage
                     anno.AddPoint(new PointD(e.X, e.Y));
                     anno.coord = ImageView.viewer.GetCoordinate();
                     ImageView.selectedImage.Annotations.Add(anno);
-                    UpdateOverlay();
                 }
             }
             else
@@ -217,7 +216,6 @@ namespace BioImage
                         anno.AddPoint(new PointD(e.X, e.Y));
                     }
                 }
-                UpdateOverlay();
             }
             else
             if (currentTool.type == Tool.Type.freeform)
@@ -303,6 +301,7 @@ namespace BioImage
                 panPanel.BackColor = Color.LightGray;
                 Cursor.Current = Cursors.Hand;
             }
+            UpdateOverlay();
         }        
         public void ToolUp(PointF e, MouseButtons buts)
         {
@@ -320,7 +319,6 @@ namespace BioImage
                 an.type = Annotation.Type.Point;
                 an.coord = ImageView.viewer.GetCoordinate();
                 ImageView.selectedImage.Annotations.Add(an);
-                UpdateOverlay();
             }
             else
             if (currentTool.type == Tool.Type.line && anno.type == Annotation.Type.Line)
@@ -329,7 +327,6 @@ namespace BioImage
                 {
                     anno.UpdatePoint(new PointD(e.X, e.Y), 1);
                     anno = new Annotation();
-                    UpdateOverlay();
                 }
             }
             else
@@ -377,19 +374,7 @@ namespace BioImage
                         an.selected = false;
                 }
                 Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(0, 0, 0, 0);
-                UpdateOverlay();
             }
-            /*
-            if (Tools.currentTool.type == Tools.Tool.Type.pan)
-            {
-                PointF pf = new PointF(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
-                if (pf.X < 500 && pf.Y < 500)
-                {
-                    ImageView.viewer.Origin = new PointF(ImageView.viewer.Origin.X + pf.X, ImageView.viewer.Origin.Y + pf.Y);
-                    UpdateView();
-                }
-            }
-            */
             if (Tools.currentTool.type == Tools.Tool.Type.magic)
             {
                 PointF pf = new PointF(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
@@ -456,8 +441,8 @@ namespace BioImage
                     Annotation an = Annotation.CreateFreeform(coord, pfs);
                     ImageView.viewer.image.Annotations.Add(an); 
                 }
-                UpdateOverlay();
             }
+            UpdateOverlay();
         }
         public void ToolMove(PointF e, MouseButtons buts)
         {
@@ -573,7 +558,7 @@ namespace BioImage
             if (Tools.currentTool.type == Tools.Tool.Type.pan && (buts == MouseButtons.Middle || buts == MouseButtons.Left))
             {
                 PointF pf = new PointF(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
-                if (pf.X > 10 && pf.Y > 10)
+                if (pf.X > 50 && pf.Y > 50)
                     return;
                 ImageView.viewer.Origin = new PointF(ImageView.viewer.Origin.X + pf.X, ImageView.viewer.Origin.Y + pf.Y);
                 UpdateView();

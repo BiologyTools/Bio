@@ -191,11 +191,7 @@ namespace BioImage
             if(node.Type == Node.DataType.buf)
             {
                 BufferInfo buf = (BufferInfo)node.Object;
-                int ind = int.Parse(Path.GetFileName(buf.ToString()));
-                string name = buf.ToString();
-                int inds = name.IndexOf("/s");
-                string filename = name.Substring(0, inds);
-                ImageView v = Table.GetViewer(Path.GetFileName(filename));
+                ImageView v = Table.GetViewer(buf.ID);
                 if(v!=null)
                     v.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
             }
