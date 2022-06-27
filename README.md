@@ -24,7 +24,9 @@ Best for working with ROI's in OME format & CSV.
 
 - Exporting ROI's from each OME image in a folder of images to CSV.
 
-- Easy freeform annotation with magic select tool which selects based on blob detection. 
+- Easy freeform annotation with magic select tool which selects based on blob detection.
+
+- Use AForge filters by opening filters tool window and right click to apply. Currently supports only some AForge filters as many of them do not support 16bit and 48bit images. Convert to 8bit image to make use of more filters. Applyed filters can be easily recorded and used in scripts.
 
 ## Dependencies
 - [BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
