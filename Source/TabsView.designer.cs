@@ -35,6 +35,9 @@ namespace BioImage
             this.saveOMEFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.panel = new System.Windows.Forms.Panel();
             this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -68,12 +71,9 @@ namespace BioImage
             this.to36BitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.to48BitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filtersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel.SuspendLayout();
-            this.menuStrip.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
+            this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // openFilesDialog
@@ -109,6 +109,28 @@ namespace BioImage
             this.tabControl.Size = new System.Drawing.Size(403, 287);
             this.tabControl.TabIndex = 0;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
+            // 
+            // tabContextMenuStrip
+            // 
+            this.tabContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.closeToolStripMenuItem,
+            this.toWindowToolStripMenuItem});
+            this.tabContextMenuStrip.Name = "tabContextMenuStrip";
+            this.tabContextMenuStrip.Size = new System.Drawing.Size(165, 48);
+            // 
+            // closeToolStripMenuItem
+            // 
+            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.closeToolStripMenuItem.Text = "Close";
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click_1);
+            // 
+            // toWindowToolStripMenuItem
+            // 
+            this.toWindowToolStripMenuItem.Name = "toWindowToolStripMenuItem";
+            this.toWindowToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.toWindowToolStripMenuItem.Text = "Open as Window";
+            this.toWindowToolStripMenuItem.Click += new System.EventHandler(this.toWindowToolStripMenuItem_Click);
             // 
             // saveCSVFileDialog
             // 
@@ -186,7 +208,7 @@ namespace BioImage
             // 
             this.rGBToolStripMenuItem.CheckOnClick = true;
             this.rGBToolStripMenuItem.Name = "rGBToolStripMenuItem";
-            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.rGBToolStripMenuItem.Text = "RGB";
             this.rGBToolStripMenuItem.Click += new System.EventHandler(this.rGBToolStripMenuItem_Click);
             // 
@@ -194,7 +216,7 @@ namespace BioImage
             // 
             this.filteredToolStripMenuItem.CheckOnClick = true;
             this.filteredToolStripMenuItem.Name = "filteredToolStripMenuItem";
-            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.filteredToolStripMenuItem.Text = "Filtered";
             this.filteredToolStripMenuItem.Click += new System.EventHandler(this.filteredToolStripMenuItem_Click);
             // 
@@ -202,7 +224,7 @@ namespace BioImage
             // 
             this.rawToolStripMenuItem.CheckOnClick = true;
             this.rawToolStripMenuItem.Name = "rawToolStripMenuItem";
-            this.rawToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rawToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.rawToolStripMenuItem.Text = "Raw";
             this.rawToolStripMenuItem.Click += new System.EventHandler(this.rawToolStripMenuItem_Click);
             // 
@@ -361,28 +383,6 @@ namespace BioImage
             this.filtersToolStripMenuItem.Text = "Filters";
             this.filtersToolStripMenuItem.Click += new System.EventHandler(this.filtersToolStripMenuItem_Click);
             // 
-            // tabContextMenuStrip
-            // 
-            this.tabContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.closeToolStripMenuItem,
-            this.toWindowToolStripMenuItem});
-            this.tabContextMenuStrip.Name = "tabContextMenuStrip";
-            this.tabContextMenuStrip.Size = new System.Drawing.Size(181, 70);
-            // 
-            // toWindowToolStripMenuItem
-            // 
-            this.toWindowToolStripMenuItem.Name = "toWindowToolStripMenuItem";
-            this.toWindowToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.toWindowToolStripMenuItem.Text = "Open as Window";
-            this.toWindowToolStripMenuItem.Click += new System.EventHandler(this.toWindowToolStripMenuItem_Click);
-            // 
-            // closeToolStripMenuItem
-            // 
-            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.closeToolStripMenuItem.Text = "Close";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click_1);
-            // 
             // TabsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -397,14 +397,13 @@ namespace BioImage
             this.Name = "TabsView";
             this.Text = "BioImage";
             this.Activated += new System.EventHandler(this.ImageViewer_Activated);
-            this.Deactivate += new System.EventHandler(this.ImageViewer_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImageViewer_FormClosing);
             this.Click += new System.EventHandler(this.ImageViewer_Click);
             this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.ImageViewer_PreviewKeyDown);
             this.panel.ResumeLayout(false);
+            this.tabContextMenuStrip.ResumeLayout(false);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
-            this.tabContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

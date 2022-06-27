@@ -67,6 +67,10 @@ namespace BioImage
         private Pen pen;
         private void HistogramControl_Paint(object sender, PaintEventArgs e)
         {
+            if (stats.BitsPerPixel > 8)
+                bin = 100;
+            else
+                bin = 10;
             e.Graphics.Clear(Color.LightGray);
             e.Graphics.TranslateTransform(-graphMin, 0);
             //e.Graphics.ScaleTransform(scale.Width, scale.Height);

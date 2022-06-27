@@ -61,6 +61,7 @@
             this.textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox.Size = new System.Drawing.Size(527, 242);
             this.textBox.TabIndex = 4;
+            this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             // 
             // delLineBut
             // 
@@ -88,7 +89,7 @@
             // timer
             // 
             this.timer.Interval = 1500;
-            this.timer.Tick += new System.EventHandler(this.timer_Tick);
+            this.timer.Tick += new System.EventHandler(this.timer_Tick_1);
             // 
             // Recorder
             // 

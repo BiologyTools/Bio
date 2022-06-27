@@ -29,6 +29,13 @@ namespace BioImage
                 return (ImageView)tabControl.SelectedTab.Controls[0];
             }
         }
+        public static BioImage SelectedImage
+        {
+            get
+            {
+                return NodeView.viewer.Image;
+            }
+        }
         
         public TabsView(BioImage arg)
         {
@@ -323,20 +330,12 @@ namespace BioImage
             
         }
 
-        private void ImageViewer_Deactivate(object sender, EventArgs e)
-        {
-        }
-
         private void ImageViewer_Activated(object sender, EventArgs e)
         {
             NodeView.viewer = this;
             app = this;
             ImageView.app = this;
-            if (this.Viewer != null)
-            {
-                ImageView.viewer = this.Viewer;
-                Recorder.AddLine("BioImage.ImageView iv = Table.GetViewer(" + '"' + this.Text + '"' + ");");
-            }
+            ImageView.viewer = this.Viewer;
         }
 
         private void channelsToolToolStripMenuItem_Click(object sender, EventArgs e)
