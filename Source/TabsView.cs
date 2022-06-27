@@ -519,9 +519,11 @@ namespace BioImage
         {
             if (tabControl.SelectedIndex == -1)
                 return;
-            ((ImageView)tabControl.SelectedTab.Controls[0]).Dispose();
+            ImageView v = (ImageView)tabControl.SelectedTab.Controls[0];
+            Table.RemoveImage(v.image);
+            Table.RemoveViewer(v);
             tabControl.TabPages.RemoveAt(tabControl.SelectedIndex);
-
+            v.Dispose();
         }
     }
 }

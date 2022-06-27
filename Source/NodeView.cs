@@ -192,8 +192,11 @@ namespace BioImage
             {
                 BufferInfo buf = (BufferInfo)node.Object;
                 ImageView v = Table.GetViewer(buf.ID);
-                if(v!=null)
-                    v.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
+                    if (v != null)
+                    {
+                        v.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
+                        v.UpdateImage();
+                    }
             }
             else
             if(node.Type == Node.DataType.roi)

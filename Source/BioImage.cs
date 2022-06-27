@@ -64,7 +64,6 @@ namespace BioImage
         public static void RemoveImage(BioImage im)
         {
             RemoveImage(im.ID);
-
         }
         public static void RemoveImage(string id)
         {
@@ -72,7 +71,8 @@ namespace BioImage
             if (im == null)
                 return;
             images.Remove(im.HashID);
-
+            im.Dispose();
+            Recorder.AddLine("Table.RemoveImage(" + '"' + id + '"' + ");");
         }
         public static void AddViewer(ImageView v)
         {
@@ -82,10 +82,7 @@ namespace BioImage
         public static void RemoveViewer(ImageView v)
         {
             viewers.Remove(v.Text);
-        }
-        public static void RemoveViewer(string name)
-        {
-            viewers.Remove(name);
+            v.Dispose();
         }
         public static ImageView GetViewer(string s)
         {
@@ -4438,7 +4435,9 @@ namespace BioImage
                     b.Coords[z, 0, t] = im;
                     b.Coords[z, 1, t] = im + 1;
                     b.Coords[z, 2, t] = im + 2;
-                    b.Buffers[im].Coordinate = co;
+                    b.Buffers[im].Coordinate = new ZCT(z, 0, t);
+                    b.Buffers[im+1].Coordinate = new ZCT(z, 1, t);
+                    b.Buffers[im+2].Coordinate = new ZCT(z, 2, t);
                     if (z < b.SizeZ - 1)
                         z++;
                     else
@@ -4455,8 +4454,9 @@ namespace BioImage
             for (int im = 0; im < b.Buffers.Count; im++)
             {
                 b.Coords[z, c, t] = im;
+                b.Buffers[im].Coordinate = new ZCT(z, c, t);
                 if (c < b.SizeC - 1)
-                    c++;
+                c++;
                 else
                 {
                     c = 0;

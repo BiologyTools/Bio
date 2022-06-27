@@ -97,7 +97,7 @@ namespace BioImage
             zBar.Value = z;
             cBar.Value = c;
             timeBar.Value = t;
-            UpdateImage();
+            //UpdateImage();
         }
         public ZCT GetCoordinate()
         {
