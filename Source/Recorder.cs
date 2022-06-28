@@ -64,5 +64,10 @@ namespace BioImage
         {
             log = textBox.Text;
         }
+
+        private void topMostBox_CheckedChanged(object sender, EventArgs e)
+        {
+            this.TopMost = topMostBox.Checked;
+        }
     }
 }

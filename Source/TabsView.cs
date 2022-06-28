@@ -536,5 +536,16 @@ namespace BioImage
             }
             BioImage.AddToSavePool(sts.ToArray());
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            About about = new About();
+            about.Show();
+        }
+
+        private void scriptRunnerToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            runner.Show();
+        }
     }
 }

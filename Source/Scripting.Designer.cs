@@ -53,6 +53,7 @@
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.stopBut = new System.Windows.Forms.Button();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
+            this.topMostBox = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.outputTab.SuspendLayout();
@@ -173,7 +174,7 @@
             this.error.Location = new System.Drawing.Point(4, 22);
             this.error.Name = "error";
             this.error.Padding = new System.Windows.Forms.Padding(3);
-            this.error.Size = new System.Drawing.Size(353, 107);
+            this.error.Size = new System.Drawing.Size(347, 121);
             this.error.TabIndex = 0;
             this.error.Text = "Error";
             this.error.UseVisualStyleBackColor = true;
@@ -184,7 +185,7 @@
             this.errorBox.Location = new System.Drawing.Point(3, 3);
             this.errorBox.Multiline = true;
             this.errorBox.Name = "errorBox";
-            this.errorBox.Size = new System.Drawing.Size(347, 101);
+            this.errorBox.Size = new System.Drawing.Size(341, 115);
             this.errorBox.TabIndex = 3;
             this.errorBox.TabStop = false;
             // 
@@ -193,7 +194,7 @@
             this.logTabPage.Controls.Add(this.logBox);
             this.logTabPage.Location = new System.Drawing.Point(4, 22);
             this.logTabPage.Name = "logTabPage";
-            this.logTabPage.Size = new System.Drawing.Size(353, 107);
+            this.logTabPage.Size = new System.Drawing.Size(347, 121);
             this.logTabPage.TabIndex = 2;
             this.logTabPage.Text = "Log";
             this.logTabPage.UseVisualStyleBackColor = true;
@@ -205,7 +206,7 @@
             this.logBox.Multiline = true;
             this.logBox.Name = "logBox";
             this.logBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.logBox.Size = new System.Drawing.Size(353, 107);
+            this.logBox.Size = new System.Drawing.Size(347, 121);
             this.logBox.TabIndex = 4;
             this.logBox.TabStop = false;
             // 
@@ -305,12 +306,25 @@
             this.splitContainer.SplitterDistance = 212;
             this.splitContainer.TabIndex = 15;
             // 
+            // topMostBox
+            // 
+            this.topMostBox.AutoSize = true;
+            this.topMostBox.ForeColor = System.Drawing.Color.White;
+            this.topMostBox.Location = new System.Drawing.Point(188, 402);
+            this.topMostBox.Name = "topMostBox";
+            this.topMostBox.Size = new System.Drawing.Size(71, 17);
+            this.topMostBox.TabIndex = 3;
+            this.topMostBox.Text = "Top Most";
+            this.topMostBox.UseVisualStyleBackColor = true;
+            this.topMostBox.CheckedChanged += new System.EventHandler(this.topMostBox_CheckedChanged);
+            // 
             // Scripting
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.ClientSize = new System.Drawing.Size(552, 428);
+            this.Controls.Add(this.topMostBox);
             this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.stopBut);
             this.Controls.Add(this.saveButton);
@@ -365,5 +379,6 @@
         private System.Windows.Forms.TextBox logBox;
         private System.Windows.Forms.Button stopBut;
         private System.Windows.Forms.SplitContainer splitContainer;
+        private System.Windows.Forms.CheckBox topMostBox;
     }
 }

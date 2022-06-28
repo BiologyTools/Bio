@@ -43,9 +43,9 @@ namespace BioImage
         {
             int i = 0;
             string f = Path.GetFileNameWithoutExtension(s);
-            foreach (BioImage im in images)
+            for (int im = 0; im < images.Count; im++)
             {
-                if (im.Filename.StartsWith(f))
+                if (images[i].Filename.StartsWith(f))
                     i++;
             }
             return i;
@@ -1513,49 +1513,6 @@ namespace BioImage
     public static class Filters
     {
         public static Dictionary<string, Filt> filters = new Dictionary<string, Filt>();
-        /*
-        public static string ApplyInPlace(BioImage im, string name)
-        {
-            try
-            {
-                Filt f = filters[name];
-                for (int i = 0; i < im.Buffers.Count; i++)
-                {
-                    im.Buffers[i].Image = f.filt.Apply((Bitmap)im.Buffers[i].Image);
-                }
-               
-            }
-            catch (Exception e)
-            {
-                return e.ToString();
-            }
-            return "OK";
-        }
-        public static BioImage Apply(string id, string name)
-        {
-            BioImage c = Table.GetImage(id);
-            BioImage img = BioImage.Copy(c);
-            try
-            {
-                Filt f = filters[name];
-                for (int i = 0; i < img.Buffers.Count; i++)
-                {
-                    Bitmap b = (Bitmap)img.Buffers[i].Image;
-                    img.Buffers[i].Image = f.filt.Apply(b);
-                }
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString(), "Filter Error");
-            }
-            Table.AddImage(img);
-            ImageViewer iv = new ImageViewer(img);
-            Table.AddViewer(iv);
-            iv.Show();
-            Recorder.AddLine("Filters.Apply(" + '"' + ImageView.viewer.image.ID + '"' + "," + '"' + name + '"' + ", false, ImageView.viewer.Index");
-            return img;
-        }
-        */
         public static BioImage BaseFilter(string id, string name, bool inPlace)
         {
             BioImage img = Table.GetImage(id);
@@ -2224,6 +2181,7 @@ namespace BioImage
         }
 
     }
+    
     public class Worker
     {
         private Thread thread;
@@ -2233,54 +2191,55 @@ namespace BioImage
             {
                 if (file.EndsWith("ome.tif"))
                 {
-                    BioImage.WriteOME(file);
+                    BioImage.SaveOME(file);
                 }
                 else
                 if (file.EndsWith("tif") || file.EndsWith("tiff") || file.EndsWith("png") || file.EndsWith("bmp") || file.EndsWith("jpg") || file.EndsWith("jpeg") || file.EndsWith("gif") ||
                 file.EndsWith("TIF") || file.EndsWith("TIFF") || file.EndsWith("PNG") || file.EndsWith("BMP") || file.EndsWith("JPG") || file.EndsWith("JPEG") || file.EndsWith("GIF"))
                 {
-                    BioImage.Write(file);
+                    BioImage.Save(file);
                 }
                 else
                 {
-                    BioImage.WriteOME(file);
+                    BioImage.SaveOME(file);
                 }
                 Table.RemoveImage(file);
             }
-                
+            files.Clear();
         }
         public static void Open()
         {
-            foreach (string file in files)
+            if (file.EndsWith("ome.tif"))
             {
-                if (file.EndsWith("ome.tif"))
-                {
-                    Table.AddImage(BioImage.ReadOME(file));
-                }
-                else
-                if (file.EndsWith("tif") || file.EndsWith("tiff") || file.EndsWith("png") || file.EndsWith("bmp") || file.EndsWith("jpg") || file.EndsWith("jpeg") || file.EndsWith("gif") ||
-                file.EndsWith("TIF") || file.EndsWith("TIFF") || file.EndsWith("PNG") || file.EndsWith("BMP") || file.EndsWith("JPG") || file.EndsWith("JPEG") || file.EndsWith("GIF"))
-                {
-                    Table.AddImage(BioImage.Read(file));
-                }
-                else
-                {
-                    Table.AddImage(BioImage.ReadOME(file));
-                }
+                Table.AddImage(BioImage.OpenOME(file));
+            }
+            else
+            if (file.EndsWith("tif") || file.EndsWith("tiff") || file.EndsWith("png") || file.EndsWith("bmp") || file.EndsWith("jpg") || file.EndsWith("jpeg") || file.EndsWith("gif") ||
+            file.EndsWith("TIF") || file.EndsWith("TIFF") || file.EndsWith("PNG") || file.EndsWith("BMP") || file.EndsWith("JPG") || file.EndsWith("JPEG") || file.EndsWith("GIF"))
+            {
+                Table.AddImage(BioImage.Open(file));
+            }
+            else
+            {
+                Table.AddImage(BioImage.OpenOME(file));
             }
             
         }
         public static List<string> files = new List<string>();
-        public Worker(string[] sts, bool open)
+        public static string file;
+
+        public Worker(string sts, bool open)
         {
             if(open)
                 thread = new Thread(Open);
             else
                 thread = new Thread(Save);
-            files.AddRange(sts);
+            file = sts;
             thread.Start();
         }
+
     }
+    
     public class BioImage : IDisposable
     {
         public int[,,] Coords;
@@ -2323,7 +2282,6 @@ namespace BioImage
         private int sizeZ, sizeC, sizeT;
         private Bitmap rgbBitmap8 = null;
         private Bitmap rgbBitmap16 = null;
-        
         SizeInfo sizeInfo = new SizeInfo();
         public static BioImage Copy(BioImage b)
         {
@@ -2461,7 +2419,7 @@ namespace BioImage
 
             bitsPerPixel = 8;
             AutoThreshold();
-            Recorder.AddLine("To8Bit();");
+            Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To8Bit();");
         }
         public void To16Bit()
         {
@@ -2479,7 +2437,7 @@ namespace BioImage
             }
             bitsPerPixel = 16;
             AutoThreshold();
-            Recorder.AddLine("To16Bit();");
+            Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To16Bit();");
         }
         public void To24Bit()
         {
@@ -2516,8 +2474,7 @@ namespace BioImage
                 }
                 bi.bitsPerPixel = 8;
             }
-            //Table.AddViewer(bi);
-            Recorder.AddLine("To24Bit();");
+            Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To24Bit();");
         }
         public void To32Bit()
         {
@@ -2528,7 +2485,7 @@ namespace BioImage
                 Bitmap b = BufferInfo.RGBTo32Bit((Bitmap)Buffers[i].Image);
                 Buffers[i].Image = b;
             }
-            Recorder.AddLine("To32Bit();");
+            Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To32Bit();");
         }
         public void To48Bit()
         {
@@ -2557,7 +2514,7 @@ namespace BioImage
             bi.bitsPerPixel = 16;
             AutoThreshold();
             Table.AddImage(bi);
-            Recorder.AddLine("To48Bit();");
+            Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To48Bit();");
 
         }
         public BioImage(string id)
@@ -2594,8 +2551,6 @@ namespace BioImage
             seriesCount = orig.seriesCount;
             imagesPerSeries = ImageCount / seriesCount;
             Coords = new int[SizeZ, SizeC, SizeT];
-
-            fileHashTable.Add(Filename, Filename.GetHashCode());
             int i = 0;
             for (int ti = 0; ti < SizeT; ti++)
             {
@@ -2621,7 +2576,7 @@ namespace BioImage
             Table.AddImage(this);
             rgbBitmap16 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
             rgbBitmap8 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            Recorder.AddLine("BioImage.Substack(" + '"' + orig.Filename + '"' + "," + ser + "," + "," + zs + "," + ze + "," + cs + "," + ce + "," + ts + "," + te + ");");
+            Recorder.AddLine("BioImage.Substack(" + '"' + orig.Filename + '"' + "," + ser + "," + zs + "," + ze + "," + cs + "," + ce + "," + ts + "," + te + ");");
         }
         public BioImage(string file, int ser)
         {
@@ -2658,18 +2613,12 @@ namespace BioImage
             res.sizeC = b2.SizeC + b.SizeC;
             res.sizeT = b2.SizeT;
             res.bitsPerPixel = b2.bitsPerPixel;
-
             res.sizeInfo = b2.sizeInfo;
-
-            //res.imageCount = res.SizeZ * res.SizeC * res.SizeT;
             res.littleEndian = b2.littleEndian;
             res.seriesCount = b2.seriesCount;
-
             res.imagesPerSeries = res.ImageCount / res.seriesCount;
             res.Coords = new int[res.SizeZ, res.SizeC, res.SizeT];
-            //res.IdString = Path.GetFileNameWithoutExtension(b2.filename) + "-1" + Path.GetExtension();
 
-            res.fileHashTable.Add(res.Filename, res.Filename.GetHashCode());
             int i = 0;
             int cc = 0;
             for (int ti = 0; ti < res.SizeT; ti++)
@@ -3184,6 +3133,8 @@ namespace BioImage
                 //if (SizeC > 2)
                     replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, GetFiltered(ri + BChannel.Index, rf, gf, bf));
             }
+            if(rgbBitmap16==null)
+                rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
             if (rgbBitmap16.Width != SizeX || rgbBitmap16.Height != SizeY)
                 rgbBitmap16 = new Bitmap(SizeX, SizeY, PixelFormat.Format48bppRgb);
             if (RGBChannelCount == 1)
@@ -3219,6 +3170,8 @@ namespace BioImage
         public Bitmap GetRGBBitmap8(int ri)
         {
             watch.Restart();
+            if (rgbBitmap8 == null)
+                rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
             if (rgbBitmap8.Width != SizeX || rgbBitmap8.Height != SizeY)
                 rgbBitmap8 = new Bitmap(SizeX, SizeY, PixelFormat.Format24bppRgb);
             if (RGBChannelCount == 1)
@@ -3366,11 +3319,17 @@ namespace BioImage
         public bool Loading = false;
         public static void AddToSavePool(string[] files)
         {
-            Worker w = new Worker(files, false);
+            foreach (string f in files)
+            {
+                Worker w = new Worker(f, false);
+            }
         }
         public static void AddToOpenPool(string[] files)
         {
-            Worker w = new Worker(files, true);
+            foreach (string f in files)
+            {
+                Worker w = new Worker(f, true);
+            }
         }
         /*
         public static void SaveOME(string file, int series)
@@ -3473,7 +3432,7 @@ namespace BioImage
             Table.AddImage(b);
         }
         */
-        public static BioImage Write(string file)
+        public static BioImage Save(string file)
         {
             BioImage b = Table.GetImage(file);
             done = false;
@@ -3559,7 +3518,7 @@ namespace BioImage
             Recorder.AddLine("BioImage.Save(" + '"' + file + '"' + ");");
             return b;
         }
-        public static BioImage Read(string file)
+        public static BioImage Open(string file)
         {
             BioImage b = new BioImage(file);
             b.series = 0;
@@ -3766,7 +3725,7 @@ namespace BioImage
             done = true;
             return b;
         }
-        public static BioImage WriteOME(string file)
+        public static BioImage SaveOME(string file)
         {
             int series = serie;
             BioImage b = new BioImage(file);
@@ -4069,11 +4028,15 @@ namespace BioImage
             pr.Close();
             pr.Dispose();
             writer.close();
-            Recorder.AddLine("BioImage.SaveOME(" + '"' + file + '"' + "," + series + ");");
+            Recorder.AddLine("BioImage.SaveOME(" + '"' + file + '"'+ ");");
             return b;
         }
-        public static BioImage ReadOME(string file)
+        public static BioImage OpenOME(string file)
         {
+            do
+            {
+                Thread.Sleep(500);
+            } while (!Initialized);
             st.Start();
             done = false;
             BioImage b = new BioImage(file);
@@ -4638,6 +4601,7 @@ namespace BioImage
             {
                 Console.WriteLine(e.Message);
             }
+
             try
             {
                 b.Volumes.Add(new VolumeD(new Point3D(stx, sty, stz), new Point3D(six * SizeX, siy * SizeY, siz * b.SizeZ)));
@@ -4647,7 +4611,7 @@ namespace BioImage
                 //Volume is used only for stage coordinates if error is thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
             }
             reader.close();
-            Recorder.AddLine("BioImage.OpenOME(" + '"' + file + '"' + "," + b.series + ");");
+            Recorder.AddLine("BioImage.OpenOME(" + '"' + file + '"' + ");");
             done = true;
             b.Loading = false;
             return b;
@@ -5297,11 +5261,13 @@ namespace BioImage
             {
                 Buffers[i] = null;
             }
-            rgbBitmap8.Dispose();
-            rgbBitmap16.Dispose();
+            if(rgbBitmap8!=null)
+                rgbBitmap8.Dispose();
+            if(rgbBitmap16!=null)
+                rgbBitmap16.Dispose();
             Table.RemoveImage(this);
             GC.Collect();
-            GC.WaitForPendingFinalizers();
+            GC.Collect();
         }
         public override string ToString()
         {

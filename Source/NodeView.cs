@@ -224,13 +224,23 @@ namespace BioImage
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (treeView.SelectedNode == null)
+                return;
             Node node = (Node)treeView.SelectedNode.Tag;
+            if (node == null)
+                return;
             if(node.Type == Node.DataType.roi)
             {
                 Annotation an = (Annotation)node.Object;
                 Node nod = (Node)treeView.SelectedNode.Parent.Tag;
                 BioImage im = (BioImage)nod.Object;
                 im.Annotations.Remove(an);
+            }
+            if (node.Type == Node.DataType.image)
+            {
+                BioImage im = (BioImage)node.Object;
+                Table.RemoveImage(im);
+                im.Dispose();
             }
             UpdateNodes();
         }

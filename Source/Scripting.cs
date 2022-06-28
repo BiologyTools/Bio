@@ -369,5 +369,10 @@ namespace BioImage
         {
             Stop();
         }
+
+        private void topMostBox_CheckedChanged(object sender, EventArgs e)
+        {
+            TopMost = topMostBox.Checked;
+        }
     }
 }

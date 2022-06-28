@@ -62,7 +62,7 @@ namespace BioImage
             {
                 Filters.BaseFilter(ImageView.viewer.image.ID, n.filt.name, false);
                 Recorder.AddLine("Filters.BaseFilter(" + '"' + ImageView.viewer.image.ID +
-                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
             }
             if (n.filt.type == Filt.Type.Base2)
             {
@@ -72,14 +72,14 @@ namespace BioImage
                 Filters.BaseFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
                 //Filters.BaseInPlaceFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
                 Recorder.AddLine("Filters.BaseFilter2(" + '"' + two.ImageA.ID + '"' + "," +
-                   '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+                   '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
             }
             else
             if (n.filt.type == Filt.Type.InPlace)
             {
                 Filters.BaseInPlaceFilter(ImageView.viewer.image.ID, n.filt.name, false);
                 Recorder.AddLine("Filters.BaseInPlaceFilter(" + '"' + ImageView.viewer.image.ID +
-                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
             }
             else
             if (n.filt.type == Filt.Type.InPlace2)
@@ -89,14 +89,14 @@ namespace BioImage
                     return;
                 Filters.BaseInPlaceFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
                 Recorder.AddLine("Filters.BaseInPlaceFilter2(" + '"' + two.ImageA.ID + '"' + "," +
-                   '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+                   '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
             }
             else
             if (n.filt.type == Filt.Type.InPlacePartial)
             {
                 Filters.BaseInPlacePartialFilter(ImageView.viewer.image.ID, n.filt.name, false);
                 Recorder.AddLine("Filters.BaseInPlacePartialFilter(" + '"' + ImageView.viewer.image.ID +
-                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
             }
             else
             if (n.filt.type == Filt.Type.Resize)
@@ -104,7 +104,7 @@ namespace BioImage
                 ApplyFilter two = new ApplyFilter(false);
                 Filters.BaseResizeFilter(ImageView.viewer.image.ID, n.filt.name, false, two.W,two.H);
                 Recorder.AddLine("Filters.BaseResizeFilter(" + '"' + ImageView.viewer.image.ID +
-                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
             }
             else
             if (n.filt.type == Filt.Type.Rotate)
@@ -112,7 +112,7 @@ namespace BioImage
                 ApplyFilter two = new ApplyFilter(false);
                 Filters.BaseRotateFilter(ImageView.viewer.image.ID, n.filt.name, false, two.Angle, two.Color);
                 Recorder.AddLine("Filters.BaseRotateFilter(" + '"' + ImageView.viewer.image.ID +
-                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
             }
             else
             if (n.filt.type == Filt.Type.Transformation)
@@ -128,7 +128,7 @@ namespace BioImage
                 {
                     Filters.BaseTransformationFilter(ImageView.viewer.image.ID, n.filt.name, false, two.Angle);
                     Recorder.AddLine("Filters.BaseTransformationFilter(" + '"' + ImageView.viewer.image.ID +
-                        '"' + "," + '"' + n.filt.name + '"' + "," + inPlace + ");");
+                        '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
                 }
             }
             UpdateView();

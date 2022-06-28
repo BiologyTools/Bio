@@ -35,6 +35,7 @@
             this.delLineBut = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.timer = new System.Windows.Forms.Timer(this.components);
+            this.topMostBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // clearBut
@@ -91,12 +92,25 @@
             this.timer.Interval = 1500;
             this.timer.Tick += new System.EventHandler(this.timer_Tick_1);
             // 
+            // topMostBox
+            // 
+            this.topMostBox.AutoSize = true;
+            this.topMostBox.ForeColor = System.Drawing.Color.White;
+            this.topMostBox.Location = new System.Drawing.Point(12, 282);
+            this.topMostBox.Name = "topMostBox";
+            this.topMostBox.Size = new System.Drawing.Size(71, 17);
+            this.topMostBox.TabIndex = 7;
+            this.topMostBox.Text = "Top Most";
+            this.topMostBox.UseVisualStyleBackColor = true;
+            this.topMostBox.CheckedChanged += new System.EventHandler(this.topMostBox_CheckedChanged);
+            // 
             // Recorder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.ClientSize = new System.Drawing.Size(551, 311);
+            this.Controls.Add(this.topMostBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.delLineBut);
             this.Controls.Add(this.textBox);
@@ -116,5 +130,6 @@
         private System.Windows.Forms.Button delLineBut;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Timer timer;
+        private System.Windows.Forms.CheckBox topMostBox;
     }
 }
