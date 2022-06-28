@@ -20,7 +20,7 @@ namespace BioImage
             file = file.Replace("\\", "/");
             InitializeComponent();
             serie = ser;
-            
+            Dock = DockStyle.Fill;
             tools = new Tools();
             if (file == "" || file == null)
                 return;
@@ -28,7 +28,7 @@ namespace BioImage
 
             image = new BioImage(file, ser);
             InitGUI(file);
-
+            
             MouseWheel += new System.Windows.Forms.MouseEventHandler(ImageView_MouseWheel);
             zBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(ZTrackBar_MouseWheel);
             cBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(CTrackBar_MouseWheel);
@@ -53,6 +53,7 @@ namespace BioImage
             serie = im.series;
             image = im;
             tools = new Tools();
+            Dock = DockStyle.Fill;
             if (file == "" || file == null)
                 return;
             SetCoordinate(0, 0, 0);

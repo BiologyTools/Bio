@@ -42,7 +42,6 @@ namespace BioImage
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openCSVFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.saveTiffFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.timer = new System.Windows.Forms.Timer(this.components);
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOMEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -95,7 +94,7 @@ namespace BioImage
             this.panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel.Location = new System.Drawing.Point(0, 24);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(403, 287);
+            this.panel.Size = new System.Drawing.Size(401, 287);
             this.panel.TabIndex = 1;
             this.panel.Click += new System.EventHandler(this.panel_Click);
             // 
@@ -106,7 +105,7 @@ namespace BioImage
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(403, 287);
+            this.tabControl.Size = new System.Drawing.Size(401, 287);
             this.tabControl.TabIndex = 0;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
@@ -150,11 +149,6 @@ namespace BioImage
             this.saveTiffFileDialog.Filter = "TIFF Files (*.tif)|*.tif";
             this.saveTiffFileDialog.SupportMultiDottedExtensions = true;
             this.saveTiffFileDialog.Title = "Save Image";
-            // 
-            // timer
-            // 
-            this.timer.Interval = 1000;
-            this.timer.Tick += new System.EventHandler(this.timer_Tick);
             // 
             // fileToolStripMenuItem
             // 
@@ -326,7 +320,7 @@ namespace BioImage
             this.filtersToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(403, 24);
+            this.menuStrip.Size = new System.Drawing.Size(401, 24);
             this.menuStrip.TabIndex = 0;
             // 
             // formatToolStripMenuItem
@@ -388,7 +382,7 @@ namespace BioImage
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(77)))), ((int)(((byte)(98)))));
-            this.ClientSize = new System.Drawing.Size(403, 311);
+            this.ClientSize = new System.Drawing.Size(401, 311);
             this.Controls.Add(this.panel);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -417,7 +411,6 @@ namespace BioImage
         private System.Windows.Forms.SaveFileDialog saveCSVFileDialog;
         private System.Windows.Forms.OpenFileDialog openCSVFileDialog;
         private System.Windows.Forms.SaveFileDialog saveTiffFileDialog;
-        private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOMEToolStripMenuItem;

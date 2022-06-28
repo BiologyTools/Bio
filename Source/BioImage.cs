@@ -22,31 +22,27 @@ namespace BioImage
     public static class Table
     {
         public static Hashtable hashID = new Hashtable();
-        public static Hashtable images = new Hashtable();
+        public static List<BioImage> images = new List<BioImage>();
         public static Hashtable viewers = new Hashtable();
         public static BioImage GetImage(string ids)
         {
-            int hash = ids.GetHashCode();
-            return (BioImage)images[hash];
-        }
-        public static BioImage GetImageByHash(int hash, ZCT coord)
-        {
-            return (BioImage)images[hash];
+            for (int i = 0; i < images.Count; i++)
+            {
+                if (images[i].ID == ids)
+                    return images[i];
+            }
+            return null;
         }
         public static void AddImage(BioImage im)
         {
-            int hash = im.HashID;
-            if (!images.ContainsKey(im.HashID))
-            {
-                images.Add(im.HashID, im);
-            }
-            NodeView.viewer.AddTab(im);
+            images.Add(im);
+            //NodeView.viewer.AddTab(im);
         }
         public static int GetImageCount(string s)
         {
             int i = 0;
             string f = Path.GetFileNameWithoutExtension(s);
-            foreach (BioImage im in images.Values)
+            foreach (BioImage im in images)
             {
                 if (im.Filename.StartsWith(f))
                     i++;
@@ -70,7 +66,7 @@ namespace BioImage
             BioImage im = GetImage(id);
             if (im == null)
                 return;
-            images.Remove(im.HashID);
+            images.Remove(im);
             im.Dispose();
             Recorder.AddLine("Table.RemoveImage(" + '"' + id + '"' + ");");
         }
@@ -2571,28 +2567,26 @@ namespace BioImage
         }
         public BioImage(string file, int ser)
         {
+            threadImage = this;
             ID = Table.GetImageName(file);
             serie = ser;
             if (file.EndsWith("ome.tif"))
             {
-                OpenOME(file,ser);
+                BioImage.OpenOME(file,ser);
             }
             else
             if (file.EndsWith("tif") || file.EndsWith("tiff") || file.EndsWith("png") || file.EndsWith("bmp") || file.EndsWith("jpg") || file.EndsWith("jpeg") || file.EndsWith("gif") ||
                 file.EndsWith("TIF") || file.EndsWith("TIFF") || file.EndsWith("PNG") || file.EndsWith("BMP") || file.EndsWith("JPG") || file.EndsWith("JPEG") || file.EndsWith("GIF"))
             {
-                Open(file);
+                BioImage.Open(file);
             }
             else
             {
-                OpenOME(file,ser);
+                BioImage.OpenOME(file,ser);
             }
             rgbChannels[0] = 0;
             rgbChannels[1] = 0;
             rgbChannels[2] = 0;
-            rgbBitmap16 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
-            rgbBitmap8 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            Table.AddImage(this);
         }
         public static BioImage MergeChannels(BioImage b2, BioImage b)
         {         
@@ -3232,7 +3226,7 @@ namespace BioImage
         private static bool done = false;
         public static float threadProgress = 0;
         private static BioImage threadImage = null;
-
+        /*
         public void Save(string file)
         {
             //This is the default saving mode we save the roi's in CSV and save tiff fast with BitMiracle.
@@ -3271,6 +3265,7 @@ namespace BioImage
             pr.Close();
 
         }
+        
         public void SaveOME(string file, int series)
         {
             threadImage = this;
@@ -3309,6 +3304,48 @@ namespace BioImage
             t.Abort();
             pr.Close();
         }
+        */
+        public static void SaveOME(string file, int series)
+        {
+            threadImage = Table.GetImage(file);
+            threadFile = file;
+            threadProgress = 0;
+            serie = series;
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(SaveOME));
+            t.Start();
+            Progress pr = new Progress(threadFile, "Saving");
+            pr.Show();
+            done = false;
+            do
+            {
+                pr.UpdateProgressF(threadProgress);
+                Application.DoEvents();
+            } while (!done);
+            pr.Close();
+        }
+        public static void OpenOME(string file, int series)
+        {
+            if (threadImage == null)
+                threadImage = new BioImage(file);
+            threadFile = file;
+            threadProgress = 0;
+            serie = series;
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(OpenOME));
+            t.Start();
+            Progress pr = new Progress(threadFile, "Opening");
+            pr.Show();
+            done = false;
+            do
+            {
+                pr.UpdateProgressF(threadProgress);
+                Application.DoEvents();
+            } while (!done);
+            t.Abort();
+            pr.Close();
+            threadImage.rgbBitmap16 = new Bitmap(threadImage.SizeX, threadImage.SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
+            threadImage.rgbBitmap8 = new Bitmap(threadImage.SizeX, threadImage.SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            Table.AddImage(threadImage);
+        }
         public static void Initialize()
         {
             //We initialize OME on a seperate thread so the user doesn't have to wait for initialization to
@@ -3325,6 +3362,46 @@ namespace BioImage
             reader = new ImageReader();
             writer = new ImageWriter();
             sto.Stop();
+        }
+        public static void Save(string file)
+        {
+            //This is the default saving mode we save the roi's in CSV and save tiff fast with BitMiracle.
+            threadImage = Table.GetImage(file);
+            threadFile = file;
+            threadProgress = 0;
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Save));
+            t.Start();
+            Progress pr = new Progress(threadFile, "Saving");
+            pr.Show();
+            done = false;
+            do
+            {
+                pr.UpdateProgressF(threadProgress);
+                Application.DoEvents();
+            } while (!done);
+            pr.Close();
+        }
+        public static void Open(string file)
+        {
+            //This is the default opening mode we load the roi's in CSV and open tiff fast with BitMiracle.
+            if(threadImage == null)
+            threadImage = new BioImage(file);
+            threadFile = file;
+            threadProgress = 0;
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Open));
+            t.Start();
+            Progress pr = new Progress(threadFile, "Opening");
+            pr.Show();
+            done = false;
+            do
+            {
+                pr.UpdateProgressF(threadProgress);
+                Application.DoEvents();
+            } while (!done);
+            pr.Close();
+            threadImage.rgbBitmap16 = new Bitmap(threadImage.SizeX, threadImage.SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
+            threadImage.rgbBitmap8 = new Bitmap(threadImage.SizeX, threadImage.SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            Table.AddImage(threadImage);
         }
         private static void Save()
         {
@@ -3403,7 +3480,7 @@ namespace BioImage
                             offset += stride;
                         }
                         image.WriteDirectory();
-                        threadProgress = ((float)im / (float)b.ImageCount) * 100;
+                        threadProgress = ((float)im / (float)b.ImageCount);
                         im++;
                     }
                 }
@@ -3575,7 +3652,7 @@ namespace BioImage
                     }
                     BufferInfo inf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), p);
                     b.Buffers.Add(inf);
-                    threadProgress = (int)((double)p / (double)pages)*100;
+                    threadProgress = (int)((double)p / (double)pages);
                 }
                 for (int im = 0; im < b.Buffers.Count; im++)
                 {
@@ -3910,9 +3987,6 @@ namespace BioImage
             writer.setSeries(series);
             writer.setWriteSequentially(true);
             wr = writer;
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(SaveOME));
-            t.Start();
-            threadImage = b;
             Progress pr = new Progress(threadFile, "Saving");
             pr.Show();
             for (int bu = 0; bu < b.Buffers.Count; bu++)
@@ -4396,8 +4470,6 @@ namespace BioImage
                 }
             }
 
-            b.fileHashTable.Add(file, file.GetHashCode());
-
             List<string> serFiles = new List<string>();
             serFiles.AddRange(reader.getSeriesUsedFiles());
             //List<BufferInfo> BufferInfos = new List<BufferInfo>(); 
@@ -4513,6 +4585,7 @@ namespace BioImage
             reader.close();
             //pr.Close();
             Recorder.AddLine("BioImage.OpenOME(" + '"' + file + '"' + "," + b.series + ");");
+            threadImage = b;
             done = true;
             //return b;
         }
@@ -5154,12 +5227,13 @@ namespace BioImage
         }
         public void Dispose()
         {
-
             for (int i = 0; i < Buffers.Count; i++)
             {
                 Buffers[i].Dispose();
             }
             Table.RemoveImage(this);
+            rgbBitmap16.Dispose();
+            rgbBitmap8.Dispose();
             GC.Collect();
         }
         public override string ToString()

@@ -47,6 +47,7 @@
             this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
+            this.updateTimer = new System.Windows.Forms.Timer(this.components);
             this.contextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -60,7 +61,7 @@
             this.treeView.ContextMenuStrip = this.contextMenuStrip;
             this.treeView.Location = new System.Drawing.Point(-1, 27);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(274, 219);
+            this.treeView.Size = new System.Drawing.Size(254, 139);
             this.treeView.TabIndex = 2;
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             // 
@@ -104,7 +105,7 @@
             this.aboutToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(273, 24);
+            this.menuStrip.Size = new System.Drawing.Size(253, 24);
             this.menuStrip.TabIndex = 3;
             // 
             // fileToolStripMenuItem
@@ -118,7 +119,7 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open Files";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -135,14 +136,14 @@
             // tabToolStripMenuItem
             // 
             this.tabToolStripMenuItem.Name = "tabToolStripMenuItem";
-            this.tabToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.tabToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.tabToolStripMenuItem.Text = "Tab View";
             this.tabToolStripMenuItem.Click += new System.EventHandler(this.tabToolStripMenuItem_Click);
             // 
             // windowsViewToolStripMenuItem
             // 
             this.windowsViewToolStripMenuItem.Name = "windowsViewToolStripMenuItem";
-            this.windowsViewToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.windowsViewToolStripMenuItem.Size = new System.Drawing.Size(151, 22);
             this.windowsViewToolStripMenuItem.Text = "Windows View";
             this.windowsViewToolStripMenuItem.Click += new System.EventHandler(this.windowsViewToolStripMenuItem_Click);
             // 
@@ -165,14 +166,14 @@
             // scriptRunnerToolStripMenuItem
             // 
             this.scriptRunnerToolStripMenuItem.Name = "scriptRunnerToolStripMenuItem";
-            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
             this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click_1);
             // 
             // scriptRecorderToolStripMenuItem
             // 
             this.scriptRecorderToolStripMenuItem.Name = "scriptRecorderToolStripMenuItem";
-            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.scriptRecorderToolStripMenuItem.Text = "Script Recorder";
             this.scriptRecorderToolStripMenuItem.Click += new System.EventHandler(this.scriptRecorderToolStripMenuItem_Click);
             // 
@@ -188,16 +189,21 @@
             this.openFilesDialog.Multiselect = true;
             this.openFilesDialog.Title = "Open Images";
             // 
-            // MainForm
+            // updateTimer
+            // 
+            this.updateTimer.Interval = 1000;
+            this.updateTimer.Tick += new System.EventHandler(this.updateTimer_Tick);
+            // 
+            // NodeView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(273, 246);
+            this.ClientSize = new System.Drawing.Size(253, 166);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.treeView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "MainForm";
-            this.Text = "BioImage";
+            this.Name = "NodeView";
+            this.Text = "BioImage Node View";
             this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.contextMenuStrip.ResumeLayout(false);
             this.menuStrip.ResumeLayout(false);
@@ -226,5 +232,6 @@
         private System.Windows.Forms.ToolStripMenuItem tabViewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tabToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem windowsViewToolStripMenuItem;
+        private System.Windows.Forms.Timer updateTimer;
     }
 }

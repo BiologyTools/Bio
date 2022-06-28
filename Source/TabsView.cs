@@ -104,16 +104,6 @@ namespace BioImage
             }
             UpdateTabs();
         }
-        public static TabsView FromID(string id)
-        {
-            if(Table.images.ContainsKey(id))
-            return new TabsView(Table.GetImage(id));
-            else
-            {
-                MessageBox.Show("No image by " + id + " found for viewer.");
-                return null;
-            }
-        }
         public static TabsView GetByID(string id)
         {
             if (Table.viewers.ContainsKey(id))
@@ -124,18 +114,19 @@ namespace BioImage
                 return null;
             }
         }
-        
-
+  
         public void UpdateTabs()
         {
-            tabControl.TabPages.Clear();
-            foreach (BioImage b in Table.images.Values)
+            if (Table.images.Count != tabControl.TabPages.Count)
             {
-                TabPage t = new TabPage(Path.GetFileName(b.ID));
-                ImageView v = new ImageView(b);
-                v.Dock = DockStyle.Fill;
-                t.Controls.Add(v);
-                tabControl.TabPages.Add(t);
+                tabControl.TabPages.Clear();
+                for (int i = 0; i < Table.images.Count; i++)
+                {
+                    BioImage b = Table.images[i];
+                    TabPage t = new TabPage(Path.GetFileName(b.ID));
+                    t.Controls.Add(new ImageView(b));
+                    tabControl.TabPages.Add(t);
+                }
             }
         }
         public void AddTab(BioImage b)
@@ -144,8 +135,8 @@ namespace BioImage
             ImageView v = new ImageView(b);
             v.Dock = DockStyle.Fill;
             t.Controls.Add(v);
-            tabControl.TabPages.Add(t);
             Table.AddViewer(v);
+            tabControl.TabPages.Add(t);
         }
         public void AddTab(ImageView v)
         {
@@ -227,6 +218,14 @@ namespace BioImage
             }
         }
 
+        public int TabCount
+        {
+            get
+            {
+                return tabControl.TabPages.Count;
+            }
+        }
+
         public void Open(string[] files)
         {
             foreach (string file in files)
@@ -266,7 +265,7 @@ namespace BioImage
                 return;
             //We save the tiff fast Libtiff otherwise we have to use BioFormats.
             //We export the ROI's to CSV to preserve ROI information without Bioformats.
-            Image.Save(saveTiffFileDialog.FileName);
+            BioImage.Save(saveTiffFileDialog.FileName);
         }
 
         private void ImageViewer_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -337,6 +336,7 @@ namespace BioImage
             app = this;
             ImageView.app = this;
             ImageView.viewer = this.Viewer;
+            UpdateTabs();
         }
 
         private void channelsToolToolStripMenuItem_Click(object sender, EventArgs e)
@@ -402,10 +402,8 @@ namespace BioImage
         {
             if (this.Image == null)
                 return;
-            Recorder.AddLine("Table.RemoveImage(" + '"' + this.Text + '"' + ");");
             //Table.RemoveViewer(this);
             this.Image.Dispose();
-            Recorder.AddLine("Table.RemoveViewer(" + '"' + this.Text + '"' + ");");
         }
 
         private void stackToolsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -425,7 +423,7 @@ namespace BioImage
                 return;
             if (saveOMEFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            Image.SaveOME(saveOMEFileDialog.FileName, Image.series);
+            BioImage.SaveOME(saveOMEFileDialog.FileName, Image.series);
         }
 
         private void copyToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
@@ -441,6 +439,7 @@ namespace BioImage
 
         private void timer_Tick(object sender, EventArgs e)
         {
+            //Here we update the tabs based on images in the table.
 
         }
         private void filtersToolStripMenuItem_Click_1(object sender, EventArgs e)

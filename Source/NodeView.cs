@@ -66,7 +66,12 @@ namespace BioImage
                 viewer.Show();
             }
             else
+            {
                 viewer = new TabsView();
+                viewer.Show();
+            }
+            updateTimer.Start();
+            //timer.Start();
         }
 
         public NodeView()
@@ -76,6 +81,9 @@ namespace BioImage
             Filters.Init();
             InitNodes();
             viewer = new TabsView();
+            viewer.Show();
+            //timer.Start();
+            updateTimer.Start();
         }
 
         private static void Init()
@@ -91,7 +99,7 @@ namespace BioImage
             TreeNode images = new TreeNode();
             images.Text = "BioImages";
             images.ForeColor = Color.White;
-            foreach (BioImage item in Table.images.Values)
+            foreach (BioImage item in Table.images)
             {
                 //TreeNode node = new TreeNode();
                 Node tree = new Node(item, Node.DataType.image);
@@ -286,6 +294,20 @@ namespace BioImage
         private void windowsViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
             
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            viewer.UpdateTabs();
+        }
+
+        private void updateTimer_Tick(object sender, EventArgs e)
+        {
+            //We use a timer to update tabs so that images can be opened by any thread. Without error
+            //caused by accessing tabcontrol from another thread than the one it was created by.
+            if (viewer.IsDisposed || viewer.Disposing || viewer==null)
+                return;
+            viewer.UpdateTabs();
         }
     }
 }
