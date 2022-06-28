@@ -26,7 +26,7 @@ namespace BioImage
                 return;
             SetCoordinate(0, 0, 0);
 
-            image = new BioImage(file, ser);
+            //image = new BioImage(file, ser);
             InitGUI(file);
             
             MouseWheel += new System.Windows.Forms.MouseEventHandler(ImageView_MouseWheel);

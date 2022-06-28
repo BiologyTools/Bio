@@ -44,7 +44,6 @@ namespace BioImage
             this.saveTiffFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openOMEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveOMEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sizeModeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,6 +69,7 @@ namespace BioImage
             this.to36BitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.to48BitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filtersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -154,9 +154,9 @@ namespace BioImage
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
-            this.openOMEToolStripMenuItem,
             this.saveToolStripMenuItem,
-            this.saveOMEToolStripMenuItem});
+            this.saveOMEToolStripMenuItem,
+            this.saveAllToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -167,12 +167,6 @@ namespace BioImage
             this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open Files";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
-            // 
-            // openOMEToolStripMenuItem
-            // 
-            this.openOMEToolStripMenuItem.Name = "openOMEToolStripMenuItem";
-            this.openOMEToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openOMEToolStripMenuItem.Text = "Open OME";
             // 
             // saveToolStripMenuItem
             // 
@@ -377,6 +371,13 @@ namespace BioImage
             this.filtersToolStripMenuItem.Text = "Filters";
             this.filtersToolStripMenuItem.Click += new System.EventHandler(this.filtersToolStripMenuItem_Click);
             // 
+            // saveAllToolStripMenuItem
+            // 
+            this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
+            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAllToolStripMenuItem.Text = "Save All Tiff";
+            this.saveAllToolStripMenuItem.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
+            // 
             // TabsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -413,7 +414,6 @@ namespace BioImage
         private System.Windows.Forms.SaveFileDialog saveTiffFileDialog;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openOMEToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveOMEToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sizeModeToolStripMenuItem;
@@ -443,5 +443,6 @@ namespace BioImage
         private System.Windows.Forms.ContextMenuStrip tabContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem toWindowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveAllToolStripMenuItem;
     }
 }

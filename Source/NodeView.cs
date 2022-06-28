@@ -176,8 +176,7 @@ namespace BioImage
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            TabsView iv = new TabsView(openFilesDialog.FileNames);
-            iv.Show();
+            BioImage.AddToOpenPool(openFilesDialog.FileNames);
         }
         private void refreshToolStripMenuItem_Click_1(object sender, EventArgs e)
         {

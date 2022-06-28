@@ -226,14 +226,6 @@ namespace BioImage
             }
         }
 
-        public void Open(string[] files)
-        {
-            foreach (string file in files)
-            {
-                BioImage b = new BioImage(file, 0);
-            }
-        }
-
         public void OpenInNewProcess(string file)
         {
             Process p = new Process();
@@ -246,7 +238,7 @@ namespace BioImage
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            Open(openFilesDialog.FileNames);
+            BioImage.AddToOpenPool(openFilesDialog.FileNames);
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -263,9 +255,7 @@ namespace BioImage
                 return;
             if (saveTiffFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            //We save the tiff fast Libtiff otherwise we have to use BioFormats.
-            //We export the ROI's to CSV to preserve ROI information without Bioformats.
-            BioImage.Save(saveTiffFileDialog.FileName);
+            BioImage.AddToSavePool(saveTiffFileDialog.FileNames);
         }
 
         private void ImageViewer_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -404,6 +394,13 @@ namespace BioImage
                 return;
             //Table.RemoveViewer(this);
             this.Image.Dispose();
+            foreach (TabPage page in tabControl.TabPages)
+            {
+                ImageView iv = (ImageView)page.Controls[0];
+                Table.RemoveImage(iv.image.ID);
+                Table.RemoveViewer(iv);
+
+            }
         }
 
         private void stackToolsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -423,7 +420,7 @@ namespace BioImage
                 return;
             if (saveOMEFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            BioImage.SaveOME(saveOMEFileDialog.FileName, Image.series);
+            BioImage.AddToSavePool(saveOMEFileDialog.FileNames);
         }
 
         private void copyToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
@@ -523,6 +520,21 @@ namespace BioImage
             Table.RemoveViewer(v);
             tabControl.TabPages.RemoveAt(tabControl.SelectedIndex);
             v.Dispose();
+        }
+
+        private void openOMEToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<string> sts = new List<string>();
+            foreach (BioImage item in Table.images)
+            {
+                sts.Add(item.ID);
+            }
+            BioImage.AddToSavePool(sts.ToArray());
         }
     }
 }

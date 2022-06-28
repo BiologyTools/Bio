@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -68,6 +69,7 @@ namespace BioImage
                 return;
             images.Remove(im);
             im.Dispose();
+            GC.Collect();
             Recorder.AddLine("Table.RemoveImage(" + '"' + id + '"' + ");");
         }
         public static void AddViewer(ImageView v)
@@ -2222,18 +2224,66 @@ namespace BioImage
         }
 
     }
+    public class Worker
+    {
+        private Thread thread;
+        public static void Save()
+        {
+            foreach (string file in files)
+            {
+                if (file.EndsWith("ome.tif"))
+                {
+                    BioImage.WriteOME(file);
+                }
+                else
+                if (file.EndsWith("tif") || file.EndsWith("tiff") || file.EndsWith("png") || file.EndsWith("bmp") || file.EndsWith("jpg") || file.EndsWith("jpeg") || file.EndsWith("gif") ||
+                file.EndsWith("TIF") || file.EndsWith("TIFF") || file.EndsWith("PNG") || file.EndsWith("BMP") || file.EndsWith("JPG") || file.EndsWith("JPEG") || file.EndsWith("GIF"))
+                {
+                    BioImage.Write(file);
+                }
+                else
+                {
+                    BioImage.WriteOME(file);
+                }
+                Table.RemoveImage(file);
+            }
+                
+        }
+        public static void Open()
+        {
+            foreach (string file in files)
+            {
+                if (file.EndsWith("ome.tif"))
+                {
+                    Table.AddImage(BioImage.ReadOME(file));
+                }
+                else
+                if (file.EndsWith("tif") || file.EndsWith("tiff") || file.EndsWith("png") || file.EndsWith("bmp") || file.EndsWith("jpg") || file.EndsWith("jpeg") || file.EndsWith("gif") ||
+                file.EndsWith("TIF") || file.EndsWith("TIFF") || file.EndsWith("PNG") || file.EndsWith("BMP") || file.EndsWith("JPG") || file.EndsWith("JPEG") || file.EndsWith("GIF"))
+                {
+                    Table.AddImage(BioImage.Read(file));
+                }
+                else
+                {
+                    Table.AddImage(BioImage.ReadOME(file));
+                }
+            }
+            
+        }
+        public static List<string> files = new List<string>();
+        public Worker(string[] sts, bool open)
+        {
+            if(open)
+                thread = new Thread(Open);
+            else
+                thread = new Thread(Save);
+            files.AddRange(sts);
+            thread.Start();
+        }
+    }
     public class BioImage : IDisposable
     {
-        public int HashID
-        {
-            get
-            {
-                return id.GetHashCode();
-            }
-        }
         public int[,,] Coords;
-        public Hashtable fileHashTable = new Hashtable();
-        public Random random = new Random();
         private string id;
         public List<Channel> Channels = new List<Channel>();
         public List<BufferInfo> Buffers = new List<BufferInfo>();
@@ -2385,6 +2435,14 @@ namespace BioImage
         {
             get { return sizeInfo.StageSizeZ; }
             set { sizeInfo.StageSizeZ = value; }
+        }
+        static bool initialized = false;
+        public static bool Initialized
+        {
+            get
+            {
+                return initialized;
+            }
         }
         public void To8Bit()
         {
@@ -2567,9 +2625,10 @@ namespace BioImage
         }
         public BioImage(string file, int ser)
         {
-            threadImage = this;
+            //threadImage = this;
             ID = Table.GetImageName(file);
             serie = ser;
+            /*
             if (file.EndsWith("ome.tif"))
             {
                 BioImage.OpenOME(file,ser);
@@ -2584,6 +2643,7 @@ namespace BioImage
             {
                 BioImage.OpenOME(file,ser);
             }
+            */
             rgbChannels[0] = 0;
             rgbChannels[1] = 0;
             rgbChannels[2] = 0;
@@ -3221,11 +3281,9 @@ namespace BioImage
         }
  
         private static ImageWriter wr;
-        private static string threadFile = "";
         private static int serie;
         private static bool done = false;
         public static float threadProgress = 0;
-        private static BioImage threadImage = null;
         /*
         public void Save(string file)
         {
@@ -3305,15 +3363,26 @@ namespace BioImage
             pr.Close();
         }
         */
+        public bool Loading = false;
+        public static void AddToSavePool(string[] files)
+        {
+            Worker w = new Worker(files, false);
+        }
+        public static void AddToOpenPool(string[] files)
+        {
+            Worker w = new Worker(files, true);
+        }
+        /*
         public static void SaveOME(string file, int series)
         {
-            threadImage = Table.GetImage(file);
-            threadFile = file;
+            BioImage b = Table.GetImage(file);
+            //threadFile = file;
             threadProgress = 0;
             serie = series;
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(SaveOME));
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(WriteOME));
+            
             t.Start();
-            Progress pr = new Progress(threadFile, "Saving");
+            Progress pr = new Progress(file, "Saving");
             pr.Show();
             done = false;
             do
@@ -3323,16 +3392,14 @@ namespace BioImage
             } while (!done);
             pr.Close();
         }
-        public static void OpenOME(string file, int series)
+        public static void OpenOME(string file, int series, int index)
         {
-            if (threadImage == null)
-                threadImage = new BioImage(file);
-            threadFile = file;
+            BioImage b = ims[index];
             threadProgress = 0;
             serie = series;
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(OpenOME));
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(ReadOME));
             t.Start();
-            Progress pr = new Progress(threadFile, "Opening");
+            Progress pr = new Progress(file, "Opening");
             pr.Show();
             done = false;
             do
@@ -3342,18 +3409,19 @@ namespace BioImage
             } while (!done);
             t.Abort();
             pr.Close();
-            threadImage.rgbBitmap16 = new Bitmap(threadImage.SizeX, threadImage.SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
-            threadImage.rgbBitmap8 = new Bitmap(threadImage.SizeX, threadImage.SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            Table.AddImage(threadImage);
+            b.rgbBitmap16 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
+            b.rgbBitmap8 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            Table.AddImage(b);
         }
+        */
         public static void Initialize()
         {
             //We initialize OME on a seperate thread so the user doesn't have to wait for initialization to
             //view images. 
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Init));
+            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(InitOME));
             t.Start();
         }
-        private static void Init()
+        private static void InitOME()
         {
             Stopwatch sto = new Stopwatch();
             sto.Start();
@@ -3361,17 +3429,18 @@ namespace BioImage
             service = (OMEXMLService)factory.getInstance(typeof(OMEXMLService));
             reader = new ImageReader();
             writer = new ImageWriter();
+            initialized = true;
             sto.Stop();
         }
+        /*
         public static void Save(string file)
         {
             //This is the default saving mode we save the roi's in CSV and save tiff fast with BitMiracle.
-            threadImage = Table.GetImage(file);
-            threadFile = file;
+            BioImage b = Table.GetImage(file);
             threadProgress = 0;
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Save));
             t.Start();
-            Progress pr = new Progress(threadFile, "Saving");
+            Progress pr = new Progress(file, "Saving");
             pr.Show();
             done = false;
             do
@@ -3381,16 +3450,16 @@ namespace BioImage
             } while (!done);
             pr.Close();
         }
-        public static void Open(string file)
+        
+        public static void Open(string file, int index)
         {
+            BioImage b = new BioImage(file);
+            ims.Add(b);
             //This is the default opening mode we load the roi's in CSV and open tiff fast with BitMiracle.
-            if(threadImage == null)
-            threadImage = new BioImage(file);
-            threadFile = file;
             threadProgress = 0;
             System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Open));
             t.Start();
-            Progress pr = new Progress(threadFile, "Opening");
+            Progress pr = new Progress(file, "Opening");
             pr.Show();
             done = false;
             do
@@ -3399,14 +3468,14 @@ namespace BioImage
                 Application.DoEvents();
             } while (!done);
             pr.Close();
-            threadImage.rgbBitmap16 = new Bitmap(threadImage.SizeX, threadImage.SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
-            threadImage.rgbBitmap8 = new Bitmap(threadImage.SizeX, threadImage.SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            Table.AddImage(threadImage);
+            b.rgbBitmap16 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
+            b.rgbBitmap8 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            Table.AddImage(b);
         }
-        private static void Save()
+        */
+        public static BioImage Write(string file)
         {
-            string file = threadFile;
-            BioImage b = threadImage;
+            BioImage b = Table.GetImage(file);
             done = false;
             string fn = Path.GetFileNameWithoutExtension(file);
             string dir = Path.GetDirectoryName(file);
@@ -3488,11 +3557,11 @@ namespace BioImage
             image.Dispose();
             done = true;
             Recorder.AddLine("BioImage.Save(" + '"' + file + '"' + ");");
+            return b;
         }
-        private static void Open()
+        public static BioImage Read(string file)
         {
-            string file = threadFile;
-            BioImage b = threadImage;
+            BioImage b = new BioImage(file);
             b.series = 0;
             done = false;
             string fn = Path.GetFileNameWithoutExtension(file);
@@ -3695,11 +3764,12 @@ namespace BioImage
             }
             Recorder.AddLine("BioImage.Open(" + '"' + file + '"' + ");");
             done = true;
+            return b;
         }
-        public static void SaveOME()
+        public static BioImage WriteOME(string file)
         {
             int series = serie;
-            BioImage b = new BioImage(threadFile);
+            BioImage b = new BioImage(file);
             // create OME-XML metadata store
             loci.formats.meta.IMetadata omexml = service.createOMEXMLMetadata();
             omexml.setImageID("Image:0", series);
@@ -3981,13 +4051,13 @@ namespace BioImage
             
             writer.setMetadataRetrieve(omexml);
             //We delete the file so we don't just add more images to an existing file;
-            if (File.Exists(threadFile))
-                File.Delete(threadFile);
-            writer.setId(threadFile);
+            if (File.Exists(file))
+                File.Delete(file);
+            writer.setId(file);
             writer.setSeries(series);
             writer.setWriteSequentially(true);
             wr = writer;
-            Progress pr = new Progress(threadFile, "Saving");
+            Progress pr = new Progress(file, "Saving");
             pr.Show();
             for (int bu = 0; bu < b.Buffers.Count; bu++)
             {
@@ -3999,20 +4069,15 @@ namespace BioImage
             pr.Close();
             pr.Dispose();
             writer.close();
-            Recorder.AddLine("BioImage.SaveOME(" + '"' + threadFile + '"' + "," + series + ");");
+            Recorder.AddLine("BioImage.SaveOME(" + '"' + file + '"' + "," + series + ");");
+            return b;
         }
-        public static void OpenOME()
+        public static BioImage ReadOME(string file)
         {
-            do
-            {
-                //We wait for OME initialization.
-                System.Threading.Thread.Sleep(500);
-            } while (!Initialized);
-
             st.Start();
             done = false;
-            string file = threadFile;
-            BioImage b = threadImage;
+            BioImage b = new BioImage(file);
+            b.Loading = true;
             b.meta = service.createOMEXMLMetadata();
             reader.setMetadataStore(b.meta);
             // initialize file
@@ -4581,13 +4646,11 @@ namespace BioImage
             {
                 //Volume is used only for stage coordinates if error is thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
             }
-            
             reader.close();
-            //pr.Close();
             Recorder.AddLine("BioImage.OpenOME(" + '"' + file + '"' + "," + b.series + ");");
-            threadImage = b;
             done = true;
-            //return b;
+            b.Loading = false;
+            return b;
         }
 
         private static Stopwatch st = new Stopwatch();
@@ -4596,7 +4659,7 @@ namespace BioImage
         private static ImageReader reader;
         private static ImageWriter writer;
         private loci.formats.meta.IMetadata meta;
-        public static bool Initialized
+        public static bool OMEInit
         {
             get 
             {
@@ -5194,23 +5257,26 @@ namespace BioImage
             {
                 statistics.AddStatistics(Buffers[i].UpdateStatistics());
             }
-            Statistics st;
-            for (int c = 0; c < Channels.Count; c++)
+            if (Buffers.Count > 0)
             {
-                if (bitsPerPixel > 8)
-                    st = new Statistics(true);
-                else
-                    st = new Statistics(false);
-                for (int z = 0; z < SizeZ; z++)
+                Statistics st;
+                for (int c = 0; c < Channels.Count; c++)
                 {
-                    for (int t = 0; t < SizeT; t++)
+                    if (bitsPerPixel > 8)
+                        st = new Statistics(true);
+                    else
+                        st = new Statistics(false);
+                    for (int z = 0; z < SizeZ; z++)
                     {
-                        int ind = Coords[z, c, t];
-                        st.AddStatistics(Buffers[ind].Statistics);
+                        for (int t = 0; t < SizeT; t++)
+                        {
+                            int ind = Coords[z, c, t];
+                            st.AddStatistics(Buffers[ind].Statistics);
+                        }
                     }
+                    st.MeanHistogram();
+                    Channels[c].stats = st;
                 }
-                st.MeanHistogram();
-                Channels[c].stats = st;
             }
 
             statistics.MeanHistogram();
@@ -5229,12 +5295,13 @@ namespace BioImage
         {
             for (int i = 0; i < Buffers.Count; i++)
             {
-                Buffers[i].Dispose();
+                Buffers[i] = null;
             }
-            Table.RemoveImage(this);
-            rgbBitmap16.Dispose();
             rgbBitmap8.Dispose();
+            rgbBitmap16.Dispose();
+            Table.RemoveImage(this);
             GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
         public override string ToString()
         {
