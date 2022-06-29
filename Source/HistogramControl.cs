@@ -19,6 +19,8 @@ namespace BioImage
             InitializeComponent();
             if (s.BitsPerPixel == 8)
                 graphMax = 255;
+            else
+                graphMax = stats.Max;
             Bin = 10;
         }
         private Statistics stats = null;
@@ -37,13 +39,12 @@ namespace BioImage
             set
             {
                 bin = value;
-                pen = new Pen(Brushes.Black, value);
             }
         }
         private float min = 0;
         public float Min
         {
-            get { return min;}
+            get { return min; }
             set { min = value; }
         }
         private int max = ushort.MaxValue;
@@ -64,30 +65,30 @@ namespace BioImage
             get { return graphMin; }
             set { graphMin = value; }
         }
-        private Pen pen;
         private void HistogramControl_Paint(object sender, PaintEventArgs e)
         {
-            if (stats.BitsPerPixel > 8)
-                bin = 100;
-            else
-                bin = 10;
+            Pen blue = new Pen(Brushes.Blue, bin);
+            Pen black = new Pen(Brushes.Black, bin);
+
             e.Graphics.Clear(Color.LightGray);
-            e.Graphics.TranslateTransform(-graphMin, 0);
+            //e.Graphics.TranslateTransform(-graphMin, 0);
             //e.Graphics.ScaleTransform(scale.Width, scale.Height);
             if (stats == null)
                 return;
             float fy = ((float)this.Height) / (float)stats.Median;
             float fx = ((float)this.Width) / ((float)graphMax);
-            for (float x = 0; x < graphMax; x+=bin)
+            for (float x = 0; x < graphMax; x += 1)
             {
-                float val = (float)stats.MeanValues[(int)x];
+                float val = (float)stats.Values[(int)x];
                 float y = this.Height - (fy * val);
-                e.Graphics.DrawLine(pen, new PointF(fx * x, this.Height), new PointF(fx * x, y));
+                e.Graphics.DrawLine(black, new PointF(fx * x, this.Height), new PointF(fx * x, y));
             }
             e.Graphics.DrawLine(Pens.Green, new PointF((fx * Max), 0), new PointF((fx * Max), this.Height));
             e.Graphics.DrawLine(Pens.Green, new PointF(fx * Min, 0), new PointF(fx * Min, this.Height));
             e.Graphics.DrawLine(Pens.Red, new PointF((fx * stats.Max), 0), new PointF((fx * stats.Max), this.Height));
             e.Graphics.DrawLine(Pens.Red, new PointF(fx * stats.Min, 0), new PointF(fx * stats.Min, this.Height));
+            blue.Dispose();
+            black.Dispose();
         }
     }
 }

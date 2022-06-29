@@ -308,6 +308,7 @@
             // 
             // topMostBox
             // 
+            this.topMostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.topMostBox.AutoSize = true;
             this.topMostBox.Checked = true;
             this.topMostBox.CheckState = System.Windows.Forms.CheckState.Checked;

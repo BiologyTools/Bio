@@ -47,10 +47,13 @@ namespace BioImage
             this.minGraphBox = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.binBox = new System.Windows.Forms.NumericUpDown();
+            this.label8 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.minBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxGraphBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minGraphBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.binBox)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -205,7 +208,7 @@ namespace BioImage
             this.statsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.statsPanel.Location = new System.Drawing.Point(12, 109);
             this.statsPanel.Name = "statsPanel";
-            this.statsPanel.Size = new System.Drawing.Size(222, 212);
+            this.statsPanel.Size = new System.Drawing.Size(222, 188);
             this.statsPanel.TabIndex = 10;
             // 
             // maxUintBox2
@@ -307,11 +310,53 @@ namespace BioImage
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(8, 330);
+            this.label7.Location = new System.Drawing.Point(10, 305);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(118, 13);
             this.label7.TabIndex = 11;
             this.label7.Text = "Graph Value Range";
+            // 
+            // binBox
+            // 
+            this.binBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.binBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.binBox.ForeColor = System.Drawing.Color.White;
+            this.binBox.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.binBox.Location = new System.Drawing.Point(37, 328);
+            this.binBox.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
+            this.binBox.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.binBox.Name = "binBox";
+            this.binBox.Size = new System.Drawing.Size(77, 20);
+            this.binBox.TabIndex = 18;
+            this.binBox.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.binBox.ValueChanged += new System.EventHandler(this.binBox_ValueChanged);
+            // 
+            // label8
+            // 
+            this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label8.AutoSize = true;
+            this.label8.ForeColor = System.Drawing.Color.White;
+            this.label8.Location = new System.Drawing.Point(8, 330);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(22, 13);
+            this.label8.TabIndex = 17;
+            this.label8.Text = "Bin";
             // 
             // ChannelsTool
             // 
@@ -319,6 +364,8 @@ namespace BioImage
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.ClientSize = new System.Drawing.Size(245, 378);
+            this.Controls.Add(this.binBox);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.maxUintBox2);
             this.Controls.Add(this.maxGraphBox);
             this.Controls.Add(this.label5);
@@ -349,6 +396,7 @@ namespace BioImage
             ((System.ComponentModel.ISupportInitialize)(this.maxBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxGraphBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.minGraphBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.binBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -373,5 +421,7 @@ namespace BioImage
         private System.Windows.Forms.NumericUpDown minGraphBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.NumericUpDown binBox;
+        private System.Windows.Forms.Label label8;
     }
 }

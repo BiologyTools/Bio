@@ -8,7 +8,7 @@ namespace BioImage
 {
     public partial class ChannelsTool : Form
     {
-        public List<Channel> Channels;
+        public List<Channel> Channels = new List<Channel>();
         private HistogramControl hist;
         public void UpdateChannels()
         {
@@ -156,6 +156,11 @@ namespace BioImage
                 hist.GraphMax = (int)maxGraphBox.Value;
                 hist.Invalidate();
             }
+        }
+
+        private void binBox_ValueChanged(object sender, EventArgs e)
+        {
+            hist.Bin = (int)binBox.Value;
         }
     }
 }

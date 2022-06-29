@@ -2007,10 +2007,11 @@ namespace BioImage
             set { values = value; }
         }
         private int bitsPerPixel;
-        private int min;
-        private int max;
-        private int mean = 0;
-        private double median = 0;
+        private int min = ushort.MaxValue;
+        private int max = ushort.MinValue;
+        private float mean = 0;
+        private float median = 0;
+        private int stackMedian = 0;
         public int Min
         {
             get { return min; }
@@ -2023,33 +2024,42 @@ namespace BioImage
         {
             get { return mean; }
         }
-        public double Median
-        {
-            get { return median; }
-        }
-
         public int BitsPerPixel
         {
             get { return bitsPerPixel; }
         }
+        public float Median
+        {
+            get
+            {
+                return median;
+            }
+        }
+        public int StackMedian
+        {
+            get
+            {
+                return stackMedian;
+            }
+        }
         private int count = 0;
         private double meansum = 0;
-        private double[] meanvalues;
-        public double[] MeanValues
+        private double[] stackValues;
+        public double[] StackValues
         {
-            get { return meanvalues; }
+            get { return stackValues; }
         }
         public Statistics(bool bit16)
         {
             if (bit16)
             {
-                meanvalues = new double[ushort.MaxValue+1];
+                stackValues = new double[ushort.MaxValue+1];
                 values = new int[ushort.MaxValue+1];
                 bitsPerPixel = 16;
             }
             else
             {
-                meanvalues = new double[256];
+                stackValues = new double[256];
                 values = new int[256];
                 bitsPerPixel = 8;
             }
@@ -2064,6 +2074,7 @@ namespace BioImage
             st.max = ushort.MinValue;
             st.min = ushort.MaxValue;
             st.bitsPerPixel = BitsPerPixel;
+            float sum = 0;
             if (BitsPerPixel > 8)
             {
                 for (int y = 0; y < h; y++)
@@ -2076,6 +2087,7 @@ namespace BioImage
                         if (st.min > s)
                             st.min = s;
                         st.values[s]++;
+                        sum += s;
                     }
                 }
             }
@@ -2091,7 +2103,14 @@ namespace BioImage
                     st.values[s]++;
                 }
             }
-            st.mean = (st.min + st.max) / 2;
+            st.mean = sum / (float)(w * h);
+            int median = 0;
+            for (int i = 0; i < st.values.Length; i++)
+            {
+                if (median > st.values[i])
+                    median = st.values[i];
+            }
+            st.median = median;
             return st;
         }
         public void AddStatistics(Statistics s)
@@ -2101,20 +2120,29 @@ namespace BioImage
             if (min > s.min)
                 min = s.min;
             meansum += s.mean;
-            for (int i = 0; i < s.meanvalues.Length; i++)
+            for (int i = 0; i < s.stackValues.Length; i++)
             {
-                meanvalues[i] += s.values[i];
+                stackValues[i] += s.values[i];
             }
+            values = s.values;
             count++;
         }
         public void MeanHistogram()
         {
-            for (int i = 0; i < meanvalues.Length; i++)
+            for (int i = 0; i < stackValues.Length; i++)
             {
-                meanvalues[i] /= (double)count;
-                if (median < meanvalues[i])
-                    median = meanvalues[i];
+                stackValues[i] /= (double)count;
+                //if (median < meanvalues[i])
+                //    median = meanvalues[i];
             }
+            mean = (float)meansum / (float)count;
+
+            for (int i = 0; i < stackValues.Length; i++)
+            {
+                if (median < stackValues[i])
+                    median = (float)stackValues[i];
+            }
+
         }
     }
     public class SizeInfo
@@ -5289,6 +5317,7 @@ namespace BioImage
                 b.Channels[c].Min = b.Channels[c].stats.Min;
                 b.Channels[c].Max = b.Channels[c].stats.Max;
             }
+            b.statistics = statistics;
         }
         public void AutoThreshold()
         {

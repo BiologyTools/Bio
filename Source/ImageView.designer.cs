@@ -363,6 +363,7 @@ namespace BioImage
             this.timeBar.Name = "timeBar";
             this.timeBar.Size = new System.Drawing.Size(413, 25);
             this.timeBar.TabIndex = 16;
+            this.timeBar.Scroll += new System.EventHandler(this.timeBar_Scroll);
             this.timeBar.ValueChanged += new System.EventHandler(this.timeBar_ValueChanged);
             // 
             // controlsMenuStrip
@@ -444,6 +445,7 @@ namespace BioImage
             this.zBar.Name = "zBar";
             this.zBar.Size = new System.Drawing.Size(413, 25);
             this.zBar.TabIndex = 12;
+            this.zBar.Scroll += new System.EventHandler(this.zBar_Scroll);
             this.zBar.ValueChanged += new System.EventHandler(this.zBar_ValueChanged);
             // 
             // zLabel
@@ -472,6 +474,7 @@ namespace BioImage
             this.cBar.Name = "cBar";
             this.cBar.Size = new System.Drawing.Size(413, 25);
             this.cBar.TabIndex = 15;
+            this.cBar.Scroll += new System.EventHandler(this.cBar_Scroll);
             this.cBar.ValueChanged += new System.EventHandler(this.cBar_ValueChanged);
             // 
             // cLabel

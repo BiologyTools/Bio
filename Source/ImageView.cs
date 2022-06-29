@@ -90,11 +90,16 @@ namespace BioImage
         public string filepath = "";
         public int serie = 0;
         private ZCT coordinate = new ZCT(0, 0, 0);
-        public static ZCT Coordinate = new ZCT(0, 0, 0);
+        public static ZCT Coordinate
+        {
+            get
+            {
+                return ImageView.viewer.GetCoordinate();
+            }
+        }
         public void SetCoordinate(int z, int c, int t)
         {
             coordinate = new ZCT(z, c, t);
-            Coordinate = coordinate;
             zBar.Value = z;
             cBar.Value = c;
             timeBar.Value = t;
@@ -102,7 +107,7 @@ namespace BioImage
         }
         public ZCT GetCoordinate()
         {
-            return new ZCT(zBar.Value,cBar.Value,timeBar.Value);
+            return coordinate;
         }
         public bool ShowControls
         {
@@ -1706,6 +1711,21 @@ namespace BioImage
                 ShowStatus = false;
             else
                 ShowStatus = true;
+        }
+
+        private void zBar_Scroll(object sender, EventArgs e)
+        {
+            SetCoordinate(zBar.Value, cBar.Value, timeBar.Value);
+        }
+
+        private void timeBar_Scroll(object sender, EventArgs e)
+        {
+            SetCoordinate(zBar.Value, cBar.Value, timeBar.Value);
+        }
+
+        private void cBar_Scroll(object sender, EventArgs e)
+        {
+            SetCoordinate(zBar.Value, cBar.Value, timeBar.Value);
         }
     }
 }
