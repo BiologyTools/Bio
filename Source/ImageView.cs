@@ -379,7 +379,6 @@ namespace BioImage
             }
                 UpdateRGBChannels();
             //We threshold the image so that the max threshold value is the max pixel value in image. 
-            image.AutoThreshold();
         }
 
         public void UpdateSelectBoxSize(float size)

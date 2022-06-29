@@ -95,6 +95,8 @@
             // topMostBox
             // 
             this.topMostBox.AutoSize = true;
+            this.topMostBox.Checked = true;
+            this.topMostBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.topMostBox.ForeColor = System.Drawing.Color.White;
             this.topMostBox.Location = new System.Drawing.Point(12, 282);
             this.topMostBox.Name = "topMostBox";
@@ -118,6 +120,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Recorder";
             this.Text = "Recorder";
+            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Recorder_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();

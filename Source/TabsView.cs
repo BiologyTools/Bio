@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
+using System.Threading;
 
 namespace BioImage
 {
@@ -238,7 +239,8 @@ namespace BioImage
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            BioImage.AddToOpenPool(openFilesDialog.FileNames);
+            BioImage.OpenThread(openFilesDialog.FileNames);
+            UpdateTabs();
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -255,7 +257,10 @@ namespace BioImage
                 return;
             if (saveTiffFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            BioImage.AddToSavePool(saveTiffFileDialog.FileNames);
+            foreach (string file in saveTiffFileDialog.FileNames)
+            {
+                BioImage.SaveThread(file,Image.ID);
+            }
         }
 
         private void ImageViewer_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -420,7 +425,10 @@ namespace BioImage
                 return;
             if (saveOMEFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            BioImage.AddToSavePool(saveOMEFileDialog.FileNames);
+            foreach (string file in saveOMEFileDialog.FileNames)
+            {
+                BioImage.SaveOMEThread(file,Image.ID);
+            }
         }
 
         private void copyToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
@@ -532,9 +540,8 @@ namespace BioImage
             List<string> sts = new List<string>();
             foreach (BioImage item in Table.images)
             {
-                sts.Add(item.ID);
+                BioImage.SaveThread(Image.ID, Image.ID);
             }
-            BioImage.AddToSavePool(sts.ToArray());
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -545,7 +552,28 @@ namespace BioImage
 
         private void scriptRunnerToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
+            Scripting runner = new Scripting();
             runner.Show();
+        }
+
+        private void scriptRecorderToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            Recorder rec = new Recorder();
+            rec.Show();
+        }
+
+        private void openOMEToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (openFilesDialog.ShowDialog() != DialogResult.OK)
+                return;
+            BioImage.OpenOMEThread(openFilesDialog.FileNames);
+            UpdateTabs();
+        }
+
+        private void newTabViewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TabsView t = new TabsView();
+            t.Show();
         }
     }
 }

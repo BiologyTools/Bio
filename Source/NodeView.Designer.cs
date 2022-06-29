@@ -36,18 +36,11 @@
             this.setTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.windowsViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.updateTimer = new System.Windows.Forms.Timer(this.components);
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newTabsViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -99,83 +92,11 @@
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.tabViewToolStripMenuItem,
-            this.refreshToolStripMenuItem,
-            this.scriptToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(303, 24);
             this.menuStrip.TabIndex = 3;
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // openToolStripMenuItem
-            // 
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openToolStripMenuItem.Text = "Open Files";
-            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
-            // 
-            // tabViewToolStripMenuItem
-            // 
-            this.tabViewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tabToolStripMenuItem,
-            this.windowsViewToolStripMenuItem});
-            this.tabViewToolStripMenuItem.Name = "tabViewToolStripMenuItem";
-            this.tabViewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.tabViewToolStripMenuItem.Text = "View";
-            this.tabViewToolStripMenuItem.Click += new System.EventHandler(this.tabViewToolStripMenuItem_Click);
-            // 
-            // tabToolStripMenuItem
-            // 
-            this.tabToolStripMenuItem.Name = "tabToolStripMenuItem";
-            this.tabToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.tabToolStripMenuItem.Text = "Tab View";
-            this.tabToolStripMenuItem.Click += new System.EventHandler(this.tabToolStripMenuItem_Click);
-            // 
-            // windowsViewToolStripMenuItem
-            // 
-            this.windowsViewToolStripMenuItem.Name = "windowsViewToolStripMenuItem";
-            this.windowsViewToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.windowsViewToolStripMenuItem.Text = "Windows View";
-            this.windowsViewToolStripMenuItem.Click += new System.EventHandler(this.windowsViewToolStripMenuItem_Click);
-            // 
-            // refreshToolStripMenuItem
-            // 
-            this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
-            this.refreshToolStripMenuItem.Text = "Refresh";
-            this.refreshToolStripMenuItem.Click += new System.EventHandler(this.refreshToolStripMenuItem_Click_1);
-            // 
-            // scriptToolStripMenuItem
-            // 
-            this.scriptToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.scriptRunnerToolStripMenuItem,
-            this.scriptRecorderToolStripMenuItem});
-            this.scriptToolStripMenuItem.Name = "scriptToolStripMenuItem";
-            this.scriptToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
-            this.scriptToolStripMenuItem.Text = "Script";
-            // 
-            // scriptRunnerToolStripMenuItem
-            // 
-            this.scriptRunnerToolStripMenuItem.Name = "scriptRunnerToolStripMenuItem";
-            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
-            this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click_1);
-            // 
-            // scriptRecorderToolStripMenuItem
-            // 
-            this.scriptRecorderToolStripMenuItem.Name = "scriptRecorderToolStripMenuItem";
-            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.scriptRecorderToolStripMenuItem.Text = "Script Recorder";
-            this.scriptRecorderToolStripMenuItem.Click += new System.EventHandler(this.scriptRecorderToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
@@ -193,6 +114,21 @@
             // 
             this.updateTimer.Interval = 1000;
             this.updateTimer.Tick += new System.EventHandler(this.updateTimer_Tick);
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newTabsViewToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // newTabsViewToolStripMenuItem
+            // 
+            this.newTabsViewToolStripMenuItem.Name = "newTabsViewToolStripMenuItem";
+            this.newTabsViewToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newTabsViewToolStripMenuItem.Text = "New Tabs View";
+            this.newTabsViewToolStripMenuItem.Click += new System.EventHandler(this.newTabsViewToolStripMenuItem_Click);
             // 
             // NodeView
             // 
@@ -217,21 +153,14 @@
 
         private System.Windows.Forms.TreeView treeView;
         private System.Windows.Forms.MenuStrip menuStrip;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openFilesDialog;
-        private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem scriptToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem scriptRunnerToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem scriptRecorderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setTextToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setIDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem tabViewToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem tabToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem windowsViewToolStripMenuItem;
         private System.Windows.Forms.Timer updateTimer;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newTabsViewToolStripMenuItem;
     }
 }

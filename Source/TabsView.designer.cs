@@ -74,6 +74,8 @@ namespace BioImage
             this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openOMEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newTabViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -158,9 +160,11 @@ namespace BioImage
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
+            this.openOMEToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.saveOMEToolStripMenuItem,
-            this.saveAllToolStripMenuItem});
+            this.saveAllToolStripMenuItem,
+            this.newTabViewToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -169,7 +173,7 @@ namespace BioImage
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.openToolStripMenuItem.Text = "Open Files";
+            this.openToolStripMenuItem.Text = "Open Images";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
@@ -405,6 +409,7 @@ namespace BioImage
             this.scriptRecorderToolStripMenuItem.Name = "scriptRecorderToolStripMenuItem";
             this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.scriptRecorderToolStripMenuItem.Text = "Script Recorder";
+            this.scriptRecorderToolStripMenuItem.Click += new System.EventHandler(this.scriptRecorderToolStripMenuItem_Click_1);
             // 
             // aboutToolStripMenuItem
             // 
@@ -412,6 +417,20 @@ namespace BioImage
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // openOMEToolStripMenuItem
+            // 
+            this.openOMEToolStripMenuItem.Name = "openOMEToolStripMenuItem";
+            this.openOMEToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openOMEToolStripMenuItem.Text = "Open OME Images";
+            this.openOMEToolStripMenuItem.Click += new System.EventHandler(this.openOMEToolStripMenuItem_Click_1);
+            // 
+            // newTabViewToolStripMenuItem
+            // 
+            this.newTabViewToolStripMenuItem.Name = "newTabViewToolStripMenuItem";
+            this.newTabViewToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newTabViewToolStripMenuItem.Text = "New Tab View";
+            this.newTabViewToolStripMenuItem.Click += new System.EventHandler(this.newTabViewToolStripMenuItem_Click);
             // 
             // TabsView
             // 
@@ -483,5 +502,7 @@ namespace BioImage
         private System.Windows.Forms.ToolStripMenuItem scriptRunnerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scriptRecorderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openOMEToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newTabViewToolStripMenuItem;
     }
 }

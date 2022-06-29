@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -1196,9 +1197,9 @@ namespace BioImage
                         {
                             int indexRGB = x * 6;
                             int indexRGBA = x * 4;
-                            int b = (int)Math.Floor(((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB)) / 255);
-                            int g = (int)Math.Floor(((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB + 2)) / 255);
-                            int r = (int)Math.Floor(((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB + 4)) / 255);
+                            int b = (int)((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB) / 255);
+                            int g = (int)((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB + 2) / 255);
+                            int r = (int)((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB + 4) / 255);
                             row[indexRGBA + 3] = 255;//byte A
                             row[indexRGBA + 2] = (byte)(b);//byte R
                             row[indexRGBA + 1] = (byte)(g);//byte G
@@ -1300,6 +1301,28 @@ namespace BioImage
             statistics = Statistics.FromBytes(bytes, SizeX, SizeY, RGBChannelsCount, BitsPerPixel, Stride);
             return statistics;
         }
+        
+        private static List<BufferInfo> bufferInfos = new List<BufferInfo>();
+        public static void AddBuffer(BufferInfo b)
+        {
+            bufferInfos.Add(b);
+        }
+        public static void CalculateStatistics()
+        {
+            Thread th = new Thread(CalcStats);
+            th.Start();
+        }
+        public static void ClearStatsBuffer()
+        {
+            bufferInfos.Clear();
+        }
+        private static void CalcStats()
+        {
+            BufferInfo bf = bufferInfos[bufferInfos.Count - 1];
+            bf.statistics = Statistics.FromBytes(bf.Bytes, bf.SizeX, bf.SizeY, bf.RGBChannelsCount, bf.BitsPerPixel, bf.Stride);
+            
+        }
+        
         public static Bitmap SwitchRedBlue(Bitmap image)
         {
             ExtractChannel cr = new ExtractChannel(AForge.Imaging.RGB.R);
@@ -1484,6 +1507,7 @@ namespace BioImage
             bytes = null;
             if(bitmap!=null)
             bitmap.Dispose();
+            statistics = null;
         }
     }
     public class Filt
@@ -2181,7 +2205,7 @@ namespace BioImage
         }
 
     }
-    
+    /*
     public class Worker
     {
         private Thread thread;
@@ -2227,8 +2251,7 @@ namespace BioImage
         }
         public static List<string> files = new List<string>();
         public static string file;
-
-        public Worker(string sts, bool open)
+        public Worker(string[] sts, bool open)
         {
             if(open)
                 thread = new Thread(Open);
@@ -2237,9 +2260,8 @@ namespace BioImage
             file = sts;
             thread.Start();
         }
-
     }
-    
+    */
     public class BioImage : IDisposable
     {
         public int[,,] Coords;
@@ -2279,7 +2301,19 @@ namespace BioImage
         public long loadTimeMS = 0;
         public long loadTimeTicks = 0;
         public bool selected = false;
+        public Statistics Statistics
+        {
+            get
+            {
+                return statistics;
+            }
+            set
+            {
+                statistics = value;
+            }
+        }
         private int sizeZ, sizeC, sizeT;
+        private Statistics statistics;
         private Bitmap rgbBitmap8 = null;
         private Bitmap rgbBitmap16 = null;
         SizeInfo sizeInfo = new SizeInfo();
@@ -2416,7 +2450,6 @@ namespace BioImage
             {
                 c.Max = 255;
             }
-
             bitsPerPixel = 8;
             AutoThreshold();
             Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To8Bit();");
@@ -3317,6 +3350,7 @@ namespace BioImage
         }
         */
         public bool Loading = false;
+        /*
         public static void AddToSavePool(string[] files)
         {
             foreach (string f in files)
@@ -3330,47 +3364,6 @@ namespace BioImage
             {
                 Worker w = new Worker(f, true);
             }
-        }
-        /*
-        public static void SaveOME(string file, int series)
-        {
-            BioImage b = Table.GetImage(file);
-            //threadFile = file;
-            threadProgress = 0;
-            serie = series;
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(WriteOME));
-            
-            t.Start();
-            Progress pr = new Progress(file, "Saving");
-            pr.Show();
-            done = false;
-            do
-            {
-                pr.UpdateProgressF(threadProgress);
-                Application.DoEvents();
-            } while (!done);
-            pr.Close();
-        }
-        public static void OpenOME(string file, int series, int index)
-        {
-            BioImage b = ims[index];
-            threadProgress = 0;
-            serie = series;
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(ReadOME));
-            t.Start();
-            Progress pr = new Progress(file, "Opening");
-            pr.Show();
-            done = false;
-            do
-            {
-                pr.UpdateProgressF(threadProgress);
-                Application.DoEvents();
-            } while (!done);
-            t.Abort();
-            pr.Close();
-            b.rgbBitmap16 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
-            b.rgbBitmap8 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            Table.AddImage(b);
         }
         */
         public static void Initialize()
@@ -3391,50 +3384,10 @@ namespace BioImage
             initialized = true;
             sto.Stop();
         }
-        /*
-        public static void Save(string file)
+
+        public static BioImage Save(string file, string ID)
         {
-            //This is the default saving mode we save the roi's in CSV and save tiff fast with BitMiracle.
-            BioImage b = Table.GetImage(file);
-            threadProgress = 0;
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Save));
-            t.Start();
-            Progress pr = new Progress(file, "Saving");
-            pr.Show();
-            done = false;
-            do
-            {
-                pr.UpdateProgressF(threadProgress);
-                Application.DoEvents();
-            } while (!done);
-            pr.Close();
-        }
-        
-        public static void Open(string file, int index)
-        {
-            BioImage b = new BioImage(file);
-            ims.Add(b);
-            //This is the default opening mode we load the roi's in CSV and open tiff fast with BitMiracle.
-            threadProgress = 0;
-            System.Threading.Thread t = new System.Threading.Thread(new System.Threading.ThreadStart(Open));
-            t.Start();
-            Progress pr = new Progress(file, "Opening");
-            pr.Show();
-            done = false;
-            do
-            {
-                pr.UpdateProgressF(threadProgress);
-                Application.DoEvents();
-            } while (!done);
-            pr.Close();
-            b.rgbBitmap16 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
-            b.rgbBitmap8 = new Bitmap(b.SizeX, b.SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            Table.AddImage(b);
-        }
-        */
-        public static BioImage Save(string file)
-        {
-            BioImage b = Table.GetImage(file);
+            BioImage b = Table.GetImage(ID);
             done = false;
             string fn = Path.GetFileNameWithoutExtension(file);
             string dir = Path.GetDirectoryName(file);
@@ -3680,8 +3633,11 @@ namespace BioImage
                     }
                     BufferInfo inf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), p);
                     b.Buffers.Add(inf);
-                    threadProgress = (int)((double)p / (double)pages);
+                    BufferInfo.AddBuffer(inf);
+                    BufferInfo.CalculateStatistics();
+                    //pr.UpdateProgressF((int)((double)p / (double)pages));
                 }
+
                 for (int im = 0; im < b.Buffers.Count; im++)
                 {
                     ZCT co = new ZCT(z, c, t);
@@ -3721,14 +3677,24 @@ namespace BioImage
                 b.Channels.Add(ch);
                 b.Coords = new int[b.SizeZ, b.SizeC, b.sizeT];
             }
-            Recorder.AddLine("BioImage.Open(" + '"' + file + '"' + ");");
+            
             done = true;
+            //We wait for threshold image statistics calculation
+            do
+            {
+            } while (b.Buffers[b.Buffers.Count -1].Statistics==null);
+            BufferInfo.ClearStatsBuffer();
+
+            AutoThreshold(b);
+
+            Recorder.AddLine("BioImage.Open(" + '"' + file + '"' + ");");
+            Table.AddImage(b);
             return b;
         }
-        public static BioImage SaveOME(string file)
+        public static BioImage SaveOME(string file, string ID)
         {
             int series = serie;
-            BioImage b = new BioImage(file);
+            BioImage b = new BioImage(ID);
             // create OME-XML metadata store
             loci.formats.meta.IMetadata omexml = service.createOMEXMLMetadata();
             omexml.setImageID("Image:0", series);
@@ -4035,7 +4001,7 @@ namespace BioImage
         {
             do
             {
-                Thread.Sleep(500);
+                Thread.Sleep(250);
             } while (!Initialized);
             st.Start();
             done = false;
@@ -4096,7 +4062,6 @@ namespace BioImage
                 PixelFormat = PixelFormat.Format32bppRgb;
                 stride = SizeX * 4;
             }
-            long ms1 = st.ElapsedMilliseconds;
             //Lets get the channels amd initialize them.
             for (int i = 0; i < b.SizeC; i++)
             {
@@ -4513,16 +4478,25 @@ namespace BioImage
                     //We convert 48bpp plane to 3 16bpp planes.
                     BufferInfo[] bfs = BufferInfo.RGB48To16(file, SizeX, SizeY, stride, bytes, new ZCT(0, 0, 0));
                     b.Buffers.AddRange(bfs);
+                    //We add the buffers to thresholding image statistics calculation threads.
+                    BufferInfo.AddBuffer(bfs[0]);
+                    BufferInfo.CalculateStatistics();
+                    BufferInfo.AddBuffer(bfs[1]);
+                    BufferInfo.CalculateStatistics();
+                    BufferInfo.AddBuffer(bfs[2]);
+                    BufferInfo.CalculateStatistics();
                 }
                 else
                 {
                     BufferInfo bf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), 0);
                     b.Buffers.Add(bf);
+                    //We add the buffers to thresholding image statistics calculation threads.
+                    BufferInfo.AddBuffer(bf);
+                    BufferInfo.CalculateStatistics();
                 }
                 threadProgress = ((float)p / (float)pages)*100;
 
             }
-            long ms2 = st.ElapsedMilliseconds - ms1;
             int z = 0;
             int c = 0;
             int t = 0;
@@ -4611,10 +4585,79 @@ namespace BioImage
                 //Volume is used only for stage coordinates if error is thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
             }
             reader.close();
+            //We wait for threshold image statistics calculation
+            do
+            {
+            } while (b.Buffers[b.Buffers.Count - 1].Statistics == null);
+
+            for (int ch = 0; ch < b.Channels.Count; ch++)
+            {
+                b.Channels[ch].Min = b.Channels[ch].stats.Min;
+                b.Channels[ch].Max = b.Channels[ch].stats.Max;
+            }
+            Table.AddImage(b);
             Recorder.AddLine("BioImage.OpenOME(" + '"' + file + '"' + ");");
             done = true;
             b.Loading = false;
             return b;
+        }
+        public static void OpenThread(string[] file)
+        {
+            openfile.AddRange(file);
+            Thread t = new Thread(Open);
+            t.Start();
+        }
+        private static List<string> openfile = new List<string>();
+        private static void Open()
+        {
+            foreach (string f in openfile)
+            {
+                Open(f);
+            }
+            openfile.Clear();
+        }
+        public static void SaveThread(string file, string ID)
+        {
+            saveID = ID;
+            savefile = file;
+            Thread t = new Thread(Save);
+            t.Start();
+
+        }
+        private static string savefile;
+        private static string saveID;
+        private static void Save()
+        {
+            Save(savefile,saveID);
+        }
+
+        public static void OpenOMEThread(string[] file)
+        {
+            openOMEfile.AddRange(file);
+            Thread t = new Thread(OpenOME);
+            t.Start();
+        }
+        private static List<string> openOMEfile = new List<string>();
+        private static void OpenOME()
+        {
+            foreach (string f in openOMEfile)
+            {
+                OpenOME(f);
+            }
+            openOMEfile.Clear();
+        }
+        public static void SaveOMEThread(string file,string ID)
+        {
+            saveOMEID = ID;
+            saveOMEfile = file;
+            Thread t = new Thread(SaveOME);
+            t.Start();
+        }
+        private static string saveOMEfile;
+        private static string saveOMEID;
+        private static void SaveOME()
+        {
+            SaveOME(saveOMEfile, saveOMEID);
         }
 
         private static Stopwatch st = new Stopwatch();
@@ -4634,6 +4677,7 @@ namespace BioImage
                 else return true;
             }
         }
+        
 
         public int GetSeriesCount(string file)
         {
@@ -5206,60 +5250,55 @@ namespace BioImage
                 i++;
             }
         }
-        private Statistics statistics;
-        public Statistics Statistics
+        public static void AutoThreshold(BioImage b)
         {
-            get { return statistics; }
-        }
-        public Statistics UpdateStatistics()
-        {
-            if (bitsPerPixel > 8)
+            Statistics statistics = null;
+            if (b.bitsPerPixel > 8)
                 statistics = new Statistics(true);
             else
                 statistics = new Statistics(false);
-            for (int i = 0; i < Buffers.Count; i++)
+            for (int i = 0; i < b.Buffers.Count; i++)
             {
-                statistics.AddStatistics(Buffers[i].UpdateStatistics());
+                statistics.AddStatistics(b.Buffers[i].Statistics);
             }
-            if (Buffers.Count > 0)
+            if (b.Buffers.Count > 0)
             {
                 Statistics st;
-                for (int c = 0; c < Channels.Count; c++)
+                for (int c = 0; c < b.Channels.Count; c++)
                 {
-                    if (bitsPerPixel > 8)
+                    if (b.bitsPerPixel > 8)
                         st = new Statistics(true);
                     else
                         st = new Statistics(false);
-                    for (int z = 0; z < SizeZ; z++)
+                    for (int z = 0; z < b.SizeZ; z++)
                     {
-                        for (int t = 0; t < SizeT; t++)
+                        for (int t = 0; t < b.SizeT; t++)
                         {
-                            int ind = Coords[z, c, t];
-                            st.AddStatistics(Buffers[ind].Statistics);
+                            int ind = b.Coords[z, c, t];
+                            st.AddStatistics(b.Buffers[ind].Statistics);
                         }
                     }
                     st.MeanHistogram();
-                    Channels[c].stats = st;
+                    b.Channels[c].stats = st;
                 }
             }
-
             statistics.MeanHistogram();
-            return statistics;
+
+            for (int c = 0; c < b.Channels.Count; c++)
+            {
+                b.Channels[c].Min = b.Channels[c].stats.Min;
+                b.Channels[c].Max = b.Channels[c].stats.Max;
+            }
         }
         public void AutoThreshold()
         {
-            UpdateStatistics();
-            for (int c = 0; c < Channels.Count; c++)
-            {
-                Channels[c].Min = Channels[c].stats.Min;
-                Channels[c].Max = Channels[c].stats.Max;
-            }
+            AutoThreshold(this);
         }
         public void Dispose()
         {
             for (int i = 0; i < Buffers.Count; i++)
             {
-                Buffers[i] = null;
+                Buffers[i].Dispose();
             }
             if(rgbBitmap8!=null)
                 rgbBitmap8.Dispose();

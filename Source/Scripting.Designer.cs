@@ -309,6 +309,8 @@
             // topMostBox
             // 
             this.topMostBox.AutoSize = true;
+            this.topMostBox.Checked = true;
+            this.topMostBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.topMostBox.ForeColor = System.Drawing.Color.White;
             this.topMostBox.Location = new System.Drawing.Point(188, 402);
             this.topMostBox.Name = "topMostBox";
@@ -336,6 +338,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Scripting";
             this.Text = "Scripting";
+            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScriptRunner_FormClosing);
             this.contextMenuStrip.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);

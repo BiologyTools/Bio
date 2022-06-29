@@ -176,7 +176,10 @@ namespace BioImage
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            BioImage.AddToOpenPool(openFilesDialog.FileNames);
+            foreach (string file in openFilesDialog.FileNames)
+            {
+                BioImage.Open(file);
+            }
         }
         private void refreshToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
@@ -317,6 +320,12 @@ namespace BioImage
             if (viewer.IsDisposed || viewer.Disposing || viewer==null)
                 return;
             viewer.UpdateTabs();
+        }
+
+        private void newTabsViewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TabsView v = new TabsView();
+            v.Show();
         }
     }
 }
