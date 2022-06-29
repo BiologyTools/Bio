@@ -43,28 +43,6 @@ Best for working with ROI's in OME format & CSV.
 - LibTiff.Net [BSD](https://bitmiracle.com/libtiff/)
 - Cs-script [MIT](https://github.com/oleg-shilo/cs-script/blob/master/LICENSE)
 
-## Example usage.
-
-ImageView imageview = new ImageView("16bitTestStack.ome.tif");
-
-imageview.Dock = DockStyle.Fill;
-
-mainTabControl.TabPages[3].Controls.Add(imageview);
-
-//Another way of opening just image.
-
-BioImage image = new BioImage(0,"16bitTestStack.ome.tif");
-
-//Get RGB Bitmap of BioImage with coordinates (Series, Z-depth, Channel, Time)
-
-Bitmap rgb = image.GetImageRGB(0,0,0,0);
-
-//Get Filtered Bitmap of BioImage with coordinates (Series, Z-depth, Channel, Time)
-
-Bitmap filt = image.GetImageFiltered(0,0,0,0);
-
-image.SaveSeries("16bitTestSaveStack.ome.tif", 0);
-
 ## Scripting
 -  Save scripts into "StartupPath/Scripts" with ".cs" ending.
 -  Open script editor and recorder from menu.
