@@ -435,8 +435,7 @@ namespace BioImage
 
         public void UpdateView()
         {
-            SetCoordinate(zBar.Value, cBar.Value, timeBar.Value);
-            pictureBox.Invalidate();
+            UpdateImage();
             UpdateStatus();
         }
 
@@ -448,7 +447,7 @@ namespace BioImage
             int index = image.Coords[zBar.Value, cBar.Value, timeBar.Value];
             if (Mode == ViewMode.Filtered)
             {
-                bm = image.GetFiltered(coords, RChannel.range, BChannel.range, GChannel.range);
+                bm = image.GetFiltered(coords, RChannel.range, RChannel.range, RChannel.range);
             }
             else if (Mode == ViewMode.RGBImage)
             {

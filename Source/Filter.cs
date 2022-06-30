@@ -19,7 +19,7 @@ namespace BioImage
         }
         private void UpdateView()
         {
-            ImageView.viewer.UpdateView();
+            ImageView.viewer.UpdateStatus();
         }
         public class Node
         {

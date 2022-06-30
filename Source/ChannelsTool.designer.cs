@@ -106,7 +106,7 @@ namespace BioImage
             0,
             0,
             0});
-            this.maxBox.Location = new System.Drawing.Point(157, 54);
+            this.maxBox.Location = new System.Drawing.Point(173, 54);
             this.maxBox.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -152,9 +152,9 @@ namespace BioImage
             this.channelsBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.channelsBox.ForeColor = System.Drawing.Color.White;
             this.channelsBox.FormattingEnabled = true;
-            this.channelsBox.Location = new System.Drawing.Point(69, 4);
+            this.channelsBox.Location = new System.Drawing.Point(85, 4);
             this.channelsBox.Name = "channelsBox";
-            this.channelsBox.Size = new System.Drawing.Size(165, 21);
+            this.channelsBox.Size = new System.Drawing.Size(166, 21);
             this.channelsBox.TabIndex = 6;
             this.channelsBox.SelectedIndexChanged += new System.EventHandler(this.channelsBox_SelectedIndexChanged);
             // 
@@ -169,7 +169,7 @@ namespace BioImage
             "4096",
             "16383",
             "65535"});
-            this.maxUintBox.Location = new System.Drawing.Point(157, 29);
+            this.maxUintBox.Location = new System.Drawing.Point(173, 29);
             this.maxUintBox.Name = "maxUintBox";
             this.maxUintBox.Size = new System.Drawing.Size(77, 21);
             this.maxUintBox.TabIndex = 7;
@@ -180,7 +180,7 @@ namespace BioImage
             // 
             this.setMaxAllBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.setMaxAllBut.ForeColor = System.Drawing.Color.White;
-            this.setMaxAllBut.Location = new System.Drawing.Point(157, 80);
+            this.setMaxAllBut.Location = new System.Drawing.Point(173, 80);
             this.setMaxAllBut.Name = "setMaxAllBut";
             this.setMaxAllBut.Size = new System.Drawing.Size(77, 23);
             this.setMaxAllBut.TabIndex = 8;
@@ -208,7 +208,7 @@ namespace BioImage
             this.statsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.statsPanel.Location = new System.Drawing.Point(12, 109);
             this.statsPanel.Name = "statsPanel";
-            this.statsPanel.Size = new System.Drawing.Size(222, 188);
+            this.statsPanel.Size = new System.Drawing.Size(239, 188);
             this.statsPanel.TabIndex = 10;
             // 
             // maxUintBox2
@@ -321,11 +321,6 @@ namespace BioImage
             this.binBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.binBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.binBox.ForeColor = System.Drawing.Color.White;
-            this.binBox.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
             this.binBox.Location = new System.Drawing.Point(37, 328);
             this.binBox.Maximum = new decimal(new int[] {
             65535,
@@ -341,7 +336,7 @@ namespace BioImage
             this.binBox.Size = new System.Drawing.Size(77, 20);
             this.binBox.TabIndex = 18;
             this.binBox.Value = new decimal(new int[] {
-            10,
+            100,
             0,
             0,
             0});
@@ -363,7 +358,7 @@ namespace BioImage
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(245, 378);
+            this.ClientSize = new System.Drawing.Size(262, 378);
             this.Controls.Add(this.binBox);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.maxUintBox2);

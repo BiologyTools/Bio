@@ -1044,6 +1044,7 @@ namespace BioImage
         public Statistics Statistics
         {
             get { return statistics; }
+            set { statistics = value; }
         }
         private Statistics statistics;
         private byte[] bytes;
@@ -2009,9 +2010,12 @@ namespace BioImage
         private int bitsPerPixel;
         private int min = ushort.MaxValue;
         private int max = ushort.MinValue;
+        private float stackMin = ushort.MaxValue;
+        private float stackMax = ushort.MinValue;
+        private float stackMean = 0;
+        private float stackMedian = 0;
         private float mean = 0;
         private float median = 0;
-        private int stackMedian = 0;
         public int Min
         {
             get { return min; }
@@ -2035,11 +2039,32 @@ namespace BioImage
                 return median;
             }
         }
-        public int StackMedian
+        public float StackMedian
         {
             get
             {
                 return stackMedian;
+            }
+        }
+        public float StackMean
+        {
+            get
+            {
+                return stackMean;
+            }
+        }
+        public float StackMax
+        {
+            get
+            {
+                return stackMax;
+            }
+        }
+        public float StackMin
+        {
+            get
+            {
+                return stackMin;
             }
         }
         private int count = 0;
@@ -2113,12 +2138,16 @@ namespace BioImage
             st.median = median;
             return st;
         }
+        public static Statistics FromBytes(BufferInfo bf)
+        {
+            return FromBytes(bf.Bytes, bf.SizeX, bf.SizeY, bf.RGBChannelsCount, bf.BitsPerPixel, bf.Stride);
+        }
         public void AddStatistics(Statistics s)
         {
-            if (max < s.max)
-                max = s.max;
-            if (min > s.min)
-                min = s.min;
+            if (stackMax < s.max)
+                stackMax = s.max;
+            if (stackMin > s.min)
+                stackMin = s.min;
             meansum += s.mean;
             for (int i = 0; i < s.stackValues.Length; i++)
             {
@@ -2132,15 +2161,13 @@ namespace BioImage
             for (int i = 0; i < stackValues.Length; i++)
             {
                 stackValues[i] /= (double)count;
-                //if (median < meanvalues[i])
-                //    median = meanvalues[i];
             }
-            mean = (float)meansum / (float)count;
+            stackMean = (float)meansum / (float)count;
 
             for (int i = 0; i < stackValues.Length; i++)
             {
-                if (median < stackValues[i])
-                    median = (float)stackValues[i];
+                if (stackMedian < stackValues[i])
+                    stackMedian = (float)stackValues[i];
             }
 
         }
@@ -5287,6 +5314,8 @@ namespace BioImage
                 statistics = new Statistics(false);
             for (int i = 0; i < b.Buffers.Count; i++)
             {
+                if (b.Buffers[i].Statistics == null)
+                    b.Buffers[i].Statistics = Statistics.FromBytes(b.Buffers[i]);
                 statistics.AddStatistics(b.Buffers[i].Statistics);
             }
             if (b.Buffers.Count > 0)
@@ -5311,13 +5340,13 @@ namespace BioImage
                 }
             }
             statistics.MeanHistogram();
-
+            b.statistics = statistics;
             for (int c = 0; c < b.Channels.Count; c++)
             {
-                b.Channels[c].Min = b.Channels[c].stats.Min;
-                b.Channels[c].Max = b.Channels[c].stats.Max;
+                b.Channels[c].Min = (int)b.Channels[c].stats.StackMin;
+                b.Channels[c].Max = (int)b.Channels[c].stats.StackMax;
             }
-            b.statistics = statistics;
+            
         }
         public void AutoThreshold()
         {

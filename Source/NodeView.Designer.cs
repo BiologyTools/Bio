@@ -36,11 +36,11 @@
             this.setTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newTabsViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
             this.updateTimer = new System.Windows.Forms.Timer(this.components);
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newTabsViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -98,6 +98,21 @@
             this.menuStrip.Size = new System.Drawing.Size(303, 24);
             this.menuStrip.TabIndex = 3;
             // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newTabsViewToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // newTabsViewToolStripMenuItem
+            // 
+            this.newTabsViewToolStripMenuItem.Name = "newTabsViewToolStripMenuItem";
+            this.newTabsViewToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newTabsViewToolStripMenuItem.Text = "New Tabs View";
+            this.newTabsViewToolStripMenuItem.Click += new System.EventHandler(this.newTabsViewToolStripMenuItem_Click);
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
@@ -115,21 +130,6 @@
             this.updateTimer.Interval = 1000;
             this.updateTimer.Tick += new System.EventHandler(this.updateTimer_Tick);
             // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newTabsViewToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // newTabsViewToolStripMenuItem
-            // 
-            this.newTabsViewToolStripMenuItem.Name = "newTabsViewToolStripMenuItem";
-            this.newTabsViewToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.newTabsViewToolStripMenuItem.Text = "New Tabs View";
-            this.newTabsViewToolStripMenuItem.Click += new System.EventHandler(this.newTabsViewToolStripMenuItem_Click);
-            // 
             // NodeView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -139,7 +139,7 @@
             this.Controls.Add(this.treeView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "NodeView";
-            this.Text = "BioImage Main Window";
+            this.Text = "BioImage Node View";
             this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.contextMenuStrip.ResumeLayout(false);
             this.menuStrip.ResumeLayout(false);

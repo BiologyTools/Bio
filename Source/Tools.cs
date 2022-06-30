@@ -161,7 +161,7 @@ namespace BioImage
         }
         public void UpdateView()
         {
-            ImageView.viewer.UpdateView();
+            ImageView.viewer.UpdateStatus();
         }
         public void UpdateSelected()
         {

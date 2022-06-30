@@ -8,24 +8,18 @@ namespace BioImage
 {
     public partial class ChannelsTool : Form
     {
-        public List<Channel> Channels = new List<Channel>();
+        //public List<Channel> Channels = new List<Channel>();
         private HistogramControl hist;
-        public void UpdateChannels()
+        public List<Channel> Channels
         {
-            if (ImageView.viewer != null)
+            get
             {
-                ImageView.viewer.image.Channels = Channels;
-                ImageView.viewer.UpdateView();
+                return ImageView.viewer.image.Channels;
             }
         }
         public ChannelsTool()
         {
-
-        }
-        public ChannelsTool(List<Channel> channels)
-        {
             InitializeComponent();
-            Channels = channels;
             foreach (Channel item in Channels)
             {
                 channelsBox.Items.Add(item);
@@ -41,14 +35,13 @@ namespace BioImage
         {
             if (channelsBox.SelectedIndex == -1)
                 return;
-            Channel c = (Channel)channelsBox.SelectedItem;
             Channels[channelsBox.SelectedIndex].Min = (int)minBox.Value;
-            UpdateChannels();
             if (hist != null)
             {
                 hist.Min = (int)minBox.Value;
                 hist.Invalidate();
             }
+            ImageView.viewer.UpdateView();
         }
 
         private void maxBox_ValueChanged(object sender, EventArgs e)
@@ -57,12 +50,12 @@ namespace BioImage
                 return;
             Channel c = (Channel)channelsBox.SelectedItem;
             Channels[channelsBox.SelectedIndex].Max = (int)maxBox.Value;
-            UpdateChannels();
             if (hist != null)
             {
                 hist.Max = (int)maxBox.Value;
                 hist.Invalidate();
             }
+            ImageView.viewer.UpdateView();
         }
         private void channelsBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -75,6 +68,7 @@ namespace BioImage
                 hist.Statistics = Channels[channelsBox.SelectedIndex].stats;
                 hist.Invalidate();
             }
+            ImageView.viewer.UpdateView();
         }
 
         private void maxUintBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -96,7 +90,7 @@ namespace BioImage
             {
                 c.Max = (int)maxBox.Value;
             }
-            UpdateChannels();
+            ImageView.viewer.UpdateView();
         }
 
         private void setMinAllBut_Click(object sender, EventArgs e)
@@ -105,7 +99,7 @@ namespace BioImage
             {
                 c.Min = (int)minBox.Value;
             }
-            UpdateChannels();
+            ImageView.viewer.UpdateView();
         }
 
         private void ChannelsTool_Activated(object sender, EventArgs e)
@@ -158,9 +152,18 @@ namespace BioImage
             }
         }
 
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
         private void binBox_ValueChanged(object sender, EventArgs e)
         {
-            hist.Bin = (int)binBox.Value;
+            if (hist != null)
+            {
+                hist.Bin = (int)binBox.Value;
+                hist.Invalidate();
+            }
         }
     }
 }

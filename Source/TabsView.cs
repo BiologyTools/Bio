@@ -164,7 +164,7 @@ namespace BioImage
             v.Dock = DockStyle.Fill;
             AddTab(v);
             string name = Path.GetFileName(file);
-            v.UpdateView();
+            v.UpdateStatus();
             System.Drawing.Size s = new System.Drawing.Size(Viewer.image.SizeX + 20, Viewer.image.SizeY + 165);
             if (s.Width > Screen.PrimaryScreen.Bounds.Width || s.Height > Screen.PrimaryScreen.Bounds.Height)
             {
@@ -183,7 +183,7 @@ namespace BioImage
             Viewer.Dock = DockStyle.Fill;
             Viewer.image = b;
             this.Text = b.Filename;
-            Viewer.UpdateView();
+            Viewer.UpdateStatus();
             System.Drawing.Size s = new System.Drawing.Size(Viewer.image.SizeX + 20, Viewer.image.SizeY + 165);
             if (s.Width > Screen.PrimaryScreen.Bounds.Width || s.Height > Screen.PrimaryScreen.Bounds.Height)
             {
@@ -338,7 +338,7 @@ namespace BioImage
         {
             if (Viewer.image == null)
                 return;
-            ChannelsTool ch = new ChannelsTool(Viewer.image.Channels);
+            ChannelsTool ch = new ChannelsTool();
             ch.Show();
         }
 
@@ -349,7 +349,7 @@ namespace BioImage
             Viewer.Mode = ImageView.ViewMode.RGBImage;
             filteredToolStripMenuItem.Checked = false;
             rawToolStripMenuItem.Checked = false;
-            Viewer.UpdateView();
+            Viewer.UpdateStatus();
         }
 
         private void filteredToolStripMenuItem_Click(object sender, EventArgs e)
@@ -359,7 +359,7 @@ namespace BioImage
             Viewer.Mode = ImageView.ViewMode.Filtered;
             rGBToolStripMenuItem.Checked = false;
             rawToolStripMenuItem.Checked = false;
-            Viewer.UpdateView();
+            Viewer.UpdateStatus();
         }
 
         private void rawToolStripMenuItem_Click(object sender, EventArgs e)
@@ -369,7 +369,7 @@ namespace BioImage
             Viewer.Mode = ImageView.ViewMode.Raw;
             rGBToolStripMenuItem.Checked = false;
             filteredToolStripMenuItem.Checked = false;
-            Viewer.UpdateView();
+            Viewer.UpdateStatus();
         }
 
         private void autoThresholdToolStripMenuItem_Click(object sender, EventArgs e)
