@@ -13,7 +13,7 @@ namespace BioImage
         public static Tools tools;
         public static ROIManager manager = null;
         public static bool init = false;
-        public static TabsView app = null;
+        public static TabsView tabview = null;
         public Filter filters = null;
         public StackTools stackTools = null;
         public static Graphics graphics = null;
@@ -45,7 +45,7 @@ namespace BioImage
             tools = new Tools();
             stackTools = new StackTools();
             filters = new Filter();
-            app = this;
+            tabview = this;
             SetImage(arg);
             UpdateTabs();
             Init();
@@ -57,7 +57,7 @@ namespace BioImage
             tools = new Tools();
             stackTools = new StackTools();
             filters = new Filter();
-            app = this;
+            tabview = this;
             UpdateTabs();
             Init();
         }
@@ -68,7 +68,7 @@ namespace BioImage
             tools = new Tools();
             manager = new ROIManager();
             filters = new Filter();
-            app = this;
+            tabview = this;
             stackTools = new StackTools();
             if (arg.Length == 0)
                 return;
@@ -86,7 +86,7 @@ namespace BioImage
             Init();
             tools = new Tools();
             manager = new ROIManager();
-            app = this;
+            tabview = this;
             stackTools = new StackTools();
             filters = new Filter();
             if (arg.Length == 0)
@@ -328,7 +328,7 @@ namespace BioImage
         private void ImageViewer_Activated(object sender, EventArgs e)
         {
             NodeView.viewer = this;
-            app = this;
+            tabview = this;
             ImageView.app = this;
             ImageView.viewer = this.Viewer;
             UpdateTabs();
@@ -376,7 +376,7 @@ namespace BioImage
         {
             if (Viewer == null)
                 return;
-            Viewer.image.AutoThreshold();
+            BioImage.AutoThresholdThread(Viewer.image);
         }
 
         public void UpdateViewMode(ImageView.ViewMode v)

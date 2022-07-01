@@ -1208,6 +1208,7 @@ namespace BioImage
                         }
                     }
                 }
+                
                 bmp.UnlockBits(bmd);
                 return bmp;
             }
@@ -1225,6 +1226,113 @@ namespace BioImage
                 }
             }
         }
+        public static unsafe Bitmap GetFiltered(int w, int h, int stride, PixelFormat px, byte[] bts, IntRange rr, IntRange rg, IntRange rb)
+        {
+            if (px == PixelFormat.Format24bppRgb)
+            {
+                //opening a 8 bit per pixel jpg image
+                Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                //creating the bitmapdata and lock bits
+                System.Drawing.Rectangle rec = new System.Drawing.Rectangle(0, 0, w, h);
+                BitmapData bmd = bmp.LockBits(rec, ImageLockMode.ReadWrite, bmp.PixelFormat);
+                unsafe
+                {
+                    //iterating through all the pixels in y direction
+                    for (int y = 0; y < h; y++)
+                    {
+                        //getting the pixels of current row
+                        byte* row = (byte*)bmd.Scan0 + (y * bmd.Stride);
+                        int rowRGB = y * stride;
+                        //iterating through all the pixels in x direction
+                        for (int x = 0; x < w; x++)
+                        {
+                            int indexRGB = x * 3;
+                            int indexRGBA = x * 4;
+                            row[indexRGBA + 3] = byte.MaxValue;//byte A
+                            row[indexRGBA + 2] = bts[rowRGB + indexRGB + 2];//byte R
+                            row[indexRGBA + 1] = bts[rowRGB + indexRGB + 1];//byte G
+                            row[indexRGBA] = bts[rowRGB + indexRGB];//byte Bfloat ri = ((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB) - rr.Min);
+                            float ri = ((float)bts[rowRGB + indexRGB] - rr.Min);
+                            if (ri < 0)
+                                ri = 0;
+                            ri = ri / rr.Max;
+                            float gi = ((float)bts[rowRGB + indexRGB + 1] - rg.Min);
+                            if (gi < 0)
+                                gi = 0;
+                            gi = gi / rg.Max;
+                            float bi = ((float)bts[rowRGB + indexRGB + 2] - rb.Min);
+                            if (bi < 0)
+                                bi = 0;
+                            bi = bi / rb.Max;
+                            int b = (int)(ri * 255);
+                            int g = (int)(gi * 255);
+                            int r = (int)(bi * 255);
+                            row[indexRGBA + 3] = 255;//byte A
+                            row[indexRGBA + 2] = (byte)(b);//byte R
+                            row[indexRGBA + 1] = (byte)(g);//byte G
+                            row[indexRGBA] = (byte)(r);//byte B
+                        }
+                    }
+                }
+                //unlocking bits and disposing image
+                bmp.UnlockBits(bmd);
+                return bmp;
+            }
+            else
+            if (px == PixelFormat.Format48bppRgb)
+            {
+                //opening a 8 bit per pixel jpg image
+                Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                //creating the bitmapdata and lock bits
+                System.Drawing.Rectangle rec = new System.Drawing.Rectangle(0, 0, w, h);
+                BitmapData bmd = bmp.LockBits(rec, ImageLockMode.ReadWrite, bmp.PixelFormat);
+                unsafe
+                {
+                    //iterating through all the pixels in y direction
+                    for (int y = 0; y < h; y++)
+                    {
+                        //getting the pixels of current row
+                        byte* row = (byte*)bmd.Scan0 + (y * bmd.Stride);
+                        int rowRGB = y * stride;
+                        //iterating through all the pixels in x direction
+                        for (int x = 0; x < w; x++)
+                        {
+                            int indexRGB = x * 6;
+                            int indexRGBA = x * 4;
+                            float ri = ((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB) - rr.Min);
+                                if (ri < 0)
+                                ri = 0;
+                            ri = ri / rr.Max;
+                            float gi = ((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB + 2) - rg.Min);
+                            if (gi < 0)
+                                gi = 0;
+                            gi = gi / rg.Max;
+                            float bi = ((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB + 4) - rb.Min);
+                            if (bi < 0)
+                                bi = 0;
+                            bi = bi / rb.Max;
+                            int b = (int)(ri * 255);
+                            int g = (int)(gi * 255);
+                            int r = (int)(bi * 255);
+                            row[indexRGBA + 3] = 255;//byte A
+                            row[indexRGBA + 2] = (byte)(b);//byte R
+                            row[indexRGBA + 1] = (byte)(g);//byte G
+                            row[indexRGBA] = (byte)(r);//byte B
+                        }
+                    }
+                }
+
+                bmp.UnlockBits(bmd);
+                return bmp;
+            }
+            throw new InvalidDataException("Get Filtered only supports 24bit & 48 bit images.");
+        }
+
+        public Bitmap GetFiltered(IntRange rr, IntRange rg, IntRange rb)
+        {
+            return BufferInfo.GetFiltered(SizeX, SizeY, Stride, PixelFormat, Bytes, rr, rg, rb);
+        }
+
         public void SetImageRaw(Bitmap b)
         {
             b.RotateFlip(RotateFlipType.Rotate180FlipNone);
@@ -2593,14 +2701,8 @@ namespace BioImage
                 bi.Coords[Buffers[i].Coordinate.Z, Buffers[i].Coordinate.C, Buffers[i].Coordinate.T] = index;
                 index++;
             }
-            /*
-            foreach (Channel c in bi.Channels)
-            {
-                c.Max = 255;
-            }
-            */
             bi.bitsPerPixel = 16;
-            AutoThreshold();
+            AutoThreshold(bi);
             Table.AddImage(bi);
             Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To48Bit();");
 
@@ -3155,7 +3257,13 @@ namespace BioImage
         }
         public Bitmap GetFiltered(int ind, IntRange r, IntRange g, IntRange b)
         {
-            if (bitsPerPixel > 8)
+            if(RGBChannelCount > 1 && bitsPerPixel > 8)
+            {
+                //We use our own get filtered method since aforge is giving a weird image.
+                return Buffers[ind].GetFiltered(r, g, b);
+            }
+            else
+            if (bitsPerPixel > 8 )
             {
                 BioImage.filter16.InRed = r;
                 BioImage.filter16.InGreen = g;
@@ -4732,8 +4840,6 @@ namespace BioImage
                 else return true;
             }
         }
-        
-
         public int GetSeriesCount(string file)
         {
             // create OME-XML metadata store
@@ -5305,6 +5411,8 @@ namespace BioImage
                 i++;
             }
         }
+
+        private static BioImage bstats = null;
         public static void AutoThreshold(BioImage b)
         {
             Statistics statistics = null;
@@ -5348,9 +5456,15 @@ namespace BioImage
             }
             
         }
-        public void AutoThreshold()
+        public static void AutoThreshold()
         {
-            AutoThreshold(this);
+            AutoThreshold(bstats);
+        }
+        public static void AutoThresholdThread(BioImage b)
+        {
+            bstats = b;
+            Thread th = new Thread(AutoThreshold);
+            th.Start();
         }
         public void Dispose()
         {

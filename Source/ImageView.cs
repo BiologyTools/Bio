@@ -214,7 +214,7 @@ namespace BioImage
             {
                 viewMode = value;
                 //If view mode is changed we update.
-                TabsView.app.UpdateViewMode(viewMode);
+                TabsView.tabview.UpdateViewMode(viewMode);
                 UpdateView();
                 UpdateOverlay();
                 UpdateImage();
@@ -613,13 +613,6 @@ namespace BioImage
 
         private string mousePoint = "";
         private string mouseColor = "";
-       
-        private void autoContrastChannelsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            image.AutoThreshold();
-            UpdateView();
-        }
-
         private void playSpeedToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PlaySpeed sp = null;

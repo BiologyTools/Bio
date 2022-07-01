@@ -27,6 +27,8 @@ namespace BioImage
                 stackABox.Items.Add(b);
                 stackBBox.Items.Add(b);
             }
+            if (stackABox.Items.Count > 0)
+                stackABox.SelectedIndex = 0;
         }
         public BioImage ImageA
         {
@@ -41,8 +43,7 @@ namespace BioImage
             if (stackABox.SelectedIndex == -1)
                 return;
             BioImage b = new BioImage(ImageA, 0, (int)zStartBox.Value, (int)zEndBox.Value, (int)cStartBox.Value, (int)cEndBox.Value, (int)tStartBox.Value, (int)tEndBox.Value);
-            TabsView iv = new TabsView(b);
-            iv.Show();
+            TabsView.tabview.AddTab(b);
             UpdateStacks();
         }
 

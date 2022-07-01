@@ -41,7 +41,7 @@
             // clearBut
             // 
             this.clearBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.clearBut.Location = new System.Drawing.Point(464, 276);
+            this.clearBut.Location = new System.Drawing.Point(368, 291);
             this.clearBut.Name = "clearBut";
             this.clearBut.Size = new System.Drawing.Size(75, 23);
             this.clearBut.TabIndex = 3;
@@ -60,14 +60,14 @@
             this.textBox.Multiline = true;
             this.textBox.Name = "textBox";
             this.textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox.Size = new System.Drawing.Size(527, 242);
+            this.textBox.Size = new System.Drawing.Size(431, 257);
             this.textBox.TabIndex = 4;
             this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             // 
             // delLineBut
             // 
             this.delLineBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.delLineBut.Location = new System.Drawing.Point(383, 276);
+            this.delLineBut.Location = new System.Drawing.Point(287, 291);
             this.delLineBut.Name = "delLineBut";
             this.delLineBut.Size = new System.Drawing.Size(75, 23);
             this.delLineBut.TabIndex = 5;
@@ -94,11 +94,12 @@
             // 
             // topMostBox
             // 
+            this.topMostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.topMostBox.AutoSize = true;
             this.topMostBox.Checked = true;
             this.topMostBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.topMostBox.ForeColor = System.Drawing.Color.White;
-            this.topMostBox.Location = new System.Drawing.Point(12, 282);
+            this.topMostBox.Location = new System.Drawing.Point(15, 295);
             this.topMostBox.Name = "topMostBox";
             this.topMostBox.Size = new System.Drawing.Size(71, 17);
             this.topMostBox.TabIndex = 7;
@@ -111,7 +112,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(551, 311);
+            this.ClientSize = new System.Drawing.Size(455, 326);
             this.Controls.Add(this.topMostBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.delLineBut);

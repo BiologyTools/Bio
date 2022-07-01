@@ -41,7 +41,6 @@ namespace BioImage
                 st[i] = sts[i];
             }
             textBox.Lines = st;
-
         }
 
         private void Recorder_FormClosing(object sender, FormClosingEventArgs e)
