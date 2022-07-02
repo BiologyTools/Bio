@@ -2543,17 +2543,20 @@ namespace BioImage
         {
             if (bitsPerPixel == 8)
                 return;
+           
             for (int i = 0; i < Buffers.Count; i++)
             {
                 Bitmap b = GetFiltered(i, RChannel.range, GChannel.range, BChannel.range);
                 b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
                 Buffers[i].Image = b;
+                bitsPerPixel = 8;
+                BufferInfo.AddBuffer(Buffers[i]);
+                BufferInfo.CalculateStatistics();
             }
             foreach (Channel c in Channels)
             {
                 c.Max = 255;
             }
-            bitsPerPixel = 8;
             AutoThreshold();
             Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To8Bit();");
         }
@@ -2566,6 +2569,8 @@ namespace BioImage
                 Bitmap b = GetFiltered(i, RChannel.range, GChannel.range, BChannel.range);
                 b = AForge.Imaging.Image.Convert8bppTo16bpp(b);
                 Buffers[i].Image = b;
+                BufferInfo.AddBuffer(Buffers[i]);
+                BufferInfo.CalculateStatistics();
             }
             foreach (Channel c in Channels)
             {
@@ -2582,6 +2587,8 @@ namespace BioImage
                 for (int i = 0; i < Buffers.Count; i++)
                 {
                     Buffers[i].Image = BufferInfo.RGBTo24Bit((Bitmap)Buffers[i].Image);
+                    BufferInfo.AddBuffer(Buffers[i]);
+                    BufferInfo.CalculateStatistics();
                 }
             }
             else
@@ -2620,6 +2627,8 @@ namespace BioImage
             {
                 Bitmap b = BufferInfo.RGBTo32Bit((Bitmap)Buffers[i].Image);
                 Buffers[i].Image = b;
+                BufferInfo.AddBuffer(Buffers[i]);
+                BufferInfo.CalculateStatistics();
             }
             Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To32Bit();");
         }
@@ -3773,8 +3782,18 @@ namespace BioImage
                 b.sizeZ = 1;
                 b.sizeC = 1;
                 b.sizeT = 1;
-                BufferInfo inf;
-                inf = new BufferInfo(file, Image.FromFile(file), new ZCT(0, 0, 0), 0);
+                BufferInfo inf = null;
+                //We use a try block incase the user tried opening a OME file.
+                try
+                {
+                    inf = new BufferInfo(file, Image.FromFile(file), new ZCT(0, 0, 0), 0);
+                }
+                catch (Exception)
+                {
+                    b.Dispose();
+                    return OpenOME(file);
+                }
+                
                 b.Buffers.Add(inf);
                 Channel ch = new Channel(0, 8);
                 b.Channels.Add(ch);
@@ -4696,8 +4715,8 @@ namespace BioImage
             AutoThreshold(b);
             for (int ch = 0; ch < b.Channels.Count; ch++)
             {
-                b.Channels[ch].Min = b.Channels[ch].stats.Min;
-                b.Channels[ch].Max = b.Channels[ch].stats.Max;
+                b.Channels[ch].Min = (int)b.Channels[ch].stats.StackMin;
+                b.Channels[ch].Max = (int)b.Channels[ch].stats.StackMax;
             }
             Table.AddImage(b);
             Recorder.AddLine("BioImage.OpenOME(" + '"' + file + '"' + ");");

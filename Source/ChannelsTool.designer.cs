@@ -112,11 +112,6 @@ namespace BioImage
             0,
             0,
             0});
-            this.maxBox.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             this.maxBox.Name = "maxBox";
             this.maxBox.Size = new System.Drawing.Size(77, 20);
             this.maxBox.TabIndex = 4;
