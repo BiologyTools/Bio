@@ -74,7 +74,8 @@ namespace BioImage
                 return;
             else
             {
-                SetFile(arg, 0);
+                BioImage b = new BioImage(arg);
+                AddTab(b);
             }
             UpdateTabs();
             Init();
@@ -92,7 +93,6 @@ namespace BioImage
             if (arg.Length == 0)
                 return;
             else
-            if (arg.Length == 1)
             {
                 if (arg[0].EndsWith(".cs"))
                 {
@@ -100,7 +100,20 @@ namespace BioImage
                 }
                 else
                 {
-                    SetFile(arg[0], 0);
+                    for (int i = 0; i < arg.Length; i++)
+                    {
+                        if(arg[i].EndsWith("ome.tif"))
+                        { 
+                            BioImage b = BioImage.OpenOME(arg[i]);
+                            AddTab(b);
+                        }
+                        if(arg[i].EndsWith(".tif") || arg[i].EndsWith(".tiff"))
+                        {
+                            BioImage b = BioImage.Open(arg[i]);
+                            AddTab(b);
+                        }
+                    }
+                    
                 }
             }
             UpdateTabs();

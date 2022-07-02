@@ -58,11 +58,10 @@ namespace BioImage
         {
             InitializeComponent();
             Init();
-            Filters.Init();
             InitNodes();
             if (args.Length > 0)
             {
-                viewer = new TabsView(args[0]);
+                viewer = new TabsView(args);
                 viewer.Show();
             }
             else
@@ -77,8 +76,6 @@ namespace BioImage
         public NodeView()
         {
             InitializeComponent();
-            Init();
-            Filters.Init();
             InitNodes();
             viewer = new TabsView();
             viewer.Show();
@@ -89,6 +86,7 @@ namespace BioImage
         private static void Init()
         {
             BioImage.Initialize();
+            Filters.Init();
             runner = new Scripting();
             recorder = new Recorder();
         }

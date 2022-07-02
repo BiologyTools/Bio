@@ -1,5 +1,6 @@
 ﻿using AForge;
 using AForge.Imaging.Filters;
+using BitMiracle.LibTiff.Classic;
 using loci.common.services;
 using loci.formats;
 using loci.formats.services;
@@ -8,16 +9,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
-using BitMiracle.LibTiff.Classic;
 
 namespace BioImage
 {
@@ -1327,7 +1325,6 @@ namespace BioImage
             }
             throw new InvalidDataException("Get Filtered only supports 24bit & 48 bit images.");
         }
-
         public Bitmap GetFiltered(IntRange rr, IntRange rg, IntRange rb)
         {
             return BufferInfo.GetFiltered(SizeX, SizeY, Stride, PixelFormat, Bytes, rr, rg, rb);
@@ -2368,63 +2365,6 @@ namespace BioImage
         }
 
     }
-    /*
-    public class Worker
-    {
-        private Thread thread;
-        public static void Save()
-        {
-            foreach (string file in files)
-            {
-                if (file.EndsWith("ome.tif"))
-                {
-                    BioImage.SaveOME(file);
-                }
-                else
-                if (file.EndsWith("tif") || file.EndsWith("tiff") || file.EndsWith("png") || file.EndsWith("bmp") || file.EndsWith("jpg") || file.EndsWith("jpeg") || file.EndsWith("gif") ||
-                file.EndsWith("TIF") || file.EndsWith("TIFF") || file.EndsWith("PNG") || file.EndsWith("BMP") || file.EndsWith("JPG") || file.EndsWith("JPEG") || file.EndsWith("GIF"))
-                {
-                    BioImage.Save(file);
-                }
-                else
-                {
-                    BioImage.SaveOME(file);
-                }
-                Table.RemoveImage(file);
-            }
-            files.Clear();
-        }
-        public static void Open()
-        {
-            if (file.EndsWith("ome.tif"))
-            {
-                Table.AddImage(BioImage.OpenOME(file));
-            }
-            else
-            if (file.EndsWith("tif") || file.EndsWith("tiff") || file.EndsWith("png") || file.EndsWith("bmp") || file.EndsWith("jpg") || file.EndsWith("jpeg") || file.EndsWith("gif") ||
-            file.EndsWith("TIF") || file.EndsWith("TIFF") || file.EndsWith("PNG") || file.EndsWith("BMP") || file.EndsWith("JPG") || file.EndsWith("JPEG") || file.EndsWith("GIF"))
-            {
-                Table.AddImage(BioImage.Open(file));
-            }
-            else
-            {
-                Table.AddImage(BioImage.OpenOME(file));
-            }
-            
-        }
-        public static List<string> files = new List<string>();
-        public static string file;
-        public Worker(string[] sts, bool open)
-        {
-            if(open)
-                thread = new Thread(Open);
-            else
-                thread = new Thread(Save);
-            file = sts;
-            thread.Start();
-        }
-    }
-    */
     public class BioImage : IDisposable
     {
         public int[,,] Coords;
@@ -4751,8 +4691,9 @@ namespace BioImage
             //We wait for threshold image statistics calculation
             do
             {
+                Thread.Sleep(100);
             } while (b.Buffers[b.Buffers.Count - 1].Statistics == null);
-
+            AutoThreshold(b);
             for (int ch = 0; ch < b.Channels.Count; ch++)
             {
                 b.Channels[ch].Min = b.Channels[ch].stats.Min;
