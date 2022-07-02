@@ -1175,6 +1175,7 @@ namespace BioImage
                 bmp.UnlockBits(bmd);
                 return bmp;
             }
+            /*
             else
             if (px == PixelFormat.Format48bppRgb)
             {
@@ -1210,6 +1211,7 @@ namespace BioImage
                 bmp.UnlockBits(bmd);
                 return bmp;
             }
+            */
             fixed (byte* numPtr1 = bts)
             {
                 if (stride % 4 == 0)
@@ -2604,29 +2606,30 @@ namespace BioImage
             }
             else
             {
+                /*
                 if (SizeC != 3)
                 {
                     MessageBox.Show("24 bit RGB conversion requires an image with 3, 8 bit channels. Use stack tools to create 3 channel image.");
+                    return;
                 }
+                */
                 BioImage bi = CopyInfo(this);
                 bi.sizeC = 1;
                 int index = 0;
-                bi.Coords = new int[sizeZ, 1, SizeT];
+                bi.Coords = new int[SizeZ, 3, SizeT];
                 for (int i = 0; i < Buffers.Count; i += 3)
                 {
                     Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
-                    if (bitsPerPixel > 8)
-                        b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
+                    //We rotate the data since we store the image data upside down.
+                    //b.RotateFlip(RotateFlipType.Rotate180FlipNone);
                     BufferInfo bf = new BufferInfo(Table.GetImageName(ID), b, Buffers[i].Coordinate, index);
                     bi.Buffers.Add(bf);
-                    bi.Coords[Buffers[i].Coordinate.Z, 0, Buffers[i].Coordinate.T] = index;
+                    bi.Coords[Buffers[i].Coordinate.Z, Buffers[i].Coordinate.C, Buffers[i].Coordinate.T] = index;
                     index++;
                 }
-                foreach (Channel c in bi.Channels)
-                {
-                    c.Max = 255;
-                }
                 bi.bitsPerPixel = 8;
+                AutoThreshold(bi, true);
+                Table.AddImage(bi);
             }
             Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To24Bit();");
         }
@@ -2657,6 +2660,8 @@ namespace BioImage
             for (int i = 0; i < Buffers.Count; i += 3)
             {
                 Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
+                //We rotate the data since we store the image data upside down.
+                b.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 BufferInfo bf = new BufferInfo(Table.GetImageName(ID), b, Buffers[i].Coordinate, index);
                 bi.Buffers.Add(bf);
                 bi.Coords[Buffers[i].Coordinate.Z, Buffers[i].Coordinate.C, Buffers[i].Coordinate.T] = index;
