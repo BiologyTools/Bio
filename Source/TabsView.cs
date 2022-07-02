@@ -14,6 +14,7 @@ namespace BioImage
         public static ROIManager manager = null;
         public static bool init = false;
         public static TabsView tabview = null;
+        public static ImageView viewer = null;
         public Filter filters = null;
         public StackTools stackTools = null;
         public static Graphics graphics = null;
@@ -150,6 +151,11 @@ namespace BioImage
             v.Dock = DockStyle.Fill;
             t.Controls.Add(v);
             Table.AddViewer(v);
+            if(Width < b.SizeX || Height < b.SizeY)
+            {
+                Width = b.SizeX;
+                Height = b.SizeY + 190;
+            }
             tabControl.TabPages.Add(t);
         }
         public void AddTab(ImageView v)
@@ -518,6 +524,7 @@ namespace BioImage
         {
             if (tabControl.SelectedIndex == -1)
                 return;
+            //We update the view status based on tab.
             if (Viewer.Mode == ImageView.ViewMode.Raw)
                 rawToolStripMenuItem.Checked = true;
             else
@@ -530,6 +537,9 @@ namespace BioImage
                 rGBToolStripMenuItem.Checked = true;
             else
                 rGBToolStripMenuItem.Checked = false;
+            //We update the active viewer.
+            ImageView.viewer = Viewer;
+            TabsView.viewer = Viewer;
         }
 
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -541,6 +551,7 @@ namespace BioImage
             Table.RemoveViewer(v);
             tabControl.TabPages.RemoveAt(tabControl.SelectedIndex);
             v.Dispose();
+
         }
 
         private void openOMEToolStripMenuItem_Click(object sender, EventArgs e)
@@ -585,8 +596,17 @@ namespace BioImage
 
         private void newTabViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TabsView t = new TabsView();
-            t.Show();
+            Process.Start(Application.ExecutablePath);
+        }
+
+        private void nodeViewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NodeView.viewer.Show();
+        }
+
+        private void tabControl_Click(object sender, EventArgs e)
+        {
+            ImageView.viewer = Viewer;
         }
     }
 }

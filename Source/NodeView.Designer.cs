@@ -109,7 +109,7 @@
             // newTabsViewToolStripMenuItem
             // 
             this.newTabsViewToolStripMenuItem.Name = "newTabsViewToolStripMenuItem";
-            this.newTabsViewToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newTabsViewToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.newTabsViewToolStripMenuItem.Text = "New Tabs View";
             this.newTabsViewToolStripMenuItem.Click += new System.EventHandler(this.newTabsViewToolStripMenuItem_Click);
             // 
@@ -140,6 +140,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "NodeView";
             this.Text = "BioImage Node View";
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.contextMenuStrip.ResumeLayout(false);
             this.menuStrip.ResumeLayout(false);

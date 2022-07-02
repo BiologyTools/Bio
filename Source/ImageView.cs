@@ -58,7 +58,6 @@ namespace BioImage
                 return;
             SetCoordinate(0, 0, 0);
             InitGUI(file);
-
             //Buf = image.GetBufByCoord(GetCoordinate());
 
             MouseWheel += new System.Windows.Forms.MouseEventHandler(ImageView_MouseWheel);
@@ -89,17 +88,10 @@ namespace BioImage
         public BioImage image;
         public string filepath = "";
         public int serie = 0;
-        private ZCT coordinate = new ZCT(0, 0, 0);
-        public static ZCT Coordinate
-        {
-            get
-            {
-                return ImageView.viewer.GetCoordinate();
-            }
-        }
+        public static ZCT coordinate = new ZCT(0, 0, 0);
         public void SetCoordinate(int z, int c, int t)
         {
-            coordinate = new ZCT(z, c, t);
+            ImageView.coordinate = new ZCT(z, c, t);
             zBar.Value = z;
             cBar.Value = c;
             timeBar.Value = t;
@@ -893,6 +885,8 @@ namespace BioImage
             {
                 foreach (Annotation an in AnnotationsRGB)
                 {
+                    if (an.coord != GetCoordinate())
+                        return;
                     pen = new Pen(an.strokeColor, (float)an.strokeWidth);
                     if (an.selected)
                     {
@@ -1021,7 +1015,7 @@ namespace BioImage
             }
             else
             {
-                foreach (Annotation an in image.GetAnnotations(Coordinate))
+                foreach (Annotation an in image.GetAnnotations(GetCoordinate()))
                 {
                     pen = new Pen(an.strokeColor, (float)an.strokeWidth);
                     if (an.selected)
@@ -1319,7 +1313,7 @@ namespace BioImage
             if (Mode == ViewMode.RGBImage)
             {
                 BioImage b = ImageView.viewer.image;
-                ZCT co = ImageView.Coordinate;
+                ZCT co = ImageView.coordinate;
                 if (b.RGBChannelCount > 1)
                 {
                     ZCTXY cor = new ZCTXY(co.Z,co.C,co.T,(int)p.X,(int)p.Y);
@@ -1571,7 +1565,7 @@ namespace BioImage
                 {
                     Annotation an = BioImage.StringToROI(line);
                     //We set the coordinates of the ROI's we are pasting
-                    an.coord = Coordinate;
+                    an.coord = GetCoordinate();
                     image.Annotations.Add(an);
                 }
             }
@@ -1707,17 +1701,20 @@ namespace BioImage
 
         private void zBar_Scroll(object sender, EventArgs e)
         {
-            SetCoordinate(zBar.Value, cBar.Value, timeBar.Value);
+            ImageView.coordinate.Z = zBar.Value;
+            overlayPictureBox.Invalidate();
         }
 
         private void timeBar_Scroll(object sender, EventArgs e)
         {
-            SetCoordinate(zBar.Value, cBar.Value, timeBar.Value);
+            ImageView.coordinate.T = timeBar.Value;
+            overlayPictureBox.Invalidate();
         }
 
         private void cBar_Scroll(object sender, EventArgs e)
         {
-            SetCoordinate(zBar.Value, cBar.Value, timeBar.Value);
+            ImageView.coordinate.C = timeBar.Value;
+            overlayPictureBox.Invalidate();
         }
     }
 }

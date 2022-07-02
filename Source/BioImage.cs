@@ -1346,22 +1346,47 @@ namespace BioImage
             //This crop function supports 16 bit images unlike Bitmap class.
             if (BitsPerPixel > 8)
             {
-                byte[] bts = null;
-                int bytesPer = 2;
-                int stridenew = r.Width * bytesPer;
-                int strideold = Stride;
-                bts = new byte[(stridenew * r.Height)];
-                for (int y = 0; y < r.Height; y++)
+                if (RGBChannelsCount == 1)
                 {
-                    for (int x = 0; x < stridenew; x += bytesPer)
+                    byte[] bts = null;
+                    int bytesPer = 2;
+                    int stridenew = r.Width * bytesPer;
+                    int strideold = Stride;
+                    bts = new byte[(stridenew * r.Height)];
+                    for (int y = 0; y < r.Height; y++)
                     {
-                        int indexnew = (y * stridenew + x) * RGBChannelsCount;
-                        int indexold = (((y + r.Y) * strideold + (x + (r.X * bytesPer))) * RGBChannelsCount);// + r.X;
-                        bts[indexnew] = bytes[indexold];
-                        bts[indexnew + 1] = bytes[indexold + 1];
-                    }
+                        for (int x = 0; x < stridenew; x += bytesPer)
+                        {
+                            int indexnew = (y * stridenew + x) * RGBChannelsCount;
+                            int indexold = (((y + r.Y) * strideold + (x + (r.X * bytesPer))) * RGBChannelsCount);// + r.X;
+                            bts[indexnew] = bytes[indexold];
+                            bts[indexnew + 1] = bytes[indexold + 1];
+                        }
+                    }bytes = bts;
                 }
-                bytes = bts;
+                else
+                {
+                    byte[] bts = null;
+                    int bytesPer = 6;
+                    int stridenew = r.Width * bytesPer;
+                    int strideold = Stride;
+                    bts = new byte[(stridenew * r.Height)];
+                    for (int y = 0; y < r.Height; y++)
+                    {
+                        for (int x = 0; x < stridenew; x += bytesPer)
+                        {
+                            int indexnew = (y * stridenew + x);
+                            int indexold = ((y + r.Y) * strideold + (x + (r.X * bytesPer)));// + r.X;
+                            bts[indexnew] = bytes[indexold];
+                            bts[indexnew + 1] = bytes[indexold + 1];
+                            bts[indexnew + 2] = bytes[indexold + 2];
+                            bts[indexnew + 3] = bytes[indexold + 3];
+                            bts[indexnew + 4] = bytes[indexold + 4];
+                            bts[indexnew + 5] = bytes[indexold + 5];
+                        }
+                    }
+                    bytes = bts;
+                }
             }
             else
             {
@@ -2606,13 +2631,13 @@ namespace BioImage
             }
             else
             {
-                /*
+                
                 if (SizeC != 3)
                 {
                     MessageBox.Show("24 bit RGB conversion requires an image with 3, 8 bit channels. Use stack tools to create 3 channel image.");
                     return;
                 }
-                */
+                
                 BioImage bi = CopyInfo(this);
                 bi.sizeC = 1;
                 int index = 0;
@@ -2620,8 +2645,6 @@ namespace BioImage
                 for (int i = 0; i < Buffers.Count; i += 3)
                 {
                     Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
-                    //We rotate the data since we store the image data upside down.
-                    //b.RotateFlip(RotateFlipType.Rotate180FlipNone);
                     BufferInfo bf = new BufferInfo(Table.GetImageName(ID), b, Buffers[i].Coordinate, index);
                     bi.Buffers.Add(bf);
                     bi.Coords[Buffers[i].Coordinate.Z, Buffers[i].Coordinate.C, Buffers[i].Coordinate.T] = index;
