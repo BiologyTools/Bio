@@ -1035,7 +1035,7 @@ namespace BioImage
                 SizeY = value.Height;
                 if(isRGB)
                 b = BufferInfo.SwitchRedBlue(b);
-                bytes = GetBuffer((Bitmap)b);
+                bytes = GetBuffer((Bitmap)b,Stride);
             }
         }
         private PixelFormat pixelFormat;
@@ -1330,14 +1330,14 @@ namespace BioImage
             return BufferInfo.GetFiltered(SizeX, SizeY, Stride, PixelFormat, Bytes, rr, rg, rb);
         }
 
-        public void SetImageRaw(Bitmap b)
+        public void SetImageRaw(Bitmap b, int stride)
         {
             b.RotateFlip(RotateFlipType.Rotate180FlipNone);
             PixelFormat = b.PixelFormat;
             SizeX = b.Width;
             SizeY = b.Height;
             b = BufferInfo.SwitchRedBlue(b);
-            bytes = GetBuffer((Bitmap)b);
+            bytes = GetBuffer((Bitmap)b,stride);
         }
         public void Crop(Rectangle r)
         {
@@ -1388,8 +1388,8 @@ namespace BioImage
             pixelFormat = im.PixelFormat;
             Coordinate = coord;
             Image = im;
-            if (isRGB)
-                SwitchRedBlue();
+            //if (isRGB)
+            //    SwitchRedBlue();
         }
         public BufferInfo(int w, int h, PixelFormat px, byte[] bts, ZCT coord, string id)
         {
@@ -1525,15 +1525,27 @@ namespace BioImage
             bitmap.Dispose();
             return bytes;
         }
-        public static byte[] GetBuffer(Bitmap bitmap)
+        public static byte[] GetBuffer(Bitmap bmp,int stride)
         {
-            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+            if(bmp.PixelFormat == PixelFormat.Format48bppRgb)
+            {
+                //The default way of getting buffer with lockbits will not work for 48bpprgb images.
+                //instead it gives a 32argb buffer.
+                byte[] bts = new byte[stride * bmp.Height];
+                System.Drawing.Rectangle rec = new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height);
+                BitmapData bmd = bmp.LockBits(rec, ImageLockMode.ReadWrite, bmp.PixelFormat);
+                Marshal.Copy(bmd.Scan0, bts, 0, bts.Length);
+                bmp.UnlockBits(bmd);
+                return bts;
+            }
+
+            BitmapData data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, bmp.PixelFormat);
             IntPtr ptr = data.Scan0;
-            int length = data.Stride * bitmap.Height;
+            int length = data.Stride * bmp.Height;
             byte[] bytes = new byte[length];
             Marshal.Copy(ptr, bytes, 0, length);
             Array.Reverse(bytes);
-            bitmap.UnlockBits(data);
+            bmp.UnlockBits(data);
             return bytes;
         }
         public static Bitmap RGBTo24Bit(Bitmap b)
@@ -2556,8 +2568,9 @@ namespace BioImage
             foreach (Channel c in Channels)
             {
                 c.Max = 255;
+                c.bitsPerPixel = 8;
             }
-            AutoThreshold();
+            AutoThreshold(this,true);
             Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To8Bit();");
         }
         public void To16Bit()
@@ -2569,15 +2582,13 @@ namespace BioImage
                 Bitmap b = GetFiltered(i, RChannel.range, GChannel.range, BChannel.range);
                 b = AForge.Imaging.Image.Convert8bppTo16bpp(b);
                 Buffers[i].Image = b;
-                BufferInfo.AddBuffer(Buffers[i]);
-                BufferInfo.CalculateStatistics();
             }
             foreach (Channel c in Channels)
             {
                 c.Max = ushort.MaxValue;
             }
             bitsPerPixel = 16;
-            AutoThreshold();
+            AutoThreshold(this, false);
             Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To16Bit();");
         }
         public void To24Bit()
@@ -2637,6 +2648,7 @@ namespace BioImage
             if (SizeC != 3)
             {
                 MessageBox.Show("48 bit RGB conversion requires an image with 3, 16 bit channels. Use stack tools to create 3 channel image.");
+                return;
             }
             BioImage bi = CopyInfo(this);
             bi.sizeC = 1;
@@ -2651,7 +2663,7 @@ namespace BioImage
                 index++;
             }
             bi.bitsPerPixel = 16;
-            AutoThreshold(bi);
+            AutoThreshold(bi,true);
             Table.AddImage(bi);
             Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To48Bit();");
 
@@ -3212,7 +3224,7 @@ namespace BioImage
                 return Buffers[ind].GetFiltered(r, g, b);
             }
             else
-            if (bitsPerPixel > 8 )
+            if (Buffers[ind].BitsPerPixel > 8 )
             {
                 BioImage.filter16.InRed = r;
                 BioImage.filter16.InGreen = g;
@@ -3807,7 +3819,7 @@ namespace BioImage
             } while (b.Buffers[b.Buffers.Count -1].Statistics==null);
             BufferInfo.ClearStatsBuffer();
 
-            AutoThreshold(b);
+            AutoThreshold(b,false);
 
             Recorder.AddLine("BioImage.Open(" + '"' + file + '"' + ");");
             Table.AddImage(b);
@@ -4712,7 +4724,7 @@ namespace BioImage
             {
                 Thread.Sleep(100);
             } while (b.Buffers[b.Buffers.Count - 1].Statistics == null);
-            AutoThreshold(b);
+            AutoThreshold(b,false);
             for (int ch = 0; ch < b.Channels.Count; ch++)
             {
                 b.Channels[ch].Min = (int)b.Channels[ch].stats.StackMin;
@@ -5373,7 +5385,8 @@ namespace BioImage
         }
 
         private static BioImage bstats = null;
-        public static void AutoThreshold(BioImage b)
+        private static bool update = false;
+        public static void AutoThreshold(BioImage b, bool updateImageStats)
         {
             Statistics statistics = null;
             if (b.bitsPerPixel > 8)
@@ -5382,7 +5395,7 @@ namespace BioImage
                 statistics = new Statistics(false);
             for (int i = 0; i < b.Buffers.Count; i++)
             {
-                if (b.Buffers[i].Statistics == null)
+                if (b.Buffers[i].Statistics == null || updateImageStats)
                     b.Buffers[i].Statistics = Statistics.FromBytes(b.Buffers[i]);
                 statistics.AddStatistics(b.Buffers[i].Statistics);
             }
@@ -5418,7 +5431,7 @@ namespace BioImage
         }
         public static void AutoThreshold()
         {
-            AutoThreshold(bstats);
+            AutoThreshold(bstats, update);
         }
         public static void AutoThresholdThread(BioImage b)
         {

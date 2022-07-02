@@ -51,10 +51,13 @@ namespace BioImage
         {
             if (stackABox.SelectedIndex == -1)
                 return;
-            zStartBox.Maximum = ImageA.SizeZ;
-            cStartBox.Maximum = ImageA.SizeC;
-            tStartBox.Maximum = ImageA.SizeT;
-            if(stackABox.SelectedItem == stackBBox.SelectedItem)
+            zEndBox.Maximum = ImageA.SizeZ;
+            cEndBox.Maximum = ImageA.SizeC;
+            tEndBox.Maximum = ImageA.SizeT;
+            zEndBox.Value = ImageA.SizeZ;
+            cEndBox.Value = ImageA.SizeC;
+            tEndBox.Value = ImageA.SizeT;
+            if (stackABox.SelectedItem == stackBBox.SelectedItem)
             {
                 //Same image selected for A & B
                 MessageBox.Show("Same image selected for A & B. Change either A stack or B stack.");
