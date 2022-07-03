@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Globalization;
 
-namespace BioImage
+namespace Bio
 {    
     public struct Point2D
     {

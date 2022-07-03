@@ -1,4 +1,4 @@
-﻿namespace BioImage
+﻿namespace Bio
 {
     partial class Progress
     {

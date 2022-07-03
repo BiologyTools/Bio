@@ -17,7 +17,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace BioImage
+namespace Bio
 {
     public static class Table
     {
@@ -1415,8 +1415,8 @@ namespace BioImage
             pixelFormat = im.PixelFormat;
             Coordinate = coord;
             Image = im;
-            //if (isRGB)
-            //    SwitchRedBlue();
+            if (isRGB && pixelFormat != PixelFormat.Format48bppRgb)
+                SwitchRedBlue();
         }
         public BufferInfo(int w, int h, PixelFormat px, byte[] bts, ZCT coord, string id)
         {
@@ -2497,14 +2497,15 @@ namespace BioImage
         {
             return BioImage.Copy(this);
         }
-        public static BioImage CopyInfo(BioImage b)
+        public static BioImage CopyInfo(BioImage b, bool copyAnnotations, bool copyChannels)
         {
             BioImage bi = new BioImage(b.ID);
+            if(copyAnnotations)
             foreach (Annotation an in b.Annotations)
             {
                 bi.Annotations.Add(an);
             }
-
+            if(copyChannels)
             foreach (Channel c in b.Channels)
             {
                 bi.Channels.Add(c.Copy());
@@ -2638,13 +2639,14 @@ namespace BioImage
                     return;
                 }
                 
-                BioImage bi = CopyInfo(this);
+                BioImage bi = CopyInfo(this,true,true);
                 bi.sizeC = 1;
                 int index = 0;
                 bi.Coords = new int[SizeZ, 3, SizeT];
                 for (int i = 0; i < Buffers.Count; i += 3)
                 {
-                    Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
+                    Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range); 
+                    b = BufferInfo.SwitchRedBlue(b);
                     BufferInfo bf = new BufferInfo(Table.GetImageName(ID), b, Buffers[i].Coordinate, index);
                     bi.Buffers.Add(bf);
                     bi.Coords[Buffers[i].Coordinate.Z, Buffers[i].Coordinate.C, Buffers[i].Coordinate.T] = index;
@@ -2676,15 +2678,16 @@ namespace BioImage
                 MessageBox.Show("48 bit RGB conversion requires an image with 3, 16 bit channels. Use stack tools to create 3 channel image.");
                 return;
             }
-            BioImage bi = CopyInfo(this);
-            bi.sizeC = 1;
+            BioImage bi = CopyInfo(this,false,true);
+            bi.sizeC = 3;
             int index = 0;
             bi.Coords = new int[SizeZ, 3, SizeT];
             for (int i = 0; i < Buffers.Count; i += 3)
             {
                 Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
-                //We rotate the data since we store the image data upside down.
+                //We rotate the data since we store the image data upside down and switch to BGR
                 b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                b = BufferInfo.SwitchRedBlue(b);
                 BufferInfo bf = new BufferInfo(Table.GetImageName(ID), b, Buffers[i].Coordinate, index);
                 bi.Buffers.Add(bf);
                 bi.Coords[Buffers[i].Coordinate.Z, Buffers[i].Coordinate.C, Buffers[i].Coordinate.T] = index;
@@ -3246,12 +3249,14 @@ namespace BioImage
         }
         public Bitmap GetFiltered(int ind, IntRange r, IntRange g, IntRange b)
         {
+            /*
             if(RGBChannelCount > 1 && bitsPerPixel > 8)
             {
                 //We use our own get filtered method since aforge is giving a weird image.
                 return Buffers[ind].GetFiltered(r, g, b);
             }
             else
+            */
             if (Buffers[ind].BitsPerPixel > 8 )
             {
                 BioImage.filter16.InRed = r;

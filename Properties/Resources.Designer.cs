@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BioImage.Properties {
+namespace Bio.Properties {
     using System;
     
     

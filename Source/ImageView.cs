@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace BioImage
+namespace Bio
 {
     public partial class ImageView : UserControl
     {
@@ -352,20 +352,21 @@ namespace BioImage
             channelBoxR.Items.Clear();
             channelBoxG.Items.Clear();
             channelBoxB.Items.Clear();
+
             foreach (Channel ch in image.Channels)
             {
                 channelBoxR.Items.Add(ch);
                 channelBoxG.Items.Add(ch);
                 channelBoxB.Items.Add(ch);
             }
-            if (image.SizeC > 2)
+            if (image.Channels.Count > 2)
             {
                 channelBoxR.SelectedIndex = 0;
                 channelBoxG.SelectedIndex = 1;
                 channelBoxB.SelectedIndex = 2;
             }
             else
-            if (image.SizeC == 2)
+            if (image.Channels.Count == 2)
             {
                 channelBoxR.SelectedIndex = 0;
                 channelBoxG.SelectedIndex = 1;
@@ -439,7 +440,7 @@ namespace BioImage
             int index = image.Coords[zBar.Value, cBar.Value, timeBar.Value];
             if (Mode == ViewMode.Filtered)
             {
-                bm = image.GetFiltered(coords, RChannel.range, RChannel.range, RChannel.range);
+                bm = image.GetFiltered(coords, RChannel.range, GChannel.range, BChannel.range);
             }
             else if (Mode == ViewMode.RGBImage)
             {

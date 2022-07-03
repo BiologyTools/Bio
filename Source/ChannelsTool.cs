@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace BioImage
+namespace Bio
 {
     public partial class ChannelsTool : Form
     {

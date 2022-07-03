@@ -14,7 +14,7 @@ using CSScripting;
 using csscript;
 using CSScriptLib;
 
-namespace BioImage
+namespace Bio
 {
     public partial class Scripting : Form
     {

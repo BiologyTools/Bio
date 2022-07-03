@@ -1,5 +1,5 @@
 ﻿
-namespace BioImage
+namespace Bio
 {
     partial class RangeTool
     {

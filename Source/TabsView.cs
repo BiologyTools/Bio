@@ -6,7 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Threading;
 
-namespace BioImage
+namespace Bio
 {
     public partial class TabsView : Form
     {

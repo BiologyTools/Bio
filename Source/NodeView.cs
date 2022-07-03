@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 
 
-namespace BioImage
+namespace Bio
 {
     public partial class NodeView : Form
     {

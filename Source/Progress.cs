@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace BioImage
+namespace Bio
 {
     public partial class Progress : Form
     {

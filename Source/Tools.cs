@@ -8,14 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BioImage;
+using Bio;
 using System.IO;
 using AForge.Imaging.Filters;
 using AForge.Imaging;
 using AForge.Math.Geometry;
 using AForge;
 
-namespace BioImage
+namespace Bio
 {
     public partial class Tools : Form
     {
