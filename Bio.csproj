@@ -53,7 +53,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>BioImage.ico</ApplicationIcon>
+    <ApplicationIcon>Bio.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
@@ -279,7 +279,7 @@
     <Compile Include="Source\About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
-    <Compile Include="Source\BioImage.cs" />
+    <Compile Include="Source\Bio.cs" />
     <Compile Include="Source\ChannelsTool.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -483,13 +483,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="BioImage.ico" />
+    <Content Include="Bio.ico" />
     <Content Include="ikvm-native-win32-x64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="ikvm-native-win32-x86.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\biobanner.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />

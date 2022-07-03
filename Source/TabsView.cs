@@ -349,6 +349,8 @@ namespace Bio
             NodeView.viewer = this;
             tabview = this;
             ImageView.app = this;
+            if (this.Viewer == null)
+                this.Height = 400;
             ImageView.viewer = this.Viewer;
             UpdateTabs();
         }
@@ -607,6 +609,7 @@ namespace Bio
         private void tabControl_Click(object sender, EventArgs e)
         {
             ImageView.viewer = Viewer;
+            TabsView.viewer = Viewer;
         }
     }
 }

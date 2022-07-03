@@ -878,6 +878,7 @@ namespace Bio
         }
         private void DrawOverlay(Graphics g)
         {
+            SetCoordinate(zBar.Value, cBar.Value, timeBar.Value);
             Pen pen = null;
             Brush b = null;
             bool bounds = showBounds;
@@ -1016,7 +1017,9 @@ namespace Bio
             }
             else
             {
-                foreach (Annotation an in image.GetAnnotations(GetCoordinate()))
+                ZCT cor = GetCoordinate();
+                List<Annotation> ans = image.GetAnnotations(cor);
+                foreach (Annotation an in ans)
                 {
                     pen = new Pen(an.strokeColor, (float)an.strokeWidth);
                     if (an.selected)

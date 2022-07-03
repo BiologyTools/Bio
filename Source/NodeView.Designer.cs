@@ -139,7 +139,7 @@
             this.Controls.Add(this.treeView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "NodeView";
-            this.Text = "BioImage Node View";
+            this.Text = "Node View";
             this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.Activated += new System.EventHandler(this.MainForm_Activated);
             this.contextMenuStrip.ResumeLayout(false);

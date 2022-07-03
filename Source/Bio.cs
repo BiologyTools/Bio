@@ -69,7 +69,7 @@ namespace Bio
             images.Remove(im);
             im.Dispose();
             GC.Collect();
-            Recorder.AddLine("Table.RemoveImage(" + '"' + id + '"' + ");");
+            Recorder.AddLine("Bio.Table.RemoveImage(" + '"' + id + '"' + ");");
         }
         public static void AddViewer(ImageView v)
         {
@@ -1936,7 +1936,7 @@ namespace Bio
 
             }
             Table.AddImage(img);
-            Recorder.AddLine("Filters.Crop(" + '"' + id + '"' + "," + x + "," + y + "," + w + "," + h + ");");
+            Recorder.AddLine("Bio.Filters.Crop(" + '"' + id + '"' + "," + x + "," + y + "," + w + "," + h + ");");
             return img;
         }
         public static BioImage Crop(string id, Rectangle r)
@@ -2599,7 +2599,7 @@ namespace Bio
                 c.bitsPerPixel = 8;
             }
             AutoThreshold(this,true);
-            Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To8Bit();");
+            Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To8Bit();");
         }
         public void To16Bit()
         {
@@ -2617,7 +2617,7 @@ namespace Bio
             }
             bitsPerPixel = 16;
             AutoThreshold(this, false);
-            Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To16Bit();");
+            Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To16Bit();");
         }
         public void To24Bit()
         {
@@ -2632,7 +2632,6 @@ namespace Bio
             }
             else
             {
-                
                 if (SizeC != 3)
                 {
                     MessageBox.Show("24 bit RGB conversion requires an image with 3, 8 bit channels. Use stack tools to create 3 channel image.");
@@ -2656,7 +2655,7 @@ namespace Bio
                 AutoThreshold(bi, true);
                 Table.AddImage(bi);
             }
-            Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To24Bit();");
+            Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To24Bit();");
         }
         public void To32Bit()
         {
@@ -2669,7 +2668,7 @@ namespace Bio
                 BufferInfo.AddBuffer(Buffers[i]);
                 BufferInfo.CalculateStatistics();
             }
-            Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To32Bit();");
+            Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To32Bit();");
         }
         public void To48Bit()
         {
@@ -2696,7 +2695,7 @@ namespace Bio
             bi.bitsPerPixel = 16;
             AutoThreshold(bi,true);
             Table.AddImage(bi);
-            Recorder.AddLine("Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To48Bit();");
+            Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To48Bit();");
 
         }
         public BioImage(string id)

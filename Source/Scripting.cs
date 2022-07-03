@@ -86,6 +86,7 @@ namespace Bio
             }
             public void Stop()
             {
+                if(thread!=null)
                 thread.Abort();
             }
             public override string ToString()
