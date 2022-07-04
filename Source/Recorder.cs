@@ -23,7 +23,6 @@ namespace Bio
         public Recorder()
         {
             InitializeComponent();
-            timer.Start();
         }
 
         private void clearBut_Click(object sender, EventArgs e)
@@ -49,24 +48,20 @@ namespace Bio
             this.WindowState = FormWindowState.Minimized;
         }
 
-        private void timer_Tick_1(object sender, EventArgs e)
-        {
-            if (update)
-            {
-                textBox.Text = log;
-                update = false;
-            }
-            
-        }
-
         private void textBox_TextChanged(object sender, EventArgs e)
         {
-            log = textBox.Text;
+           // update = true;
+           // log = textBox.Text;
         }
 
         private void topMostBox_CheckedChanged(object sender, EventArgs e)
         {
             this.TopMost = topMostBox.Checked;
+        }
+
+        private void Recorder_Activated(object sender, EventArgs e)
+        {
+            textBox.Text = log;
         }
     }
 }

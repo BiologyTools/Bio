@@ -8,8 +8,8 @@
     <ProjectGuid>{7A6E5506-2296-4820-AA2A-967D4E80D5B2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BioImage</RootNamespace>
-    <AssemblyName>BioImage</AssemblyName>
+    <RootNamespace>Bio</RootNamespace>
+    <AssemblyName>Bio</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -484,6 +484,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Bio.ico" />
+    <Content Include="bio.jpg" />
     <Content Include="ikvm-native-win32-x64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

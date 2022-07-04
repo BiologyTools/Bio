@@ -617,5 +617,17 @@ namespace Bio
             ImageView.viewer = Viewer;
             TabsView.viewer = Viewer;
         }
+
+        private void saveToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (saveTiffFileDialog.ShowDialog() == DialogResult.OK)
+                Bio.BioImage.Save(Viewer.image.ID, saveTiffFileDialog.FileName);
+        }
+
+        private void saveOMEToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (saveOMEFileDialog.ShowDialog() == DialogResult.OK)
+                Bio.BioImage.Save(Viewer.image.ID, saveOMEFileDialog.FileName);
+        }
     }
 }

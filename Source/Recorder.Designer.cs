@@ -28,20 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Recorder));
             this.clearBut = new System.Windows.Forms.Button();
             this.textBox = new System.Windows.Forms.TextBox();
             this.delLineBut = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.timer = new System.Windows.Forms.Timer(this.components);
             this.topMostBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // clearBut
             // 
             this.clearBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.clearBut.Location = new System.Drawing.Point(368, 291);
+            this.clearBut.Location = new System.Drawing.Point(368, 271);
             this.clearBut.Name = "clearBut";
             this.clearBut.Size = new System.Drawing.Size(75, 23);
             this.clearBut.TabIndex = 3;
@@ -60,14 +58,14 @@
             this.textBox.Multiline = true;
             this.textBox.Name = "textBox";
             this.textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox.Size = new System.Drawing.Size(431, 257);
+            this.textBox.Size = new System.Drawing.Size(431, 237);
             this.textBox.TabIndex = 4;
             this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             // 
             // delLineBut
             // 
             this.delLineBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.delLineBut.Location = new System.Drawing.Point(287, 291);
+            this.delLineBut.Location = new System.Drawing.Point(287, 271);
             this.delLineBut.Name = "delLineBut";
             this.delLineBut.Size = new System.Drawing.Size(75, 23);
             this.delLineBut.TabIndex = 5;
@@ -87,11 +85,6 @@
             this.label1.Text = "Use these lines in a script by pasting these lines in script editor\'s \"Load\" meth" +
     "od.";
             // 
-            // timer
-            // 
-            this.timer.Interval = 1500;
-            this.timer.Tick += new System.EventHandler(this.timer_Tick_1);
-            // 
             // topMostBox
             // 
             this.topMostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -99,7 +92,7 @@
             this.topMostBox.Checked = true;
             this.topMostBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.topMostBox.ForeColor = System.Drawing.Color.White;
-            this.topMostBox.Location = new System.Drawing.Point(15, 295);
+            this.topMostBox.Location = new System.Drawing.Point(15, 275);
             this.topMostBox.Name = "topMostBox";
             this.topMostBox.Size = new System.Drawing.Size(71, 17);
             this.topMostBox.TabIndex = 7;
@@ -112,7 +105,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(455, 326);
+            this.ClientSize = new System.Drawing.Size(455, 306);
             this.Controls.Add(this.topMostBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.delLineBut);
@@ -122,6 +115,7 @@
             this.Name = "Recorder";
             this.Text = "Recorder";
             this.TopMost = true;
+            this.Activated += new System.EventHandler(this.Recorder_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Recorder_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -133,7 +127,6 @@
         private System.Windows.Forms.TextBox textBox;
         private System.Windows.Forms.Button delLineBut;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.CheckBox topMostBox;
     }
 }

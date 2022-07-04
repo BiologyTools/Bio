@@ -333,7 +333,7 @@ namespace Bio
         public void InitGUI(string path)
         {
             filepath = path;
-            //image = new BioImage(filePath);
+            //image = new Bio(filePath);
             zBar.Maximum = image.SizeZ - 1;
             cBar.Maximum = image.SizeC - 1;
             if (image.SizeT > 1)

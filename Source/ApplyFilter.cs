@@ -16,8 +16,14 @@ namespace Bio
         {
             InitializeComponent();
             UpdateStacks();
-            if(!two)
-            stackBBox.Enabled = false;
+            if (!two)
+            { 
+                stackBBox.Enabled = false;
+                if (stackBBox.Items.Count > 1)
+                    stackBBox.SelectedIndex = 1;
+            }
+            if (stackABox.Items.Count > 0)
+                stackABox.SelectedIndex = 0;
         }
         public void UpdateStacks()
         {

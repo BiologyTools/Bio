@@ -60,26 +60,21 @@ namespace Bio
             Node n = (Node)filterView.SelectedNode.Tag;
             if (n.filt.type == Filt.Type.Base)
             {
-                Filters.BaseFilter(ImageView.viewer.image.ID, n.filt.name, false);
-                Recorder.AddLine("Filters.BaseFilter(" + '"' + ImageView.viewer.image.ID +
-                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
+                Filters.Base(ImageView.viewer.image.ID, n.filt.name, false);
+                
             }
             if (n.filt.type == Filt.Type.Base2)
             {
                 ApplyFilter two = new ApplyFilter(true);
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.BaseFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
-                //Filters.BaseInPlaceFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
-                Recorder.AddLine("Filters.BaseFilter2(" + '"' + two.ImageA.ID + '"' + "," +
-                   '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
+                Filters.Base2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
+                
             }
             else
             if (n.filt.type == Filt.Type.InPlace)
             {
-                Filters.BaseInPlaceFilter(ImageView.viewer.image.ID, n.filt.name, false);
-                Recorder.AddLine("Filters.BaseInPlaceFilter(" + '"' + ImageView.viewer.image.ID +
-                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
+                Filters.InPlace(ImageView.viewer.image.ID, n.filt.name, false);
             }
             else
             if (n.filt.type == Filt.Type.InPlace2)
@@ -87,32 +82,30 @@ namespace Bio
                 ApplyFilter two = new ApplyFilter(true);
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.BaseInPlaceFilter2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
-                Recorder.AddLine("Filters.BaseInPlaceFilter2(" + '"' + two.ImageA.ID + '"' + "," +
-                   '"' + two.ImageB.ID + '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
+                Filters.InPlace2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
+                
             }
             else
             if (n.filt.type == Filt.Type.InPlacePartial)
             {
-                Filters.BaseInPlacePartialFilter(ImageView.viewer.image.ID, n.filt.name, false);
-                Recorder.AddLine("Filters.BaseInPlacePartialFilter(" + '"' + ImageView.viewer.image.ID +
-                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
+                Filters.InPlacePartial(ImageView.viewer.image.ID, n.filt.name, false);
+                
             }
             else
             if (n.filt.type == Filt.Type.Resize)
             {
                 ApplyFilter two = new ApplyFilter(false);
-                Filters.BaseResizeFilter(ImageView.viewer.image.ID, n.filt.name, false, two.W,two.H);
-                Recorder.AddLine("Filters.BaseResizeFilter(" + '"' + ImageView.viewer.image.ID +
-                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
+                if (two.ShowDialog() != DialogResult.OK)
+                    return;
+                Filters.Resize(ImageView.viewer.image.ID, n.filt.name, false, two.W,two.H);
             }
             else
             if (n.filt.type == Filt.Type.Rotate)
             {
                 ApplyFilter two = new ApplyFilter(false);
-                Filters.BaseRotateFilter(ImageView.viewer.image.ID, n.filt.name, false, two.Angle, two.Color);
-                Recorder.AddLine("Filters.BaseRotateFilter(" + '"' + ImageView.viewer.image.ID +
-                    '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
+                if (two.ShowDialog() != DialogResult.OK)
+                    return;
+                Filters.Rotate(ImageView.viewer.image.ID, n.filt.name, false, two.Angle, two.Color.A, two.Color.R, two.Color.G, two.Color.B);
             }
             else
             if (n.filt.type == Filt.Type.Transformation)
@@ -126,10 +119,13 @@ namespace Bio
                 }
                 else
                 {
-                    Filters.BaseTransformationFilter(ImageView.viewer.image.ID, n.filt.name, false, two.Angle);
-                    Recorder.AddLine("Filters.BaseTransformationFilter(" + '"' + ImageView.viewer.image.ID +
-                        '"' + "," + '"' + n.filt.name + '"' + "," + inPlace.ToString().ToLower() + ");");
+                    Filters.Transformation(ImageView.viewer.image.ID, n.filt.name, false, two.Angle);
                 }
+            }
+            else
+            if (n.filt.type == Filt.Type.Copy)
+            {
+                Filters.Copy(ImageView.viewer.image.ID, n.filt.name, false);
             }
             UpdateView();
         }

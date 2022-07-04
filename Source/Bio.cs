@@ -35,27 +35,43 @@ namespace Bio
         }
         public static void AddImage(BioImage im)
         {
+            im.ID = GetImageName(im.ID);
             images.Add(im);
             //NodeView.viewer.AddTab(im);
         }
         public static int GetImageCount(string s)
         {
             int i = 0;
-            string f = Path.GetFileNameWithoutExtension(s);
+            string name = Path.GetFileNameWithoutExtension(s);
+            int sti = name.LastIndexOf("-");
+            string st = name.Substring(sti, name.Length - sti);
             for (int im = 0; im < images.Count; im++)
             {
-                if (images[i].Filename.StartsWith(f))
+                if (images[im].ID.Contains(name))
                     i++;
             }
             return i;
         }
         public static string GetImageName(string s)
         {
+            //Here we create a unique ID for an image.
             int i = Table.GetImageCount(s);
             if (i == 0)
                 return s;
+            string test = Path.GetFileName(s);
+            string name = Path.GetFileNameWithoutExtension(s);
+            string ext = Path.GetExtension(s);
+            int sti = name.LastIndexOf("-");
+            string stb = name.Substring(0, sti);
+            string sta = name.Substring(sti+1, name.Length - sti-1);
+            int ind;
+            if (int.TryParse(sta, out ind))
+            {
+                return stb + "-" + (ind + 1).ToString() + ext;
+            }
             else
-                return Path.GetFileNameWithoutExtension(s) + "-" + i + Path.GetExtension(s);
+                return name + "-" + i + ext;
+            //
         }
         public static void RemoveImage(BioImage im)
         {
@@ -1033,8 +1049,8 @@ namespace Bio
                 PixelFormat = value.PixelFormat;
                 SizeX = value.Width;
                 SizeY = value.Height;
-                if(isRGB)
-                b = BufferInfo.SwitchRedBlue(b);
+                //if(isRGB)
+                //b = BufferInfo.SwitchRedBlue(b);
                 bytes = GetBuffer((Bitmap)b,Stride);
             }
         }
@@ -1052,14 +1068,16 @@ namespace Bio
             if (stride % 4 == 0)
                 return stride;
             int newstride = stride + 2;
-            if (stride % 3 == 0 && stride % 2 != 0)
+            if (stride % 3 == 0 && stride % 2 != 0 && newstride % 4 != 0)
             {
                 newstride = stride + 1;
                 if (newstride % 4 != 0)
                     newstride = stride + 3;
             }
             if (newstride % 4 != 0)
-                throw new InvalidOperationException("Stride padding failed");
+            {
+            throw new InvalidOperationException("Stride padding failed");
+            }
             return newstride;
         }
         private static byte[] GetPaddedBuffer(byte[] bts, int w, int h, int stride, PixelFormat px)
@@ -1068,7 +1086,7 @@ namespace Bio
             if (newstride == stride)
                 return bts;
             byte[] newbts = new byte[newstride * h];
-            if (px == PixelFormat.Format24bppRgb || px == PixelFormat.Format32bppArgb)
+            if (px == PixelFormat.Format24bppRgb || px == PixelFormat.Format32bppArgb || px == PixelFormat.Format8bppIndexed)
             {
                 for (int y = 0; y < h; ++y)
                 {
@@ -1144,6 +1162,7 @@ namespace Bio
         }
         public static unsafe Bitmap GetBitmap(int w, int h, int stride, PixelFormat px, byte[] bts)
         {
+            /*
             if (px == PixelFormat.Format24bppRgb)
             {
                 //opening a 8 bit per pixel jpg image
@@ -1175,6 +1194,7 @@ namespace Bio
                 bmp.UnlockBits(bmd);
                 return bmp;
             }
+            */
             /*
             else
             if (px == PixelFormat.Format48bppRgb)
@@ -1682,7 +1702,7 @@ namespace Bio
     public static class Filters
     {
         public static Dictionary<string, Filt> filters = new Dictionary<string, Filt>();
-        public static BioImage BaseFilter(string id, string name, bool inPlace)
+        public static BioImage Base(string id, string name, bool inPlace)
         {
             BioImage img = Table.GetImage(id);
             if (!inPlace)
@@ -1702,7 +1722,8 @@ namespace Bio
                     Table.AddViewer(iv);
                     iv.Show();
                 }
-                //Recorder.AddLine("Filters." + (" + '"' + id + '"' + ", " + '"' + name + '"' + "," + inPlace + ");");
+                Recorder.AddLine("Bio.Filters.Base(" + '"' + id +
+                    '"' + "," + '"' + name + '"' + "," + inPlace.ToString().ToLower() + ");");
             }
             catch (Exception e)
             {
@@ -1710,7 +1731,7 @@ namespace Bio
             }
             return img;
         }
-        public static BioImage BaseFilter2(string id, string id2, string name, bool inPlace)
+        public static BioImage Base2(string id, string id2, string name, bool inPlace)
         {
             BioImage c2 = Table.GetImage(id);
             BioImage img = Table.GetImage(id2);
@@ -1732,7 +1753,8 @@ namespace Bio
                     Table.AddViewer(iv);
                     iv.Show();
                 }
-                //Recorder.AddLine("Filters.BaseFilter2(" + '"' + id + '"' + "," + '"' + id2 + '"' + ", " +'"' + name + '"' + "," + inPlace + ");");
+                Recorder.AddLine("Bio.Filters.Base2(" + '"' + id + '"' + "," +
+                   '"' + id2 + '"' + "," + '"' + name + '"' + "," + inPlace.ToString().ToLower() + ");");
                 return img;
             }
             catch (Exception e)
@@ -1741,7 +1763,7 @@ namespace Bio
             }
             return img;
         }
-        public static BioImage BaseInPlaceFilter(string id, string name, bool inPlace)
+        public static BioImage InPlace(string id, string name, bool inPlace)
         {
             BioImage img = Table.GetImage(id);
             if (!inPlace)
@@ -1761,7 +1783,8 @@ namespace Bio
                     Table.AddViewer(iv);
                     iv.Show();
                 }
-                //Recorder.AddLine("Filters.BaseInPlaceFilter(" + '"' + id + '"' + "," + '"' + name + '"' + "," + inPlace + ");");
+                Recorder.AddLine("Bio.Filters.InPlace(" + '"' + id +
+                    '"' + "," + '"' + name + '"' + "," + inPlace.ToString().ToLower() + ");"); 
                 return img;
             }
             catch (Exception e)
@@ -1770,7 +1793,7 @@ namespace Bio
             }
             return img;
         }
-        public static BioImage BaseInPlaceFilter2(string id, string id2, string name, bool inPlace)
+        public static BioImage InPlace2(string id, string id2, string name, bool inPlace)
         {
             BioImage c2 = Table.GetImage(id);
             BioImage img = Table.GetImage(id2);
@@ -1792,7 +1815,8 @@ namespace Bio
                     Table.AddViewer(iv);
                     iv.Show();
                 }
-                //Recorder.AddLine("Filters.BaseFilter2(" + '"' + id + '"' + "," + '"' + id2 + '"' + ", " + '"' + name + '"' + "," + inPlace + ");");
+                Recorder.AddLine("Bio.Filters.InPlace2(" + '"' + id + '"' + "," +
+                   '"' + id2 + '"' + "," + '"' + name + '"' + "," + inPlace.ToString().ToLower() + ");"); 
                 return img;
             }
             catch (Exception e)
@@ -1801,7 +1825,7 @@ namespace Bio
             }
             return img;
         }
-        public static BioImage BaseInPlacePartialFilter(string id, string name, bool inPlace)
+        public static BioImage InPlacePartial(string id, string name, bool inPlace)
         {
             BioImage img = Table.GetImage(id);
             if (!inPlace)
@@ -1821,7 +1845,8 @@ namespace Bio
                     Table.AddViewer(iv);
                     iv.Show();
                 }
-                //Recorder.AddLine("Filters.BaseInPlaceFilter(" + '"' + id + '"' + "," + '"' + name + '"' + "," + inPlace + ");");
+                Recorder.AddLine("Bio.Filters.InPlacePartial(" + '"' + id +
+                    '"' + "," + '"' + name + '"' + "," + inPlace.ToString().ToLower() + ");"); 
                 return img;
             }
             catch (Exception e)
@@ -1830,7 +1855,7 @@ namespace Bio
             }
             return img;
         }
-        public static BioImage BaseResizeFilter(string id, string name, bool inPlace, int w, int h)
+        public static BioImage Resize(string id, string name, bool inPlace, int w, int h)
         {
             BioImage img = Table.GetImage(id);
             if (!inPlace)
@@ -1852,8 +1877,8 @@ namespace Bio
                     Table.AddViewer(iv);
                     iv.Show();
                 }
-                //Recorder.AddLine("Filters.BaseResizeFilter(" + '"' + id + '"' + ", " + '"' + name + '"' + "," +
-                //    inPlace + "," + w + "," + h + ");");
+                Recorder.AddLine("Bio.Filters.Resize(" + '"' + id +
+                    '"' + "," + '"' + name + '"' + "," + inPlace.ToString().ToLower() + "," + w + "," + h + ");");
             }
             catch (Exception e)
             {
@@ -1861,17 +1886,17 @@ namespace Bio
             }
             return img;
         }
-        public static BioImage BaseRotateFilter(string id, string name, bool inPlace, float angle, System.Drawing.Color fill)
+        public static BioImage Rotate(string id, string name, bool inPlace, float angle, int a, int r, int g, int b)
         {
             BioImage img = Table.GetImage(id);
             if (!inPlace)
-                img = BioImage.Copy(img);
+                img = BioImage.Copy(Table.GetImage(id));
             try
             {
                 Filt f = filters[name];
                 BaseRotateFilter fi = (BaseRotateFilter)f.filt;
                 fi.Angle = angle;
-                fi.FillColor = fill;
+                fi.FillColor = System.Drawing.Color.FromArgb(a,r,g,b);
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
                     img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
@@ -1883,8 +1908,9 @@ namespace Bio
                     Table.AddViewer(iv);
                     iv.Show();
                 }
-                //Recorder.AddLine("Filters.BaseResizeFilter(" + '"' + id + '"' + ", " + '"' + name + '"' + "," +
-                //    inPlace + "," + w + "," + h + ");");
+                Recorder.AddLine("Bio.Filters.Rotate(" + '"' + id +
+                    '"' + "," + '"' + name + '"' + "," + inPlace.ToString().ToLower() + "," + angle.ToString() + "," +
+                    a + "," + r + "," + g + "," + b + ");");
             }
             catch (Exception e)
             {
@@ -1893,7 +1919,7 @@ namespace Bio
             return img;
 
         }
-        public static BioImage BaseTransformationFilter(string id, string name, bool inPlace, float angle)
+        public static BioImage Transformation(string id, string name, bool inPlace, float angle)
         {
             BioImage img = Table.GetImage(id);
             if (!inPlace)
@@ -1913,8 +1939,37 @@ namespace Bio
                     Table.AddViewer(iv);
                     iv.Show();
                 }
-                //Recorder.AddLine("Filters.BaseResizeFilter(" + '"' + id + '"' + ", " + '"' + name + '"' + "," +
-                //    inPlace + "," + w + "," + h + ");");
+                Recorder.AddLine("Bio.Filters.Transformation(" + '"' + id +
+                        '"' + "," + '"' + name + '"' + "," + inPlace.ToString().ToLower() + "," + angle + ");");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString(), "Filter Error");
+            }
+            return img;
+        }
+        public static BioImage Copy(string id, string name, bool inPlace)
+        {
+            BioImage img = Table.GetImage(id);
+            if (!inPlace)
+                img = BioImage.Copy(img);
+            try
+            {
+                Filt f = filters[name];
+                BaseUsingCopyPartialFilter fi = (BaseUsingCopyPartialFilter)f.filt;
+                for (int i = 0; i < img.Buffers.Count; i++)
+                {
+                    img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i].Image);
+                }
+                if (!inPlace)
+                {
+                    Table.AddImage(img);
+                    ImageView iv = new ImageView(img);
+                    Table.AddViewer(iv);
+                    iv.Show();
+                }
+                Recorder.AddLine("Bio.Filters.Copy(" + '"' + id +
+                        '"' + "," + '"' + name + '"' + "," + inPlace.ToString().ToLower()+");");
             }
             catch (Exception e)
             {
@@ -1930,10 +1985,6 @@ namespace Bio
             for (int i = 0; i < img.Buffers.Count; i++)
             {
                 img.Buffers[i].Crop(new Rectangle(x, y, w, h));
-                //AForge.Imaging.Filters.Crop cr = (Crop)f.filt;
-                //cr.Rectangle = new Rectangle(x,y,w,h);
-                //img.Buffers[i].SetImageRaw(cr.Apply((Bitmap)img.Buffers[i].Image));
-
             }
             Table.AddImage(img);
             Recorder.AddLine("Bio.Filters.Crop(" + '"' + id + '"' + "," + x + "," + y + "," + w + "," + h + ");");
@@ -2757,7 +2808,7 @@ namespace Bio
             Table.AddImage(this);
             rgbBitmap16 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format48bppRgb);
             rgbBitmap8 = new Bitmap(SizeX, SizeY, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-            Recorder.AddLine("BioImage.Substack(" + '"' + orig.Filename + '"' + "," + ser + "," + zs + "," + ze + "," + cs + "," + ce + "," + ts + "," + te + ");");
+            Recorder.AddLine("Bio.BioImage.Substack(" + '"' + orig.Filename + '"' + "," + ser + "," + zs + "," + ze + "," + cs + "," + ce + "," + ts + "," + te + ");");
         }
         public BioImage(string file, int ser)
         {
@@ -2852,7 +2903,7 @@ namespace Bio
                 }
             }
             Table.AddImage(res);
-            Recorder.AddLine("MergeChannels(" + '"' + b.ID + '"' + "," + '"' + b2.ID + '"' + ");");
+            Recorder.AddLine("Bio.BioImage.MergeChannels(" + '"' + b.ID + '"' + "," + '"' + b2.ID + '"' + ");");
             return res;
         }
         public static BioImage MergeChannels(string bname, string b2name)
@@ -2876,7 +2927,7 @@ namespace Bio
                 BioImage b = new BioImage(this, 0, 0, SizeZ, c, c + 1, 0, SizeT);
                 Table.AddImage(b);
             }
-            Recorder.AddLine("BioImage.SplitChannels(" + '"' + Filename + '"' + ");");
+            Recorder.AddLine("Bio.BioImage.SplitChannels(" + '"' + Filename + '"' + ");");
         }
         public static void SplitChannels(BioImage bb)
         {
@@ -3195,9 +3246,8 @@ namespace Bio
             }
             else
             {
-                int stride = SizeX;
-                System.Drawing.Color c = ((Bitmap)Buffers[ind].Image).GetPixel(ix, iy);
-                return c.R;
+                int index2 = (y * stridex + x) * RGBChannelCount;
+                return bytes[index2];
             }
         }
         public ushort GetValue( int z, int c, int t, int x, int y)
@@ -3624,7 +3674,7 @@ namespace Bio
             }
             image.Dispose();
             done = true;
-            Recorder.AddLine("BioImage.Save(" + '"' + file + '"' + ");");
+            Recorder.AddLine("Bio.BioImage.Save(" + '"' + file + '"' + "," + '"' + ID + '"' + ");");
             return b;
         }
         public static BioImage Open(string file)
@@ -3853,7 +3903,7 @@ namespace Bio
 
             AutoThreshold(b,false);
 
-            Recorder.AddLine("BioImage.Open(" + '"' + file + '"' + ");");
+            Recorder.AddLine("Bio.BioImage.Open(" + '"' + file + '"' + ");");
             Table.AddImage(b);
             return b;
         }
@@ -4160,7 +4210,7 @@ namespace Bio
             pr.Close();
             pr.Dispose();
             writer.close();
-            Recorder.AddLine("BioImage.SaveOME(" + '"' + file + '"'+ ");");
+            Recorder.AddLine("Bio.BioImage.SaveOME(" + '"' + file + '"'+ ");");
             return b;
         }
         public static BioImage OpenOME(string file)
@@ -4763,7 +4813,7 @@ namespace Bio
                 b.Channels[ch].Max = (int)b.Channels[ch].stats.StackMax;
             }
             Table.AddImage(b);
-            Recorder.AddLine("BioImage.OpenOME(" + '"' + file + '"' + ");");
+            Recorder.AddLine("Bio.BioImage.OpenOME(" + '"' + file + '"' + ");");
             done = true;
             b.Loading = false;
             return b;
@@ -4789,7 +4839,6 @@ namespace Bio
             savefile = file;
             Thread t = new Thread(Save);
             t.Start();
-
         }
         private static string savefile;
         private static string saveID;

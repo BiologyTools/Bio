@@ -48,11 +48,11 @@
             this.xBox = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
             this.roiBox = new System.Windows.Forms.ComboBox();
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label9 = new System.Windows.Forms.Label();
             this.setColorBut = new System.Windows.Forms.Button();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
-            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fillPanel = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.hBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.wBox)).BeginInit();
@@ -216,10 +216,15 @@
             this.angleBox.ForeColor = System.Drawing.Color.White;
             this.angleBox.Location = new System.Drawing.Point(11, 154);
             this.angleBox.Maximum = new decimal(new int[] {
-            65535,
+            360,
             0,
             0,
             0});
+            this.angleBox.Minimum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            -2147483648});
             this.angleBox.Name = "angleBox";
             this.angleBox.Size = new System.Drawing.Size(77, 20);
             this.angleBox.TabIndex = 32;
@@ -301,6 +306,20 @@
             this.roiBox.Size = new System.Drawing.Size(117, 21);
             this.roiBox.TabIndex = 37;
             // 
+            // contextMenuStrip
+            // 
+            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.clearToolStripMenuItem});
+            this.contextMenuStrip.Name = "contextMenuStrip";
+            this.contextMenuStrip.Size = new System.Drawing.Size(102, 26);
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
+            this.clearToolStripMenuItem.Text = "Clear";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            // 
             // label9
             // 
             this.label9.AutoSize = true;
@@ -320,20 +339,6 @@
             this.setColorBut.Text = "Set Fill Color";
             this.setColorBut.UseVisualStyleBackColor = true;
             this.setColorBut.Click += new System.EventHandler(this.setColorBut_Click);
-            // 
-            // contextMenuStrip
-            // 
-            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.clearToolStripMenuItem});
-            this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(102, 26);
-            // 
-            // clearToolStripMenuItem
-            // 
-            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(101, 22);
-            this.clearToolStripMenuItem.Text = "Clear";
-            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // fillPanel
             // 
