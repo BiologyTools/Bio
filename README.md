@@ -49,91 +49,59 @@ Best for working with ROI's in OME format & CSV.
 -  Double click on script name in Script runner to run script.
 -  Scripts saved in Scripts folder will be loaded into script runner.
 -  Program installer include sample script "Sample.cs" which gets & sets pixels and saves resulting image.
--  Use Script recorder to record program function calls and script runner to turn recorder text into working scripts. (See sample [scripts](https://github.com/BioMicroscopy/BioImage-Scripts))
-## Sample Script
+-  Use Script recorder to record program function calls and script runner to turn recorder text into working scripts. (See sample [scripts](https://github.com/BioMicroscopy/BioImage-Scripts)
 
-//css_reference BioImage.dll;
-
-using System;
-
-using System.Windows.Forms;
-
-using BioImage;
-
-public class Loader
-{
-
-	public string Load()
-	{	
-		BioImage.BioImage b =  new BioImage.BioImage("E://TESTIMAGES//text.ome.tif",0);
-		//We create a substack of BioImage b.
-		BioImage.BioImage bio = new BioImage.BioImage(b,"subStack.ome.tif", 0, 0, 3, 0, 3, 0, 2);
-		//SetValueRGB(int z, int c, int t, int x, int y, int RGBindex, ushort value)
-		b.SetValueRGB(0,0,0,0,0,0,15000);
-		//GetValueRGB(int z, int c, int t, int x, int y, int RGBindex);
-		ushort val = b.GetValueRGB(0,0,0,0,0,1);
-		b.SaveSeries("E://TESTIMAGES//save.ome.tif",0);
-		bio.SaveSeries("E://TESTIMAGES//subStack.ome.tif",0);
-		ImageViewer iv = new ImageViewer(bio);
-		//We open the result in an ImageViewer.
-		iv.ShowDialog();
-		return val.ToString();
-	}
-	
-}
 ## Sample Tool Script
 
 //css_reference BioImage.dll;
-
 using System;
 using System.Windows.Forms;
 using System.Drawing;
-using BioImage;
+using Bio;
 using System.Threading;
-
 public class Loader
 {
-
 	//Point ROI Tool Example
 	public string Load()
 	{
 		int ind = 1;
 		do
 		{
-			BioImage.Scripting.State s = BioImage.Scripting.GetState();
+			Bio.Scripting.State s = Bio.Scripting.GetState();
 			if (s != null)
 			{
 				if (!s.processed)
 				{
-					if (s.type == BioImage.Scripting.Event.Up && s.buts == MouseButtons.Left)
+					if (s.type == Bio.Scripting.Event.Down && s.buts == MouseButtons.Left)
 					{
-						ZCT cord = ImageView.viewer.GetCoordinate();
-						Annotation an = Annotation.CreatePoint(cord, s.p.X, s.p.Y);
-						ImageView.viewer.image.Annotations.Add(an);
+						ZCT cord = Bio.ImageView.viewer.GetCoordinate();
+						Bio.Scripting.LogLine(cord.ToString() + " Coordinate");
+						Bio.Annotation an = Bio.Annotation.CreatePoint(cord, s.p.X, s.p.Y);
+						Bio.ImageView.viewer.image.Annotations.Add(an);
+						Bio.Scripting.LogLine(cord.ToString() + " Coordinate");
 						an.Text = "Point" + ind;
 						ind++;
-						BioImage.Scripting.LogLine(s.ToString());
-						ImageView.viewer.UpdateOverlay();
+						Bio.Scripting.LogLine(s.ToString() + " Point");
+						//ImageView.viewer.UpdateOverlay();
 					}
 					else
-					if (s.type == BioImage.Scripting.Event.Down)
+					if (s.type == Bio.Scripting.Event.Up)
 					{
-						BioImage.Scripting.LogLine(s.ToString());
+						Bio.Scripting.LogLine(s.ToString());
 					}
 					else
-					if (s.type == BioImage.Scripting.Event.Move)
+					if (s.type == Bio.Scripting.Event.Move)
 					{
-						BioImage.Scripting.LogLine(s.ToString());
+						Bio.Scripting.LogLine(s.ToString());
 					}
-				}
-				{
 					s.processed = true;
 				}
 			}
 		} while (true);
-		return "Done";
+		return "OK";
 	}
 }
+
 
 
 
