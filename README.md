@@ -53,7 +53,8 @@ Best for working with ROI's in OME format & CSV.
 
 ## Sample Tool Script
 
-//css_reference BioImage.dll;
+//css_reference Bio.dll;
+
 using System;
 using System.Windows.Forms;
 using System.Drawing;
