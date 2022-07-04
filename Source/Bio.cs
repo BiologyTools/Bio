@@ -43,8 +43,6 @@ namespace Bio
         {
             int i = 0;
             string name = Path.GetFileNameWithoutExtension(s);
-            int sti = name.LastIndexOf("-");
-            string st = name.Substring(sti, name.Length - sti);
             for (int im = 0; im < images.Count; im++)
             {
                 if (images[im].ID.Contains(name))
@@ -3298,14 +3296,6 @@ namespace Bio
         }
         public Bitmap GetFiltered(int ind, IntRange r, IntRange g, IntRange b)
         {
-            /*
-            if(RGBChannelCount > 1 && bitsPerPixel > 8)
-            {
-                //We use our own get filtered method since aforge is giving a weird image.
-                return Buffers[ind].GetFiltered(r, g, b);
-            }
-            else
-            */
             if (Buffers[ind].BitsPerPixel > 8 )
             {
                 BioImage.filter16.InRed = r;

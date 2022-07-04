@@ -484,14 +484,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Bio.ico" />
-    <Content Include="bio.jpg" />
     <Content Include="ikvm-native-win32-x64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="ikvm-native-win32-x86.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\biobanner.bmp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />

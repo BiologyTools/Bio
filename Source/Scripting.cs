@@ -375,5 +375,18 @@ namespace Bio
         {
             TopMost = topMostBox.Checked;
         }
+
+        private void Scripting_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.S && e.Modifiers == Keys.Control)
+            {
+                saveButton.PerformClick();
+            }
+        }
+
+        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
     }
 }

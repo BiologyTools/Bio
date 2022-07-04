@@ -139,5 +139,15 @@ namespace Bio
         {
             ApplyFilter(true);
         }
+
+        private void topMostBox_CheckedChanged(object sender, EventArgs e)
+        {
+            TopMost = topMostBox.Checked;
+        }
+
+        private void filterView_DoubleClick(object sender, EventArgs e)
+        {
+            ApplyFilter(false);
+        }
     }
 }

@@ -34,6 +34,7 @@
             this.applyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.applyRGBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filterView = new System.Windows.Forms.TreeView();
+            this.topMostBox = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -61,14 +62,28 @@
             // 
             // filterView
             // 
+            this.filterView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.filterView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.filterView.ContextMenuStrip = this.contextMenuStrip;
-            this.filterView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.filterView.ForeColor = System.Drawing.Color.White;
             this.filterView.Location = new System.Drawing.Point(0, 0);
             this.filterView.Name = "filterView";
-            this.filterView.Size = new System.Drawing.Size(201, 242);
+            this.filterView.Size = new System.Drawing.Size(201, 213);
             this.filterView.TabIndex = 8;
+            this.filterView.DoubleClick += new System.EventHandler(this.filterView_DoubleClick);
+            // 
+            // topMostBox
+            // 
+            this.topMostBox.AutoSize = true;
+            this.topMostBox.Location = new System.Drawing.Point(12, 219);
+            this.topMostBox.Name = "topMostBox";
+            this.topMostBox.Size = new System.Drawing.Size(71, 17);
+            this.topMostBox.TabIndex = 9;
+            this.topMostBox.Text = "Top Most";
+            this.topMostBox.UseVisualStyleBackColor = true;
+            this.topMostBox.CheckedChanged += new System.EventHandler(this.topMostBox_CheckedChanged);
             // 
             // Filter
             // 
@@ -76,6 +91,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.ClientSize = new System.Drawing.Size(201, 242);
+            this.Controls.Add(this.topMostBox);
             this.Controls.Add(this.filterView);
             this.ForeColor = System.Drawing.Color.White;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -83,6 +99,7 @@
             this.Text = "Filters";
             this.contextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -91,5 +108,6 @@
         private System.Windows.Forms.ToolStripMenuItem applyToolStripMenuItem;
         private System.Windows.Forms.TreeView filterView;
         private System.Windows.Forms.ToolStripMenuItem applyRGBToolStripMenuItem;
+        private System.Windows.Forms.CheckBox topMostBox;
     }
 }

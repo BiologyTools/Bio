@@ -341,6 +341,7 @@
             this.Text = "Scripting";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ScriptRunner_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Scripting_KeyDown);
             this.contextMenuStrip.ResumeLayout(false);
             this.tabControl.ResumeLayout(false);
             this.outputTab.ResumeLayout(false);
