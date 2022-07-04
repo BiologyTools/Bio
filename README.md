@@ -1,6 +1,6 @@
-![alt text](https://github.com/RepoErik/BioImage/blob/master/banner.bmp?raw=true)
+![alt text](https://github.com/RepoErik/BioImage/blob/master/banner.jpg?raw=true)
 
-# BioImage Library
+# Bio Library
 
 A .NET Library for opening & annotating various microscopy imaging formats. Supports all bioformats supported images like .TIF, .CZI etc. 
 Best for working with ROI's in OME format & CSV.
