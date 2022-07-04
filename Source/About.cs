@@ -15,14 +15,14 @@ namespace Bio
         public About()
         {
             InitializeComponent();
-#if DEBUG
+            #if DEBUG
             MessageBox.Show("Application is running in Debug mode.");
             #endif
         }
 
         private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/BioMicroscopy/BioImage");
+            System.Diagnostics.Process.Start("https://github.com/BioMicroscopy/Bio");
         }
     }
 }

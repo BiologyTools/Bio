@@ -108,9 +108,15 @@ namespace Bio
                             BioImage b = BioImage.OpenOME(arg[i]);
                             AddTab(b);
                         }
+                        else
                         if(arg[i].EndsWith(".tif") || arg[i].EndsWith(".tiff"))
                         {
                             BioImage b = BioImage.Open(arg[i]);
+                            AddTab(b);
+                        }
+                        else
+                        {
+                            BioImage b = BioImage.OpenOME(arg[i]);
                             AddTab(b);
                         }
                     }
