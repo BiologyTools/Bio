@@ -28,6 +28,7 @@ namespace Bio
             minBox.Value = Channels[0].Min;
             maxBox.Value = Channels[0].Max;
             hist = new HistogramControl(ImageView.viewer.image.Statistics);
+            MouseWheel += new System.Windows.Forms.MouseEventHandler(ChannelsTool_MouseWheel);
             statsPanel.Controls.Add(hist);
         }
 
@@ -164,6 +165,80 @@ namespace Bio
                 hist.Bin = (int)binBox.Value;
                 hist.Invalidate();
             }
+        }
+
+        private void ChannelsTool_MouseClick(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void ChannelsTool_MouseHover(object sender, EventArgs e)
+        {
+
+        }
+
+        private void ChannelsTool_MouseDown(object sender, MouseEventArgs e)
+        {
+            
+        }
+        private bool pressedX1 = false;
+        private bool pressedX2 = false;
+        private void ChannelsTool_MouseMove(object sender, MouseEventArgs e)
+        {
+            //The event is fired twice per XButton click so we need to only process one of them.
+            if(e.Button == MouseButtons.XButton1)
+            {
+                if (channelsBox.SelectedIndex < channelsBox.Items.Count-1)
+                {
+                    if (pressedX1 == false)
+                    {
+                        channelsBox.SelectedIndex++;
+                        pressedX1 = true;
+                        return;
+                    }
+                }
+            }
+            pressedX1 = false;
+            if (e.Button == MouseButtons.XButton2)
+            {
+                if (channelsBox.SelectedIndex > 0)
+                {
+                    if (pressedX2 == false)
+                    {
+                        channelsBox.SelectedIndex--;
+                        pressedX2 = true;
+                        return;
+                    }
+                }
+            }
+            pressedX2 = false;
+        }
+
+        private void ChannelsTool_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta == 0)
+                return;
+            int i = 10;
+            if (e.Delta > 0)
+            if (maxGraphBox.Value + i < maxGraphBox.Maximum)
+            {
+                maxGraphBox.Value += i;
+                hist.Invalidate();
+                return;
+            }
+            if (e.Delta < 0)
+            if (maxGraphBox.Value - i > maxGraphBox.Minimum)
+            {
+                maxGraphBox.Value -= i;
+                hist.Invalidate();
+                return;
+            }
+        }
+
+        private void stackHistoBox_CheckedChanged(object sender, EventArgs e)
+        {
+            hist.StackHistogram = stackHistoBox.Checked;
+            hist.Invalidate();
         }
     }
 }

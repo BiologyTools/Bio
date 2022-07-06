@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.32510.428
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bio", "Bio.csproj", "{7A6E5506-2296-4820-AA2A-967D4E80D5B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioViewer", "..\BioImageViewer\BioViewer.csproj", "{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioViewer", "..\BioViewer\BioViewer.csproj", "{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "BioSetup", "..\BioImageSetup\BioImageSetup.vdproj", "{1E605839-E334-4F2B-9E50-21004E769F76}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "BioSetup", "..\BioSetup\BioSetup.vdproj", "{2E7CC018-00F9-4C5D-AC7B-6DF1CB674403}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,12 +43,12 @@ Global
 		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|x64.Build.0 = Release|x64
 		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|x86.ActiveCfg = Release|x86
 		{C18C8C2B-3655-435F-8ACD-15A7E4B01AD5}.Release|x86.Build.0 = Release|x86
-		{1E605839-E334-4F2B-9E50-21004E769F76}.Debug|Any CPU.ActiveCfg = Debug
-		{1E605839-E334-4F2B-9E50-21004E769F76}.Debug|x64.ActiveCfg = Debug
-		{1E605839-E334-4F2B-9E50-21004E769F76}.Debug|x86.ActiveCfg = Debug
-		{1E605839-E334-4F2B-9E50-21004E769F76}.Release|Any CPU.ActiveCfg = Release
-		{1E605839-E334-4F2B-9E50-21004E769F76}.Release|x64.ActiveCfg = Release
-		{1E605839-E334-4F2B-9E50-21004E769F76}.Release|x86.ActiveCfg = Release
+		{2E7CC018-00F9-4C5D-AC7B-6DF1CB674403}.Debug|Any CPU.ActiveCfg = Debug
+		{2E7CC018-00F9-4C5D-AC7B-6DF1CB674403}.Debug|x64.ActiveCfg = Debug
+		{2E7CC018-00F9-4C5D-AC7B-6DF1CB674403}.Debug|x86.ActiveCfg = Debug
+		{2E7CC018-00F9-4C5D-AC7B-6DF1CB674403}.Release|Any CPU.ActiveCfg = Release
+		{2E7CC018-00F9-4C5D-AC7B-6DF1CB674403}.Release|x64.ActiveCfg = Release
+		{2E7CC018-00F9-4C5D-AC7B-6DF1CB674403}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

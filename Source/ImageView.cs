@@ -1311,7 +1311,6 @@ namespace Bio
                 UpdateOverlay();
             }
 
-            //Pencil tool
             if (Tools.currentTool != null)
             if(Tools.currentTool.type == Tools.Tool.Type.pencil && e.Button == MouseButtons.Left)
             if (Mode == ViewMode.RGBImage)

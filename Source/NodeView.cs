@@ -17,6 +17,7 @@ namespace Bio
         public static Scripting runner = null;
         public static Recorder recorder = null;
         public static TabsView viewer = null;
+        public static NodeView nodeView = null;
         public class Node
         {
             public TreeNode node;
@@ -79,6 +80,7 @@ namespace Bio
             InitNodes();
             viewer = new TabsView();
             viewer.Show();
+            nodeView = this;
             //timer.Start();
             updateTimer.Start();
         }

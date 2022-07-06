@@ -60,15 +60,23 @@ namespace Bio
             string name = Path.GetFileNameWithoutExtension(s);
             string ext = Path.GetExtension(s);
             int sti = name.LastIndexOf("-");
-            string stb = name.Substring(0, sti);
-            string sta = name.Substring(sti+1, name.Length - sti-1);
-            int ind;
-            if (int.TryParse(sta, out ind))
+            if (sti == -1)
             {
-                return stb + "-" + (ind + 1).ToString() + ext;
+                return name + "-" + i + ext;
+
             }
             else
-                return name + "-" + i + ext;
+            {
+                string stb = name.Substring(0, sti);
+                string sta = name.Substring(sti + 1, name.Length - sti - 1);
+                int ind;
+                if (int.TryParse(sta, out ind))
+                {
+                    return stb + "-" + (ind + 1).ToString() + ext;
+                }
+                else
+                    return name + "-" + i + ext;
+            }
             //
         }
         public static void RemoveImage(BioImage im)
@@ -1043,12 +1051,12 @@ namespace Bio
             set
             {
                 Bitmap b = (Bitmap)value;
+                if(isRGB)
+                b = BufferInfo.SwitchRedBlue(b);
                 b.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 PixelFormat = value.PixelFormat;
                 SizeX = value.Width;
                 SizeY = value.Height;
-                //if(isRGB)
-                //b = BufferInfo.SwitchRedBlue(b);
                 bytes = GetBuffer((Bitmap)b,Stride);
             }
         }
@@ -1422,8 +1430,8 @@ namespace Bio
 
             Coordinate = coord;
             bytes = bts;
-            if (isRGB)
-                SwitchRedBlue();
+            //if (isRGB)
+            //    SwitchRedBlue();
         }
         public BufferInfo(string file, Image im, ZCT coord, int index)
         {
@@ -1433,8 +1441,8 @@ namespace Bio
             pixelFormat = im.PixelFormat;
             Coordinate = coord;
             Image = im;
-            if (isRGB && pixelFormat != PixelFormat.Format48bppRgb)
-                SwitchRedBlue();
+            //if (isRGB && pixelFormat != PixelFormat.Format48bppRgb)
+            //    SwitchRedBlue();
         }
         public BufferInfo(int w, int h, PixelFormat px, byte[] bts, ZCT coord, string id)
         {
@@ -1444,8 +1452,8 @@ namespace Bio
             pixelFormat = px;
             Coordinate = coord;
             bytes = bts;
-            if (isRGB)
-                SwitchRedBlue();
+            //if (isRGB)
+            //    SwitchRedBlue();
         }
         public Statistics UpdateStatistics()
         {
@@ -2461,7 +2469,6 @@ namespace Bio
         public List<BufferInfo> Buffers = new List<BufferInfo>();
         public List<VolumeD> Volumes = new List<VolumeD>();
         public List<Annotation> Annotations = new List<Annotation>();
-
         public string filename = "";
         public string Filename
         {
@@ -2694,7 +2701,7 @@ namespace Bio
                 for (int i = 0; i < Buffers.Count; i += 3)
                 {
                     Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range); 
-                    b = BufferInfo.SwitchRedBlue(b);
+                    //b = BufferInfo.SwitchRedBlue(b);
                     BufferInfo bf = new BufferInfo(Table.GetImageName(ID), b, Buffers[i].Coordinate, index);
                     bi.Buffers.Add(bf);
                     bi.Coords[Buffers[i].Coordinate.Z, Buffers[i].Coordinate.C, Buffers[i].Coordinate.T] = index;
@@ -3669,6 +3676,8 @@ namespace Bio
         }
         public static BioImage Open(string file)
         {
+            Progress pr = new Progress(file, "Opening");
+            pr.Show();
             BioImage b = new BioImage(file);
             b.series = 0;
             done = false;
@@ -3831,7 +3840,7 @@ namespace Bio
                     b.Buffers.Add(inf);
                     BufferInfo.AddBuffer(inf);
                     BufferInfo.CalculateStatistics();
-                    //pr.UpdateProgressF((int)((double)p / (double)pages));
+                    pr.UpdateProgressF((float)((double)p / (double)pages));
                 }
 
                 for (int im = 0; im < b.Buffers.Count; im++)
@@ -3899,6 +3908,8 @@ namespace Bio
         }
         public static BioImage SaveOME(string file, string ID)
         {
+            Progress pr = new Progress(file, "Saving");
+            pr.Show();
             int series = serie;
             BioImage b = new BioImage(ID);
             // create OME-XML metadata store
@@ -4179,7 +4190,6 @@ namespace Bio
                 i++;
             }
 
-            
             writer.setMetadataRetrieve(omexml);
             //We delete the file so we don't just add more images to an existing file;
             if (File.Exists(file))
@@ -4188,13 +4198,12 @@ namespace Bio
             writer.setSeries(series);
             writer.setWriteSequentially(true);
             wr = writer;
-            Progress pr = new Progress(file, "Saving");
-            pr.Show();
+            
             for (int bu = 0; bu < b.Buffers.Count; bu++)
             {
                 writer.saveBytes(bu,b.Buffers[bu].GetSaveBytes());
                 threadProgress = (float)bu / b.Buffers.Count;
-                pr.UpdateProgress((int)threadProgress);
+                pr.UpdateProgressF((int)threadProgress);
                 Application.DoEvents();
             }
             pr.Close();

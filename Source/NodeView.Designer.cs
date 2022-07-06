@@ -54,7 +54,7 @@
             this.treeView.ContextMenuStrip = this.contextMenuStrip;
             this.treeView.Location = new System.Drawing.Point(-1, 27);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(304, 177);
+            this.treeView.Size = new System.Drawing.Size(286, 170);
             this.treeView.TabIndex = 2;
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             // 
@@ -95,7 +95,7 @@
             this.aboutToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(303, 24);
+            this.menuStrip.Size = new System.Drawing.Size(285, 24);
             this.menuStrip.TabIndex = 3;
             // 
             // fileToolStripMenuItem
@@ -134,11 +134,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(303, 204);
+            this.ClientSize = new System.Drawing.Size(285, 197);
             this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.treeView);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "NodeView";
+            this.ShowInTaskbar = false;
             this.Text = "Node View";
             this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.Activated += new System.EventHandler(this.MainForm_Activated);

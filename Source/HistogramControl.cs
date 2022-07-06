@@ -73,6 +73,18 @@ namespace Bio
             get { return graphMin; }
             set { graphMin = value; }
         }
+        private bool stackHistogram = true;
+        public bool StackHistogram
+        {
+            get
+            {
+                return stackHistogram;
+            }
+            set
+            {
+                stackHistogram = value;
+            }
+        }
         private void HistogramControl_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.Clear(Color.LightGray);
@@ -91,18 +103,20 @@ namespace Bio
 
             for (float x = 0; x < graphMax; x++)
             {
-                //Lets draw the stack histogram
-                float val = (float)ImageView.viewer.image.Statistics.StackValues[(int)x];
-                sumbin += val;
-                if (binind == bin)
+                if (StackHistogram)
                 {
-                    float v = sumbin / binind;
-                    float yy = this.Height - (fy * v);
-                    e.Graphics.DrawLine(black, new PointF(fx * x, this.Height), new PointF(fx * x, yy));
-                    binind = 0;
-                    sumbin = 0;
+                    //Lets draw the stack histogram
+                    float val = (float)ImageView.viewer.image.Statistics.StackValues[(int)x];
+                    sumbin += val;
+                    if (binind == bin)
+                    {
+                        float v = sumbin / binind;
+                        float yy = this.Height - (fy * v);
+                        e.Graphics.DrawLine(black, new PointF(fx * x, this.Height), new PointF(fx * x, yy));
+                        binind = 0;
+                        sumbin = 0;
+                    }
                 }
-
                 //Lets draw the channel histogram on top of the stack histogram.
                 float vals = (float)stats.StackValues[(int)x];
                 sumbins += vals;

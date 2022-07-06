@@ -15,6 +15,7 @@ namespace Bio
         public static bool init = false;
         public static TabsView tabview = null;
         public static ImageView viewer = null;
+        public static NodeView nodeView = null;
         public Filter filters = null;
         public StackTools stackTools = null;
         public static Graphics graphics = null;
@@ -415,11 +416,13 @@ namespace Bio
             if(v == ImageView.ViewMode.Raw)
                 rawToolStripMenuItem.Checked = true;
         }
+
         private void scriptRunnerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NodeView.runner.WindowState = FormWindowState.Normal;
             NodeView.runner.Show();
         }
+
         private void ImageViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (this.Image == null)
@@ -440,6 +443,7 @@ namespace Bio
             stackTools.WindowState = FormWindowState.Normal;
             stackTools.Show();
         }
+
         private void scriptRecorderToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Recorder.recorder.WindowState = FormWindowState.Normal;
@@ -474,6 +478,7 @@ namespace Bio
             //Here we update the tabs based on images in the table.
 
         }
+
         private void filtersToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
         }
@@ -609,7 +614,8 @@ namespace Bio
 
         private void nodeViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NodeView.viewer.Show();
+            NodeView.nodeView.Show();
+            NodeView.nodeView.ShowInTaskbar = true;
         }
 
         private void tabControl_Click(object sender, EventArgs e)
