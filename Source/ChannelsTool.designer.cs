@@ -150,7 +150,7 @@ namespace Bio
             this.channelsBox.FormattingEnabled = true;
             this.channelsBox.Location = new System.Drawing.Point(85, 4);
             this.channelsBox.Name = "channelsBox";
-            this.channelsBox.Size = new System.Drawing.Size(166, 21);
+            this.channelsBox.Size = new System.Drawing.Size(165, 21);
             this.channelsBox.TabIndex = 6;
             this.channelsBox.SelectedIndexChanged += new System.EventHandler(this.channelsBox_SelectedIndexChanged);
             // 
@@ -204,7 +204,7 @@ namespace Bio
             this.statsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.statsPanel.Location = new System.Drawing.Point(12, 109);
             this.statsPanel.Name = "statsPanel";
-            this.statsPanel.Size = new System.Drawing.Size(236, 111);
+            this.statsPanel.Size = new System.Drawing.Size(238, 111);
             this.statsPanel.TabIndex = 10;
             // 
             // maxUintBox2
@@ -219,7 +219,7 @@ namespace Bio
             "4096",
             "16383",
             "65535"});
-            this.maxUintBox2.Location = new System.Drawing.Point(157, 250);
+            this.maxUintBox2.Location = new System.Drawing.Point(173, 250);
             this.maxUintBox2.Name = "maxUintBox2";
             this.maxUintBox2.Size = new System.Drawing.Size(77, 21);
             this.maxUintBox2.TabIndex = 16;
@@ -236,7 +236,7 @@ namespace Bio
             0,
             0,
             0});
-            this.maxGraphBox.Location = new System.Drawing.Point(157, 275);
+            this.maxGraphBox.Location = new System.Drawing.Point(173, 275);
             this.maxGraphBox.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -262,7 +262,7 @@ namespace Bio
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label5.AutoSize = true;
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(125, 277);
+            this.label5.Location = new System.Drawing.Point(140, 277);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(27, 13);
             this.label5.TabIndex = 14;
@@ -332,7 +332,7 @@ namespace Bio
             this.binBox.Size = new System.Drawing.Size(77, 20);
             this.binBox.TabIndex = 18;
             this.binBox.Value = new decimal(new int[] {
-            50,
+            10,
             0,
             0,
             0});
@@ -368,7 +368,7 @@ namespace Bio
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(259, 301);
+            this.ClientSize = new System.Drawing.Size(258, 301);
             this.Controls.Add(this.stackHistoBox);
             this.Controls.Add(this.binBox);
             this.Controls.Add(this.label8);

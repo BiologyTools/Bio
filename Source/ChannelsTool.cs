@@ -8,7 +8,6 @@ namespace Bio
 {
     public partial class ChannelsTool : Form
     {
-        //public List<Channel> Channels = new List<Channel>();
         private HistogramControl hist;
         public List<Channel> Channels
         {
@@ -27,7 +26,7 @@ namespace Bio
             channelsBox.SelectedIndex = 0;
             minBox.Value = Channels[0].Min;
             maxBox.Value = Channels[0].Max;
-            hist = new HistogramControl(ImageView.viewer.image.Statistics);
+            hist = new HistogramControl(Channels[channelsBox.SelectedIndex].stats);
             MouseWheel += new System.Windows.Forms.MouseEventHandler(ChannelsTool_MouseWheel);
             statsPanel.Controls.Add(hist);
         }

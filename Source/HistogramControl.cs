@@ -12,6 +12,7 @@ namespace Bio
 {
     public partial class HistogramControl : UserControl
     {
+        
         public HistogramControl(Statistics s)
         {
             stats = s;
@@ -85,21 +86,60 @@ namespace Bio
                 stackHistogram = value;
             }
         }
+        private int mouseX = 0;
+        private int mouseY = 0;
+        public int MouseX
+        {
+            get
+            {
+                return mouseX;
+            }
+        }
+        public int MouseY
+        {
+            get
+            {
+                return mouseX;
+            }
+        }
+        private float mouseValX = 0;
+        private float mouseValY = 0;
+        public float MouseValX
+        {
+            get
+            {
+                return mouseValX;
+            }
+        }
+        public float MouseValY
+        {
+            get
+            {
+                return mouseValY;
+            }
+        }
+        private float fx = 0;
+        private float fy = 0;
+        private Bitmap bm;
+        private Graphics g;
         private void HistogramControl_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.Clear(Color.LightGray);
-            e.Graphics.TranslateTransform(-graphMin, 0);
-            //e.Graphics.ScaleTransform(scale.Width, scale.Height);
+            g.Clear(Color.LightGray);
+            g.TranslateTransform(-graphMin, 0);
+            //g.ScaleTransform(scale.Width, scale.Height);
             if (stats == null)
                 return;
-            float fy = ((float)this.Height) / (float)stats.StackMedian;
-            float fx = ((float)this.Width) / ((float)graphMax);
+            fy = ((float)this.Height) / (float)stats.StackMedian;
+            fx = ((float)this.Width) / ((float)graphMax);
             Pen black = new Pen(Color.FromArgb(150,0,0,0), bin * fx);
             Pen blue = new Pen(Color.FromArgb(150,0, 0, 255), bin * fx);
             float sumbins = 0;
             float sumbin = 0;
             int binind = 0;
             int bininds = 0;
+
+            g.DrawString("(" + (mouseX / fx).ToString() + ", " + (Math.Abs(graphMin - ((Height - mouseY) / fy))).ToString() + ")"
+                , SystemFonts.DefaultFont, Brushes.Black, mouseX + 10, mouseY -20);
 
             for (float x = 0; x < graphMax; x++)
             {
@@ -112,7 +152,7 @@ namespace Bio
                     {
                         float v = sumbin / binind;
                         float yy = this.Height - (fy * v);
-                        e.Graphics.DrawLine(black, new PointF(fx * x, this.Height), new PointF(fx * x, yy));
+                        g.DrawLine(black, new PointF(fx * x, this.Height), new PointF(fx * x, yy));
                         binind = 0;
                         sumbin = 0;
                     }
@@ -124,20 +164,55 @@ namespace Bio
                 {
                     float v = sumbins / bininds;
                     float yy = this.Height - (fy * v);
-                    e.Graphics.DrawLine(blue, new PointF(fx * x, this.Height), new PointF(fx * x, yy));
+                    g.DrawLine(blue, new PointF(fx * x, this.Height), new PointF(fx * x, yy));
                     bininds = 0;
                     sumbins = 0;
                 }
                 binind++;
                 bininds++;
             }
+            g.DrawLine(Pens.Red, new PointF((fx * stats.StackMax), 0), new PointF((fx * stats.StackMax), this.Height));
+            g.DrawLine(Pens.Red, new PointF(fx * stats.StackMin, 0), new PointF(fx * stats.StackMin, this.Height));
 
-            e.Graphics.DrawLine(Pens.Green, new PointF((fx * Max), 0), new PointF((fx * Max), this.Height));
-            e.Graphics.DrawLine(Pens.Green, new PointF(fx * Min, 0), new PointF(fx * Min, this.Height));
-            e.Graphics.DrawLine(Pens.Red, new PointF((fx * stats.StackMax), 0), new PointF((fx * stats.StackMax), this.Height));
-            e.Graphics.DrawLine(Pens.Red, new PointF(fx * stats.StackMin, 0), new PointF(fx * stats.StackMin, this.Height));
+            g.DrawLine(Pens.Green, new PointF((fx * Max), 0), new PointF((fx * Max), this.Height));
+            g.DrawString(Max.ToString(), SystemFonts.DefaultFont, Brushes.Black, new PointF((fx * Max), 0));
+            g.DrawLine(Pens.Green, new PointF(fx * Min, 0), new PointF(fx * Min, this.Height));
+            g.DrawString(Min.ToString(), SystemFonts.DefaultFont, Brushes.Black, new PointF((fx * Min), 0));
             blue.Dispose();
             black.Dispose();
+            e.Graphics.DrawImage(bm, 0, 0);
+        }
+
+        private void HistogramControl_MouseDown(object sender, MouseEventArgs e)
+        {
+            mouseX = e.X;
+            mouseY = e.Y;
+            Invalidate();
+        }
+
+        private void HistogramControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            mouseValX = e.X * fx;
+            mouseValY = e.X * fy;
+        }
+
+        private void HistogramControl_SizeChanged(object sender, EventArgs e)
+        {
+            InitGraphics();
+        }
+        private void InitGraphics()
+        {
+            if (Width == 0 || Height == 0)
+                return;
+            bm = new Bitmap(Width, Height);
+            if (g != null)
+                g.Dispose();
+            g = Graphics.FromImage(bm);
+        }
+
+        private void copyViewToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetImage(bm);
         }
     }
 }
