@@ -273,6 +273,12 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\CodeView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Source\CodeView.Designer.cs">
+      <DependentUpon>CodeView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Source\About.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -410,6 +416,9 @@
     <Compile Include="Source\Win32.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Source\CodeView.resx">
+      <DependentUpon>CodeView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Source\About.resx">
       <DependentUpon>About.cs</DependentUpon>
     </EmbeddedResource>

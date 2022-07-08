@@ -19,12 +19,12 @@ namespace Bio
     public partial class Scripting : Form
     {
         public static string log;
-        
+        public CodeView view = null;
+
         public static void LogLine(string s)
         {
             log += s + Environment.NewLine;
         }
-
         public static Dictionary<string, Script> Scripts = new Dictionary<string, Script>();
         public class Script
         {
@@ -151,13 +151,11 @@ namespace Bio
             Move,
             None
         }
-
         public enum ScriptType
         {
             tool,
             script
         }
-
         private static State state;
         public static State GetState()
         {
@@ -217,14 +215,25 @@ namespace Bio
         }
         public void RefreshStatus()
         {
+            errorView.Clear();
             foreach (ListViewItem item in scriptView.SelectedItems)
             {
                 Script s = (Script)item.Tag;
                 //We update item text to show Script status.
                 item.Text = s.ToString();
                 outputBox.Text = s.output;
-                if(s.ex!=null)
-                errorBox.Text = s.ex.Message.ToString();
+                if (s.ex != null)
+                {
+                    string[] sps = s.ex.Message.Split('>');
+                    //ListViewItem it = new ListViewItem(s.ex.ToString());
+                    for (int i = 1; i < sps.Length; i++)
+                    {
+                        ListViewItem er = new ListViewItem(sps[i]);
+                        er.Tag = s.ex;
+                        errorView.Items.Add(er);
+                    }
+                    
+                }
             }
             foreach (ListViewItem item in scriptView.SelectedItems)
             {
@@ -240,14 +249,18 @@ namespace Bio
                 logBox.ScrollToCaret();
             }
         }
+        private CodeView codeview;
+        private RichTextBox textBox;
         public Scripting()
         {
             InitializeComponent();
             scriptView.MultiSelect = false;
             RefreshItems();
             timer.Start();
+            codeview = new CodeView();
+            textBox = codeview.TextBox;
+            splitContainer.Panel1.Controls.Add(codeview);
         }
-
         public void RunScriptFile(string file)
         {
             Script sc = new Script(file);
@@ -260,7 +273,6 @@ namespace Bio
             log = "";
             outputBox.Text = "";
             logBox.Text = "";
-            errorBox.Text = "";
             if (scriptView.SelectedItems.Count == 0)
                     return;
             foreach (ListViewItem item in scriptView.SelectedItems)
@@ -384,9 +396,23 @@ namespace Bio
             }
         }
 
-        private void textBox_KeyPress(object sender, KeyPressEventArgs e)
+        private void errorBox_SelectionChanged(object sender, EventArgs e)
         {
+            Script sc = (Script)scriptView.SelectedItems[0].Tag;
+            Exception ex = sc.ex;
+        }
 
+        private void errorView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Exception ex = (Exception)errorView.SelectedItems[0].Tag;
+            string exs = ex.Message.Substring(ex.Message.IndexOf('('), ex.Message.IndexOf(')'));
+            string ls = exs.Substring(1, exs.IndexOf(',')-1);
+            int line = int.Parse(ls);
+            string c = exs.Substring(exs.IndexOf(',') + 1, exs.IndexOf(")") - exs.IndexOf(',') - 1);
+            int cr = int.Parse(c);
+            //textBox.SelectionLength = cr;
+            textBox.SelectionStart = line;
+            textBox.Focus();
         }
     }
 }
