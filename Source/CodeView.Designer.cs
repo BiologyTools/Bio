@@ -35,6 +35,9 @@ namespace Bio
             // 
             // panel
             // 
+            this.panel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.panel.Location = new System.Drawing.Point(49, 0);
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(318, 256);
@@ -42,6 +45,8 @@ namespace Bio
             // 
             // panel2
             // 
+            this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(49, 256);
@@ -55,6 +60,7 @@ namespace Bio
             this.Controls.Add(this.panel);
             this.Name = "CodeView";
             this.Size = new System.Drawing.Size(370, 256);
+            this.Resize += new System.EventHandler(this.CodeView_Resize);
             this.ResumeLayout(false);
 
         }

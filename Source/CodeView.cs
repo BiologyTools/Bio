@@ -14,6 +14,7 @@ namespace Bio
     {
         private ScrollTextBox textBox = new ScrollTextBox();
         private ScrollTextBox lineBox = new ScrollTextBox();
+        private int tabSize = 15;
         public CodeView()
         {
             InitializeComponent();
@@ -22,12 +23,13 @@ namespace Bio
             textBox.TextChanged += new EventHandler(textBox_TextChanged);
             textBox.SelectionChanged += new EventHandler(richTextBox_SelectionChanged);
             textBox.VScroll += new EventHandler(textBox_TextChanged);
+            textBox.WordWrap = false;
             panel.Controls.Add(textBox);
             lineBox.Dock = DockStyle.Fill;
             lineBox.ScrollBars = RichTextBoxScrollBars.None;
             panel2.Controls.Add(lineBox);
             MouseWheel += new MouseEventHandler(Code_MouseWheel);
-            textBox.SelectionTabs = new int[] { 10, 10, 10, 10, 10, 10 };
+            textBox.SelectionTabs = new int[] { tabSize, tabSize * 2, tabSize * 3, tabSize * 4, tabSize * 5, tabSize * 6 };
             UpdateLines();
         }
         public RichTextBox TextBox
@@ -37,15 +39,51 @@ namespace Bio
                 return textBox;
             }
         }
+
+        public bool WordWrap
+        {
+            get
+            {
+                return textBox.WordWrap;
+            }
+            set
+            {
+                textBox.WordWrap = value;
+            }
+        }
+
+        int TabCount(string s)
+        {
+            return (int)s.Count(ch => ch == '\t');
+        }
         public void UpdateLines()
         {
             lineBox.Text = "";
+            Graphics g = textBox.CreateGraphics();
             for (int i = 0; i < textBox.Lines.Length; i++)
             {
-                lineBox.Text += i + Environment.NewLine;
+                if (WordWrap)
+                {
+                    string s = textBox.Lines[i].Replace("\n", "");
+                    int t = TabCount(textBox.Lines[i]);
+                    float f = (g.MeasureString(s, textBox.Font).Width) - (t * tabSize);
+                    f += t * tabSize;
+                    if (f > textBox.Width)
+                    {
+                        //IF line wraps to next line we ensure that line numbers stay correct.
+                        lineBox.Text += (i + 1).ToString() + Environment.NewLine;
+                        lineBox.Text += Environment.NewLine;
+                    }
+                    else
+                        lineBox.Text += (i + 1).ToString() + Environment.NewLine;
+                }
+                else
+                    lineBox.Text += (i + 1).ToString() + Environment.NewLine;
             }
             lineBox.VerticalScrollPosition = textBox.VerticalScrollPosition;
+            g.Dispose();
         }
+
         /// <summary>
         /// TextBox with support for getting and setting the vertical scroll bar
         /// position, as well as listening to vertical scroll events.
@@ -350,6 +388,11 @@ namespace Bio
         private void textBox_FontChanged(object sender, EventArgs e)
         {
             lineBox.Font = textBox.Font;
+        }
+
+        private void CodeView_Resize(object sender, EventArgs e)
+        {
+            UpdateLines();
         }
     }
 }

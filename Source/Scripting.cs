@@ -251,6 +251,7 @@ namespace Bio
         }
         private CodeView codeview;
         private RichTextBox textBox;
+
         public Scripting()
         {
             InitializeComponent();
@@ -258,6 +259,8 @@ namespace Bio
             RefreshItems();
             timer.Start();
             codeview = new CodeView();
+            codeview.Dock = DockStyle.Fill;
+            //splitContainer.Dock = DockStyle.Fill;
             textBox = codeview.TextBox;
             splitContainer.Panel1.Controls.Add(codeview);
         }
