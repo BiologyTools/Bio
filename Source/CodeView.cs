@@ -24,6 +24,7 @@ namespace Bio
             textBox.SelectionChanged += new EventHandler(richTextBox_SelectionChanged);
             textBox.VScroll += new EventHandler(textBox_TextChanged);
             textBox.WordWrap = false;
+            textBox.AcceptsTab = true;
             panel.Controls.Add(textBox);
             lineBox.Dock = DockStyle.Fill;
             lineBox.ScrollBars = RichTextBoxScrollBars.None;

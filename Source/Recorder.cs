@@ -13,11 +13,9 @@ namespace Bio
     public partial class Recorder : Form
     {
         public static string log;
-        private static bool update = false;
         public static void AddLine(string s)
         {
             log += s + Environment.NewLine;
-            update = true;
         }
         public static Recorder recorder = null;
         public Recorder()

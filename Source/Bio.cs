@@ -1040,13 +1040,11 @@ namespace Bio
             get { return bytes; }
             set { bytes = value; }
         }
-        private Bitmap bitmap = null;
         public Image Image
         {
             get
             { 
-                bitmap = GetBitmap(SizeX, SizeY, Stride, PixelFormat, Bytes);
-                return bitmap;
+                return GetBitmap(SizeX, SizeY, Stride, PixelFormat, Bytes);
             }
             set
             {
@@ -1676,9 +1674,10 @@ namespace Bio
         public void Dispose()
         {
             bytes = null;
-            if(bitmap!=null)
-            bitmap.Dispose();
-            statistics = null;
+            statistics.Dispose();
+            ID = null;
+            file = null;
+            GC.Collect();
         }
     }
     public class Filt
@@ -2371,6 +2370,18 @@ namespace Bio
                     stackMedian = (float)stackValues[i];
             }
 
+        }
+        public void Dispose()
+        {
+            stackValues = null;
+            values = null;
+            GC.Collect();
+        }
+        public void DisposeHistogram()
+        {
+            stackValues = null;
+            values = null;
+            GC.Collect();
         }
     }
     public class SizeInfo
@@ -5508,6 +5519,12 @@ namespace Bio
                 b.Channels[c].Max = (int)b.Channels[c].stats.StackMax;
             }
             
+            for (int i = 0; i < b.Buffers.Count; i++)
+            {
+                //We get rid of the histogram statistics as they will otherwise consume to much memory.
+                b.Buffers[i].Statistics.DisposeHistogram();
+            }
+            
         }
         public static void AutoThreshold()
         {
@@ -5530,7 +5547,6 @@ namespace Bio
             if(rgbBitmap16!=null)
                 rgbBitmap16.Dispose();
             Table.RemoveImage(this);
-            GC.Collect();
             GC.Collect();
         }
         public override string ToString()
