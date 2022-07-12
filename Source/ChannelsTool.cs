@@ -26,7 +26,7 @@ namespace Bio
             channelsBox.SelectedIndex = 0;
             minBox.Value = Channels[0].Min;
             maxBox.Value = Channels[0].Max;
-            hist = new HistogramControl(Channels[channelsBox.SelectedIndex].stats);
+            hist = new HistogramControl(Channels[channelsBox.SelectedIndex].statistics);
             MouseWheel += new System.Windows.Forms.MouseEventHandler(ChannelsTool_MouseWheel);
             statsPanel.Controls.Add(hist);
         }
@@ -65,7 +65,7 @@ namespace Bio
             maxBox.Value = Channels[channelsBox.SelectedIndex].Max;
             if (hist != null)
             {
-                hist.Statistics = Channels[channelsBox.SelectedIndex].stats;
+                hist.Statistics = Channels[channelsBox.SelectedIndex].statistics;
                 hist.Invalidate();
             }
             ImageView.viewer.UpdateView();

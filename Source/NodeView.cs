@@ -60,6 +60,7 @@ namespace Bio
             InitializeComponent();
             Init();
             InitNodes();
+            TabsView.nodeView = this;
             if (args.Length > 0)
             {
                 viewer = new TabsView(args);
@@ -165,6 +166,13 @@ namespace Bio
                     roi.Text = an.ToString();
                 }
             }
+        }
+
+        public void Exit()
+        {
+            this.Close();
+            Application.Exit();
+            Application.ExitThread();
         }
 
         private void MainForm_Activated(object sender, EventArgs e)

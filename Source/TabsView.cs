@@ -425,17 +425,8 @@ namespace Bio
 
         private void ImageViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (this.Image == null)
-                return;
-            //Table.RemoveViewer(this);
-            this.Image.Dispose();
-            foreach (TabPage page in tabControl.TabPages)
-            {
-                ImageView iv = (ImageView)page.Controls[0];
-                Table.RemoveImage(iv.image.ID);
-                Table.RemoveViewer(iv);
-
-            }
+            //We close the mainform nodeview to exit application.
+            nodeView.Exit();
         }
 
         private void stackToolsToolStripMenuItem_Click(object sender, EventArgs e)

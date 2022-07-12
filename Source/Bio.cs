@@ -733,7 +733,7 @@ namespace Bio
             return type.ToString() + ", " + Text + " (" + Point.X + ", " + Point.Y + ") " + coord.ToString();
         }
     }
-    public class Channel
+    public class Channel : IDisposable
     {
         public string Name = "";
         public string ID = "";
@@ -752,7 +752,7 @@ namespace Bio
         public int bitsPerPixel;
 
         public IntRange range;
-        public Statistics stats;
+        public Statistics statistics;
         public int Index
         {
             get
@@ -829,6 +829,10 @@ namespace Bio
                 return index.ToString();
             else
                 return index + ", " + Name;
+        }
+        public void Dispose()
+        {
+            statistics.Dispose();
         }
     }
     public class BufferInfo : IDisposable
@@ -1458,11 +1462,14 @@ namespace Bio
             statistics = Statistics.FromBytes(bytes, SizeX, SizeY, RGBChannelsCount, BitsPerPixel, Stride);
             return statistics;
         }
-        
+        /*
+        private static int count = 0;
         private static List<BufferInfo> bufferInfos = new List<BufferInfo>();
-        public static void AddBuffer(BufferInfo b)
+        public static void AddBuffer(BufferInfo b, int Count)
         {
+            index = 0;
             bufferInfos.Add(b);
+            count = Count;
         }
         public static void CalculateStatistics()
         {
@@ -1473,13 +1480,7 @@ namespace Bio
         {
             bufferInfos.Clear();
         }
-        private static void CalcStats()
-        {
-            BufferInfo bf = bufferInfos[bufferInfos.Count - 1];
-            bf.statistics = Statistics.FromBytes(bf.Bytes, bf.SizeX, bf.SizeY, bf.RGBChannelsCount, bf.BitsPerPixel, bf.Stride);
-            
-        }
-        
+        */
         public static Bitmap SwitchRedBlue(Bitmap image)
         {
             ExtractChannel cr = new ExtractChannel(AForge.Imaging.RGB.R);
@@ -1677,7 +1678,6 @@ namespace Bio
             statistics.Dispose();
             ID = null;
             file = null;
-            GC.Collect();
         }
     }
     public class Filt
@@ -2267,10 +2267,10 @@ namespace Bio
                 return stackMin;
             }
         }
+        private float meansum = 0;
+        private float[] stackValues;
         private int count = 0;
-        private double meansum = 0;
-        private double[] stackValues;
-        public double[] StackValues
+        public float[] StackValues
         {
             get { return stackValues; }
         }
@@ -2278,13 +2278,13 @@ namespace Bio
         {
             if (bit16)
             {
-                stackValues = new double[ushort.MaxValue+1];
+                stackValues = new float[ushort.MaxValue+1];
                 values = new int[ushort.MaxValue+1];
                 bitsPerPixel = 16;
             }
             else
             {
-                stackValues = new double[256];
+                stackValues = new float[256];
                 values = new int[256];
                 bitsPerPixel = 8;
             }
@@ -2342,6 +2342,25 @@ namespace Bio
         {
             return FromBytes(bf.Bytes, bf.SizeX, bf.SizeY, bf.RGBChannelsCount, bf.BitsPerPixel, bf.Stride);
         }
+        public static BioImage b = null;
+        public static Hashtable list = new Hashtable();
+        public static void FromBytes()
+        {
+            string name = Thread.CurrentThread.Name;
+            BufferInfo bf = (BufferInfo)list[name];
+            bf.Statistics = FromBytes(bf);
+        }
+        public static void CalcStatistics(BufferInfo bf)
+        {
+            Thread th = new Thread(FromBytes);
+            th.Name = bf.ID;
+            list.Add(th.Name.ToString(), bf);
+            th.Start();
+        }
+        public static void ClearCalcBuffer()
+        {
+            list.Clear();
+        }
         public void AddStatistics(Statistics s)
         {
             if (stackMax < s.max)
@@ -2360,7 +2379,7 @@ namespace Bio
         {
             for (int i = 0; i < stackValues.Length; i++)
             {
-                stackValues[i] /= (double)count;
+                stackValues[i] /= (float)count;
             }
             stackMean = (float)meansum / (float)count;
 
@@ -2375,13 +2394,11 @@ namespace Bio
         {
             stackValues = null;
             values = null;
-            GC.Collect();
         }
         public void DisposeHistogram()
         {
             stackValues = null;
             values = null;
-            GC.Collect();
         }
     }
     public class SizeInfo
@@ -2657,8 +2674,9 @@ namespace Bio
                 b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
                 Buffers[i].Image = b;
                 bitsPerPixel = 8;
-                BufferInfo.AddBuffer(Buffers[i]);
-                BufferInfo.CalculateStatistics();
+                Statistics.CalcStatistics(Buffers[i]);
+                //BufferInfo.AddBuffer(Buffers[i],Buffers.Count);
+                //Statistics.FromBuffer(Buffers[i]);
             }
             foreach (Channel c in Channels)
             {
@@ -2693,8 +2711,9 @@ namespace Bio
                 for (int i = 0; i < Buffers.Count; i++)
                 {
                     Buffers[i].Image = BufferInfo.RGBTo24Bit((Bitmap)Buffers[i].Image);
-                    BufferInfo.AddBuffer(Buffers[i]);
-                    BufferInfo.CalculateStatistics();
+                    Statistics.CalcStatistics(Buffers[i]);
+                    //BufferInfo.AddBuffer(Buffers[i], Buffers.Count);
+                    //BufferInfo.CalculateStatistics();
                 }
             }
             else
@@ -2732,8 +2751,9 @@ namespace Bio
             {
                 Bitmap b = BufferInfo.RGBTo32Bit((Bitmap)Buffers[i].Image);
                 Buffers[i].Image = b;
-                BufferInfo.AddBuffer(Buffers[i]);
-                BufferInfo.CalculateStatistics();
+                Statistics.CalcStatistics(Buffers[i]);
+                //BufferInfo.AddBuffer(Buffers[i], Buffers.Count);
+                //BufferInfo.CalculateStatistics();
             }
             Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To32Bit();");
         }
@@ -3601,6 +3621,7 @@ namespace Bio
 
         public static BioImage Save(string file, string ID)
         {
+            Progress pr = new Progress(file, "Saving");
             BioImage b = Table.GetImage(ID);
             done = false;
             string fn = Path.GetFileNameWithoutExtension(file);
@@ -3675,7 +3696,8 @@ namespace Bio
                             offset += stride;
                         }
                         image.WriteDirectory();
-                        threadProgress = ((float)im / (float)b.ImageCount);
+                        pr.UpdateProgressF((float)im / (float)b.ImageCount);
+                        Application.DoEvents();
                         im++;
                     }
                 }
@@ -3683,12 +3705,16 @@ namespace Bio
             image.Dispose();
             done = true;
             Recorder.AddLine("Bio.BioImage.Save(" + '"' + file + '"' + "," + '"' + ID + '"' + ");");
+            pr.Close();
             return b;
         }
         public static BioImage Open(string file)
         {
+            Stopwatch st = new Stopwatch();
+            st.Start();
             Progress pr = new Progress(file, "Opening");
             pr.Show();
+            Application.DoEvents();
             BioImage b = new BioImage(file);
             b.series = 0;
             done = false;
@@ -3837,7 +3863,6 @@ namespace Bio
                 b.Buffers = new List<BufferInfo>();
                 int pages = image.NumberOfDirectories();
                 int stride = image.ScanlineSize();
-
                 for (int p = 0; p < pages; p++)
                 {
                     image.SetDirectory((short)p);
@@ -3849,9 +3874,10 @@ namespace Bio
                     }
                     BufferInfo inf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), p);
                     b.Buffers.Add(inf);
-                    BufferInfo.AddBuffer(inf);
-                    BufferInfo.CalculateStatistics();
+                    Statistics.CalcStatistics(inf);
+                    //b.Buffers[b.Buffers.Count - 1].Statistics = Statistics.FromBytes(inf);
                     pr.UpdateProgressF((float)((double)p / (double)pages));
+                    Application.DoEvents();
                 }
 
                 for (int im = 0; im < b.Buffers.Count; im++)
@@ -3905,16 +3931,17 @@ namespace Bio
             }
             
             done = true;
-            //We wait for threshold image statistics calculation
+            //We wait for histogram image statistics calculation
             do
             {
             } while (b.Buffers[b.Buffers.Count -1].Statistics==null);
-            BufferInfo.ClearStatsBuffer();
-
+            Statistics.ClearCalcBuffer();
             AutoThreshold(b,false);
-
             Recorder.AddLine("Bio.BioImage.Open(" + '"' + file + '"' + ");");
             Table.AddImage(b);
+            pr.Close();
+            pr.Dispose();
+            st.Stop();
             return b;
         }
         public static BioImage SaveOME(string file, string ID)
@@ -4705,20 +4732,16 @@ namespace Bio
                     BufferInfo[] bfs = BufferInfo.RGB48To16(file, SizeX, SizeY, stride, bytes, new ZCT(0, 0, 0));
                     b.Buffers.AddRange(bfs);
                     //We add the buffers to thresholding image statistics calculation threads.
-                    BufferInfo.AddBuffer(bfs[0]);
-                    BufferInfo.CalculateStatistics();
-                    BufferInfo.AddBuffer(bfs[1]);
-                    BufferInfo.CalculateStatistics();
-                    BufferInfo.AddBuffer(bfs[2]);
-                    BufferInfo.CalculateStatistics();
+                    Statistics.CalcStatistics(bfs[0]);
+                    Statistics.CalcStatistics(bfs[1]);
+                    Statistics.CalcStatistics(bfs[2]);
                 }
                 else
                 {
                     BufferInfo bf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), 0);
                     b.Buffers.Add(bf);
                     //We add the buffers to thresholding image statistics calculation threads.
-                    BufferInfo.AddBuffer(bf);
-                    BufferInfo.CalculateStatistics();
+                    Statistics.CalcStatistics(bf);
                 }
                 threadProgress = ((float)p / (float)pages)*100;
 
@@ -4819,8 +4842,8 @@ namespace Bio
             AutoThreshold(b,false);
             for (int ch = 0; ch < b.Channels.Count; ch++)
             {
-                b.Channels[ch].Min = (int)b.Channels[ch].stats.StackMin;
-                b.Channels[ch].Max = (int)b.Channels[ch].stats.StackMax;
+                b.Channels[ch].Min = (int)b.Channels[ch].statistics.StackMin;
+                b.Channels[ch].Max = (int)b.Channels[ch].statistics.StackMax;
             }
             Table.AddImage(b);
             Recorder.AddLine("Bio.BioImage.OpenOME(" + '"' + file + '"' + ");");
@@ -5479,6 +5502,7 @@ namespace Bio
         private static bool update = false;
         public static void AutoThreshold(BioImage b, bool updateImageStats)
         {
+            bstats = b;
             Statistics statistics = null;
             if (b.bitsPerPixel > 8)
                 statistics = new Statistics(true);
@@ -5508,27 +5532,34 @@ namespace Bio
                         }
                     }
                     st.MeanHistogram();
-                    b.Channels[c].stats = st;
+                    b.Channels[c].statistics = st;
                 }
             }
             statistics.MeanHistogram();
             b.statistics = statistics;
             for (int c = 0; c < b.Channels.Count; c++)
             {
-                b.Channels[c].Min = (int)b.Channels[c].stats.StackMin;
-                b.Channels[c].Max = (int)b.Channels[c].stats.StackMax;
+                b.Channels[c].Min = (int)b.Channels[c].statistics.StackMin;
+                b.Channels[c].Max = (int)b.Channels[c].statistics.StackMax;
             }
-            
-            for (int i = 0; i < b.Buffers.Count; i++)
-            {
-                //We get rid of the histogram statistics as they will otherwise consume to much memory.
-                b.Buffers[i].Statistics.DisposeHistogram();
-            }
-            
+
+            //We get rid of the histogram statistics data as they will otherwise consume too much memory.
+            Thread th = new Thread(DisposeHistogram);
+            th.Start();
         }
         public static void AutoThreshold()
         {
             AutoThreshold(bstats, update);
+        }
+
+        public static void DisposeHistogram()
+        {
+            for (int i = 0; i < bstats.Buffers.Count; i++)
+            {
+                //We get rid of the histogram statistics data as they will otherwise consume too much memory.
+                bstats.Buffers[i].Statistics.DisposeHistogram();
+            }
+            GC.Collect();
         }
         public static void AutoThresholdThread(BioImage b)
         {
@@ -5542,7 +5573,11 @@ namespace Bio
             {
                 Buffers[i].Dispose();
             }
-            if(rgbBitmap8!=null)
+            for (int i = 0; i < Channels.Count; i++)
+            {
+                Channels[i].Dispose();
+            }
+            if (rgbBitmap8!=null)
                 rgbBitmap8.Dispose();
             if(rgbBitmap16!=null)
                 rgbBitmap16.Dispose();
