@@ -103,7 +103,7 @@ namespace Bio
             this.panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel.Location = new System.Drawing.Point(0, 24);
             this.panel.Name = "panel";
-            this.panel.Size = new System.Drawing.Size(448, 1);
+            this.panel.Size = new System.Drawing.Size(500, 1);
             this.panel.TabIndex = 1;
             this.panel.Click += new System.EventHandler(this.panel_Click);
             // 
@@ -114,7 +114,7 @@ namespace Bio
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(448, 1);
+            this.tabControl.Size = new System.Drawing.Size(500, 1);
             this.tabControl.TabIndex = 0;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             this.tabControl.Click += new System.EventHandler(this.tabControl_Click);
@@ -194,49 +194,49 @@ namespace Bio
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "Open Images";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // openOMEToolStripMenuItem
             // 
             this.openOMEToolStripMenuItem.Name = "openOMEToolStripMenuItem";
-            this.openOMEToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.openOMEToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openOMEToolStripMenuItem.Text = "Open OME Images";
             this.openOMEToolStripMenuItem.Click += new System.EventHandler(this.openOMEToolStripMenuItem_Click_1);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "Save Selected Tiff";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveOMEToolStripMenuItem
             // 
             this.saveOMEToolStripMenuItem.Name = "saveOMEToolStripMenuItem";
-            this.saveOMEToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.saveOMEToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveOMEToolStripMenuItem.Text = "Save Selected OME";
             this.saveOMEToolStripMenuItem.Click += new System.EventHandler(this.saveOMEToolStripMenuItem_Click);
             // 
             // saveAllToolStripMenuItem
             // 
             this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
-            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveAllToolStripMenuItem.Text = "Save All Tiff";
             this.saveAllToolStripMenuItem.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
             // 
             // newTabViewToolStripMenuItem
             // 
             this.newTabViewToolStripMenuItem.Name = "newTabViewToolStripMenuItem";
-            this.newTabViewToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.newTabViewToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newTabViewToolStripMenuItem.Text = "New Process";
             this.newTabViewToolStripMenuItem.Click += new System.EventHandler(this.newTabViewToolStripMenuItem_Click);
             // 
             // nodeViewToolStripMenuItem
             // 
             this.nodeViewToolStripMenuItem.Name = "nodeViewToolStripMenuItem";
-            this.nodeViewToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.nodeViewToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.nodeViewToolStripMenuItem.Text = "Node View";
             this.nodeViewToolStripMenuItem.Click += new System.EventHandler(this.nodeViewToolStripMenuItem_Click);
             // 
@@ -374,7 +374,7 @@ namespace Bio
             this.aboutToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(448, 24);
+            this.menuStrip.Size = new System.Drawing.Size(500, 24);
             this.menuStrip.TabIndex = 0;
             // 
             // formatToolStripMenuItem
@@ -466,7 +466,7 @@ namespace Bio
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(69)))), ((int)(((byte)(77)))), ((int)(((byte)(98)))));
-            this.ClientSize = new System.Drawing.Size(448, 25);
+            this.ClientSize = new System.Drawing.Size(500, 25);
             this.Controls.Add(this.panel);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

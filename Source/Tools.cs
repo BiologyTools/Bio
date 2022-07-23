@@ -383,45 +383,39 @@ namespace Bio
                 Rectangle r = new Rectangle((int)ImageView.mouseDown.X, (int)ImageView.mouseDown.Y, (int)(ImageView.mouseUp.X - ImageView.mouseDown.X), (int)(ImageView.mouseUp.Y - ImageView.mouseDown.Y));
                 if (r.Width <= 2 && r.Height <= 2)
                     return;
-                Bitmap image = ImageView.viewer.image.GetBitmap(coord);
-                Crop c = new Crop(r);
-                Bitmap crop = c.Apply(image);
-
-                Bitmap gray = null;
-                if (ImageView.viewer.image.bitsPerPixel > 8)
-                    gray = AForge.Imaging.Image.Convert16bppTo8bpp(crop);
-                else
-                    gray = crop;
-                AForge.Imaging.ImageStatistics st = new AForge.Imaging.ImageStatistics(gray);
-                Threshold th = null;
+                BufferInfo bf = ImageView.viewer.image.Buffers[ImageView.viewer.image.Coords[coord.Z, coord.C, coord.T]].GetCropBuffer(r);
+                Statistics st = Statistics.FromBytes(bf);
+                Bitmap crop = (Bitmap)bf.Image;
+                Threshold th;
                 if(magicSel.Numeric)
                 {
-                    th = new Threshold(magicSel.Threshold);
+                    th = new Threshold((int)magicSel.Threshold);
                 }
                 else
                 if(magicSel.Index == 2)
-                    th = new Threshold(st.Gray.Median - st.Gray.Min);
+                    th = new Threshold((int)(st.Min + st.Mean));
                 else
                 if(magicSel.Index == 1)
-                    th = new Threshold(st.Gray.Median);
+                    th = new Threshold((int)st.Median);
                 else
-                    th = new Threshold(st.Gray.Min);
-
-                th.ApplyInPlace(gray);
-
+                    th = new Threshold(st.Min);
+                th.ApplyInPlace(crop);
                 Invert inv = new Invert();
-                inv.ApplyInPlace(gray);
-
+                Bitmap det = AForge.Imaging.Image.Convert16bppTo8bpp((crop));
                 BlobCounter blobCounter = new BlobCounter();
-                blobCounter.ProcessImage(gray);
+
+                Clipboard.SetImage(det);
+                
+                blobCounter.ProcessImage(det);
                 Blob[] blobs = blobCounter.GetObjectsInformation();
                 // create convex hull searching algorithm
                 GrahamConvexHull hullFinder = new GrahamConvexHull();
                 // lock image to draw on it
                 // process each blob
-                
                 foreach (Blob blob in blobs)
                 {
+                    if(blob.Rectangle.Width < magicSel.Min  || blob.Rectangle.Height < magicSel.Max)
+                        continue;
                     List<IntPoint> leftPoints = new List<IntPoint>();
                     List<IntPoint> rightPoints = new List<IntPoint>();
                     List<IntPoint> edgePoints = new List<IntPoint>();

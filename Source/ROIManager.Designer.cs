@@ -54,8 +54,6 @@
             this.showTextBox = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportToCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportAllToCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label7 = new System.Windows.Forms.Label();
             this.imageNameLabel = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -101,6 +99,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.roiView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.roiView.ContextMenuStrip = this.contextMenuStrip;
             this.roiView.ForeColor = System.Drawing.Color.White;
             this.roiView.HideSelection = false;
             this.roiView.Location = new System.Drawing.Point(-1, 0);
@@ -395,29 +394,16 @@
             // contextMenuStrip
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteToolStripMenuItem,
-            this.exportToCSVToolStripMenuItem,
-            this.exportAllToCSVToolStripMenuItem});
+            this.deleteToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(164, 70);
+            this.contextMenuStrip.Size = new System.Drawing.Size(108, 26);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
-            // 
-            // exportToCSVToolStripMenuItem
-            // 
-            this.exportToCSVToolStripMenuItem.Name = "exportToCSVToolStripMenuItem";
-            this.exportToCSVToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.exportToCSVToolStripMenuItem.Text = "Export to CSV";
-            // 
-            // exportAllToCSVToolStripMenuItem
-            // 
-            this.exportAllToCSVToolStripMenuItem.Name = "exportAllToCSVToolStripMenuItem";
-            this.exportAllToCSVToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.exportAllToCSVToolStripMenuItem.Text = "Export All to CSV";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // label7
             // 
@@ -788,8 +774,6 @@
         private System.Windows.Forms.Label imageNameLabel;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox idBox;
-        private System.Windows.Forms.ToolStripMenuItem exportToCSVToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exportAllToCSVToolStripMenuItem;
         private System.Windows.Forms.NumericUpDown pointYBox;
         private System.Windows.Forms.NumericUpDown pointXBox;
         private System.Windows.Forms.NumericUpDown pointIndexBox;

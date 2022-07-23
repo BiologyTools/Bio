@@ -57,6 +57,7 @@
             this.treeView.Size = new System.Drawing.Size(286, 170);
             this.treeView.TabIndex = 2;
             this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
+            this.treeView.DoubleClick += new System.EventHandler(this.treeView_DoubleClick);
             // 
             // contextMenuStrip
             // 

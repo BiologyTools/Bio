@@ -83,6 +83,7 @@ namespace Bio
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.overlayPictureBox = new System.Windows.Forms.PictureBox();
             this.panel = new System.Windows.Forms.Panel();
+            this.goToOriginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.zPlayMenuStrip.SuspendLayout();
@@ -161,9 +162,10 @@ namespace Bio
             this.pasteROIToolStripMenuItem,
             this.copyViewToClipboardToolStripMenuItem,
             this.showControlToolStripMenuItem,
-            this.showStatusToolStripMenuItem});
+            this.showStatusToolStripMenuItem,
+            this.goToOriginToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(200, 158);
+            this.contextMenuStrip.Size = new System.Drawing.Size(200, 180);
             // 
             // deleteROIToolStripMenuItem
             // 
@@ -591,7 +593,6 @@ namespace Bio
             this.overlayPictureBox.Size = new System.Drawing.Size(425, 269);
             this.overlayPictureBox.TabIndex = 19;
             this.overlayPictureBox.TabStop = false;
-            this.overlayPictureBox.Click += new System.EventHandler(this.pictureBox_Click);
             this.overlayPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.overlayPictureBox_Paint);
             this.overlayPictureBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDoubleClick);
             this.overlayPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
@@ -609,6 +610,13 @@ namespace Bio
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(425, 269);
             this.panel.TabIndex = 21;
+            // 
+            // goToOriginToolStripMenuItem
+            // 
+            this.goToOriginToolStripMenuItem.Name = "goToOriginToolStripMenuItem";
+            this.goToOriginToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.goToOriginToolStripMenuItem.Text = "Go To Origin";
+            this.goToOriginToolStripMenuItem.Click += new System.EventHandler(this.goToOriginToolStripMenuItem_Click);
             // 
             // ImageView
             // 
@@ -701,5 +709,6 @@ namespace Bio
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.PictureBox overlayPictureBox;
         private System.Windows.Forms.Panel panel;
+        private System.Windows.Forms.ToolStripMenuItem goToOriginToolStripMenuItem;
     }
 }

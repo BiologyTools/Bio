@@ -48,7 +48,7 @@ namespace Bio
             stackTools = new StackTools();
             filters = new Filter();
             tabview = this;
-            SetImage(arg);
+            ResizeView();
             UpdateTabs();
             Init();
         }
@@ -60,6 +60,7 @@ namespace Bio
             stackTools = new StackTools();
             filters = new Filter();
             tabview = this;
+            ResizeView();
             UpdateTabs();
             Init();
         }
@@ -79,6 +80,7 @@ namespace Bio
                 BioImage b = new BioImage(arg);
                 AddTab(b);
             }
+            ResizeView();
             UpdateTabs();
             Init();
         }
@@ -148,6 +150,7 @@ namespace Bio
                     TabPage t = new TabPage(Path.GetFileName(b.ID));
                     t.Controls.Add(new ImageView(b));
                     tabControl.TabPages.Add(t);
+                    ResizeView();
                 }
             }
         }
@@ -182,34 +185,10 @@ namespace Bio
             init = true;
         }
 
-        public void SetFile(string file, int seri)
+        public void ResizeView()
         {
-            ImageView v = new ImageView(file, seri);
-            v.serie = seri;
-            v.filepath = file;
-            v.Dock = DockStyle.Fill;
-            AddTab(v);
-            string name = Path.GetFileName(file);
-            v.UpdateStatus();
-            System.Drawing.Size s = new System.Drawing.Size(Viewer.image.SizeX + 20, Viewer.image.SizeY + 165);
-            if (s.Width > Screen.PrimaryScreen.Bounds.Width || s.Height > Screen.PrimaryScreen.Bounds.Height)
-            {
-                this.WindowState = FormWindowState.Maximized;
-            }
-            else
-            {
-                Size = s;
-            }
-        }
-        public void SetImage(BioImage b)
-        {
-            //AddTab(b);
-            Viewer.serie = b.series;
-            Viewer.filepath = b.ID;
-            Viewer.Dock = DockStyle.Fill;
-            Viewer.image = b;
-            this.Text = b.Filename;
-            Viewer.UpdateStatus();
+            if (Image == null)
+                return;
             System.Drawing.Size s = new System.Drawing.Size(Viewer.image.SizeX + 20, Viewer.image.SizeY + 165);
             if (s.Width > Screen.PrimaryScreen.Bounds.Width || s.Height > Screen.PrimaryScreen.Bounds.Height)
             {
@@ -605,8 +584,8 @@ namespace Bio
 
         private void nodeViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NodeView.nodeView.Show();
-            NodeView.nodeView.ShowInTaskbar = true;
+            nodeView.Show();
+            nodeView.ShowInTaskbar = true;
         }
 
         private void tabControl_Click(object sender, EventArgs e)

@@ -151,12 +151,6 @@ namespace Bio
                 hist.Invalidate();
             }
         }
-
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void binBox_ValueChanged(object sender, EventArgs e)
         {
             if (hist != null)
@@ -164,16 +158,6 @@ namespace Bio
                 hist.Bin = (int)binBox.Value;
                 hist.Invalidate();
             }
-        }
-
-        private void ChannelsTool_MouseClick(object sender, MouseEventArgs e)
-        {
-
-        }
-
-        private void ChannelsTool_MouseHover(object sender, EventArgs e)
-        {
-
         }
 
         private void ChannelsTool_MouseDown(object sender, MouseEventArgs e)
@@ -184,7 +168,6 @@ namespace Bio
         private bool pressedX2 = false;
         private void ChannelsTool_MouseMove(object sender, MouseEventArgs e)
         {
-            //The event is fired twice per XButton click so we need to only process one of them.
             if(e.Button == MouseButtons.XButton1)
             {
                 if (channelsBox.SelectedIndex < channelsBox.Items.Count-1)

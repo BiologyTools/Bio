@@ -76,6 +76,7 @@
             // 
             // topMostBox
             // 
+            this.topMostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.topMostBox.AutoSize = true;
             this.topMostBox.Location = new System.Drawing.Point(12, 219);
             this.topMostBox.Name = "topMostBox";

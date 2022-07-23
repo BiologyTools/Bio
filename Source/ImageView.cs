@@ -240,7 +240,6 @@ namespace Bio
                 return filepath;
             }
         }
-        //public Buf Buf;
         public Channel RChannel
         {
             get
@@ -437,6 +436,8 @@ namespace Bio
             ZCT coords = new ZCT(zBar.Value, cBar.Value, timeBar.Value);
             if (image == null)
                 return;
+            bm = null;
+            GC.Collect();
             int index = image.Coords[zBar.Value, cBar.Value, timeBar.Value];
             if (Mode == ViewMode.Filtered)
             {
@@ -460,7 +461,6 @@ namespace Bio
             }
             if (bm.PixelFormat == PixelFormat.Format16bppGrayScale || bm.PixelFormat == PixelFormat.Format48bppRgb)
                 bm = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)bm);
-
             pictureBox.Invalidate();
         }
 
@@ -883,270 +883,137 @@ namespace Bio
             Brush b = null;
             bool bounds = showBounds;
             bool labels = showText;
-            if (Mode == ViewMode.RGBImage)
-            {
-                foreach (Annotation an in AnnotationsRGB)
-                {
-                    if (an.coord != GetCoordinate())
-                        return;
-                    pen = new Pen(an.strokeColor, (float)an.strokeWidth);
-                    if (an.selected)
-                    {
-                        b = new SolidBrush(Color.Magenta);
-                    }
-                    else
-                        b = new SolidBrush(an.strokeColor);
-                    PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
-                    if (an.type == Annotation.Type.Point)
-                    {
-                        g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Line)
-                    {
-                        g.DrawLine(pen, an.GetPoint(0).ToPointF(), an.GetPoint(1).ToPointF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Rectangle)
-                    {
-                        RectangleF[] rects = new RectangleF[1];
-                        rects[0] = an.Rect.ToRectangleF();
-                        g.DrawRectangles(pen, rects);
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Ellipse)
-                    {
-                        g.DrawEllipse(pen, an.Rect.ToRectangleF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Polygon && an.closed)
-                    {
-                        g.DrawPolygon(pen, an.GetPointsF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Polygon && !an.closed)
-                    {
-                        PointF[] points = an.GetPointsF();
-                        if (points.Length == 1)
-                        {
-                            g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
-                        }
-                        else
-                            g.DrawLines(pen, points);
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Polyline)
-                    {
-                        g.DrawLines(pen, an.GetPointsF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    
-                    else
-                    if (an.type == Annotation.Type.Freeform && an.closed)
-                    {
-                        PointF[] points = an.GetPointsF();
-                        if (points.Length > 1)
-                        if (points.Length == 1)
-                        {
-                            g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
-                        }
-                        else
-                        g.DrawPolygon(pen, an.GetPointsF());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Freeform && !an.closed)
-                    {
-                        PointF[] points = an.GetPointsF();
-                        if(points.Length > 1)
-                        if (points.Length == 1)
-                        {
-                            g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
-                        }
-                        else
-                            g.DrawLines(pen, points);
-                    }
-                    if (an.type == Annotation.Type.Label)
-                    {
-                        g.DrawString(an.Text, an.font, b, an.Point.ToPointF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    if (labels)
-                    {
-                        //Lets draw the text of this ROI in the middle of the ROI
-                        float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
-                        float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
-                        g.DrawString(an.Text, an.font, b, new PointF(fw, fh));
-                    }
-                    if (bounds)
-                    {
-                        RectangleF[] rects = new RectangleF[1];
-                        rects[0] = an.BoundingBox.ToRectangleF();
-                        g.DrawRectangles(Pens.Green, rects);
-                    }
-                    if (an.selected)
-                    {
-                        //Lets draw the bounding box.
-                        RectangleF[] bo = new RectangleF[1];
-                        bo[0] = an.BoundingBox.ToRectangleF();
-                        g.DrawRectangles(Pens.Magenta, bo);
-                        //Lets draw the selectBoxes.
-                        List<RectangleF> rects = new List<RectangleF>();
-                        for (int i = 0; i < an.selectedPoints.Count; i++)
-                        {
-                            if (an.selectedPoints[i] < an.selectBoxs.Count)
-                            {
-                                rects.Add(an.selectBoxs[an.selectedPoints[i]]);
-                            }
-                        }
-                        if(rects.Count > 0)
-                        g.DrawRectangles(Pens.Blue, rects.ToArray());
-                        rects.Clear();
-                        //Lets draw the text of this ROI in the middle of the ROI
-                        float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
-                        float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
-                        g.DrawString(an.Text, an.font, b, new PointF(fw, fh));
-                    }
-                    pen.Dispose();
-                }
-            }
-            else
-            {
-                ZCT cor = GetCoordinate();
-                List<Annotation> ans = image.GetAnnotations(cor);
-                foreach (Annotation an in ans)
-                {
-                    pen = new Pen(an.strokeColor, (float)an.strokeWidth);
-                    if (an.selected)
-                    {
-                        b = new SolidBrush(Color.Magenta);
-                    }
-                    else
-                        b = new SolidBrush(an.strokeColor);
-                    PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
-                    if (an.type == Annotation.Type.Point)
-                    {
-                        g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Line)
-                    {
-                        g.DrawLine(pen, an.GetPoint(0).ToPointF(), an.GetPoint(1).ToPointF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Rectangle)
-                    {
-                        RectangleF[] rects = new RectangleF[1];
-                        rects[0] = an.Rect.ToRectangleF();
-                        g.DrawRectangles(pen, rects);
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Ellipse)
-                    {
-                        g.DrawEllipse(pen, an.Rect.ToRectangleF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Polygon && an.closed)
-                    {
-                        g.DrawPolygon(pen, an.GetPointsF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Polygon && !an.closed)
-                    {
-                        PointF[] points = an.GetPointsF();
-                        if (points.Length == 1)
-                        {
-                            g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
-                        }
-                        else
-                            g.DrawLines(pen, points);
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Polyline)
-                    {
-                        g.DrawLines(pen, an.GetPointsF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
 
-                    else
-                    if (an.type == Annotation.Type.Freeform && an.closed)
-                    {
-                        PointF[] points = an.GetPointsF();
-                        if (points.Length > 1)
-                            if (points.Length == 1)
-                            {
-                                g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
-                            }
-                            else
-                                g.DrawPolygon(pen, an.GetPointsF());
-                    }
-                    else
-                    if (an.type == Annotation.Type.Freeform && !an.closed)
-                    {
-                        PointF[] points = an.GetPointsF();
-                        if (points.Length > 1)
-                            if (points.Length == 1)
-                            {
-                                g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
-                            }
-                            else
-                                g.DrawLines(pen, points);
-                    }
-                    if (an.type == Annotation.Type.Label)
-                    {
-                        g.DrawString(an.Text, an.font, b, an.Point.ToPointF());
-                        g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
-                    }
-                    if (labels)
-                    {
-                        //Lets draw the text of this ROI in the middle of the ROI
-                        float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
-                        float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
-                        g.DrawString(an.Text, an.font, b, new PointF(fw, fh));
-                    }
-                    if (bounds)
-                    {
-                        RectangleF[] rects = new RectangleF[1];
-                        rects[0] = an.BoundingBox.ToRectangleF();
-                        g.DrawRectangles(Pens.Green, rects);
-                    }
-                    if (an.selected)
-                    {
-                        //Lets draw the bounding box.
-                        RectangleF[] bo = new RectangleF[1];
-                        bo[0] = an.BoundingBox.ToRectangleF();
-                        g.DrawRectangles(Pens.Magenta, bo);
-                        //Lets draw the selectBoxes.
-                        List<RectangleF> rects = new List<RectangleF>();
-                        for (int i = 0; i < an.selectedPoints.Count; i++)
-                        {
-                            if (an.selectedPoints[i] < an.selectBoxs.Count)
-                            {
-                                rects.Add(an.selectBoxs[an.selectedPoints[i]]);
-                            }
-                        }
-                        if (rects.Count > 0)
-                            g.DrawRectangles(Pens.Blue, rects.ToArray());
-                        rects.Clear();
-                        //Lets draw the text of this ROI in the middle of the ROI
-                        float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
-                        float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
-                        g.DrawString(an.Text, an.font, b, new PointF(fw, fh));
-                    }
-                    pen.Dispose();
+            ZCT cor = GetCoordinate();
+            List<Annotation> ans = image.GetAnnotations(cor);
+            foreach (Annotation an in ans)
+            {
+                pen = new Pen(an.strokeColor, (float)an.strokeWidth);
+                if (an.selected)
+                {
+                    b = new SolidBrush(Color.Magenta);
                 }
+                else
+                    b = new SolidBrush(an.strokeColor);
+                PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
+                if (an.type == Annotation.Type.Point)
+                {
+                    g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
+                    g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                }
+                else
+                if (an.type == Annotation.Type.Line)
+                {
+                    g.DrawLine(pen, an.GetPoint(0).ToPointF(), an.GetPoint(1).ToPointF());
+                    g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                }
+                else
+                if (an.type == Annotation.Type.Rectangle)
+                {
+                    RectangleF[] rects = new RectangleF[1];
+                    rects[0] = an.Rect.ToRectangleF();
+                    g.DrawRectangles(pen, rects);
+                    g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                }
+                else
+                if (an.type == Annotation.Type.Ellipse)
+                {
+                    g.DrawEllipse(pen, an.Rect.ToRectangleF());
+                    g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                }
+                else
+                if (an.type == Annotation.Type.Polygon && an.closed)
+                {
+                    g.DrawPolygon(pen, an.GetPointsF());
+                    g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                }
+                else
+                if (an.type == Annotation.Type.Polygon && !an.closed)
+                {
+                    PointF[] points = an.GetPointsF();
+                    if (points.Length == 1)
+                    {
+                        g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
+                    }
+                    else
+                        g.DrawLines(pen, points);
+                    g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                }
+                else
+                if (an.type == Annotation.Type.Polyline)
+                {
+                    g.DrawLines(pen, an.GetPointsF());
+                    g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                }
+
+                else
+                if (an.type == Annotation.Type.Freeform && an.closed)
+                {
+                    PointF[] points = an.GetPointsF();
+                    if (points.Length > 1)
+                        if (points.Length == 1)
+                        {
+                            g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
+                        }
+                        else
+                            g.DrawPolygon(pen, an.GetPointsF());
+                }
+                else
+                if (an.type == Annotation.Type.Freeform && !an.closed)
+                {
+                    PointF[] points = an.GetPointsF();
+                    if (points.Length > 1)
+                        if (points.Length == 1)
+                        {
+                            g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
+                        }
+                        else
+                            g.DrawLines(pen, points);
+                }
+                if (an.type == Annotation.Type.Label)
+                {
+                    g.DrawString(an.Text, an.font, b, an.Point.ToPointF());
+                    g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
+                }
+                if (labels)
+                {
+                    //Lets draw the text of this ROI in the middle of the ROI
+                    float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
+                    float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
+                    g.DrawString(an.Text, an.font, b, new PointF(fw, fh));
+                }
+                if (bounds)
+                {
+                    RectangleF[] rects = new RectangleF[1];
+                    rects[0] = an.BoundingBox.ToRectangleF();
+                    g.DrawRectangles(Pens.Green, rects);
+                }
+                if (an.selected)
+                {
+                    //Lets draw the bounding box.
+                    RectangleF[] bo = new RectangleF[1];
+                    bo[0] = an.BoundingBox.ToRectangleF();
+                    g.DrawRectangles(Pens.Magenta, bo);
+                    //Lets draw the selectBoxes.
+                    List<RectangleF> rects = new List<RectangleF>();
+                    for (int i = 0; i < an.selectedPoints.Count; i++)
+                    {
+                        if (an.selectedPoints[i] < an.selectBoxs.Count)
+                        {
+                            rects.Add(an.selectBoxs[an.selectedPoints[i]]);
+                        }
+                    }
+                    if (rects.Count > 0)
+                        g.DrawRectangles(Pens.Blue, rects.ToArray());
+                    rects.Clear();
+                    //Lets draw the text of this ROI in the middle of the ROI
+                    float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
+                    float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
+                    g.DrawString(an.Text, an.font, b, new PointF(fw, fh));
+                }
+                pen.Dispose();
             }
+            
         }
         private PointF origin = new PointF(0,0);
         public PointF Origin
@@ -1184,6 +1051,10 @@ namespace Bio
                 UpdateImage();
             PointF pp = GetImagePoint();
             Graphics g = e.Graphics;
+            if (origin.X > 10000000)
+                origin.X = 0;
+            if (origin.Y > 10000000)
+                origin.Y = 0;
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
             g.DrawImage(bm, 0,0, bm.Size.Width, bm.Size.Height);
@@ -1451,31 +1322,28 @@ namespace Bio
                     int tc = coordinate.T;
                     if (Mode == ViewMode.RGBImage)
                     {
-                        if (image.RGBChannelCount == 1)
-                        {
-                            int r = image.GetValue(zc, RChannel.Index, tc, (int)p.X, (int)p.Y);
-                            int g = image.GetValue(zc, GChannel.Index, tc, (int)p.X, (int)p.Y);
-                            int b = image.GetValue(zc, BChannel.Index, tc, (int)p.X, (int)p.Y);
-                            mouseColor = ", " + r + "," + g + "," + b;
-                        }
-                        else
+                        int r = image.GetValueRGB(zc, RChannel.Index, tc, (int)p.X, (int)p.Y, 0);
+                        int g = image.GetValueRGB(zc, GChannel.Index, tc, (int)p.X, (int)p.Y, 1);
+                        int b = image.GetValueRGB(zc, BChannel.Index, tc, (int)p.X, (int)p.Y, 2);
+                        mouseColor = ", " + r + "," + g + "," + b;
+                    }
+                    else
+                    {
+                        if (image.isRGB)
                         {
                             int r = image.GetValueRGB(zc, RChannel.Index, tc, (int)p.X, (int)p.Y, 0);
                             int g = image.GetValueRGB(zc, GChannel.Index, tc, (int)p.X, (int)p.Y, 1);
                             int b = image.GetValueRGB(zc, BChannel.Index, tc, (int)p.X, (int)p.Y, 2);
                             mouseColor = ", " + r + "," + g + "," + b;
                         }
-                    }
-                    else
-                    {
-                        int r = image.GetValueRGB(zc, 0, tc, (int)p.X, (int)p.Y, 0);
-                        int g = image.GetValueRGB(zc, 1, tc, (int)p.X, (int)p.Y, 1);
-                        int b = image.GetValueRGB(zc, 2, tc, (int)p.X, (int)p.Y, 2);
-                        mouseColor = ", " + r + "," + g + "," + b;
+                        else
+                        {
+                            int r = image.GetValueRGB(zc, 0, tc, (int)p.X, (int)p.Y, 0);
+                            mouseColor = ", " + r;
+                        }
                     }
                 }
             }
-
             UpdateStatus();
             tools.ToolDown(p,e.Button);
         }
@@ -1489,13 +1357,6 @@ namespace Bio
             p.X /= scale.Width;
             p.Y /= scale.Height;
             tools.ToolDown(p, e.Button);
-        }
-
-        private void pictureBox_Click(object sender, EventArgs e)
-        {
-            tools.BringToFront();
-            tools.TopMost = true;
-            
         }
         private void deleteROIToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1536,12 +1397,15 @@ namespace Bio
 
         private void copyViewToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Bitmap bm = new Bitmap(pictureBox.Width, pictureBox.Height);
-            using (Graphics g = Graphics.FromImage(bm))
+            Bitmap bmp = new Bitmap(pictureBox.Width, pictureBox.Height);
+            using (Graphics g = Graphics.FromImage(bmp))
             {
-                g.CopyFromScreen(PointToScreen(new Point(pictureBox.Left, pictureBox.Top + 25)), Point.Empty, bm.Size);
+                //g.CopyFromScreen(PointToScreen(new Point(pictureBox.Left, pictureBox.Top + 25)), Point.Empty, bm.Size);
+                g.DrawImage(bm, 0, 0);
+                DrawOverlay(g);
+
             }
-            Clipboard.SetImage(bm);
+            Clipboard.SetImage(bmp);
         }
         List<Annotation> copys = new List<Annotation>();
 
@@ -1718,6 +1582,12 @@ namespace Bio
         {
             ImageView.coordinate.C = timeBar.Value;
             overlayPictureBox.Invalidate();
+        }
+
+        private void goToOriginToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            origin.X = 0;
+            origin.Y = 0;
         }
     }
 }

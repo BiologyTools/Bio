@@ -254,6 +254,10 @@ namespace Bio
 
         public Scripting()
         {
+            if (!Directory.Exists(Application.StartupPath + "//" + "Scripts"))
+                Directory.CreateDirectory(Application.StartupPath + "//" + "Scripts");
+            if (!Directory.Exists(Application.StartupPath + "//" + "Tools"))
+                Directory.CreateDirectory(Application.StartupPath + "//" + "Tools");
             InitializeComponent();
             scriptView.MultiSelect = false;
             RefreshItems();

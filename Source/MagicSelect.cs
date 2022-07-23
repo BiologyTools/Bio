@@ -17,7 +17,15 @@ namespace Bio
             InitializeComponent();
             thBox.SelectedIndex = index;
         }
-        public bool Numeric = false;
+        private bool numeric = false;
+
+        public bool Numeric
+        {
+            get
+            {
+                return numeric;
+            }
+        }
 
         public int Threshold
         {
@@ -25,6 +33,15 @@ namespace Bio
             {
                 return (int)numBox.Value;
             }
+        }
+
+        public int Min
+        {
+            get { return (int)minBox.Value; }
+        }
+        public int Max
+        {
+            get { return (int)maxBox.Value; }
         }
         public int Index
         {
@@ -35,7 +52,7 @@ namespace Bio
         }
         private void numericBox_CheckedChanged(object sender, EventArgs e)
         {
-            Numeric = numericBox.Checked;
+            numeric = numericBox.Checked;
         }
 
         private void okBut_Click(object sender, EventArgs e)

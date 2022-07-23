@@ -20,7 +20,7 @@ namespace Bio
                 typeBox.Items.Add(item);
             }
         }
-        public void GetROIsFromImage()
+        public void UpdateAnnotationList()
         {
             if (ImageView.selectedImage == null)
                 return;
@@ -151,7 +151,7 @@ namespace Bio
             string n = System.IO.Path.GetFileName(ImageView.selectedImage.ID);
             if (imageNameLabel.Text != n)
                 imageNameLabel.Text = n;
-            GetROIsFromImage();
+            UpdateAnnotationList();
         }
         public Annotation anno = new Annotation();
         private void roiView_SelectedIndexChanged(object sender, EventArgs e)
@@ -309,6 +309,16 @@ namespace Bio
         {
             e.Cancel = true;
             this.WindowState = FormWindowState.Minimized;
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            for (int i = 0; i < roiView.SelectedItems.Count; i++)
+            {
+                ImageView.viewer.image.Annotations.Remove((Annotation)roiView.SelectedItems[i].Tag);
+            }
+            UpdateAnnotationList();
+            UpdateOverlay();
         }
     }
 }

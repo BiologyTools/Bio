@@ -75,17 +75,6 @@ namespace Bio
             //timer.Start();
         }
 
-        public NodeView()
-        {
-            InitializeComponent();
-            InitNodes();
-            viewer = new TabsView();
-            viewer.Show();
-            nodeView = this;
-            //timer.Start();
-            updateTimer.Start();
-        }
-
         private static void Init()
         {
             BioImage.Initialize();
@@ -93,7 +82,11 @@ namespace Bio
             runner = new Scripting();
             recorder = new Recorder();
         }
-
+        public void UpdateOverlay()
+        {
+            if (ImageView.viewer != null)
+                ImageView.viewer.UpdateOverlay();
+        }
         public void InitNodes()
         {
             treeView.Nodes.Clear();
@@ -208,17 +201,17 @@ namespace Bio
             if(node!=null)
             if(node.Type == Node.DataType.buf)
             {
+                setIDToolStripMenuItem.Visible = false;
+                setTextToolStripMenuItem.Visible = false;
                 BufferInfo buf = (BufferInfo)node.Object;
-                ImageView v = Table.GetViewer(buf.ID);
-                    if (v != null)
-                    {
-                        v.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
-                        v.UpdateImage();
-                    }
+                ImageView.viewer.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
+                ImageView.viewer.UpdateImage();
             }
             else
             if(node.Type == Node.DataType.roi)
             {
+                setIDToolStripMenuItem.Visible = true;
+                setTextToolStripMenuItem.Visible = true;
                 Annotation an = (Annotation)node.Object;
                 string name = node.node.Parent.Parent.Text;
                 ImageView v = Table.GetViewer(name);
@@ -254,6 +247,7 @@ namespace Bio
                 im.Dispose();
             }
             UpdateNodes();
+            UpdateOverlay();
         }
 
         private void scriptRecorderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -277,6 +271,7 @@ namespace Bio
                 an.strokeColor = input.color;
             }
             UpdateNodes();
+            UpdateOverlay();
         }
 
         private void setIDToolStripMenuItem_Click(object sender, EventArgs e)
@@ -293,6 +288,7 @@ namespace Bio
                 an.id = input.textInput;
             }
             UpdateNodes();
+            UpdateOverlay();
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -334,6 +330,31 @@ namespace Bio
         {
             TabsView v = new TabsView();
             v.Show();
+        }
+
+        private void treeView_DoubleClick(object sender, EventArgs e)
+        {
+            Node node = (Node)treeView.SelectedNode.Tag;
+            if (node != null)
+                if (node.Type == Node.DataType.buf)
+                {
+                    setIDToolStripMenuItem.Visible = false;
+                    setTextToolStripMenuItem.Visible = false;
+                    BufferInfo buf = (BufferInfo)node.Object;
+                    ImageView.viewer.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
+                    ImageView.viewer.UpdateImage();
+                }
+                else
+                if (node.Type == Node.DataType.roi)
+                {
+                    setIDToolStripMenuItem.Visible = true;
+                    setTextToolStripMenuItem.Visible = true;
+                    Annotation an = (Annotation)node.Object;
+                    string name = node.node.Parent.Parent.Text;
+                    ImageView v = Table.GetViewer(name);
+                    if (v != null)
+                        v.SetCoordinate(an.coord.Z, an.coord.C, an.coord.T);
+                }
         }
     }
 }

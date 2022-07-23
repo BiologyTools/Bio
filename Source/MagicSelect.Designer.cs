@@ -33,7 +33,13 @@
             this.thBox = new System.Windows.Forms.ComboBox();
             this.numBox = new System.Windows.Forms.NumericUpDown();
             this.numericBox = new System.Windows.Forms.CheckBox();
+            this.minBox = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.maxBox = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.numBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.minBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.maxBox)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -82,12 +88,70 @@
             this.numericBox.UseVisualStyleBackColor = true;
             this.numericBox.CheckedChanged += new System.EventHandler(this.numericBox_CheckedChanged);
             // 
+            // minBox
+            // 
+            this.minBox.Location = new System.Drawing.Point(95, 59);
+            this.minBox.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.minBox.Name = "minBox";
+            this.minBox.Size = new System.Drawing.Size(120, 20);
+            this.minBox.TabIndex = 4;
+            this.minBox.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.ForeColor = System.Drawing.Color.White;
+            this.label2.Location = new System.Drawing.Point(12, 61);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(24, 13);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Min";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.ForeColor = System.Drawing.Color.White;
+            this.label3.Location = new System.Drawing.Point(12, 87);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(27, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Max";
+            // 
+            // maxBox
+            // 
+            this.maxBox.Location = new System.Drawing.Point(95, 85);
+            this.maxBox.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.maxBox.Name = "maxBox";
+            this.maxBox.Size = new System.Drawing.Size(120, 20);
+            this.maxBox.TabIndex = 6;
+            this.maxBox.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
             // MagicSelect
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(224, 65);
+            this.ClientSize = new System.Drawing.Size(224, 110);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.maxBox);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.minBox);
             this.Controls.Add(this.numericBox);
             this.Controls.Add(this.numBox);
             this.Controls.Add(this.thBox);
@@ -98,6 +162,8 @@
             this.ShowInTaskbar = false;
             this.Text = "Magick Select";
             ((System.ComponentModel.ISupportInitialize)(this.numBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.minBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.maxBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -109,5 +175,9 @@
         private System.Windows.Forms.ComboBox thBox;
         private System.Windows.Forms.NumericUpDown numBox;
         private System.Windows.Forms.CheckBox numericBox;
+        private System.Windows.Forms.NumericUpDown minBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.NumericUpDown maxBox;
     }
 }
