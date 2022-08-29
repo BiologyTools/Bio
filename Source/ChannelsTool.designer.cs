@@ -29,10 +29,16 @@ namespace Bio
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChannelsTool));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.minBox = new System.Windows.Forms.NumericUpDown();
+            this.minContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.minToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.maxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.medianToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.meanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.maxBox = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -40,7 +46,6 @@ namespace Bio
             this.maxUintBox = new System.Windows.Forms.ComboBox();
             this.setMaxAllBut = new System.Windows.Forms.Button();
             this.setMinAllBut = new System.Windows.Forms.Button();
-            this.statsPanel = new System.Windows.Forms.Panel();
             this.maxUintBox2 = new System.Windows.Forms.ComboBox();
             this.maxGraphBox = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
@@ -50,11 +55,20 @@ namespace Bio
             this.binBox = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
             this.stackHistoBox = new System.Windows.Forms.CheckBox();
+            this.statsPanel = new System.Windows.Forms.Panel();
+            this.applyBut = new System.Windows.Forms.Button();
+            this.maxContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.minBox)).BeginInit();
+            this.minContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.maxBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxGraphBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minGraphBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.binBox)).BeginInit();
+            this.maxContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -81,6 +95,7 @@ namespace Bio
             // minBox
             // 
             this.minBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.minBox.ContextMenuStrip = this.minContextMenuStrip;
             this.minBox.ForeColor = System.Drawing.Color.White;
             this.minBox.Increment = new decimal(new int[] {
             10,
@@ -98,9 +113,48 @@ namespace Bio
             this.minBox.TabIndex = 2;
             this.minBox.ValueChanged += new System.EventHandler(this.minBox_ValueChanged);
             // 
+            // minContextMenuStrip
+            // 
+            this.minContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.minToolStripMenuItem,
+            this.maxToolStripMenuItem,
+            this.medianToolStripMenuItem,
+            this.meanToolStripMenuItem});
+            this.minContextMenuStrip.Name = "minContextMenuStrip";
+            this.minContextMenuStrip.Size = new System.Drawing.Size(181, 114);
+            // 
+            // minToolStripMenuItem
+            // 
+            this.minToolStripMenuItem.Name = "minToolStripMenuItem";
+            this.minToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.minToolStripMenuItem.Text = "Min";
+            this.minToolStripMenuItem.Click += new System.EventHandler(this.minToolStripMenuItem_Click);
+            // 
+            // maxToolStripMenuItem
+            // 
+            this.maxToolStripMenuItem.Name = "maxToolStripMenuItem";
+            this.maxToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.maxToolStripMenuItem.Text = "Max";
+            this.maxToolStripMenuItem.Click += new System.EventHandler(this.maxToolStripMenuItem_Click);
+            // 
+            // medianToolStripMenuItem
+            // 
+            this.medianToolStripMenuItem.Name = "medianToolStripMenuItem";
+            this.medianToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.medianToolStripMenuItem.Text = "Median";
+            this.medianToolStripMenuItem.Click += new System.EventHandler(this.medianToolStripMenuItem_Click);
+            // 
+            // meanToolStripMenuItem
+            // 
+            this.meanToolStripMenuItem.Name = "meanToolStripMenuItem";
+            this.meanToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.meanToolStripMenuItem.Text = "Mean";
+            this.meanToolStripMenuItem.Click += new System.EventHandler(this.meanToolStripMenuItem_Click);
+            // 
             // maxBox
             // 
             this.maxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.maxBox.ContextMenuStrip = this.maxContextMenuStrip;
             this.maxBox.ForeColor = System.Drawing.Color.White;
             this.maxBox.Increment = new decimal(new int[] {
             10,
@@ -127,7 +181,7 @@ namespace Bio
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(125, 56);
+            this.label3.Location = new System.Drawing.Point(140, 56);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(27, 13);
             this.label3.TabIndex = 3;
@@ -196,17 +250,6 @@ namespace Bio
             this.setMinAllBut.UseVisualStyleBackColor = false;
             this.setMinAllBut.Click += new System.EventHandler(this.setMinAllBut_Click);
             // 
-            // statsPanel
-            // 
-            this.statsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.statsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.statsPanel.Location = new System.Drawing.Point(12, 109);
-            this.statsPanel.Name = "statsPanel";
-            this.statsPanel.Size = new System.Drawing.Size(238, 111);
-            this.statsPanel.TabIndex = 10;
-            // 
             // maxUintBox2
             // 
             this.maxUintBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -219,7 +262,7 @@ namespace Bio
             "4096",
             "16383",
             "65535"});
-            this.maxUintBox2.Location = new System.Drawing.Point(173, 250);
+            this.maxUintBox2.Location = new System.Drawing.Point(175, 263);
             this.maxUintBox2.Name = "maxUintBox2";
             this.maxUintBox2.Size = new System.Drawing.Size(77, 21);
             this.maxUintBox2.TabIndex = 16;
@@ -236,7 +279,7 @@ namespace Bio
             0,
             0,
             0});
-            this.maxGraphBox.Location = new System.Drawing.Point(173, 275);
+            this.maxGraphBox.Location = new System.Drawing.Point(175, 288);
             this.maxGraphBox.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -262,7 +305,7 @@ namespace Bio
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label5.AutoSize = true;
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(140, 277);
+            this.label5.Location = new System.Drawing.Point(142, 290);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(27, 13);
             this.label5.TabIndex = 14;
@@ -278,7 +321,7 @@ namespace Bio
             0,
             0,
             0});
-            this.minGraphBox.Location = new System.Drawing.Point(37, 275);
+            this.minGraphBox.Location = new System.Drawing.Point(39, 288);
             this.minGraphBox.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -294,7 +337,7 @@ namespace Bio
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label6.AutoSize = true;
             this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(8, 277);
+            this.label6.Location = new System.Drawing.Point(10, 290);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(24, 13);
             this.label6.TabIndex = 12;
@@ -306,7 +349,7 @@ namespace Bio
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(10, 228);
+            this.label7.Location = new System.Drawing.Point(12, 241);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(118, 13);
             this.label7.TabIndex = 11;
@@ -317,7 +360,7 @@ namespace Bio
             this.binBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.binBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.binBox.ForeColor = System.Drawing.Color.White;
-            this.binBox.Location = new System.Drawing.Point(37, 251);
+            this.binBox.Location = new System.Drawing.Point(39, 264);
             this.binBox.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -343,7 +386,7 @@ namespace Bio
             this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label8.AutoSize = true;
             this.label8.ForeColor = System.Drawing.Color.White;
-            this.label8.Location = new System.Drawing.Point(8, 253);
+            this.label8.Location = new System.Drawing.Point(10, 266);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(22, 13);
             this.label8.TabIndex = 17;
@@ -355,7 +398,7 @@ namespace Bio
             this.stackHistoBox.AutoSize = true;
             this.stackHistoBox.Checked = true;
             this.stackHistoBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.stackHistoBox.Location = new System.Drawing.Point(157, 227);
+            this.stackHistoBox.Location = new System.Drawing.Point(148, 240);
             this.stackHistoBox.Name = "stackHistoBox";
             this.stackHistoBox.Size = new System.Drawing.Size(104, 17);
             this.stackHistoBox.TabIndex = 19;
@@ -363,12 +406,75 @@ namespace Bio
             this.stackHistoBox.UseVisualStyleBackColor = true;
             this.stackHistoBox.CheckedChanged += new System.EventHandler(this.stackHistoBox_CheckedChanged);
             // 
+            // statsPanel
+            // 
+            this.statsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.statsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.statsPanel.Location = new System.Drawing.Point(12, 109);
+            this.statsPanel.Name = "statsPanel";
+            this.statsPanel.Size = new System.Drawing.Size(239, 120);
+            this.statsPanel.TabIndex = 10;
+            // 
+            // applyBut
+            // 
+            this.applyBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.applyBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.applyBut.ForeColor = System.Drawing.Color.White;
+            this.applyBut.Location = new System.Drawing.Point(175, 314);
+            this.applyBut.Name = "applyBut";
+            this.applyBut.Size = new System.Drawing.Size(77, 23);
+            this.applyBut.TabIndex = 20;
+            this.applyBut.Text = "Bake";
+            this.applyBut.UseVisualStyleBackColor = false;
+            this.applyBut.Click += new System.EventHandler(this.applyBut_Click);
+            // 
+            // maxContextMenuStrip
+            // 
+            this.maxContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1,
+            this.toolStripMenuItem2,
+            this.toolStripMenuItem3,
+            this.toolStripMenuItem4});
+            this.maxContextMenuStrip.Name = "minContextMenuStrip";
+            this.maxContextMenuStrip.Size = new System.Drawing.Size(115, 92);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenuItem1.Text = "Min";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenuItem2.Text = "Max";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenuItem3.Text = "Median";
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenuItem4.Text = "Mean";
+            this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click);
+            // 
             // ChannelsTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(258, 301);
+            this.ClientSize = new System.Drawing.Size(259, 346);
+            this.Controls.Add(this.applyBut);
             this.Controls.Add(this.stackHistoBox);
             this.Controls.Add(this.binBox);
             this.Controls.Add(this.label8);
@@ -401,10 +507,12 @@ namespace Bio
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ChannelsTool_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ChannelsTool_MouseMove);
             ((System.ComponentModel.ISupportInitialize)(this.minBox)).EndInit();
+            this.minContextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.maxBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.maxGraphBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.minGraphBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.binBox)).EndInit();
+            this.maxContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -422,7 +530,6 @@ namespace Bio
         private System.Windows.Forms.ComboBox maxUintBox;
         private System.Windows.Forms.Button setMaxAllBut;
         private System.Windows.Forms.Button setMinAllBut;
-        private System.Windows.Forms.Panel statsPanel;
         private System.Windows.Forms.ComboBox maxUintBox2;
         private System.Windows.Forms.NumericUpDown maxGraphBox;
         private System.Windows.Forms.Label label5;
@@ -432,5 +539,17 @@ namespace Bio
         private System.Windows.Forms.NumericUpDown binBox;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox stackHistoBox;
+        private System.Windows.Forms.Panel statsPanel;
+        private System.Windows.Forms.Button applyBut;
+        private System.Windows.Forms.ContextMenuStrip minContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem minToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem maxToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem medianToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem meanToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip maxContextMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
     }
 }

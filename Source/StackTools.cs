@@ -43,7 +43,7 @@ namespace Bio
             if (stackABox.SelectedIndex == -1)
                 return;
             BioImage b = new BioImage(ImageA, 0, (int)zStartBox.Value, (int)zEndBox.Value, (int)cStartBox.Value, (int)cEndBox.Value, (int)tStartBox.Value, (int)tEndBox.Value);
-            TabsView.tabview.AddTab(b);
+            App.tabsView.AddTab(b);
             UpdateStacks();
         }
 

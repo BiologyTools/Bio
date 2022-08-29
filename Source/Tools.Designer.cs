@@ -253,7 +253,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(61, 180);
+            this.ClientSize = new System.Drawing.Size(61, 181);
             this.ContextMenuStrip = this.contextMenuStrip;
             this.Controls.Add(this.magicPanel);
             this.Controls.Add(this.panPanel);

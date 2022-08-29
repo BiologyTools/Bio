@@ -157,11 +157,11 @@ namespace Bio
         }
         public void UpdateOverlay()
         {
-            ImageView.viewer.UpdateOverlay();
+            App.viewer.UpdateOverlay();
         }
         public void UpdateView()
         {
-            ImageView.viewer.UpdateStatus();
+            App.viewer.UpdateStatus();
         }
         public void UpdateSelected()
         {
@@ -171,10 +171,10 @@ namespace Bio
             }
         }
 
-        Annotation anno = new Annotation();
+        ROI anno = new ROI();
         public void ToolDown(PointF e, MouseButtons buts)
         {
-            if (ImageView.viewer == null)
+            if (App.viewer == null)
                 return;
             if (currentTool == null)
                 return;
@@ -183,12 +183,12 @@ namespace Bio
             {
                 if (anno.GetPointCount() == 0)
                 {
-                    anno = new Annotation();
-                    anno.type = Annotation.Type.Line;
+                    anno = new ROI();
+                    anno.type = ROI.Type.Line;
                     anno.AddPoint(new PointD(e.X, e.Y));
                     anno.AddPoint(new PointD(e.X, e.Y));
-                    anno.coord = ImageView.viewer.GetCoordinate();
-                    ImageView.selectedImage.Annotations.Add(anno);
+                    anno.coord = App.viewer.GetCoordinate();
+                    ImageView.SelectedImage.Annotations.Add(anno);
                 }
             }
             else
@@ -196,11 +196,11 @@ namespace Bio
             {
                 if (anno.GetPointCount() == 0)
                 {
-                    anno = new Annotation();
-                    anno.type = Annotation.Type.Polygon;
+                    anno = new ROI();
+                    anno.type = ROI.Type.Polygon;
                     anno.AddPoint(new PointD(e.X, e.Y));
-                    anno.coord = ImageView.viewer.GetCoordinate();
-                    ImageView.selectedImage.Annotations.Add(anno);
+                    anno.coord = App.viewer.GetCoordinate();
+                    ImageView.SelectedImage.Annotations.Add(anno);
                 }
                 else
                 {
@@ -209,7 +209,7 @@ namespace Bio
                     if (d.IntersectsWith(anno.Point))
                     {
                         anno.closed = true;
-                        anno = new Annotation();
+                        anno = new ROI();
                     }
                     else
                     {
@@ -222,12 +222,12 @@ namespace Bio
             {
                 if (anno.GetPointCount() == 0)
                 {
-                    anno = new Annotation();
-                    anno.type = Annotation.Type.Freeform;
+                    anno = new ROI();
+                    anno.type = ROI.Type.Freeform;
                     anno.AddPoint(new PointD(e.X, e.Y));
-                    anno.coord = ImageView.viewer.GetCoordinate();
+                    anno.coord = App.viewer.GetCoordinate();
                     anno.closed = true;
-                    ImageView.selectedImage.Annotations.Add(anno);
+                    ImageView.SelectedImage.Annotations.Add(anno);
                 }
                 else
                 {
@@ -237,40 +237,40 @@ namespace Bio
             else
             if (currentTool.type == Tool.Type.rect)
             {
-                anno.type = Annotation.Type.Rectangle;
+                anno.type = ROI.Type.Rectangle;
                 anno.Rect = new RectangleD(e.X, e.Y, 1, 1);
-                anno.coord = ImageView.viewer.GetCoordinate();
-                ImageView.selectedImage.Annotations.Add(anno);
+                anno.coord = App.viewer.GetCoordinate();
+                ImageView.SelectedImage.Annotations.Add(anno);
             }
             else
             if (currentTool.type == Tool.Type.ellipse)
             {
-                anno.type = Annotation.Type.Ellipse;
+                anno.type = ROI.Type.Ellipse;
                 anno.Rect = new RectangleD(e.X, e.Y, 1, 1);
-                anno.coord = ImageView.viewer.GetCoordinate();
-                ImageView.selectedImage.Annotations.Add(anno);
+                anno.coord = App.viewer.GetCoordinate();
+                ImageView.SelectedImage.Annotations.Add(anno);
             }
             else
             if(currentTool.type == Tool.Type.delete)
             {
-                foreach (Annotation an in ImageView.selectedAnnotations)
+                foreach (ROI an in ImageView.selectedAnnotations)
                 {
                     if (an != null)
                     {
                         if (an.selectedPoints.Count == 0)
                         {
-                            ImageView.selectedImage.Annotations.Remove(an);
+                            ImageView.SelectedImage.Annotations.Remove(an);
                         }
                         else
-                        if (an.selectedPoints.Count == 1 && !(an.type == Annotation.Type.Polygon || an.type == Annotation.Type.Polyline || an.type == Annotation.Type.Freeform))
+                        if (an.selectedPoints.Count == 1 && !(an.type == ROI.Type.Polygon || an.type == ROI.Type.Polyline || an.type == ROI.Type.Freeform))
                         {
-                            ImageView.selectedImage.Annotations.Remove(an);
+                            ImageView.SelectedImage.Annotations.Remove(an);
                         }
                         else
                         {
-                            if (an.type == Annotation.Type.Polygon ||
-                                an.type == Annotation.Type.Polyline ||
-                                an.type == Annotation.Type.Freeform)
+                            if (an.type == ROI.Type.Polygon ||
+                                an.type == ROI.Type.Polyline ||
+                                an.type == ROI.Type.Freeform)
                             {
                                 an.closed = false;
                                 an.RemovePoints(an.selectedPoints.ToArray());
@@ -282,17 +282,17 @@ namespace Bio
             else
             if (currentTool.type == Tool.Type.text)
             {
-                Annotation an = new Annotation();
-                an.type = Annotation.Type.Label;
+                ROI an = new ROI();
+                an.type = ROI.Type.Label;
                 an.AddPoint(new PointD(e.X, e.Y));
-                an.coord = ImageView.viewer.GetCoordinate();
+                an.coord = App.viewer.GetCoordinate();
                 TextInput ti = new TextInput("");
                 if (ti.ShowDialog() != DialogResult.OK)
                     return;
                 an.font = ti.font;
                 an.strokeColor = ti.color;
                 an.Text = ti.textInput;
-                ImageView.selectedImage.Annotations.Add(an);
+                ImageView.SelectedImage.Annotations.Add(an);
             }
             if (buts == MouseButtons.Middle || currentTool.type == Tool.Type.pan)
             {
@@ -305,7 +305,7 @@ namespace Bio
         }        
         public void ToolUp(PointF e, MouseButtons buts)
         {
-            if (ImageView.viewer == null)
+            if (App.viewer == null)
                 return;
             if (currentTool == null)
                 return;
@@ -314,48 +314,48 @@ namespace Bio
             Scripting.UpdateState(Scripting.State.GetUp(e, buts));
             if (currentTool.type == Tool.Type.point)    
             {
-                Annotation an = new Annotation();
+                ROI an = new ROI();
                 an.AddPoint(new PointD(e.X, e.Y));
-                an.type = Annotation.Type.Point;
-                an.coord = ImageView.viewer.GetCoordinate();
-                ImageView.selectedImage.Annotations.Add(an);
+                an.type = ROI.Type.Point;
+                an.coord = App.viewer.GetCoordinate();
+                ImageView.SelectedImage.Annotations.Add(an);
             }
             else
-            if (currentTool.type == Tool.Type.line && anno.type == Annotation.Type.Line)
+            if (currentTool.type == Tool.Type.line && anno.type == ROI.Type.Line)
             {
                 if (anno.GetPointCount() > 0)
                 {
                     anno.UpdatePoint(new PointD(e.X, e.Y), 1);
-                    anno = new Annotation();
+                    anno = new ROI();
                 }
             }
             else
-            if (currentTool.type == Tool.Type.rect && anno.type == Annotation.Type.Rectangle)
+            if (currentTool.type == Tool.Type.rect && anno.type == ROI.Type.Rectangle)
             {
                 if (anno.GetPointCount() == 4)
                 {
-                    anno = new Annotation();
+                    anno = new ROI();
                 }
             }
             else
-            if (currentTool.type == Tool.Type.ellipse && anno.type == Annotation.Type.Ellipse)
+            if (currentTool.type == Tool.Type.ellipse && anno.type == ROI.Type.Ellipse)
             {
                 if (anno.GetPointCount() == 4)
                 {
-                    anno = new Annotation();
+                    anno = new ROI();
                 }
             }
             else
-            if (currentTool.type == Tool.Type.freeform && anno.type == Annotation.Type.Freeform)
+            if (currentTool.type == Tool.Type.freeform && anno.type == ROI.Type.Freeform)
             {
-                anno = new Annotation();
+                anno = new ROI();
             }
             else
             if (currentTool.type == Tool.Type.rectSel)
             {
                 ImageView.selectedAnnotations.Clear();
                 RectangleF r = GetTool(Tool.Type.rectSel).RectangleF;
-                foreach (Annotation an in ImageView.viewer.AnnotationsRGB)
+                foreach (ROI an in App.viewer.AnnotationsRGB)
                 {
                     if (an.GetSelectBound().ToRectangleF().IntersectsWith(r))
                     {
@@ -378,12 +378,12 @@ namespace Bio
             if (Tools.currentTool.type == Tools.Tool.Type.magic)
             {
                 PointF pf = new PointF(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
-                ZCT coord = ImageView.viewer.GetCoordinate();
+                ZCT coord = App.viewer.GetCoordinate();
                
                 Rectangle r = new Rectangle((int)ImageView.mouseDown.X, (int)ImageView.mouseDown.Y, (int)(ImageView.mouseUp.X - ImageView.mouseDown.X), (int)(ImageView.mouseUp.Y - ImageView.mouseDown.Y));
-                if (r.Width <= 2 && r.Height <= 2)
+                if (r.Width <= 2 || r.Height <= 2)
                     return;
-                BufferInfo bf = ImageView.viewer.image.Buffers[ImageView.viewer.image.Coords[coord.Z, coord.C, coord.T]].GetCropBuffer(r);
+                BufferInfo bf = App.viewer.image.Buffers[App.viewer.image.Coords[coord.Z, coord.C, coord.T]].GetCropBuffer(r);
                 Statistics st = Statistics.FromBytes(bf);
                 Bitmap crop = (Bitmap)bf.Image;
                 Threshold th;
@@ -401,11 +401,12 @@ namespace Bio
                     th = new Threshold(st.Min);
                 th.ApplyInPlace(crop);
                 Invert inv = new Invert();
-                Bitmap det = AForge.Imaging.Image.Convert16bppTo8bpp((crop));
+                Bitmap det;
+                if (bf.BitsPerPixel > 8)
+                    det = AForge.Imaging.Image.Convert16bppTo8bpp((crop));
+                else
+                    det = crop;
                 BlobCounter blobCounter = new BlobCounter();
-
-                Clipboard.SetImage(det);
-                
                 blobCounter.ProcessImage(det);
                 Blob[] blobs = blobCounter.GetObjectsInformation();
                 // create convex hull searching algorithm
@@ -414,7 +415,7 @@ namespace Bio
                 // process each blob
                 foreach (Blob blob in blobs)
                 {
-                    if(blob.Rectangle.Width < magicSel.Min  || blob.Rectangle.Height < magicSel.Max)
+                    if(blob.Rectangle.Width < magicSel.Max  && blob.Rectangle.Height < magicSel.Max)
                         continue;
                     List<IntPoint> leftPoints = new List<IntPoint>();
                     List<IntPoint> rightPoints = new List<IntPoint>();
@@ -432,15 +433,15 @@ namespace Bio
                     {
                         pfs[i] = new PointD(r.X + hull[i].X,r.Y + hull[i].Y);
                     }
-                    Annotation an = Annotation.CreateFreeform(coord, pfs);
-                    ImageView.viewer.image.Annotations.Add(an); 
+                    ROI an = ROI.CreateFreeform(coord, pfs);
+                    App.viewer.image.Annotations.Add(an); 
                 }
             }
             UpdateOverlay();
         }
         public void ToolMove(PointF e, MouseButtons buts)
         {
-            if (ImageView.viewer == null)
+            if (App.viewer == null)
                 return;
             Scripting.UpdateState(Scripting.State.GetMove(e, buts));
             if (currentTool.type == Tool.Type.line && ImageView.down)
@@ -454,11 +455,11 @@ namespace Bio
             {
                 if (anno.GetPointCount() == 0)
                 {
-                    anno.type = Annotation.Type.Freeform;
+                    anno.type = ROI.Type.Freeform;
                     anno.AddPoint(new PointD(e.X, e.Y));
-                    anno.coord = ImageView.viewer.GetCoordinate();
+                    anno.coord = App.viewer.GetCoordinate();
                     anno.closed = true;
-                    ImageView.selectedImage.Annotations.Add(anno);
+                    ImageView.SelectedImage.Annotations.Add(anno);
                 }
                 else
                 {
@@ -467,7 +468,7 @@ namespace Bio
                 UpdateOverlay();
             }
             else
-            if (currentTool.type == Tool.Type.rect && anno.type == Annotation.Type.Rectangle)
+            if (currentTool.type == Tool.Type.rect && anno.type == ROI.Type.Rectangle)
             {
                 if (anno.GetPointCount() == 4)
                 {
@@ -476,7 +477,7 @@ namespace Bio
                 }
             }
             else
-            if (currentTool.type == Tool.Type.ellipse && anno.type == Annotation.Type.Ellipse)
+            if (currentTool.type == Tool.Type.ellipse && anno.type == ROI.Type.Ellipse)
             {
                 if (anno.GetPointCount() == 4)
                 {
@@ -490,7 +491,7 @@ namespace Bio
                 PointD d = new PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
                 Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(ImageView.mouseDown.X, ImageView.mouseDown.Y, d.X, d.Y);
                 RectangleF r = Tools.GetTool(Tools.Tool.Type.rectSel).RectangleF;
-                foreach (Annotation an in ImageView.viewer.AnnotationsRGB)
+                foreach (ROI an in App.viewer.AnnotationsRGB)
                 {
                     if (an.GetSelectBound().ToRectangleF().IntersectsWith(r))
                     {
@@ -518,20 +519,20 @@ namespace Bio
             else
             if (Win32.GetKeyState(Keys.Delete))
             {
-                foreach (Annotation an in ImageView.selectedAnnotations)
+                foreach (ROI an in ImageView.selectedAnnotations)
                 {
                     if (an != null)
                     {
                         if (an.selectedPoints.Count == 0)
                         {
-                            ImageView.selectedImage.Annotations.Remove(an);
+                            ImageView.SelectedImage.Annotations.Remove(an);
                             UpdateOverlay();
                         }
                         else
                         {
-                            if (an.type == Annotation.Type.Polygon ||
-                                an.type == Annotation.Type.Polyline ||
-                                an.type == Annotation.Type.Freeform)
+                            if (an.type == ROI.Type.Polygon ||
+                                an.type == ROI.Type.Polyline ||
+                                an.type == ROI.Type.Freeform)
                             {
                                 an.closed = false;
                                 an.RemovePoints(an.selectedPoints.ToArray());
@@ -554,7 +555,7 @@ namespace Bio
                 PointF pf = new PointF(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
                 if (pf.X > 50 && pf.Y > 50)
                     return;
-                ImageView.viewer.Origin = new PointF(ImageView.viewer.Origin.X + pf.X, ImageView.viewer.Origin.Y + pf.Y);
+                App.viewer.Origin = new PointF(App.viewer.Origin.X + pf.X, App.viewer.Origin.Y + pf.Y);
                 UpdateView();
             }
 

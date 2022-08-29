@@ -10,15 +10,10 @@ namespace Bio
 {
     public partial class TabsView : Form
     {
-        public static Tools tools;
-        public static ROIManager manager = null;
         public static bool init = false;
-        public static TabsView tabview = null;
-        public static ImageView viewer = null;
-        public static NodeView nodeView = null;
         public Filter filters = null;
-        public StackTools stackTools = null;
         public static Graphics graphics = null;
+        
         public ImageView Viewer
         {
             get
@@ -36,18 +31,20 @@ namespace Bio
         {
             get
             {
-                return NodeView.viewer.Image;
+                return App.tabsView.Image;
             }
         }
-        
+        public static ImageView SelectedViewer
+        {
+            get
+            {
+                return App.tabsView.ImageView;
+            }
+        }
         public TabsView(BioImage arg)
         {
             InitializeComponent();
-            DialogResult = DialogResult.None;
-            tools = new Tools();
-            stackTools = new StackTools();
-            filters = new Filter();
-            tabview = this;
+            LoadProperties();
             ResizeView();
             UpdateTabs();
             Init();
@@ -55,11 +52,7 @@ namespace Bio
         public TabsView()
         {
             InitializeComponent();
-            DialogResult = DialogResult.None;
-            tools = new Tools();
-            stackTools = new StackTools();
-            filters = new Filter();
-            tabview = this;
+            LoadProperties();
             ResizeView();
             UpdateTabs();
             Init();
@@ -67,12 +60,7 @@ namespace Bio
         public TabsView(string arg)
         {
             InitializeComponent();
-            DialogResult = DialogResult.None;
-            tools = new Tools();
-            manager = new ROIManager();
-            filters = new Filter();
-            tabview = this;
-            stackTools = new StackTools();
+            LoadProperties();
             if (arg.Length == 0)
                 return;
             else
@@ -87,58 +75,32 @@ namespace Bio
         public TabsView(string[] arg)
         {
             InitializeComponent();
-            DialogResult = DialogResult.None;
+            LoadProperties();
             Init();
-            tools = new Tools();
-            manager = new ROIManager();
-            tabview = this;
-            stackTools = new StackTools();
-            filters = new Filter();
             if (arg.Length == 0)
                 return;
             else
             {
                 if (arg[0].EndsWith(".cs"))
                 {
-                    NodeView.runner.RunScriptFile(arg[0]);
+                    App.runner.RunScriptFile(arg[0]);
                 }
                 else
                 {
                     for (int i = 0; i < arg.Length; i++)
                     {
-                        if(arg[i].EndsWith("ome.tif"))
-                        { 
-                            BioImage b = BioImage.OpenOME(arg[i]);
-                            AddTab(b);
+                        if(arg[i].EndsWith(".ijm"))
+                        {
+                            ImageJ.RunMacro(arg[i], "");
                         }
                         else
-                        if(arg[i].EndsWith(".tif") || arg[i].EndsWith(".tiff"))
-                        {
-                            BioImage b = BioImage.Open(arg[i]);
-                            AddTab(b);
-                        }
-                        else
-                        {
-                            BioImage b = BioImage.OpenOME(arg[i]);
-                            AddTab(b);
-                        }
+                            BioImage.Open(arg[i]);
                     }
                     
                 }
             }
             UpdateTabs();
         }
-        public static TabsView GetByID(string id)
-        {
-            if (Table.viewers.ContainsKey(id))
-                return new TabsView(Table.GetImage(id));
-            else
-            {
-                MessageBox.Show("No viewer by " + id + " found.");
-                return null;
-            }
-        }
-  
         public void UpdateTabs()
         {
             if (Table.images.Count != tabControl.TabPages.Count)
@@ -160,7 +122,7 @@ namespace Bio
             ImageView v = new ImageView(b);
             v.Dock = DockStyle.Fill;
             t.Controls.Add(v);
-            Table.AddViewer(v);
+            //TO DO Sizeing
             if(Width < b.SizeX || Height < b.SizeY)
             {
                 Width = b.SizeX;
@@ -168,20 +130,9 @@ namespace Bio
             }
             tabControl.TabPages.Add(t);
         }
-        public void AddTab(ImageView v)
+        private void Init()
         {
-            TabPage t = new TabPage(Path.GetFileName(v.image.ID));
-            v.Dock = DockStyle.Fill;
-            t.Controls.Add(v);
-            tabControl.TabPages.Add(t);
-            Table.AddViewer(v);
-        }
-        private static void Init()
-        {
-            if (Recorder.recorder == null)
-                Recorder.recorder = new Recorder();
-            if(manager == null)
-                manager = new ROIManager();
+            filters = new Filter();
             init = true;
         }
 
@@ -189,7 +140,7 @@ namespace Bio
         {
             if (Image == null)
                 return;
-            System.Drawing.Size s = new System.Drawing.Size(Viewer.image.SizeX + 20, Viewer.image.SizeY + 165);
+            System.Drawing.Size s = new System.Drawing.Size(Viewer.image.SizeX + 20, Viewer.image.SizeY + 180);
             if (s.Width > Screen.PrimaryScreen.Bounds.Width || s.Height > Screen.PrimaryScreen.Bounds.Height)
             {
                 this.WindowState = FormWindowState.Maximized;
@@ -244,15 +195,48 @@ namespace Bio
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            BioImage.OpenThread(openFilesDialog.FileNames);
+            foreach (string item in openFilesDialog.FileNames)
+            {
+                BioImage.Open(item);
+            }
+            App.recent.AddRange(openFilesDialog.FileNames);
+            foreach (string item in App.recent)
+            {
+                openRecentToolStripMenuItem.DropDownItems.Add(item, null, ItemClicked);
+            }
             UpdateTabs();
+        }
+
+        private void SaveProperties()
+        {
+            int re = (int)Properties.Settings.Default["RecentFilesCount"];
+            //string s = (string)Properties.Settings.Default["Recent"]; 
+            string s = "";
+            for (int i = 0; i < App.recent.Count; i++)
+            {
+                 s += "$"+App.recent[i];
+            }
+            Properties.Settings.Default["Recent"] = s;
+            Properties.Settings.Default.Save();
+        }
+
+        private void LoadProperties()
+        {
+            App.recent.Clear();
+            string s = (string)Properties.Settings.Default["Recent"];
+            string[] sts = s.Split('$');
+            foreach (string item in sts)
+            {
+                if(item!="")
+                    App.recent.Add(item);
+            }
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.Viewer != null)
             {
-                Table.RemoveViewer(this.Viewer);
+                Table.RemoveImage(SelectedImage);
             }
         }
 
@@ -260,11 +244,12 @@ namespace Bio
         {
             if (Image == null)
                 return;
+            saveTiffFileDialog.FileName = Image.Filename;
             if (saveTiffFileDialog.ShowDialog() != DialogResult.OK)
                 return;
             foreach (string file in saveTiffFileDialog.FileNames)
             {
-                BioImage.SaveThread(file,Image.ID);
+                BioImage.Save(file,Image.ID);
             }
         }
 
@@ -283,7 +268,7 @@ namespace Bio
 
         private void toolboxToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            tools.Show();
+            App.tools.Show();
         }
 
         private void exportCSVToolStripMenuItem_Click(object sender, EventArgs e)
@@ -312,32 +297,15 @@ namespace Bio
             BioImage.ExportROIFolder(folderBrowserDialog.SelectedPath, f);
         }
 
-        private void ImageViewer_Click(object sender, EventArgs e)
-        {
-            if (Image != null)
-                ImageView.selectedImage = Viewer.image;
-        }
-
-        private void panel_Click(object sender, EventArgs e)
-        {
-            if(Image != null)
-            ImageView.selectedImage = Viewer.image;
-        }
-
         private void rOIManagerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            manager.Show();
-            
+            App.manager.Show();
         }
 
         private void ImageViewer_Activated(object sender, EventArgs e)
         {
-            NodeView.viewer = this;
-            tabview = this;
-            ImageView.app = this;
-            if (this.Viewer == null)
-                this.Height = 400;
-            ImageView.viewer = this.Viewer;
+            App.tabsView = this;
+            //App.Image = SelectedImage;
             UpdateTabs();
         }
 
@@ -345,8 +313,9 @@ namespace Bio
         {
             if (Viewer.image == null)
                 return;
-            ChannelsTool ch = new ChannelsTool();
-            ch.Show();
+            if (App.channelsTool == null)
+                App.channelsTool = new ChannelsTool(App.Channels);
+            App.channelsTool.Show();
         }
 
         private void rGBToolStripMenuItem_Click(object sender, EventArgs e)
@@ -398,20 +367,13 @@ namespace Bio
 
         private void scriptRunnerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            NodeView.runner.WindowState = FormWindowState.Normal;
-            NodeView.runner.Show();
-        }
-
-        private void ImageViewer_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            //We close the mainform nodeview to exit application.
-            nodeView.Exit();
+            App.runner.WindowState = FormWindowState.Normal;
+            App.runner.Show();
         }
 
         private void stackToolsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            stackTools.WindowState = FormWindowState.Normal;
-            stackTools.Show();
+            App.stackTools.Show();
         }
 
         private void scriptRecorderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -428,7 +390,7 @@ namespace Bio
                 return;
             foreach (string file in saveOMEFileDialog.FileNames)
             {
-                BioImage.SaveOMEThread(file,Image.ID);
+                BioImage.SaveAsync(file,Image.ID);
             }
         }
 
@@ -472,21 +434,25 @@ namespace Bio
         private void bit8ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Image.To8Bit();
+            Viewer.UpdateImage();
         }
 
         private void bit16ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Image.To16Bit();
+            Viewer.UpdateImage();
         }
 
         private void to24BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Image.To24Bit();
+            Viewer.UpdateImage();
         }
 
         private void to48BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Image.To48Bit();
+            Viewer.UpdateImage();
         }
 
         private void to32BitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -520,9 +486,10 @@ namespace Bio
                 rGBToolStripMenuItem.Checked = true;
             else
                 rGBToolStripMenuItem.Checked = false;
-            //We update the active viewer.
-            ImageView.viewer = Viewer;
-            TabsView.viewer = Viewer;
+
+            ImageView.SelectedImage = Image;
+            //We update the active Viewer.
+            App.viewer = Viewer;
         }
 
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -531,7 +498,6 @@ namespace Bio
                 return;
             ImageView v = (ImageView)tabControl.SelectedTab.Controls[0];
             Table.RemoveImage(v.image);
-            Table.RemoveViewer(v);
             tabControl.TabPages.RemoveAt(tabControl.SelectedIndex);
             v.Dispose();
 
@@ -547,7 +513,7 @@ namespace Bio
             List<string> sts = new List<string>();
             foreach (BioImage item in Table.images)
             {
-                BioImage.SaveThread(Image.ID, Image.ID);
+                BioImage.Save(Image.ID, Image.ID);
             }
         }
 
@@ -559,21 +525,19 @@ namespace Bio
 
         private void scriptRunnerToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            Scripting runner = new Scripting();
-            runner.Show();
+            App.runner.Show();
         }
 
         private void scriptRecorderToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            Recorder rec = new Recorder();
-            rec.Show();
+            App.recorder.Show();
         }
 
         private void openOMEToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            BioImage.OpenOMEThread(openFilesDialog.FileNames);
+            BioImage.OpenOME(openFilesDialog.FileName);
             UpdateTabs();
         }
 
@@ -584,16 +548,9 @@ namespace Bio
 
         private void nodeViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            nodeView.Show();
-            nodeView.ShowInTaskbar = true;
+            App.nodeView.Show();
+            App.nodeView.ShowInTaskbar = true;
         }
-
-        private void tabControl_Click(object sender, EventArgs e)
-        {
-            ImageView.viewer = Viewer;
-            TabsView.viewer = Viewer;
-        }
-
         private void saveToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             if (saveTiffFileDialog.ShowDialog() == DialogResult.OK)
@@ -604,6 +561,87 @@ namespace Bio
         {
             if (saveOMEFileDialog.ShowDialog() == DialogResult.OK)
                 Bio.BioImage.Save(Viewer.image.ID, saveOMEFileDialog.FileName);
+        }
+        private void openRecentToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            openRecentToolStripMenuItem.DropDownItems.Clear();
+            foreach (string item in App.recent)
+            {
+                openRecentToolStripMenuItem.DropDownItems.Add(item, null, ItemClicked);
+            }
+        }
+        private void ItemClicked(object sender, EventArgs e)
+        {
+            ToolStripMenuItem ts = (ToolStripMenuItem)sender;
+            BioImage.Open(ts.Text);
+        }
+        private void TabsView_KeyDown(object sender, KeyEventArgs e)
+        {
+            
+            int moveAmount = 5;
+            if (e.KeyCode == Keys.C && e.Control)
+            {
+                Viewer.CopySelection();
+                return;
+            }
+            if (e.KeyCode == Keys.V && e.Control)
+            {
+                Viewer.PasteSelection();
+                return;
+            }
+            if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.NumPad7)
+            {
+                Viewer.scale.Width -= 0.1f;
+                Viewer.scale.Height -= 0.1f;
+                Viewer.UpdateOverlay();
+            }
+            if (e.KeyCode == Keys.Add || e.KeyCode == Keys.NumPad9)
+            {
+                Viewer.scale.Width += 0.1f;
+                Viewer.scale.Height += 0.1f;
+                Viewer.UpdateOverlay();
+            }
+            if (e.KeyCode == Keys.W || e.KeyCode == Keys.NumPad8)
+            {
+                Viewer.Origin = new System.Drawing.PointF(Viewer.Origin.X, Viewer.Origin.Y - moveAmount);
+                return;
+            }
+            if (e.KeyCode == Keys.S || e.KeyCode == Keys.NumPad2)
+            {
+                Viewer.Origin = new System.Drawing.PointF(Viewer.Origin.X, Viewer.Origin.Y + moveAmount);
+                return;
+            }
+            if (e.KeyCode == Keys.A || e.KeyCode == Keys.NumPad4)
+            {
+                Viewer.Origin = new System.Drawing.PointF(Viewer.Origin.X - moveAmount, Viewer.Origin.Y);
+                return;
+            }
+            if (e.KeyCode == Keys.D || e.KeyCode == Keys.NumPad6)
+            {
+                Viewer.Origin = new System.Drawing.PointF(Viewer.Origin.X + moveAmount, Viewer.Origin.Y);
+                return;
+            }
+        }
+
+        private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BioImage im = Image.Copy();
+            AddTab(im);
+        }
+
+        private void saveSeriesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            App.seriesTool.Show();
+        }
+
+        private void TabsView_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveProperties();
+        }
+
+        private void automationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            App.elements.Show();
         }
     }
 }

@@ -15,17 +15,18 @@ namespace Bio
         public ROIManager()
         {
             InitializeComponent();
-            foreach (Annotation.Type item in Enum.GetValues(typeof(Annotation.Type)))
+            foreach (ROI.Type item in Enum.GetValues(typeof(ROI.Type)))
             {
                 typeBox.Items.Add(item);
             }
         }
+        public ROI anno = new ROI();
         public void UpdateAnnotationList()
         {
-            if (ImageView.selectedImage == null)
+            if (ImageView.SelectedImage == null)
                 return;
             roiView.Items.Clear();
-            foreach (Annotation an in ImageView.selectedImage.Annotations)
+            foreach (ROI an in ImageView.SelectedImage.Annotations)
             {
                 ListViewItem it = new ListViewItem();
                 it.Tag = an;
@@ -35,14 +36,14 @@ namespace Bio
         }
         public void UpdateOverlay()
         {
-            if(ImageView.viewer != null)
-                ImageView.viewer.UpdateOverlay();
+            if(App.viewer != null)
+                App.viewer.UpdateOverlay();
         }
-        public void updateROI(int index, Annotation an)
+        public void updateROI(int index, ROI an)
         {
-            if (ImageView.selectedImage == null)
+            if (ImageView.SelectedImage == null)
                 return;
-            ImageView.selectedImage.Annotations[index] = an;
+            ImageView.SelectedImage.Annotations[index] = an;
             UpdateOverlay();
         }
         private void xBox_ValueChanged(object sender, EventArgs e)
@@ -63,7 +64,7 @@ namespace Bio
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
-            if(anno.type == Annotation.Type.Rectangle || anno.type == Annotation.Type.Ellipse)
+            if(anno.type == ROI.Type.Rectangle || anno.type == ROI.Type.Ellipse)
                 anno.W = (double)wBox.Value;
             UpdateOverlay();
         }
@@ -71,8 +72,9 @@ namespace Bio
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
-            if (anno.type == Annotation.Type.Rectangle || anno.type == Annotation.Type.Ellipse)
+            if (anno.type == ROI.Type.Rectangle || anno.type == ROI.Type.Ellipse)
                 anno.H = (double)hBox.Value;
+            UpdateAnnotationList();
             UpdateOverlay();
         }
         private void sBox_ValueChanged(object sender, EventArgs e)
@@ -127,7 +129,7 @@ namespace Bio
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
-            anno.type = (Annotation.Type)typeBox.SelectedItem;
+            anno.type = (ROI.Type)typeBox.SelectedItem;
             UpdateOverlay();
         }
         private void textBox_TextChanged(object sender, EventArgs e)
@@ -146,24 +148,24 @@ namespace Bio
         }
         private void ROIManager_Activated(object sender, EventArgs e)
         {
-            if (ImageView.selectedImage == null)
+            if (ImageView.SelectedImage == null)
                 return;
-            string n = System.IO.Path.GetFileName(ImageView.selectedImage.ID);
+            string n = System.IO.Path.GetFileName(ImageView.SelectedImage.ID);
             if (imageNameLabel.Text != n)
                 imageNameLabel.Text = n;
             UpdateAnnotationList();
         }
-        public Annotation anno = new Annotation();
+        
         private void roiView_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
             ListViewItem it = roiView.SelectedItems[0];
-            anno = (Annotation)it.Tag;
-            if(ImageView.viewer!=null)
-            ImageView.viewer.SetCoordinate(anno.coord.Z, anno.coord.C, anno.coord.T);
-            if(anno.type == Annotation.Type.Line || anno.type == Annotation.Type.Polygon ||
-               anno.type == Annotation.Type.Polyline)
+            anno = (ROI)it.Tag;
+            if(App.viewer!=null)
+            App.viewer.SetCoordinate(anno.coord.Z, anno.coord.C, anno.coord.T);
+            if(anno.type == ROI.Type.Line || anno.type == ROI.Type.Polygon ||
+               anno.type == ROI.Type.Polyline)
             {
                 xBox.Enabled = false;
                 yBox.Enabled = false;
@@ -177,7 +179,7 @@ namespace Bio
                 wBox.Enabled = true;
                 hBox.Enabled = true;
             }
-            if(anno.type == Annotation.Type.Rectangle || anno.type == Annotation.Type.Ellipse)
+            if(anno.type == ROI.Type.Rectangle || anno.type == ROI.Type.Ellipse)
             {
                 pointIndexBox.Enabled = false;
                 pointXBox.Enabled = false;
@@ -209,18 +211,14 @@ namespace Bio
         {
             if (roiView.SelectedItems.Count == 0)
                 return;
-            if (ImageView.selectedImage == null)
+            if (ImageView.SelectedImage == null)
                 return;
-            ImageView.selectedImage.Annotations[roiView.SelectedIndices[0]] = anno;
+            ImageView.SelectedImage.Annotations[roiView.SelectedIndices[0]] = anno;
             UpdateOverlay();
         }
         private void addButton_Click(object sender, EventArgs e)
         {
-            if (ImageView.selectedImage == null)
-                return;
-            if (anno == null)
-                return;
-            ImageView.selectedImage.Annotations.Add(anno);
+            ImageView.SelectedImage.Annotations.Add(anno);
             UpdateOverlay();
         }
         private void showBoundsBox_CheckedChanged(object sender, EventArgs e)
@@ -237,7 +235,7 @@ namespace Bio
         {
             if (anno == null)
                 return;
-            if (anno.type == Annotation.Type.Rectangle || anno.type == Annotation.Type.Ellipse)
+            if (anno.type == ROI.Type.Rectangle || anno.type == ROI.Type.Ellipse)
                 return;
             anno.UpdatePoint(new PointD((double)pointXBox.Value, (double)pointYBox.Value),(int)pointIndexBox.Value);
             UpdateOverlay();
@@ -246,7 +244,7 @@ namespace Bio
         {
             if (anno == null)
                 return;
-            if (anno.type == Annotation.Type.Rectangle || anno.type == Annotation.Type.Ellipse)
+            if (anno.type == ROI.Type.Rectangle || anno.type == ROI.Type.Ellipse)
                 return;
             anno.UpdatePoint(new PointD((double)pointXBox.Value, (double)pointYBox.Value), (int)pointIndexBox.Value);
             UpdateOverlay();
@@ -281,28 +279,28 @@ namespace Bio
         }
         private void selectBoxSize_ValueChanged(object sender, EventArgs e)
         {
-            ImageView.viewer.UpdateSelectBoxSize((float)selectBoxSize.Value);
+            App.viewer.UpdateSelectBoxSize((float)selectBoxSize.Value);
             UpdateOverlay();
         }
         private void rChBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (ImageView.viewer == null)
+            if (App.viewer == null)
                 return;
-            ImageView.viewer.showRROIs = rChBox.Checked;
+            App.viewer.showRROIs = rChBox.Checked;
             UpdateOverlay();
         }
         private void gChBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (ImageView.viewer == null)
+            if (App.viewer == null)
                 return;
-            ImageView.viewer.showGROIs = gChBox.Checked;
+            App.viewer.showGROIs = gChBox.Checked;
             UpdateOverlay();
         }
         private void bChBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (ImageView.viewer == null)
+            if (App.viewer == null)
                 return;
-            ImageView.viewer.showBROIs = bChBox.Checked;
+            App.viewer.showBROIs = bChBox.Checked;
             UpdateOverlay();
         }
         private void ROIManager_FormClosing(object sender, FormClosingEventArgs e)
@@ -315,10 +313,22 @@ namespace Bio
         {
             for (int i = 0; i < roiView.SelectedItems.Count; i++)
             {
-                ImageView.viewer.image.Annotations.Remove((Annotation)roiView.SelectedItems[i].Tag);
+                App.viewer.image.Annotations.Remove((ROI)roiView.SelectedItems[i].Tag);
             }
             UpdateAnnotationList();
             UpdateOverlay();
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<ROI> annotations = new List<ROI>();
+            ROI an = (ROI)roiView.SelectedItems[0].Tag;
+            Clipboard.SetText(BioImage.ROIToString(an));
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

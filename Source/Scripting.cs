@@ -20,6 +20,7 @@ namespace Bio
     {
         public static string log;
         public CodeView view = null;
+        public static string ImageJPath = Properties.Settings.Default.ImageJPath;
 
         public static void LogLine(string s)
         {
@@ -42,15 +43,17 @@ namespace Bio
             {
                 name = Path.GetFileName(file);
                 scriptString = scriptStr;
+                if (file.EndsWith(".txt") || file.EndsWith(".ijm"))
+                    type = ScriptType.imagej;
             }
             public Script(string file)
             {
                 name = Path.GetFileName(file);
                 scriptString = File.ReadAllText(file);
                 this.file = file;
+                if (file.EndsWith(".txt") || file.EndsWith(".ijm"))
+                    type = ScriptType.imagej;
             }
-            public Script()
-            { }
             public static void Run(Script rn)
             {
                 scriptName = rn.name;
@@ -63,17 +66,34 @@ namespace Bio
             {
                 Script rn = Scripts[scriptName];
                 rn.ex = null;
-                try
+                if (rn.type == ScriptType.imagej)
                 {
-                    rn.done = false;
-                    rn.script = CSScript.Evaluator.LoadCode(rn.scriptString);
-                    rn.obj = rn.script.Load();
-                    rn.output = rn.obj.ToString();
-                    rn.done = true;
+                    try
+                    {
+                        rn.done = false;
+                        string ex;
+                        ImageJ.RunString(rn.scriptString,"", false);
+                        rn.done = true;
+                    }
+                    catch (Exception e)
+                    {
+                        rn.ex = e;
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    rn.ex = e;
+                    try
+                    {
+                        rn.done = false;
+                        rn.script = CSScript.Evaluator.LoadCode(rn.scriptString);
+                        rn.obj = rn.script.Load();
+                        rn.output = rn.obj.ToString();
+                        rn.done = true;
+                    }
+                    catch (Exception e)
+                    {
+                        rn.ex = e;
+                    }
                 }
             }
             public void Run()
@@ -154,7 +174,8 @@ namespace Bio
         public enum ScriptType
         {
             tool,
-            script
+            script,
+            imagej
         }
         private static State state;
         public static State GetState()
@@ -180,18 +201,15 @@ namespace Bio
             string dir = Application.StartupPath + "//" + "Scripts";
             foreach (string file in Directory.GetFiles(dir))
             {
-                if (file.EndsWith(".cs"))
+                if (!Scripts.ContainsKey(Path.GetFileName(file)))
                 {
-                    if (!Scripts.ContainsKey(Path.GetFileName(file)))
-                    {
-                        //This is a script file.
-                        Script sc = new Script(file, File.ReadAllText(file));
-                        ListViewItem lv = new ListViewItem();
-                        lv.Tag = sc;
-                        lv.Text = sc.ToString();
-                        scriptView.Items.Add(lv);
-                        Scripts.Add(lv.Text, sc);
-                    }
+                    //This is a script file.
+                    Script sc = new Script(file, File.ReadAllText(file));
+                    ListViewItem lv = new ListViewItem();
+                    lv.Tag = sc;
+                    lv.Text = sc.ToString();
+                    scriptView.Items.Add(lv);
+                    Scripts.Add(lv.Text, sc);
                 }
             }
             string tls = Application.StartupPath + "//" + "Tools";

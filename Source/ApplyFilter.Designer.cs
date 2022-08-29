@@ -102,7 +102,7 @@
             // 
             // okBut
             // 
-            this.okBut.Location = new System.Drawing.Point(138, 215);
+            this.okBut.Location = new System.Drawing.Point(136, 237);
             this.okBut.Name = "okBut";
             this.okBut.Size = new System.Drawing.Size(75, 23);
             this.okBut.TabIndex = 23;
@@ -113,7 +113,7 @@
             // cancelBut
             // 
             this.cancelBut.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelBut.Location = new System.Drawing.Point(57, 215);
+            this.cancelBut.Location = new System.Drawing.Point(55, 237);
             this.cancelBut.Name = "cancelBut";
             this.cancelBut.Size = new System.Drawing.Size(75, 23);
             this.cancelBut.TabIndex = 24;
@@ -214,6 +214,11 @@
             this.angleBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.angleBox.DecimalPlaces = 1;
             this.angleBox.ForeColor = System.Drawing.Color.White;
+            this.angleBox.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
             this.angleBox.Location = new System.Drawing.Point(11, 154);
             this.angleBox.Maximum = new decimal(new int[] {
             360,
@@ -332,7 +337,7 @@
             // 
             // setColorBut
             // 
-            this.setColorBut.Location = new System.Drawing.Point(138, 186);
+            this.setColorBut.Location = new System.Drawing.Point(136, 208);
             this.setColorBut.Name = "setColorBut";
             this.setColorBut.Size = new System.Drawing.Size(75, 23);
             this.setColorBut.TabIndex = 39;
@@ -343,7 +348,7 @@
             // fillPanel
             // 
             this.fillPanel.BackColor = System.Drawing.Color.Black;
-            this.fillPanel.Location = new System.Drawing.Point(57, 186);
+            this.fillPanel.Location = new System.Drawing.Point(55, 208);
             this.fillPanel.Name = "fillPanel";
             this.fillPanel.Size = new System.Drawing.Size(75, 23);
             this.fillPanel.TabIndex = 41;
@@ -355,7 +360,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.CancelButton = this.cancelBut;
-            this.ClientSize = new System.Drawing.Size(224, 250);
+            this.ClientSize = new System.Drawing.Size(224, 272);
             this.Controls.Add(this.fillPanel);
             this.Controls.Add(this.setColorBut);
             this.Controls.Add(this.label9);

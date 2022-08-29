@@ -12,15 +12,12 @@ namespace Bio
 {
     public partial class HistogramControl : UserControl
     {
-        
-        public HistogramControl(Statistics s)
+        public HistogramControl(Channel c)
         {
-            stats = s;
+            channel = c;
             this.Dock = DockStyle.Fill;
             InitializeComponent();
-            min = ImageView.viewer.image.Channels[0].Min;
-            max = ImageView.viewer.image.Channels[0].Max;
-            if (s.BitsPerPixel == 8)
+            if (c.BitsPerPixel == 8)
             {
                 graphMax = 255;
                 Bin = 1;
@@ -30,14 +27,9 @@ namespace Bio
                 graphMax = ushort.MaxValue;
                 Bin = 10;
             }
-            
+
         }
-        private Statistics stats = null;
-        public Statistics Statistics
-        {
-            get { return stats; }
-            set { stats = value; }
-        }
+        private Channel channel = null;
         private float bin = 10;
         public float Bin
         {
@@ -50,17 +42,27 @@ namespace Bio
                 bin = value;
             }
         }
-        private float min = 0;
+        private int min = 0;
         public float Min
         {
             get { return min; }
-            set { min = value; }
+            set 
+            { 
+                if(channel!=null)
+                    channel.Min = (int)value;
+                min = (int)value;
+            }
         }
-        private int max = ushort.MaxValue;
-        public int Max
+        private int max = 0;
+        public float Max
         {
             get { return max; }
-            set { max = value; }
+            set
+            {
+                if (channel != null)
+                    channel.Max = (int)value;
+                max = (int)value;
+            }
         }
         private int graphMax = ushort.MaxValue;
         public int GraphMax
@@ -118,18 +120,42 @@ namespace Bio
                 return mouseValY;
             }
         }
+
+        private bool axisNumbers = true;
+        public bool AxisNumbers
+        {
+            get { return axisNumbers;}
+            set { axisNumbers = value; }
+        }
+
+        private bool axisTicks = true;
+        public bool AxisTicks
+        {
+            get { return axisTicks; }
+            set { axisTicks = value; }
+        }
+
         private float fx = 0;
         private float fy = 0;
         private Bitmap bm;
         private Graphics g;
+
+        public void UpdateChannel(Channel c)
+        {
+            channel = c;
+        }
+        public void UpdateView()
+        {
+            this.Invalidate();
+        }
         private void HistogramControl_Paint(object sender, PaintEventArgs e)
         {
             g.Clear(Color.LightGray);
             g.TranslateTransform(-graphMin, 0);
             //g.ScaleTransform(scale.Width, scale.Height);
-            if (stats == null)
+            if (channel.statistics == null)
                 return;
-            fy = ((float)this.Height) / (float)stats.StackMedian;
+            fy = ((float)this.Height) / (float)channel.statistics.StackMedian;
             fx = ((float)this.Width) / ((float)graphMax);
             Pen black = new Pen(Color.FromArgb(150,0,0,0), bin * fx);
             Pen blue = new Pen(Color.FromArgb(150,0, 0, 255), bin * fx);
@@ -137,16 +163,18 @@ namespace Bio
             float sumbin = 0;
             int binind = 0;
             int bininds = 0;
-
             g.DrawString("(" + (mouseX / fx).ToString() + ", " + (Math.Abs(graphMin - ((Height - mouseY) / fy))).ToString() + ")"
                 , SystemFonts.DefaultFont, Brushes.Black, mouseX + 10, mouseY -20);
-
-            for (float x = 0; x < graphMax; x++)
+            int gmax = graphMax;
+            if (App.Image.bitsPerPixel <= 8)
+                gmax = 255;
+             
+            for (float x = 0; x < gmax; x++)
             {
                 if (StackHistogram)
                 {
                     //Lets draw the stack histogram
-                    float val = (float)ImageView.viewer.image.Statistics.StackValues[(int)x];
+                    float val = (float)App.viewer.image.Statistics.StackValues[(int)x];
                     sumbin += val;
                     if (binind == bin)
                     {
@@ -158,7 +186,7 @@ namespace Bio
                     }
                 }
                 //Lets draw the channel histogram on top of the stack histogram.
-                float vals = (float)stats.StackValues[(int)x];
+                float vals = (float)channel.statistics.StackValues[(int)x];
                 sumbins += vals;
                 if (bininds == bin)
                 {
@@ -170,14 +198,28 @@ namespace Bio
                 }
                 binind++;
                 bininds++;
+                
             }
-            g.DrawLine(Pens.Red, new PointF((fx * stats.StackMax), 0), new PointF((fx * stats.StackMax), this.Height));
-            g.DrawLine(Pens.Red, new PointF(fx * stats.StackMin, 0), new PointF(fx * stats.StackMin, this.Height));
+            g.DrawLine(Pens.Red, new PointF((fx * channel.Max), 0), new PointF((fx * channel.Max), this.Height));
+            g.DrawLine(Pens.Red, new PointF(fx * channel.Min, 0), new PointF(fx * channel.Min, this.Height));
 
-            g.DrawLine(Pens.Green, new PointF((fx * Max), 0), new PointF((fx * Max), this.Height));
-            g.DrawString(Max.ToString(), SystemFonts.DefaultFont, Brushes.Black, new PointF((fx * Max), 0));
-            g.DrawLine(Pens.Green, new PointF(fx * Min, 0), new PointF(fx * Min, this.Height));
-            g.DrawString(Min.ToString(), SystemFonts.DefaultFont, Brushes.Black, new PointF((fx * Min), 0));
+            float tick = 6;
+            if (axisTicks)
+            {
+                if (axisNumbers)
+                for (float x = 0; x < graphMax; x += 1000)
+                {
+                    g.DrawString(x.ToString(), SystemFonts.DefaultFont, Brushes.Black, fx * x, tick + 2);
+                }
+                for (float x = 0; x < graphMax; x += 100)
+                {
+                    g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick));
+                }
+                for (float x = 0; x < graphMax; x += 50)
+                {
+                    g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), 3));
+                }
+            }
             blue.Dispose();
             black.Dispose();
             e.Graphics.DrawImage(bm, 0, 0);
@@ -192,8 +234,8 @@ namespace Bio
 
         private void HistogramControl_MouseMove(object sender, MouseEventArgs e)
         {
-            mouseValX = e.X * fx;
-            mouseValY = e.X * fy;
+            mouseValX = e.X / fx;
+            mouseValY = e.Y / fy;
         }
 
         private void HistogramControl_SizeChanged(object sender, EventArgs e)
@@ -213,6 +255,36 @@ namespace Bio
         private void copyViewToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Clipboard.SetImage(bm);
+        }
+
+        private void setMaxToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            App.channelsTool.SelectedChannel.Max = (int)MouseValX;
+            Invalidate();
+            App.viewer.UpdateImage();
+        }
+
+        private void setMinToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            App.channelsTool.SelectedChannel.Min = (int)MouseValX;
+            Invalidate();
+            App.viewer.UpdateImage();
+        }
+
+        private void setMaxAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (Channel c in App.viewer.image.Channels)
+            {
+                c.Max = (int)MouseValX;
+            }
+        }
+
+        private void setMinAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (Channel c in App.viewer.image.Channels)
+            {
+                c.Min = (int)MouseValX;
+            }
         }
     }
 }

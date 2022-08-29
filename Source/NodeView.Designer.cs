@@ -28,10 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NodeView));
             this.treeView = new System.Windows.Forms.TreeView();
-            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,7 +39,7 @@
             this.newTabsViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
-            this.updateTimer = new System.Windows.Forms.Timer(this.components);
+            this.updateTimer = new System.Windows.Forms.Timer();
             this.contextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -56,7 +55,6 @@
             this.treeView.Name = "treeView";
             this.treeView.Size = new System.Drawing.Size(286, 170);
             this.treeView.TabIndex = 2;
-            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             this.treeView.DoubleClick += new System.EventHandler(this.treeView_DoubleClick);
             // 
             // contextMenuStrip

@@ -256,11 +256,11 @@
             // openFileDialog
             // 
             this.openFileDialog.FileName = "openFileDialog";
-            this.openFileDialog.Filter = "\"C# Files (*.cs)|*.cs|All files (*.*)|*.*\"";
+            this.openFileDialog.Filter = "\"C# Files (*.cs)|*.cs| IJM Files (*.ijm)|*.ijm| All files (*.*)|*.*\"";
             // 
             // saveFileDialog
             // 
-            this.saveFileDialog.Filter = "\"C# Files (*.cs)|*.cs|All files (*.*)|*.*\"";
+            this.saveFileDialog.Filter = "\"C# Files (*.cs)|*.cs| Text Files (*.txt)|*.txt| All files (*.*)|*.*\"";
             // 
             // stopBut
             // 

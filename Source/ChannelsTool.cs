@@ -8,15 +8,34 @@ namespace Bio
 {
     public partial class ChannelsTool : Form
     {
-        private HistogramControl hist;
+        private HistogramControl hist = null;
         public List<Channel> Channels
         {
             get
             {
-                return ImageView.viewer.image.Channels;
+                return App.Channels;
             }
         }
-        public ChannelsTool()
+        public Channel SelectedChannel
+        {
+            get
+            {
+                if (channelsBox.SelectedIndex != -1)
+                    return Channels[channelsBox.SelectedIndex];
+                else
+                    return Channels[0];
+            }
+        }
+
+        public void UpdateItems()
+        {
+            channelsBox.Items.Clear();
+            foreach (Channel item in Channels)
+            {
+                channelsBox.Items.Add(item);
+            }
+        }
+        public ChannelsTool(List<Channel> Channels)
         {
             InitializeComponent();
             foreach (Channel item in Channels)
@@ -26,7 +45,8 @@ namespace Bio
             channelsBox.SelectedIndex = 0;
             minBox.Value = Channels[0].Min;
             maxBox.Value = Channels[0].Max;
-            hist = new HistogramControl(Channels[channelsBox.SelectedIndex].statistics);
+            hist = new HistogramControl(Channels[channelsBox.SelectedIndex]);
+            hist.GraphMax = (int)maxBox.Value;
             MouseWheel += new System.Windows.Forms.MouseEventHandler(ChannelsTool_MouseWheel);
             statsPanel.Controls.Add(hist);
         }
@@ -35,27 +55,29 @@ namespace Bio
         {
             if (channelsBox.SelectedIndex == -1)
                 return;
-            Channels[channelsBox.SelectedIndex].Min = (int)minBox.Value;
             if (hist != null)
             {
-                hist.Min = (int)minBox.Value;
+                hist.UpdateChannel(Channels[channelsBox.SelectedIndex]);
                 hist.Invalidate();
+                hist.Min = (int)minBox.Value;
             }
-            ImageView.viewer.UpdateView();
+            
+            App.Channels[channelsBox.SelectedIndex].Min = (int)minBox.Value;
+            App.viewer.UpdateView();
         }
-
         private void maxBox_ValueChanged(object sender, EventArgs e)
         {
             if (channelsBox.SelectedIndex == -1)
                 return;
-            Channel c = (Channel)channelsBox.SelectedItem;
-            Channels[channelsBox.SelectedIndex].Max = (int)maxBox.Value;
             if (hist != null)
             {
-                hist.Max = (int)maxBox.Value;
+                hist.UpdateChannel(Channels[channelsBox.SelectedIndex]);
                 hist.Invalidate();
+                hist.Max = (int)maxBox.Value;
             }
-            ImageView.viewer.UpdateView();
+            
+            App.Channels[channelsBox.SelectedIndex].Max = (int)maxBox.Value;
+            App.viewer.UpdateView();
         }
         private void channelsBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -65,10 +87,11 @@ namespace Bio
             maxBox.Value = Channels[channelsBox.SelectedIndex].Max;
             if (hist != null)
             {
-                hist.Statistics = Channels[channelsBox.SelectedIndex].statistics;
+                //hist.Statistics = Channels[channelsBox.SelectedIndex].statistics;
+                hist.UpdateChannel(SelectedChannel);
                 hist.Invalidate();
             }
-            ImageView.viewer.UpdateView();
+            App.viewer.UpdateView();
         }
 
         private void maxUintBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -81,7 +104,8 @@ namespace Bio
 
         private void ChannelsTool_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.DialogResult = DialogResult.OK;
+            e.Cancel = true;
+            this.Hide();
         }
 
         private void setMaxAllBut_Click(object sender, EventArgs e)
@@ -90,7 +114,7 @@ namespace Bio
             {
                 c.Max = (int)maxBox.Value;
             }
-            ImageView.viewer.UpdateView();
+            App.viewer.UpdateView();
         }
 
         private void setMinAllBut_Click(object sender, EventArgs e)
@@ -99,27 +123,17 @@ namespace Bio
             {
                 c.Min = (int)minBox.Value;
             }
-            ImageView.viewer.UpdateView();
+            App.viewer.UpdateView();
         }
 
         private void ChannelsTool_Activated(object sender, EventArgs e)
         {
-            if (channelsBox.SelectedItem == null)
-                return;
-            Channel c = (Channel)channelsBox.SelectedItem;
-            ZCT coord = ImageView.viewer.GetCoordinate();
-            ImageView.viewer.image.GetBitmap(coord);
-            Bitmap b = ImageView.viewer.image.GetBitmap(coord);
-            if (hist.Statistics.BitsPerPixel > 8)
-            {
-                maxBox.Maximum = ushort.MaxValue;
-                maxGraphBox.Maximum = ushort.MaxValue;
-            }
-            else
-            {
-                maxBox.Maximum = 255;
-                maxGraphBox.Maximum = 255;
-            }
+            minBox.Value = SelectedChannel.Min;
+            maxBox.Value = SelectedChannel.Max;
+            if (App.Image.bitsPerPixel == 8)
+                maxGraphBox.Value = 255;
+            UpdateItems();
+            hist.UpdateView();
         }
 
         private void ChannelsTool_ResizeEnd(object sender, EventArgs e)
@@ -168,7 +182,9 @@ namespace Bio
         private bool pressedX2 = false;
         private void ChannelsTool_MouseMove(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.XButton1)
+            minBox.Value = SelectedChannel.Min;
+            maxBox.Value = SelectedChannel.Max;
+            if (e.Button == MouseButtons.XButton1)
             {
                 if (channelsBox.SelectedIndex < channelsBox.Items.Count-1)
                 {
@@ -222,5 +238,59 @@ namespace Bio
             hist.StackHistogram = stackHistoBox.Checked;
             hist.Invalidate();
         }
+
+        private void setMinToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            minBox.Value = (int)hist.MouseValX;
+        }
+
+        private void setMaxToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            maxBox.Value = (int)hist.MouseValX;
+        }
+
+        private void applyBut_Click(object sender, EventArgs e)
+        {
+            //App.Image.Bake(App.Image.RChannel.range, App.Image.GChannel.range, App.Image.BChannel.range);
+        }
+
+        private void minToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            minBox.Value = SelectedChannel.statistics.Min;
+        }
+
+        private void maxToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            minBox.Value = SelectedChannel.statistics.Max;
+        }
+
+        private void medianToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            minBox.Value = (decimal)SelectedChannel.statistics.Median;
+        }
+
+        private void meanToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            minBox.Value = (decimal)SelectedChannel.statistics.Mean;
+        }
+
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            maxBox.Value = SelectedChannel.statistics.Min;
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            maxBox.Value = SelectedChannel.statistics.Max;
+        }
+        private void toolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            maxBox.Value = (decimal)SelectedChannel.statistics.Median;
+        }
+        private void toolStripMenuItem4_Click(object sender, EventArgs e)
+        {
+            maxBox.Value = (decimal)SelectedChannel.statistics.Mean;
+        }
+
     }
 }

@@ -53,7 +53,7 @@ namespace Bio
             get
             {
                 if (roiBox.SelectedIndex != -1)
-                    return ((Annotation)roiBox.SelectedItem).BoundingBox.ToRectangleInt();
+                    return ((ROI)roiBox.SelectedItem).BoundingBox.ToRectangleInt();
                 else
                     return new Rectangle((int)xBox.Value, (int)yBox.Value, (int)wBox.Value, (int)hBox.Value);
             }

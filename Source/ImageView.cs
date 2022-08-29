@@ -9,43 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 
 namespace Bio
 {
     public partial class ImageView : UserControl
     {
-        public ImageView(string file, int ser)
-        {
-            file = file.Replace("\\", "/");
-            InitializeComponent();
-            serie = ser;
-            Dock = DockStyle.Fill;
-            tools = new Tools();
-            if (file == "" || file == null)
-                return;
-            SetCoordinate(0, 0, 0);
-
-            //image = new BioImage(file, ser);
-            InitGUI(file);
-            
-            MouseWheel += new System.Windows.Forms.MouseEventHandler(ImageView_MouseWheel);
-            zBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(ZTrackBar_MouseWheel);
-            cBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(CTrackBar_MouseWheel);
-            timeBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(TimeTrackBar_MouseWheel);
-            //We set the trackbar event to handled so that it only scrolls one tick not the default multiple.
-            zBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
-            timeBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
-            cBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
-            TimeFps = 60;
-            ZFps = 60;
-            CFps = 1;
-            UpdateView();
-            viewer = this;
-            // Change parent for overlay PictureBox.
-            overlayPictureBox.Parent = pictureBox;
-            overlayPictureBox.Location = new Point(0, 0);
-        }
         public ImageView(BioImage im)
         {
             string file = im.ID.Replace("\\", "/");
@@ -54,6 +24,7 @@ namespace Bio
             image = im;
             tools = new Tools();
             Dock = DockStyle.Fill;
+            App.viewer = this;
             if (file == "" || file == null)
                 return;
             SetCoordinate(0, 0, 0);
@@ -72,7 +43,6 @@ namespace Bio
             ZFps = 60;
             CFps = 1;
             UpdateView();
-            viewer = this;
             // Change parent for overlay PictureBox.
             overlayPictureBox.Parent = pictureBox;
             overlayPictureBox.Location = new Point(0, 0);
@@ -82,16 +52,55 @@ namespace Bio
 
         }
 
+        Bitmap bm = null;
+        public static List<ROI> selectedAnnotations = new List<ROI>();
+        private static BioImage selectedImage = null;
+        public static BioImage SelectedImage
+        {
+            get
+            {
+                return selectedImage;
+            }
+            set
+            {
+                selectedImage = value;
+            }
+        }
+        public static PointF mouseDown;
+        public static bool down;
+        public static PointF mouseUp;
+        public static bool up;
+        public static bool Ctrl
+        {
+            get
+            {
+                return Win32.GetKeyState(Keys.LControlKey);
+            }
+        }
+        private bool x1State = false;
+        private bool x2State = false;
+        public static MouseButtons mouseUpButtons;
+        public static MouseButtons mouseDownButtons;
+        private PointF pd;
         public static bool showBounds = true;
         public static bool showText = true;
         public Image Buf = null;
+        public bool init = false;
         public BioImage image;
         public string filepath = "";
         public int serie = 0;
         public static ZCT coordinate = new ZCT(0, 0, 0);
         public void SetCoordinate(int z, int c, int t)
         {
-            ImageView.coordinate = new ZCT(z, c, t);
+            if (image == null)
+                return;
+            coordinate = new ZCT(z, c, t);
+            if (z >= image.SizeZ)
+                zBar.Value = zBar.Maximum;
+            if (c >= image.SizeC)
+                cBar.Value = cBar.Maximum;
+            if (t >= image.SizeT)
+                timeBar.Value = timeBar.Maximum;
             zBar.Value = z;
             cBar.Value = c;
             timeBar.Value = t;
@@ -111,18 +120,14 @@ namespace Bio
                     statusPanel.Hide();
                     trackBarPanel.Hide();
                     panel.Dock = DockStyle.Fill;
-                    //overlayPictureBox.Anchor = AnchorStyles.None;
-                    //pictureBox.Anchor = AnchorStyles.None;
-                    //trackBarPanel.Hide();
-                    //statusPanel.Hide();
-                    //statusPanel.SendToBack();
                     overlayPictureBox.Location = new Point(0, 0);
-                    overlayPictureBox.Height = image.SizeY;
+                    if (image != null)
+                    {
+                        overlayPictureBox.Height = image.SizeY;
+                        pictureBox.Height = image.SizeY;
+                    }
                     pictureBox.Location = new Point(0, 0);
-                    pictureBox.Height = image.SizeY;
-                    showControlToolStripMenuItem.Text = "Show Controls";
-                    //pictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Left;
-                    
+                    showControlsToolStripMenuItem.Text = "Show Controls";
                 }
                 else
                 {
@@ -131,27 +136,11 @@ namespace Bio
                     panel.Top = 25;
                     panel.Height -= 75;
                     panel.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Left;
-
-                    showControlToolStripMenuItem.Text = "Hide Controls";
-                    /*
-                    overlayPictureBox.Anchor = AnchorStyles.None;
-                    pictureBox.Anchor = AnchorStyles.None;
-                    overlayPictureBox.Location = new Point(0, 25);
-                    pictureBox.Location = new Point(0, 25);
-                    overlayPictureBox.Height = image.SizeY;
-                    pictureBox.Height = image.SizeY;
+                    showControlsToolStripMenuItem.Text = "Hide Controls";
                     
-                    pictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Left;
-                    trackBarPanel.Show();
-                    trackBarPanel.BringToFront();
-                    statusPanel.Show();
-                    statusPanel.BringToFront();
-                    showControlToolStripMenuItem.Visible = false;
-                    */
                 }
             }
-        }
-        
+        }       
         public bool ShowStatus
         {
             get { return statusPanel.Visible; }
@@ -163,19 +152,18 @@ namespace Bio
                     statusPanel.Visible = value;
                     statusPanel.Height = 0;
                     pictureBox.Location = new Point(0, 0);
-                    showStatusToolStripMenuItem.Visible = true;
+                    showControlsToolStripMenuItem.Visible = true;
                 }
                 else
                 {
                     statusPanel.Show();
                     statusPanel.Visible = value;
                     pictureBox.Top = 0;
-                    showStatusToolStripMenuItem.Visible = false;
+                    showControlsToolStripMenuItem.Visible = false;
                     statusPanel.Height = 25;
                 }
             }
         }
-
         public int Index
         {
             get
@@ -206,7 +194,7 @@ namespace Bio
             {
                 viewMode = value;
                 //If view mode is changed we update.
-                TabsView.tabview.UpdateViewMode(viewMode);
+                App.tabsView.UpdateViewMode(viewMode);
                 UpdateView();
                 UpdateOverlay();
                 UpdateImage();
@@ -261,9 +249,15 @@ namespace Bio
                 return image.Channels[image.rgbChannels[2]];
             }
         }
+        public BioImage Image
+        {
+            get { return image; }
+            set {
+                image = value;
+            }
+        }
 
         public Tools tools;
-
         public void UpdateRGBChannels()
         {
             //Buf = image.GetBufByCoord(GetCoordinate());
@@ -331,8 +325,9 @@ namespace Bio
 
         public void InitGUI(string path)
         {
+
             filepath = path;
-            //image = new Bio(filePath);
+            //image = new BioImage(path, 0);
             zBar.Maximum = image.SizeZ - 1;
             cBar.Maximum = image.SizeC - 1;
             if (image.SizeT > 1)
@@ -370,17 +365,15 @@ namespace Bio
                 channelBoxR.SelectedIndex = 0;
                 channelBoxG.SelectedIndex = 1;
             }
-            else
-            {
-                channelBoxR.SelectedIndex = 0;
-            }
-                UpdateRGBChannels();
-            //We threshold the image so that the max threshold value is the max pixel value in image. 
+            UpdateRGBChannels();
+            init = true;
         }
 
         public void UpdateSelectBoxSize(float size)
         {
-            foreach (Annotation item in image.Annotations)
+            if (image == null)
+                return;
+            foreach (ROI item in image.Annotations)
             {
                 item.selectBoxSize = size;
             }
@@ -388,7 +381,9 @@ namespace Bio
 
         public void UpdateOverlay()
         {
-            if(image.Buffers[0].PixelFormat == PixelFormat.Format24bppRgb)
+            if (image == null)
+                return;
+            if (image.Buffers[0].PixelFormat == PixelFormat.Format24bppRgb)
             UpdateView();
             else
             overlayPictureBox.Invalidate();
@@ -396,6 +391,8 @@ namespace Bio
 
         public void UpdateStatus()
         {
+            if (image == null)
+                return;
             if (Mode == ViewMode.RGBImage)
             {
                 //Since combining 3 planes to one image takes time we show the image load time.
@@ -408,7 +405,7 @@ namespace Bio
                 }
                 else
                 {
-                    statusLabel.Text = (zBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint + mouseColor;
+                    statusLabel.Text = (zBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " + image.Buffers[0].PixelFormat.ToString();
                 }
                 
             }
@@ -433,6 +430,8 @@ namespace Bio
 
         public void UpdateImage()
         {
+            if (!init)
+                return;
             ZCT coords = new ZCT(zBar.Value, cBar.Value, timeBar.Value);
             if (image == null)
                 return;
@@ -448,7 +447,7 @@ namespace Bio
                 PixelFormat px = image.Buffers[index].PixelFormat;
                 if (px == PixelFormat.Format8bppIndexed || px == PixelFormat.Format16bppGrayScale)
                 {
-                    bm = image.GetRGBBitmap(coords, RChannel.range, BChannel.range, GChannel.range);
+                    bm = image.GetRGBBitmap(coords, RChannel.range, GChannel.range, BChannel.range);
                 }
                 else
                 {
@@ -645,14 +644,6 @@ namespace Bio
             cTimer.Interval = sp.CPlayspeed;
             timelineTimer.Interval = sp.TimePlayspeed;
         }
-        private void ImageView_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Delete)
-            {
-                deleteROIToolStripMenuItem.PerformClick();
-            }
-            
-        }
 
         public void GetRange()
         {
@@ -832,24 +823,24 @@ namespace Bio
         public bool showGROIs = true;
         public bool showBROIs = true;
 
-        private List<Annotation> annotationsR = new List<Annotation>();
-        public List<Annotation> AnnotationsR
+        private List<ROI> annotationsR = new List<ROI>();
+        public List<ROI> AnnotationsR
         {
             get
             {
                 return image.GetAnnotations(coordinate.Z, image.RChannel.Index, coordinate.T);
             }
         }
-        private List<Annotation> annotationsG = new List<Annotation>();
-        public List<Annotation> AnnotationsG
+        private List<ROI> annotationsG = new List<ROI>();
+        public List<ROI> AnnotationsG
         {
             get
             {
                 return image.GetAnnotations(coordinate.Z, image.GChannel.Index, coordinate.T);
             }
         }
-        private List<Annotation> annotationsB = new List<Annotation>();
-        public List<Annotation> AnnotationsB
+        private List<ROI> annotationsB = new List<ROI>();
+        public List<ROI> AnnotationsB
         {
             get
             {
@@ -857,11 +848,13 @@ namespace Bio
             }
         }
 
-        public List<Annotation> AnnotationsRGB
+        public List<ROI> AnnotationsRGB
         {
             get
             {
-                List<Annotation> ans = new List<Annotation>();
+                if (image == null)
+                    return null;
+                List<ROI> ans = new List<ROI>();
                 if (Mode == ViewMode.RGBImage)
                 {
                     if (showRROIs)
@@ -872,12 +865,16 @@ namespace Bio
                         ans.AddRange(AnnotationsB);
                 }
                 else
+                {
                     ans.AddRange(image.GetAnnotations(coordinate));
+                }
                 return ans;
             }
         }
         private void DrawOverlay(Graphics g)
         {
+            if (image == null)
+                return;
             SetCoordinate(zBar.Value, cBar.Value, timeBar.Value);
             Pen pen = null;
             Brush b = null;
@@ -885,8 +882,8 @@ namespace Bio
             bool labels = showText;
 
             ZCT cor = GetCoordinate();
-            List<Annotation> ans = image.GetAnnotations(cor);
-            foreach (Annotation an in ans)
+            List<ROI> ans = image.GetAnnotations(cor);
+            foreach (ROI an in ans)
             {
                 pen = new Pen(an.strokeColor, (float)an.strokeWidth);
                 if (an.selected)
@@ -896,19 +893,19 @@ namespace Bio
                 else
                     b = new SolidBrush(an.strokeColor);
                 PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
-                if (an.type == Annotation.Type.Point)
+                if (an.type == ROI.Type.Point)
                 {
                     g.DrawLine(pen, an.Point.ToPointF(), new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1));
                     g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                 }
                 else
-                if (an.type == Annotation.Type.Line)
+                if (an.type == ROI.Type.Line)
                 {
                     g.DrawLine(pen, an.GetPoint(0).ToPointF(), an.GetPoint(1).ToPointF());
                     g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                 }
                 else
-                if (an.type == Annotation.Type.Rectangle)
+                if (an.type == ROI.Type.Rectangle && an.Rect.W > 0 && an.Rect.H > 0)
                 {
                     RectangleF[] rects = new RectangleF[1];
                     rects[0] = an.Rect.ToRectangleF();
@@ -916,19 +913,19 @@ namespace Bio
                     g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                 }
                 else
-                if (an.type == Annotation.Type.Ellipse)
+                if (an.type == ROI.Type.Ellipse)
                 {
                     g.DrawEllipse(pen, an.Rect.ToRectangleF());
                     g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                 }
                 else
-                if (an.type == Annotation.Type.Polygon && an.closed)
+                if (an.type == ROI.Type.Polygon && an.closed)
                 {
                     g.DrawPolygon(pen, an.GetPointsF());
                     g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                 }
                 else
-                if (an.type == Annotation.Type.Polygon && !an.closed)
+                if (an.type == ROI.Type.Polygon && !an.closed)
                 {
                     PointF[] points = an.GetPointsF();
                     if (points.Length == 1)
@@ -940,14 +937,14 @@ namespace Bio
                     g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                 }
                 else
-                if (an.type == Annotation.Type.Polyline)
+                if (an.type == ROI.Type.Polyline)
                 {
                     g.DrawLines(pen, an.GetPointsF());
                     g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
                 }
 
                 else
-                if (an.type == Annotation.Type.Freeform && an.closed)
+                if (an.type == ROI.Type.Freeform && an.closed)
                 {
                     PointF[] points = an.GetPointsF();
                     if (points.Length > 1)
@@ -959,7 +956,7 @@ namespace Bio
                             g.DrawPolygon(pen, an.GetPointsF());
                 }
                 else
-                if (an.type == Annotation.Type.Freeform && !an.closed)
+                if (an.type == ROI.Type.Freeform && !an.closed)
                 {
                     PointF[] points = an.GetPointsF();
                     if (points.Length > 1)
@@ -970,7 +967,7 @@ namespace Bio
                         else
                             g.DrawLines(pen, points);
                 }
-                if (an.type == Annotation.Type.Label)
+                if (an.type == ROI.Type.Label)
                 {
                     g.DrawString(an.Text, an.font, b, an.Point.ToPointF());
                     g.DrawRectangles(Pens.Red, an.selectBoxs.ToArray());
@@ -1022,7 +1019,7 @@ namespace Bio
             set 
             { 
                 origin = value;
-                viewer.UpdateOverlay(); 
+                App.viewer.UpdateOverlay(); 
             }
         }
 
@@ -1044,47 +1041,27 @@ namespace Bio
             else
                 Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(0, 0, 0, 0);
         }
-        Bitmap bm = null;
+        
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
             if (bm == null)
                 UpdateImage();
             PointF pp = GetImagePoint();
             Graphics g = e.Graphics;
-            if (origin.X > 10000000)
+            if (origin.X > 100000)
                 origin.X = 0;
-            if (origin.Y > 10000000)
+            if (origin.Y > 100000)
                 origin.Y = 0;
             g.TranslateTransform(origin.X, origin.Y);
             g.ScaleTransform(scale.Width, scale.Height);
+            if(bm!=null)
             g.DrawImage(bm, 0,0, bm.Size.Width, bm.Size.Height);
         }
-
-        public static List<Annotation> selectedAnnotations = new List<Annotation>();
-        public static BioImage selectedImage = null;
-
-        public static ImageView viewer = null;
-        public static TabsView app = null;
-
-        public static PointF mouseDown;
-        public static bool down;
-        public static PointF mouseUp;
-        public static bool up;
-
-        public static bool Ctrl
-        {
-            get
-            {
-                return Win32.GetKeyState(Keys.LControlKey);
-            }
-        }
-        private bool x1State = false;
-        private bool x2State = false;
-        public static MouseButtons mouseUpButtons;
-        public static MouseButtons mouseDownButtons;
-        private PointF pd;
+        
         private void rgbPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
+            if (image == null)
+                return;
             selectedImage = image;
             PointF p = new PointF(e.Location.X, e.Location.Y);
             p.X -= origin.X;
@@ -1115,11 +1092,11 @@ namespace Bio
 
             if (Tools.currentTool.type == Tools.Tool.Type.move && e.Button == MouseButtons.Left)
             {
-                foreach (Annotation an in selectedAnnotations)
+                foreach (ROI an in selectedAnnotations)
                 {
                     if (an.selectedPoints.Count > 0 && an.selectedPoints.Count < an.GetPointCount())
                     {
-                        if (an.type == Annotation.Type.Rectangle || an.type == Annotation.Type.Ellipse)
+                        if (an.type == ROI.Type.Rectangle || an.type == ROI.Type.Ellipse)
                         {
                             RectangleD d = an.Rect;
                             if (an.selectedPoints[0] == 0)
@@ -1186,7 +1163,7 @@ namespace Bio
             if(Tools.currentTool.type == Tools.Tool.Type.pencil && e.Button == MouseButtons.Left)
             if (Mode == ViewMode.RGBImage)
             {
-                BioImage b = ImageView.viewer.image;
+                BioImage b = App.viewer.image;
                 ZCT co = ImageView.coordinate;
                 if (b.RGBChannelCount > 1)
                 {
@@ -1248,7 +1225,9 @@ namespace Bio
         }
         private void pictureBox_MouseUp(object sender, MouseEventArgs e)
         {
-            viewer = this;
+            if (image == null)
+                return;
+            App.viewer = this;
             selectedImage = image;
             PointF p = new PointF(e.Location.X, e.Location.Y);
             p.X -= origin.X;
@@ -1264,17 +1243,19 @@ namespace Bio
         }
         private void pictureBox_MouseDown(object sender, MouseEventArgs e)
         {
+            if (image == null)
+                return;
             tools.BringToFront();
             if (!Ctrl)
             {
-                foreach (Annotation item in selectedAnnotations)
+                foreach (ROI item in selectedAnnotations)
                 {
                     if(item.selected)
                     item.selectedPoints.Clear();
                 }
                 selectedAnnotations.Clear();
             }
-            viewer = this;
+            App.viewer = this;
             selectedImage = image;
             mouseDownButtons = e.Button;
             mouseUpButtons = MouseButtons.None;
@@ -1289,7 +1270,7 @@ namespace Bio
             up = false;
             if (Tools.currentTool.type == Tools.Tool.Type.move)
             {
-                foreach (Annotation an in AnnotationsRGB)
+                foreach (ROI an in AnnotationsRGB)
                 {
                     if (an.GetSelectBound().IntersectsWith(p.X, p.Y))
                     {
@@ -1349,7 +1330,9 @@ namespace Bio
         }
         private void pictureBox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            viewer = this;
+            if (image == null)
+                return;
+            App.viewer = this;
             selectedImage = image;
             PointF p = new PointF(e.Location.X, e.Location.Y);
             p.X -= origin.X;
@@ -1360,7 +1343,9 @@ namespace Bio
         }
         private void deleteROIToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (Annotation item in AnnotationsRGB)
+            if (image == null)
+                return;
+            foreach (ROI item in AnnotationsRGB)
             {
                 if (item.selected && (item.selectedPoints.Count == 0 || item.selectedPoints.Count == item.GetPointCount()))
                 {
@@ -1368,7 +1353,7 @@ namespace Bio
                 }
                 else
                 {
-                    if ((item.type == Annotation.Type.Polygon || item.type == Annotation.Type.Freeform || item.type == Annotation.Type.Polyline) && item.selectedPoints.Count > 0)
+                    if ((item.type == ROI.Type.Polygon || item.type == ROI.Type.Freeform || item.type == ROI.Type.Polyline) && item.selectedPoints.Count > 0)
                     {
                         item.RemovePoints(item.selectedPoints.ToArray());
                         
@@ -1380,7 +1365,9 @@ namespace Bio
         }
         private void setTextSelectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (Annotation item in AnnotationsRGB)
+            if (image == null)
+                return;
+            foreach (ROI item in AnnotationsRGB)
             {
                 if(item.selected)
                 {
@@ -1407,18 +1394,18 @@ namespace Bio
             }
             Clipboard.SetImage(bmp);
         }
-        List<Annotation> copys = new List<Annotation>();
+        List<ROI> copys = new List<ROI>();
 
         public void CopySelection()
         {
             copys.Clear();
             string s = "";
-            foreach (Annotation item in AnnotationsRGB)
+            foreach (ROI item in AnnotationsRGB)
             {
                 if (item.selected)
                 {
                     copys.Add(item);
-                    s += BioImage.ROItoString(item);
+                    s += BioImage.ROIToString(item);
                 }
             }
             Clipboard.SetText(s);
@@ -1430,7 +1417,7 @@ namespace Bio
             {
                 if (line.Length > 8)
                 {
-                    Annotation an = BioImage.StringToROI(line);
+                    ROI an = BioImage.StringToROI(line);
                     //We set the coordinates of the ROI's we are pasting
                     an.coord = GetCoordinate();
                     image.Annotations.Add(an);
@@ -1461,7 +1448,7 @@ namespace Bio
         protected override bool ProcessCmdKey(ref Message msg, Keys key)
         {
             int moveAmount = 5;
-            if (viewer != null && msg.Msg == (int)KeyMessages.WM_KEYDOWN)
+            if (App.viewer != null && msg.Msg == (int)KeyMessages.WM_KEYDOWN)
             {
                 if(key == Keys.Subtract || key == Keys.NumPad7)
                 {
@@ -1477,28 +1464,28 @@ namespace Bio
                 }
                 if (key == Keys.W || key == Keys.NumPad8)
                 {
-                    viewer.Origin = new System.Drawing.PointF(viewer.Origin.X, viewer.Origin.Y + moveAmount);
+                    App.viewer.Origin = new System.Drawing.PointF(App.viewer.Origin.X, App.viewer.Origin.Y + moveAmount);
                     return true;
                 }
                 if (key == Keys.S || key == Keys.NumPad2)
                 {
-                    viewer.Origin = new System.Drawing.PointF(viewer.Origin.X, viewer.Origin.Y - moveAmount);
+                    App.viewer.Origin = new System.Drawing.PointF(App.viewer.Origin.X, App.viewer.Origin.Y - moveAmount);
                     return true;
                 }
                 if (key == Keys.A || key == Keys.NumPad4)
                 {
-                    viewer.Origin = new System.Drawing.PointF(viewer.Origin.X + moveAmount, viewer.Origin.Y);
+                    App.viewer.Origin = new System.Drawing.PointF(App.viewer.Origin.X + moveAmount, App.viewer.Origin.Y);
                     return true;
                 }
                 if (key == Keys.D || key == Keys.NumPad6)
                 {
-                    viewer.Origin = new System.Drawing.PointF(viewer.Origin.X - moveAmount, viewer.Origin.Y);
+                    App.viewer.Origin = new System.Drawing.PointF(App.viewer.Origin.X - moveAmount, App.viewer.Origin.Y);
                     return true;
                 }
                 if (key == Keys.Delete)
                 {
                     Tools.currentTool = Tools.GetTool(Tools.Tool.Type.delete);
-                    foreach (Annotation an in ImageView.selectedAnnotations)
+                    foreach (ROI an in ImageView.selectedAnnotations)
                     {
                         if (an != null)
                         {
@@ -1507,15 +1494,15 @@ namespace Bio
                                 ImageView.selectedImage.Annotations.Remove(an);
                             }
                             else
-                            if(!(an.type == Annotation.Type.Polygon || an.type == Annotation.Type.Polyline || an.type == Annotation.Type.Freeform))
+                            if(!(an.type == ROI.Type.Polygon || an.type == ROI.Type.Polyline || an.type == ROI.Type.Freeform))
                             {
                                 ImageView.selectedImage.Annotations.Remove(an);
                             }
                             else
                             {
-                                if (an.type == Annotation.Type.Polygon ||
-                                    an.type == Annotation.Type.Polyline ||
-                                    an.type == Annotation.Type.Freeform)
+                                if (an.type == ROI.Type.Polygon ||
+                                    an.type == ROI.Type.Polyline ||
+                                    an.type == ROI.Type.Freeform)
                                 {
                                     an.closed = false;
                                     an.RemovePoints(an.selectedPoints.ToArray());
@@ -1526,14 +1513,14 @@ namespace Bio
                     UpdateOverlay();
                     return true;
                 }
-                if (key.HasFlag(Keys.C) && Ctrl && Tools.currentTool.type == Tools.Tool.Type.move)
+                if (key == Keys.Control && key == Keys.C)
                 {
-                    viewer.CopySelection();
+                    App.viewer.CopySelection();
                     return true;
                 }
-                if (key.HasFlag(Keys.V) && Ctrl && Tools.currentTool.type == Tools.Tool.Type.move)
+                if (key == Keys.Control && key == Keys.V)
                 {
-                    viewer.PasteSelection();
+                    App.viewer.PasteSelection();
                     return true;
                 }
             }
@@ -1542,7 +1529,10 @@ namespace Bio
 
         private void hideControlsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ShowControls = false;
+            if (showControlsToolStripMenuItem.Checked)
+                ShowControls = false;
+            else
+                ShowControls = true;
         }
 
         private void showControlToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1588,6 +1578,77 @@ namespace Bio
         {
             origin.X = 0;
             origin.Y = 0;
+            UpdateImage();
+        }
+
+        private void saveROIToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveCSVFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+            List<string> sts = new List<string>();
+            foreach (ROI item in image.Annotations)
+            {
+                if (item.selected)
+                    sts.Add(BioImage.ROIToString(item));
+            }
+            
+        }
+
+        private void openROIToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveCSVFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+            List<string> sts = new List<string>();
+            foreach (ROI item in image.Annotations)
+            {
+                if (item.selected)
+                    sts.Add(BioImage.ROIToString(item));
+            }
+        }
+
+        private void bitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            image.To8Bit();
+            UpdateImage();
+        }
+
+        private void bitToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            image.To16Bit();
+            UpdateImage();
+        }
+
+        private void bitToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            image.To24Bit();
+            UpdateImage();
+        }
+
+        private void bitToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            image.To32Bit();
+            UpdateImage();
+        }
+
+        private void bitToolStripMenuItem4_Click(object sender, EventArgs e)
+        {
+            image.To48Bit();
+            UpdateImage();
+        }
+
+        private void rGBToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Mode = ViewMode.RGBImage;
+        }
+
+        private void filteredToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Mode = ViewMode.Filtered;
+        }
+
+        private void rawToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Mode = ViewMode.Raw;
         }
     }
 }

@@ -14,10 +14,6 @@ namespace Bio
 {
     public partial class NodeView : Form
     {
-        public static Scripting runner = null;
-        public static Recorder recorder = null;
-        public static TabsView viewer = null;
-        public static NodeView nodeView = null;
         public class Node
         {
             public TreeNode node;
@@ -57,19 +53,19 @@ namespace Bio
         }
         public NodeView(string[] args)
         {
-            InitializeComponent();
             Init();
+            InitializeComponent();
             InitNodes();
-            TabsView.nodeView = this;
+            App.nodeView = this;
             if (args.Length > 0)
             {
-                viewer = new TabsView(args);
-                viewer.Show();
+                App.tabsView = new TabsView(args);
+                App.tabsView.Show();
             }
             else
             {
-                viewer = new TabsView();
-                viewer.Show();
+                App.tabsView = new TabsView();
+                App.tabsView.Show();
             }
             updateTimer.Start();
             //timer.Start();
@@ -77,15 +73,15 @@ namespace Bio
 
         private static void Init()
         {
-            BioImage.Initialize();
+            App.Initialize();
             Filters.Init();
-            runner = new Scripting();
-            recorder = new Recorder();
+            App.runner = new Scripting();
+            App.recorder = new Recorder();
         }
         public void UpdateOverlay()
         {
-            if (ImageView.viewer != null)
-                ImageView.viewer.UpdateOverlay();
+            if (App.viewer != null)
+                App.viewer.UpdateOverlay();
         }
         public void InitNodes()
         {
@@ -113,7 +109,7 @@ namespace Bio
                 Node rois = new Node(item, Node.DataType.text);
                 rois.Text = "ROI";
 
-                foreach (Annotation an in item.Annotations)
+                foreach (ROI an in item.Annotations)
                 {
                     Node roi = new Node(an, Node.DataType.roi);
                     rois.node.Nodes.Add(roi.node);
@@ -144,7 +140,7 @@ namespace Bio
                 {
                     //If ROI count is not same as node count we refresh annotations.
                     rois.Nodes.Clear();
-                    foreach (Annotation an in im.Annotations)
+                    foreach (ROI an in im.Annotations)
                     {
                         Node roi = new Node(an, Node.DataType.roi);
                         rois.Nodes.Add(roi.node);
@@ -155,7 +151,7 @@ namespace Bio
                 {
                     TreeNode roi = rois.Nodes[i];
                     Node n = (Node)roi.Tag;  
-                    Annotation an = (Annotation)n.Object;
+                    ROI an = (ROI)n.Object;
                     roi.Text = an.ToString();
                 }
             }
@@ -195,35 +191,13 @@ namespace Bio
 
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (treeView.SelectedNode == null)
-                return;
-            Node node = (Node)treeView.SelectedNode.Tag;
-            if(node!=null)
-            if(node.Type == Node.DataType.buf)
-            {
-                setIDToolStripMenuItem.Visible = false;
-                setTextToolStripMenuItem.Visible = false;
-                BufferInfo buf = (BufferInfo)node.Object;
-                ImageView.viewer.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
-                ImageView.viewer.UpdateImage();
-            }
-            else
-            if(node.Type == Node.DataType.roi)
-            {
-                setIDToolStripMenuItem.Visible = true;
-                setTextToolStripMenuItem.Visible = true;
-                Annotation an = (Annotation)node.Object;
-                string name = node.node.Parent.Parent.Text;
-                ImageView v = Table.GetViewer(name);
-                if (v != null)
-                    v.SetCoordinate(an.coord.Z, an.coord.C, an.coord.T);
-            }
+
         }
 
         private void scriptRunnerToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            runner.WindowState = FormWindowState.Normal;
-            runner.Show();
+            App.runner.WindowState = FormWindowState.Normal;
+            App.runner.Show();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -235,7 +209,7 @@ namespace Bio
                 return;
             if(node.Type == Node.DataType.roi)
             {
-                Annotation an = (Annotation)node.Object;
+                ROI an = (ROI)node.Object;
                 Node nod = (Node)treeView.SelectedNode.Parent.Tag;
                 BioImage im = (BioImage)nod.Object;
                 im.Annotations.Remove(an);
@@ -252,7 +226,7 @@ namespace Bio
 
         private void scriptRecorderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            recorder.Show();
+            App.recorder.Show();
         }
 
         private void setTextToolStripMenuItem_Click(object sender, EventArgs e)
@@ -260,7 +234,7 @@ namespace Bio
             Node node = (Node)treeView.SelectedNode.Tag;
             if (node.Type == Node.DataType.roi)
             {
-                Annotation an = (Annotation)node.Object;
+                ROI an = (ROI)node.Object;
                 Node nod = (Node)treeView.SelectedNode.Parent.Tag;
                 BioImage im = (BioImage)nod.Object;
                 TextInput input = new TextInput(an.Text);
@@ -279,7 +253,7 @@ namespace Bio
             Node node = (Node)treeView.SelectedNode.Tag;
             if (node.Type == Node.DataType.roi)
             {
-                Annotation an = (Annotation)node.Object;
+                ROI an = (ROI)node.Object;
                 Node nod = (Node)treeView.SelectedNode.Parent.Tag;
                 BioImage im = (BioImage)nod.Object;
                 TextInput input = new TextInput(an.id);
@@ -304,7 +278,7 @@ namespace Bio
 
         private void tabToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            viewer.Show();
+            App.tabsView.Show();
         }
 
         private void windowsViewToolStripMenuItem_Click(object sender, EventArgs e)
@@ -314,16 +288,16 @@ namespace Bio
 
         private void timer_Tick(object sender, EventArgs e)
         {
-            viewer.UpdateTabs();
+            App.tabsView.UpdateTabs();
         }
 
         private void updateTimer_Tick(object sender, EventArgs e)
         {
             //We use a timer to update tabs so that images can be opened by any thread. Without error
             //caused by accessing tabcontrol from another thread than the one it was created by.
-            if (viewer.IsDisposed || viewer.Disposing || viewer==null)
+            if (App.tabsView.IsDisposed || App.tabsView.Disposing || App.tabsView == null)
                 return;
-            viewer.UpdateTabs();
+            App.tabsView.UpdateTabs();
         }
 
         private void newTabsViewToolStripMenuItem_Click(object sender, EventArgs e)
@@ -341,17 +315,17 @@ namespace Bio
                     setIDToolStripMenuItem.Visible = false;
                     setTextToolStripMenuItem.Visible = false;
                     BufferInfo buf = (BufferInfo)node.Object;
-                    ImageView.viewer.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
-                    ImageView.viewer.UpdateImage();
+                    App.viewer.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
+                    App.viewer.UpdateImage();
                 }
                 else
                 if (node.Type == Node.DataType.roi)
                 {
                     setIDToolStripMenuItem.Visible = true;
                     setTextToolStripMenuItem.Visible = true;
-                    Annotation an = (Annotation)node.Object;
+                    ROI an = (ROI)node.Object;
                     string name = node.node.Parent.Parent.Text;
-                    ImageView v = Table.GetViewer(name);
+                    ImageView v = TabsView.SelectedViewer;
                     if (v != null)
                         v.SetCoordinate(an.coord.Z, an.coord.C, an.coord.T);
                 }

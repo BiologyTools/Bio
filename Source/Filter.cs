@@ -19,7 +19,7 @@ namespace Bio
         }
         private void UpdateView()
         {
-            ImageView.viewer.UpdateStatus();
+            App.viewer.UpdateStatus();
         }
         public class Node
         {
@@ -60,7 +60,7 @@ namespace Bio
             Node n = (Node)filterView.SelectedNode.Tag;
             if (n.filt.type == Filt.Type.Base)
             {
-                Filters.Base(ImageView.viewer.image.ID, n.filt.name, false);
+                Filters.Base(App.viewer.image.ID, n.filt.name, false);
                 
             }
             if (n.filt.type == Filt.Type.Base2)
@@ -74,7 +74,7 @@ namespace Bio
             else
             if (n.filt.type == Filt.Type.InPlace)
             {
-                Filters.InPlace(ImageView.viewer.image.ID, n.filt.name, false);
+                Filters.InPlace(App.viewer.image.ID, n.filt.name, false);
             }
             else
             if (n.filt.type == Filt.Type.InPlace2)
@@ -88,7 +88,7 @@ namespace Bio
             else
             if (n.filt.type == Filt.Type.InPlacePartial)
             {
-                Filters.InPlacePartial(ImageView.viewer.image.ID, n.filt.name, false);
+                Filters.InPlacePartial(App.viewer.image.ID, n.filt.name, false);
                 
             }
             else
@@ -97,7 +97,7 @@ namespace Bio
                 ApplyFilter two = new ApplyFilter(false);
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.Resize(ImageView.viewer.image.ID, n.filt.name, false, two.W,two.H);
+                Filters.Resize(App.viewer.image.ID, n.filt.name, false, two.W,two.H);
             }
             else
             if (n.filt.type == Filt.Type.Rotate)
@@ -105,7 +105,7 @@ namespace Bio
                 ApplyFilter two = new ApplyFilter(false);
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.Rotate(ImageView.viewer.image.ID, n.filt.name, false, two.Angle, two.Color.A, two.Color.R, two.Color.G, two.Color.B);
+                Filters.Rotate(App.viewer.image.ID, n.filt.name, false, two.Angle, two.Color.A, two.Color.R, two.Color.G, two.Color.B);
             }
             else
             if (n.filt.type == Filt.Type.Transformation)
@@ -119,13 +119,13 @@ namespace Bio
                 }
                 else
                 {
-                    Filters.Transformation(ImageView.viewer.image.ID, n.filt.name, false, two.Angle);
+                    Filters.Transformation(App.viewer.image.ID, n.filt.name, false, two.Angle);
                 }
             }
             else
             if (n.filt.type == Filt.Type.Copy)
             {
-                Filters.Copy(ImageView.viewer.image.ID, n.filt.name, false);
+                Filters.Copy(App.viewer.image.ID, n.filt.name, false);
             }
             UpdateView();
         }

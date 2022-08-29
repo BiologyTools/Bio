@@ -31,6 +31,8 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ROIManager));
             this.roiView = new System.Windows.Forms.ListView();
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.label1 = new System.Windows.Forms.Label();
             this.rBox = new System.Windows.Forms.NumericUpDown();
@@ -52,8 +54,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.showBoundsBox = new System.Windows.Forms.CheckBox();
             this.showTextBox = new System.Windows.Forms.CheckBox();
-            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label7 = new System.Windows.Forms.Label();
             this.imageNameLabel = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -75,6 +75,9 @@
             this.bChBox = new System.Windows.Forms.CheckBox();
             this.label14 = new System.Windows.Forms.Label();
             this.selectBoxSize = new System.Windows.Forms.NumericUpDown();
+            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bBox)).BeginInit();
@@ -85,7 +88,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.xBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.wBox)).BeginInit();
-            this.contextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pointYBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointXBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointIndexBox)).BeginInit();
@@ -110,6 +112,22 @@
             this.roiView.UseCompatibleStateImageBehavior = false;
             this.roiView.View = System.Windows.Forms.View.List;
             this.roiView.SelectedIndexChanged += new System.EventHandler(this.roiView_SelectedIndexChanged);
+            // 
+            // contextMenuStrip
+            // 
+            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteToolStripMenuItem,
+            this.copyToolStripMenuItem,
+            this.saveToolStripMenuItem});
+            this.contextMenuStrip.Name = "contextMenuStrip";
+            this.contextMenuStrip.Size = new System.Drawing.Size(181, 92);
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // label1
             // 
@@ -391,20 +409,6 @@
             this.showTextBox.UseVisualStyleBackColor = true;
             this.showTextBox.CheckedChanged += new System.EventHandler(this.showTextBox_CheckedChanged);
             // 
-            // contextMenuStrip
-            // 
-            this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.deleteToolStripMenuItem});
-            this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(108, 26);
-            // 
-            // deleteToolStripMenuItem
-            // 
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            this.deleteToolStripMenuItem.Text = "Delete";
-            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
-            // 
             // label7
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -671,6 +675,20 @@
             0});
             this.selectBoxSize.ValueChanged += new System.EventHandler(this.selectBoxSize_ValueChanged);
             // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.copyToolStripMenuItem.Text = "Copy";
+            this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
             // ROIManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -723,6 +741,7 @@
             this.Text = "ROI Manager";
             this.Activated += new System.EventHandler(this.ROIManager_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ROIManager_FormClosing);
+            this.contextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.rBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bBox)).EndInit();
@@ -733,7 +752,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.xBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.hBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.wBox)).EndInit();
-            this.contextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pointYBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointXBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointIndexBox)).EndInit();
@@ -791,5 +809,7 @@
         private System.Windows.Forms.CheckBox bChBox;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.NumericUpDown selectBoxSize;
+        private System.Windows.Forms.ToolStripMenuItem copyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
     }
 }
