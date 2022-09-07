@@ -1,9 +1,8 @@
 ![alt text](https://github.com/RepoErik/BioImage/blob/master/banner.jpg?raw=true)
 
-# Bio Library
+# Bio
 
-A .NET Library for opening & annotating various microscopy imaging formats. Supports all bioformats supported images like .TIF, .CZI etc. 
-Best for working with ROI's in OME format & CSV.
+A .NET application for editing & annotating various microscopy imaging formats. Supports all bioformats supported images like .TIF, .CZI etc. Integrates with ImageJ through ImageJ Macros.
 
 ## Features
 
