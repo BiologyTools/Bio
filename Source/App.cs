@@ -16,12 +16,15 @@ namespace Bio
         public static NodeView nodeView = null;
         public static Scripting runner = null;
         public static Recorder recorder = null;
+        public static Imager imager = null;
         public static Tools tools = null;
         public static StackTools stackTools = null;
         public static ImageView viewer = null;
+        public static StageTool stage = null;
         public static Series seriesTool = null;
         public static Recordings recordings = null;
         public static Automation automation = null;
+        public static MicroscopeSetup setup = null;
         public static Library lib = null;
         public static List<string> recent = new List<string>();
 
@@ -46,6 +49,7 @@ namespace Bio
         {
             BioImage.Initialize();
             Microscope.Initialize();
+            setup = new MicroscopeSetup();
             tools = new Tools();
             stackTools = new StackTools();
             manager = new ROIManager();
@@ -54,17 +58,9 @@ namespace Bio
             seriesTool = new Series();
             recordings = new Recordings();
             automation = new Automation();
+            stage = new StageTool();
             lib = new Library();
-            if(Properties.Settings.Default.ImageJPath == "")
-            {
-                MessageBox.Show("ImageJ path not set. Set the ImageJ executable location.");
-                OpenFileDialog file = new OpenFileDialog();
-                file.Title = "Set the ImageJ executable location.";
-                if (file.ShowDialog() != DialogResult.OK)
-                    return;
-                Properties.Settings.Default.ImageJPath = file.FileName;
-                file.Dispose();
-            }
+            imager = new Imager();
             ImageJ.Initialize(Properties.Settings.Default.ImageJPath);
             //channelsTool = new ChannelsTool();
         }

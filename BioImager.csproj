@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Bio</RootNamespace>
-    <AssemblyName>Bio</AssemblyName>
+    <AssemblyName>BioImager</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -275,6 +275,12 @@
       <DependentUpon>HistogramControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\ImageJ.cs" />
+    <Compile Include="Source\Imager.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\Imager.Designer.cs">
+      <DependentUpon>Imager.cs</DependentUpon>
+    </Compile>
     <Compile Include="Source\ImagesView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -294,6 +300,12 @@
       <DependentUpon>Library.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\Microscope.cs" />
+    <Compile Include="Source\MicroscopeSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\MicroscopeSetup.Designer.cs">
+      <DependentUpon>MicroscopeSetup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Source\Recordings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -311,6 +323,12 @@
     </Compile>
     <Compile Include="Source\Series.Designer.cs">
       <DependentUpon>Series.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Source\StageTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\StageTool.Designer.cs">
+      <DependentUpon>StageTool.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\TabsView.cs">
       <SubType>Form</SubType>
@@ -438,6 +456,9 @@
     <EmbeddedResource Include="Source\HistogramControl.resx">
       <DependentUpon>HistogramControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Source\Imager.resx">
+      <DependentUpon>Imager.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Source\ImagesView.resx">
       <DependentUpon>ImagesView.cs</DependentUpon>
     </EmbeddedResource>
@@ -448,6 +469,9 @@
     <EmbeddedResource Include="Source\Library.resx">
       <DependentUpon>Library.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Source\MicroscopeSetup.resx">
+      <DependentUpon>MicroscopeSetup.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Source\Recordings.resx">
       <DependentUpon>Recordings.cs</DependentUpon>
     </EmbeddedResource>
@@ -456,6 +480,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Source\Series.resx">
       <DependentUpon>Series.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Source\StageTool.resx">
+      <DependentUpon>StageTool.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Source\TabsView.resx">
       <DependentUpon>TabsView.cs</DependentUpon>

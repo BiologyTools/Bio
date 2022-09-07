@@ -46,8 +46,10 @@ namespace Bio
             this.rGBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filteredToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.moveStageToImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.goToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.goToImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.goToStageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.controlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hideControlsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.hideStatusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -91,7 +93,6 @@ namespace Bio
             this.overlayPictureBox = new System.Windows.Forms.PictureBox();
             this.panel = new System.Windows.Forms.Panel();
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.moveStageToImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.zPlayMenuStrip.SuspendLayout();
@@ -166,12 +167,14 @@ namespace Bio
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rOIToolStripMenuItem,
             this.viewToolStripMenuItem,
+            this.moveStageToImageToolStripMenuItem,
             this.goToToolStripMenuItem,
             this.goToImageToolStripMenuItem,
-            this.copyViewToClipboardToolStripMenuItem,
-            this.controlsToolStripMenuItem});
+            this.goToStageToolStripMenuItem,
+            this.controlsToolStripMenuItem,
+            this.copyViewToClipboardToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(200, 158);
+            this.contextMenuStrip.Size = new System.Drawing.Size(200, 180);
             // 
             // rOIToolStripMenuItem
             // 
@@ -243,12 +246,21 @@ namespace Bio
             this.rawToolStripMenuItem.Text = "Raw";
             this.rawToolStripMenuItem.Click += new System.EventHandler(this.rawToolStripMenuItem_Click);
             // 
+            // moveStageToImageToolStripMenuItem
+            // 
+            this.moveStageToImageToolStripMenuItem.Name = "moveStageToImageToolStripMenuItem";
+            this.moveStageToImageToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.moveStageToImageToolStripMenuItem.Text = "Move Stage To Image";
+            this.moveStageToImageToolStripMenuItem.DropDownOpening += new System.EventHandler(this.goToImageToolStripMenuItem_DropDownOpening);
+            this.moveStageToImageToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.moveStageToImageToolStripMenuItem_DropDownItemClicked);
+            this.moveStageToImageToolStripMenuItem.Click += new System.EventHandler(this.moveStageToImageToolStripMenuItem_Click);
+            // 
             // goToToolStripMenuItem
             // 
             this.goToToolStripMenuItem.Name = "goToToolStripMenuItem";
             this.goToToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.goToToolStripMenuItem.Text = "Go To";
-            this.goToToolStripMenuItem.Click += new System.EventHandler(this.goToToolStripMenuItem1_Click);
+            this.goToToolStripMenuItem.Click += new System.EventHandler(this.goToToolStripMenuItem_Click_1);
             // 
             // goToImageToolStripMenuItem
             // 
@@ -258,6 +270,13 @@ namespace Bio
             this.goToImageToolStripMenuItem.DropDownOpening += new System.EventHandler(this.goToImageToolStripMenuItem_DropDownOpening);
             this.goToImageToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.goToImageToolStripMenuItem_DropDownItemClicked);
             this.goToImageToolStripMenuItem.Click += new System.EventHandler(this.goToImageToolStripMenuItem_Click);
+            // 
+            // goToStageToolStripMenuItem
+            // 
+            this.goToStageToolStripMenuItem.Name = "goToStageToolStripMenuItem";
+            this.goToStageToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.goToStageToolStripMenuItem.Text = "Go To Stage";
+            this.goToStageToolStripMenuItem.Click += new System.EventHandler(this.goToStageToolStripMenuItem_Click);
             // 
             // controlsToolStripMenuItem
             // 
@@ -687,13 +706,6 @@ namespace Bio
             this.saveCSVFileDialog.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
             this.saveCSVFileDialog.Title = "Save ROIs to CSV";
             // 
-            // moveStageToImageToolStripMenuItem
-            // 
-            this.moveStageToImageToolStripMenuItem.Name = "moveStageToImageToolStripMenuItem";
-            this.moveStageToImageToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.moveStageToImageToolStripMenuItem.Text = "Move Stage To Image";
-            this.moveStageToImageToolStripMenuItem.DropDownOpening += new System.EventHandler(this.goToImageToolStripMenuItem_DropDownOpening);
-            // 
             // ImageView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -790,7 +802,8 @@ namespace Bio
         private System.Windows.Forms.ToolStripMenuItem hideControlsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem hideStatusToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem goToImageToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem goToToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem goToStageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem moveStageToImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem goToToolStripMenuItem;
     }
 }
