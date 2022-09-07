@@ -63,7 +63,7 @@ namespace Bio
             // 
             // timeMinBox
             // 
-            this.timeMinBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.timeMinBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.timeMinBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.timeMinBox, "timeMinBox");
             this.timeMinBox.Maximum = new decimal(new int[] {
@@ -75,7 +75,7 @@ namespace Bio
             // 
             // zMinBox
             // 
-            this.zMinBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.zMinBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.zMinBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.zMinBox, "zMinBox");
             this.zMinBox.Maximum = new decimal(new int[] {
@@ -87,7 +87,7 @@ namespace Bio
             // 
             // zMaxBox
             // 
-            this.zMaxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.zMaxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.zMaxBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.zMaxBox, "zMaxBox");
             this.zMaxBox.Maximum = new decimal(new int[] {
@@ -99,7 +99,7 @@ namespace Bio
             // 
             // timeMaxBox
             // 
-            this.timeMaxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.timeMaxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.timeMaxBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.timeMaxBox, "timeMaxBox");
             this.timeMaxBox.Maximum = new decimal(new int[] {
@@ -123,7 +123,7 @@ namespace Bio
             // 
             // cMaxBox
             // 
-            this.cMaxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.cMaxBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.cMaxBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.cMaxBox, "cMaxBox");
             this.cMaxBox.Maximum = new decimal(new int[] {
@@ -135,7 +135,7 @@ namespace Bio
             // 
             // cMinBox
             // 
-            this.cMinBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
+            this.cMinBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.cMinBox.ForeColor = System.Drawing.Color.White;
             resources.ApplyResources(this.cMinBox, "cMinBox");
             this.cMinBox.Maximum = new decimal(new int[] {

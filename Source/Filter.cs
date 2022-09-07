@@ -60,7 +60,7 @@ namespace Bio
             Node n = (Node)filterView.SelectedNode.Tag;
             if (n.filt.type == Filt.Type.Base)
             {
-                Filters.Base(App.viewer.image.ID, n.filt.name, false);
+                Filters.Base(ImageView.SelectedImage.ID, n.filt.name, false);
                 
             }
             if (n.filt.type == Filt.Type.Base2)
@@ -74,7 +74,7 @@ namespace Bio
             else
             if (n.filt.type == Filt.Type.InPlace)
             {
-                Filters.InPlace(App.viewer.image.ID, n.filt.name, false);
+                Filters.InPlace(ImageView.SelectedImage.ID, n.filt.name, false);
             }
             else
             if (n.filt.type == Filt.Type.InPlace2)
@@ -88,7 +88,7 @@ namespace Bio
             else
             if (n.filt.type == Filt.Type.InPlacePartial)
             {
-                Filters.InPlacePartial(App.viewer.image.ID, n.filt.name, false);
+                Filters.InPlacePartial(ImageView.SelectedImage.ID, n.filt.name, false);
                 
             }
             else
@@ -97,7 +97,7 @@ namespace Bio
                 ApplyFilter two = new ApplyFilter(false);
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.Resize(App.viewer.image.ID, n.filt.name, false, two.W,two.H);
+                Filters.Resize(ImageView.SelectedImage.ID, n.filt.name, false, two.W,two.H);
             }
             else
             if (n.filt.type == Filt.Type.Rotate)
@@ -105,7 +105,7 @@ namespace Bio
                 ApplyFilter two = new ApplyFilter(false);
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.Rotate(App.viewer.image.ID, n.filt.name, false, two.Angle, two.Color.A, two.Color.R, two.Color.G, two.Color.B);
+                Filters.Rotate(ImageView.SelectedImage.ID, n.filt.name, false, two.Angle, two.Color.A, two.Color.R, two.Color.G, two.Color.B);
             }
             else
             if (n.filt.type == Filt.Type.Transformation)
@@ -119,13 +119,13 @@ namespace Bio
                 }
                 else
                 {
-                    Filters.Transformation(App.viewer.image.ID, n.filt.name, false, two.Angle);
+                    Filters.Transformation(ImageView.SelectedImage.ID, n.filt.name, false, two.Angle);
                 }
             }
             else
             if (n.filt.type == Filt.Type.Copy)
             {
-                Filters.Copy(App.viewer.image.ID, n.filt.name, false);
+                Filters.Copy(ImageView.SelectedImage.ID, n.filt.name, false);
             }
             UpdateView();
         }

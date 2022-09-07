@@ -174,7 +174,7 @@ namespace Bio
                 if (StackHistogram)
                 {
                     //Lets draw the stack histogram
-                    float val = (float)App.viewer.image.Statistics.StackValues[(int)x];
+                    float val = (float)ImageView.SelectedImage.Statistics.StackValues[(int)x];
                     sumbin += val;
                     if (binind == bin)
                     {
@@ -273,7 +273,7 @@ namespace Bio
 
         private void setMaxAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (Channel c in App.viewer.image.Channels)
+            foreach (Channel c in ImageView.SelectedImage.Channels)
             {
                 c.Max = (int)MouseValX;
             }
@@ -281,7 +281,7 @@ namespace Bio
 
         private void setMinAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (Channel c in App.viewer.image.Channels)
+            foreach (Channel c in ImageView.SelectedImage.Channels)
             {
                 c.Min = (int)MouseValX;
             }

@@ -28,9 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NodeView));
             this.treeView = new System.Windows.Forms.TreeView();
-            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -39,7 +40,6 @@
             this.newTabsViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFilesDialog = new System.Windows.Forms.OpenFileDialog();
-            this.updateTimer = new System.Windows.Forms.Timer();
             this.contextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -124,11 +124,6 @@
             this.openFilesDialog.Multiselect = true;
             this.openFilesDialog.Title = "Open Images";
             // 
-            // updateTimer
-            // 
-            this.updateTimer.Interval = 1000;
-            this.updateTimer.Tick += new System.EventHandler(this.updateTimer_Tick);
-            // 
             // NodeView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -160,7 +155,6 @@
         private System.Windows.Forms.ToolStripMenuItem setTextToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setIDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-        private System.Windows.Forms.Timer updateTimer;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newTabsViewToolStripMenuItem;
     }

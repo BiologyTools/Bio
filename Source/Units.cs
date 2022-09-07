@@ -7,14 +7,15 @@ using System.Drawing;
 using System.Globalization;
 
 namespace Bio
-{    
-    public struct Point2D
+{
+    [Serializable]
+    public struct PointD
     {
         private static double minX = -80000;
         private static double minY = -58000;
         private static double maxX = 80000;
         private static double maxY = 58000;
-
+        
         public static double MinX
         {
             get
@@ -44,23 +45,23 @@ namespace Bio
             }
         }
 
-        public static Point2D Min
+        public static PointD Min
         {
             get
             {
-                return new Point2D(MinX, MinY);
+                return new PointD(MinX, MinY);
             }
         }
 
-        public static Point2D Max
+        public static PointD Max
         {
             get
             {
-                return new Point2D(MaxX, MaxY);
+                return new PointD(MaxX, MaxY);
             }
         }
 
-        public static bool InLimits(Point2D p)
+        public static bool InLimits(PointD p)
         {
             if (p.X < minX || p.X > maxX)
             {
@@ -107,7 +108,11 @@ namespace Bio
             {
                 if (value < minX || value > maxX)
                 {
-                    throw new Exception("Point X coordinate " + value.ToString() + " is outside x-Axis range");
+                    if(value < minX)
+                        x = minX;
+                    if(value > maxX)
+                        x = maxX;
+                    return;
                 }
                 x = value;
             }
@@ -122,7 +127,11 @@ namespace Bio
             {
                 if (value < minY || value > maxY)
                 {
-                    throw new Exception("Point Y coordinate " + value.ToString() + " is outside y-Axis range");
+                    if (value < minY)
+                        y = minY;
+                    if (value > maxY)
+                        y = maxY;
+                    return;
                 }
                 y = value;
             }
@@ -132,18 +141,34 @@ namespace Bio
             }
         }
 
-        public Point2D(double xx, double yy)
+        public PointD(double xx, double yy)
         {
             x = xx;
             y = yy;
         }
 
-        public static Point2D Parse(string s)
+        public static PointD Parse(string s)
         {
             string[] st = s.Split(',');
             double xd = double.Parse(st[0], CultureInfo.InvariantCulture);
             double yd = double.Parse(st[1], CultureInfo.InvariantCulture);
-            return new Point2D(xd, yd);
+            return new PointD(xd, yd);
+        }
+        public PointF ToPointF()
+        {
+            return new PointF((float)X, (float)Y);
+        }
+        public System.Drawing.Point ToPointInt()
+        {
+            return new System.Drawing.Point((int)X, (int)Y);
+        }
+        public static bool operator ==(PointD p1, PointD p2)
+        {
+            return (p1.X == p2.X && p1.Y == p2.Y);
+        }
+        public static bool operator !=(PointD p1, PointD p2)
+        {
+            return (p1.X != p2.X && p1.Y != p2.Y);
         }
 
         public override string ToString()
@@ -151,7 +176,7 @@ namespace Bio
             return X.ToString() + "," + Y.ToString();
         }
     }
-
+    [Serializable]
     public struct Point3D
     {
         private static double minX = -80000;
@@ -223,7 +248,11 @@ namespace Bio
             {
                 if(value < minX || value > maxX)
                 {
-                    throw new Exception("Point X coordinate " + value.ToString() + " is outside x-Axis range");
+                    if (value < minX)
+                        x = minX;
+                    if (value > maxX)
+                        x = maxX;
+                    return;
                 }
                 x = value;
             }
@@ -238,7 +267,11 @@ namespace Bio
             {
                 if (value < minY || value > maxY)
                 {
-                    throw new Exception("Point Y coordinate " + value.ToString() + " is outside y-Axis range");
+                    if (value < minY)
+                        y = minY;
+                    if (value > maxY)
+                        y = maxY;
+                    return;
                 }
                 y = value;
             }
@@ -253,7 +286,11 @@ namespace Bio
             {
                 if (value < minZ || value > maxZ)
                 {
-                    throw new Exception("Point Z coordinate " + value.ToString() + " is outside Basic Focus range");
+                    if (value < minZ)
+                        x = minZ;
+                    if (value > maxZ)
+                        x = maxZ;
+                    return;
                 }
                 z = value;
             }
@@ -349,7 +386,7 @@ namespace Bio
         }
 
     }
-
+    [Serializable]
     public struct VolumeD
     {
         public VolumeD(Point3D loc, Point3D s)
@@ -426,7 +463,7 @@ namespace Bio
             else
                 return false;
         }
-        public bool Intersects(Point2D p)
+        public bool Intersects(PointD p)
         {
             if ((p.X > Location.X && p.X < (Location.X + Width)) && (p.Y > Location.Y && p.Y < (Location.Y + Height)))
             {

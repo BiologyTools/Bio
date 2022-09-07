@@ -6,7 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{7A6E5506-2296-4820-AA2A-967D4E80D5B2}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Bio</RootNamespace>
     <AssemblyName>Bio</AssemblyName>
@@ -56,8 +56,7 @@
     <ApplicationIcon>Bio.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>Bio.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -139,6 +138,12 @@
       <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.XInput, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
+      <HintPath>packages\SharpDX.XInput.4.2.0\lib\net45\SharpDX.XInput.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -212,6 +217,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Program.cs" />
     <Compile Include="Source\Automation.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -250,17 +256,17 @@
     <Compile Include="Source\ColorTool.Designer.cs">
       <DependentUpon>ColorTool.cs</DependentUpon>
     </Compile>
-    <Compile Include="Source\Elements.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Source\Elements.Designer.cs">
-      <DependentUpon>Elements.cs</DependentUpon>
-    </Compile>
     <Compile Include="Source\Filter.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Source\Filter.Designer.cs">
       <DependentUpon>Filter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Source\Function.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\Function.Designer.cs">
+      <DependentUpon>Function.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\HistogramControl.cs">
       <SubType>UserControl</SubType>
@@ -269,11 +275,42 @@
       <DependentUpon>HistogramControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\ImageJ.cs" />
+    <Compile Include="Source\ImagesView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\ImagesView.Designer.cs">
+      <DependentUpon>ImagesView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Source\ImageView.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Source\ImageView.designer.cs">
       <DependentUpon>ImageView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Source\Library.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\Library.Designer.cs">
+      <DependentUpon>Library.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Source\Microscope.cs" />
+    <Compile Include="Source\MicroscopeSetup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\MicroscopeSetup.Designer.cs">
+      <DependentUpon>MicroscopeSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Source\Recordings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\Recordings.designer.cs">
+      <DependentUpon>Recordings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Source\SelectRecording.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\SelectRecording.Designer.cs">
+      <DependentUpon>SelectRecording.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\Series.cs">
       <SubType>Form</SubType>
@@ -398,18 +435,33 @@
       <DependentUpon>ColorTool.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Source\Elements.resx">
-      <DependentUpon>Elements.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Source\Filter.resx">
       <DependentUpon>Filter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Source\Function.resx">
+      <DependentUpon>Function.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Source\HistogramControl.resx">
       <DependentUpon>HistogramControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Source\ImagesView.resx">
+      <DependentUpon>ImagesView.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Source\ImageView.resx">
       <DependentUpon>ImageView.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Source\Library.resx">
+      <DependentUpon>Library.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Source\MicroscopeSetup.resx">
+      <DependentUpon>MicroscopeSetup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Source\Recordings.resx">
+      <DependentUpon>Recordings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Source\SelectRecording.resx">
+      <DependentUpon>SelectRecording.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Source\Series.resx">
       <DependentUpon>Series.cs</DependentUpon>

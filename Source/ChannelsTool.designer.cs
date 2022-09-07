@@ -40,6 +40,11 @@ namespace Bio
             this.medianToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.maxBox = new System.Windows.Forms.NumericUpDown();
+            this.maxContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.channelsBox = new System.Windows.Forms.ComboBox();
@@ -57,18 +62,13 @@ namespace Bio
             this.stackHistoBox = new System.Windows.Forms.CheckBox();
             this.statsPanel = new System.Windows.Forms.Panel();
             this.applyBut = new System.Windows.Forms.Button();
-            this.maxContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.minBox)).BeginInit();
             this.minContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.maxBox)).BeginInit();
+            this.maxContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.maxGraphBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minGraphBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.binBox)).BeginInit();
-            this.maxContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -121,33 +121,33 @@ namespace Bio
             this.medianToolStripMenuItem,
             this.meanToolStripMenuItem});
             this.minContextMenuStrip.Name = "minContextMenuStrip";
-            this.minContextMenuStrip.Size = new System.Drawing.Size(181, 114);
+            this.minContextMenuStrip.Size = new System.Drawing.Size(115, 92);
             // 
             // minToolStripMenuItem
             // 
             this.minToolStripMenuItem.Name = "minToolStripMenuItem";
-            this.minToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.minToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.minToolStripMenuItem.Text = "Min";
             this.minToolStripMenuItem.Click += new System.EventHandler(this.minToolStripMenuItem_Click);
             // 
             // maxToolStripMenuItem
             // 
             this.maxToolStripMenuItem.Name = "maxToolStripMenuItem";
-            this.maxToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.maxToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.maxToolStripMenuItem.Text = "Max";
             this.maxToolStripMenuItem.Click += new System.EventHandler(this.maxToolStripMenuItem_Click);
             // 
             // medianToolStripMenuItem
             // 
             this.medianToolStripMenuItem.Name = "medianToolStripMenuItem";
-            this.medianToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.medianToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.medianToolStripMenuItem.Text = "Median";
             this.medianToolStripMenuItem.Click += new System.EventHandler(this.medianToolStripMenuItem_Click);
             // 
             // meanToolStripMenuItem
             // 
             this.meanToolStripMenuItem.Name = "meanToolStripMenuItem";
-            this.meanToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.meanToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.meanToolStripMenuItem.Text = "Mean";
             this.meanToolStripMenuItem.Click += new System.EventHandler(this.meanToolStripMenuItem_Click);
             // 
@@ -176,6 +176,44 @@ namespace Bio
             0,
             0});
             this.maxBox.ValueChanged += new System.EventHandler(this.maxBox_ValueChanged);
+            // 
+            // maxContextMenuStrip
+            // 
+            this.maxContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1,
+            this.toolStripMenuItem2,
+            this.toolStripMenuItem3,
+            this.toolStripMenuItem4});
+            this.maxContextMenuStrip.Name = "minContextMenuStrip";
+            this.maxContextMenuStrip.Size = new System.Drawing.Size(115, 92);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenuItem1.Text = "Min";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenuItem2.Text = "Max";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenuItem3.Text = "Median";
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(114, 22);
+            this.toolStripMenuItem4.Text = "Mean";
+            this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click);
             // 
             // label3
             // 
@@ -430,44 +468,6 @@ namespace Bio
             this.applyBut.UseVisualStyleBackColor = false;
             this.applyBut.Click += new System.EventHandler(this.applyBut_Click);
             // 
-            // maxContextMenuStrip
-            // 
-            this.maxContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1,
-            this.toolStripMenuItem2,
-            this.toolStripMenuItem3,
-            this.toolStripMenuItem4});
-            this.maxContextMenuStrip.Name = "minContextMenuStrip";
-            this.maxContextMenuStrip.Size = new System.Drawing.Size(115, 92);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
-            this.toolStripMenuItem1.Text = "Min";
-            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(114, 22);
-            this.toolStripMenuItem2.Text = "Max";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(114, 22);
-            this.toolStripMenuItem3.Text = "Median";
-            this.toolStripMenuItem3.Click += new System.EventHandler(this.toolStripMenuItem3_Click);
-            // 
-            // toolStripMenuItem4
-            // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(114, 22);
-            this.toolStripMenuItem4.Text = "Mean";
-            this.toolStripMenuItem4.Click += new System.EventHandler(this.toolStripMenuItem4_Click);
-            // 
             // ChannelsTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -509,10 +509,10 @@ namespace Bio
             ((System.ComponentModel.ISupportInitialize)(this.minBox)).EndInit();
             this.minContextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.maxBox)).EndInit();
+            this.maxContextMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.maxGraphBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.minGraphBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.binBox)).EndInit();
-            this.maxContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

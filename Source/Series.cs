@@ -21,7 +21,7 @@ namespace Bio
         public void UpdateItems()
         {
            imagesBox.Items.Clear();
-            foreach (BioImage item in Table.images)
+            foreach (BioImage item in Images.images)
             {
                 imagesBox.Items.Add(item);
             }
@@ -52,16 +52,38 @@ namespace Bio
             UpdateItems();
         }
 
-        private void saveBut_Click(object sender, EventArgs e)
+        private void saveOMEToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                return;
             int i = 0;
+            List<string> sts = new List<string>();
             foreach (BioImage item in seriesBox.Items)
             {
+                sts.Add(item.ID);
                 item.series = i;
-                BioImage.SaveAsync(item.ID, item.ID);
-                
                 i++;
             }
+            BioImage.SaveOMESeries(sts.ToArray() , saveFileDialog.FileName);
+        }
+
+        private void addAllBut_Click(object sender, EventArgs e)
+        {
+            foreach (BioImage item in imagesBox.Items)
+            {
+                seriesBox.Items.Add(item);
+            }
+        }
+
+        private void removeAllBut_Click(object sender, EventArgs e)
+        {
+            seriesBox.Items.Clear();
+        }
+
+        private void Series_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.Hide();
+            e.Cancel = true;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Automation;
+using System.Windows.Forms;
 
 namespace Bio
 {
@@ -19,8 +20,10 @@ namespace Bio
         public static StackTools stackTools = null;
         public static ImageView viewer = null;
         public static Series seriesTool = null;
-        public static Elements elements = null;
+        public static Recordings recordings = null;
         public static Automation automation = null;
+        public static MicroscopeSetup setup = null;
+        public static Library lib = null;
         public static List<string> recent = new List<string>();
 
         public static BioImage Image
@@ -40,32 +43,23 @@ namespace Bio
         {
             get { return Image.Annotations; }
         }
-        public static void RunScript(string file)
-        {
-            Scripting.Script sc = new Scripting.Script(file);
-            Recorder.AddLine("App.RunScript(" + '"' + file + '"' + ");");
-            sc.Run();
-        }
-
-        public static void RunFilter(string filter)
-        {
-            
-        }
         public static void Initialize()
         {
             BioImage.Initialize();
+            Microscope.Initialize();
+            setup = new MicroscopeSetup();
             tools = new Tools();
             stackTools = new StackTools();
             manager = new ROIManager();
             runner = new Scripting();
             recorder = new Recorder();
             seriesTool = new Series();
-            elements = new Elements();
+            recordings = new Recordings();
             automation = new Automation();
+            lib = new Library();
             ImageJ.Initialize(Properties.Settings.Default.ImageJPath);
             //channelsTool = new ChannelsTool();
         }
-
         public static void AddROI(string an)
         {
             Annotations.Add(BioImage.StringToROI(an));

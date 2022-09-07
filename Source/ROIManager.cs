@@ -313,7 +313,7 @@ namespace Bio
         {
             for (int i = 0; i < roiView.SelectedItems.Count; i++)
             {
-                App.viewer.image.Annotations.Remove((ROI)roiView.SelectedItems[i].Tag);
+                ImageView.SelectedImage.Annotations.Remove((ROI)roiView.SelectedItems[i].Tag);
             }
             UpdateAnnotationList();
             UpdateOverlay();

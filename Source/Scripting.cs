@@ -71,7 +71,6 @@ namespace Bio
                     try
                     {
                         rn.done = false;
-                        string ex;
                         ImageJ.RunString(rn.scriptString,"", false);
                         rn.done = true;
                     }
@@ -122,7 +121,7 @@ namespace Bio
         public class State
         {
             public Event type;
-            public static State GetUp(PointF pf,MouseButtons mb)
+            public static State GetUp(PointD pf,MouseButtons mb)
             {
                 State st = new State();
                 st.type = Event.Up;
@@ -130,7 +129,7 @@ namespace Bio
                 st.buts = mb;
                 return st;
             }
-            public static State GetDown(PointF pf, MouseButtons mb)
+            public static State GetDown(PointD pf, MouseButtons mb)
             {
                 State st = new State();
                 st.type = Event.Down;
@@ -138,7 +137,7 @@ namespace Bio
                 st.buts = mb;
                 return st;
             }
-            public static State GetMove(PointF pf, MouseButtons mb)
+            public static State GetMove(PointD pf, MouseButtons mb)
             {
                 State st = new State();
                 st.type = Event.Move;
@@ -150,12 +149,12 @@ namespace Bio
             {
                 State st = new State();
                 st.type = Event.None;
-                st.p = new PointF();
+                st.p = new PointD();
                 st.buts = MouseButtons.None;
                 return st;
             }
 
-            public PointF p;
+            public PointD p;
             public MouseButtons buts;
             public bool processed = false;
             public override string ToString()
@@ -198,8 +197,7 @@ namespace Bio
         public void RefreshItems()
         {
             Scripts.Clear();
-            string dir = Application.StartupPath + "//" + "Scripts";
-            foreach (string file in Directory.GetFiles(dir))
+            foreach (string file in Directory.GetFiles("Scripts"))
             {
                 if (!Scripts.ContainsKey(Path.GetFileName(file)))
                 {
@@ -212,8 +210,7 @@ namespace Bio
                     Scripts.Add(lv.Text, sc);
                 }
             }
-            string tls = Application.StartupPath + "//" + "Tools";
-            foreach (string file in Directory.GetFiles(tls))
+            foreach (string file in Directory.GetFiles("Tools"))
             {
                 if (file.EndsWith(".cs"))
                 {
@@ -291,6 +288,12 @@ namespace Bio
             Script sc = new Script(file);
             Scripts.Add(sc.name,sc);
             RefreshItems();
+            RunByName(sc.name);
+        }
+        public static void RunScript(string file)
+        {
+            Script sc = new Script(file);
+            Scripts.Add(sc.name, sc);
             RunByName(sc.name);
         }
         public void Run()

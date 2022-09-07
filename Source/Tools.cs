@@ -172,7 +172,7 @@ namespace Bio
         }
 
         ROI anno = new ROI();
-        public void ToolDown(PointF e, MouseButtons buts)
+        public void ToolDown(PointD e, MouseButtons buts)
         {
             if (App.viewer == null)
                 return;
@@ -303,7 +303,7 @@ namespace Bio
             }
             UpdateOverlay();
         }        
-        public void ToolUp(PointF e, MouseButtons buts)
+        public void ToolUp(PointD e, MouseButtons buts)
         {
             if (App.viewer == null)
                 return;
@@ -362,9 +362,10 @@ namespace Bio
                         an.selectedPoints.Clear();
                         ImageView.selectedAnnotations.Add(an);
                         an.selected = true;
-                        for (int i = 0; i < an.selectBoxs.Count; i++)
+                        RectangleF[] sels = an.GetSelectBoxes(ImageView.scale.Width);
+                        for (int i = 0; i < sels.Length; i++)
                         {
-                            if (an.selectBoxs[i].IntersectsWith(r))
+                            if (sels[i].IntersectsWith(r))
                             {
                                 an.selectedPoints.Add(i);
                             }
@@ -377,13 +378,13 @@ namespace Bio
             }
             if (Tools.currentTool.type == Tools.Tool.Type.magic)
             {
-                PointF pf = new PointF(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
+                PointD pf = new PointD(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
                 ZCT coord = App.viewer.GetCoordinate();
                
                 Rectangle r = new Rectangle((int)ImageView.mouseDown.X, (int)ImageView.mouseDown.Y, (int)(ImageView.mouseUp.X - ImageView.mouseDown.X), (int)(ImageView.mouseUp.Y - ImageView.mouseDown.Y));
                 if (r.Width <= 2 || r.Height <= 2)
                     return;
-                BufferInfo bf = App.viewer.image.Buffers[App.viewer.image.Coords[coord.Z, coord.C, coord.T]].GetCropBuffer(r);
+                BufferInfo bf = ImageView.SelectedImage.Buffers[ImageView.SelectedImage.Coords[coord.Z, coord.C, coord.T]].GetCropBuffer(r);
                 Statistics st = Statistics.FromBytes(bf);
                 Bitmap crop = (Bitmap)bf.Image;
                 Threshold th;
@@ -434,12 +435,12 @@ namespace Bio
                         pfs[i] = new PointD(r.X + hull[i].X,r.Y + hull[i].Y);
                     }
                     ROI an = ROI.CreateFreeform(coord, pfs);
-                    App.viewer.image.Annotations.Add(an); 
+                    ImageView.SelectedImage.Annotations.Add(an); 
                 }
             }
             UpdateOverlay();
         }
-        public void ToolMove(PointF e, MouseButtons buts)
+        public void ToolMove(PointD e, MouseButtons buts)
         {
             if (App.viewer == null)
                 return;
@@ -498,9 +499,10 @@ namespace Bio
                         an.selectedPoints.Clear();
                         ImageView.selectedAnnotations.Add(an);
                         an.selected = true;
-                        for (int i = 0; i < an.selectBoxs.Count; i++)
+                        RectangleF[] sels = an.GetSelectBoxes(ImageView.scale.Width);
+                        for (int i = 0; i < sels.Length; i++)
                         {
-                            if (an.selectBoxs[i].IntersectsWith(r))
+                            if (sels[i].IntersectsWith(r))
                             {
                                 an.selectedPoints.Add(i);
                             }
@@ -526,7 +528,6 @@ namespace Bio
                         if (an.selectedPoints.Count == 0)
                         {
                             ImageView.SelectedImage.Annotations.Remove(an);
-                            UpdateOverlay();
                         }
                         else
                         {
@@ -536,11 +537,12 @@ namespace Bio
                             {
                                 an.closed = false;
                                 an.RemovePoints(an.selectedPoints.ToArray());
-                                UpdateOverlay();
+                                
                             }
                         }
                     }
                 }
+                UpdateOverlay();
             }
 
             if (Tools.currentTool.type == Tools.Tool.Type.magic && buts == MouseButtons.Left)
@@ -552,10 +554,10 @@ namespace Bio
             }
             if (Tools.currentTool.type == Tools.Tool.Type.pan && (buts == MouseButtons.Middle || buts == MouseButtons.Left))
             {
-                PointF pf = new PointF(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
+                PointD pf = new PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
                 if (pf.X > 50 && pf.Y > 50)
                     return;
-                App.viewer.Origin = new PointF(App.viewer.Origin.X + pf.X, App.viewer.Origin.Y + pf.Y);
+                //App.viewer.Origin = new PointD(App.viewer.Origin.X + pf.X, App.viewer.Origin.Y + pf.Y);
                 UpdateView();
             }
 

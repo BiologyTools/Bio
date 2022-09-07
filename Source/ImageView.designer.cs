@@ -46,17 +46,12 @@ namespace Bio
             this.rGBToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filteredToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.formatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.bitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.bitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.bitToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.bitToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
-            this.bitToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyViewToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.goToOriginToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.goToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.goToImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.controlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hideControlsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.hideStatusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyViewToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zPlayMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.playZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,7 +65,7 @@ namespace Bio
             this.rgbBoxsPanel = new System.Windows.Forms.Panel();
             this.statusLabel = new System.Windows.Forms.Label();
             this.tLabel = new System.Windows.Forms.Label();
-            this.timeBar = new System.Windows.Forms.TrackBar();
+            this.tBar = new System.Windows.Forms.TrackBar();
             this.controlsMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.hideControlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cPlayMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -85,7 +80,6 @@ namespace Bio
             this.cLabel = new System.Windows.Forms.Label();
             this.timelineTimer = new System.Windows.Forms.Timer(this.components);
             this.zTimer = new System.Windows.Forms.Timer(this.components);
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.cTimer = new System.Windows.Forms.Timer(this.components);
             this.trackBarPanel = new System.Windows.Forms.Panel();
             this.statusPanel = new System.Windows.Forms.Panel();
@@ -97,11 +91,12 @@ namespace Bio
             this.overlayPictureBox = new System.Windows.Forms.PictureBox();
             this.panel = new System.Windows.Forms.Panel();
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.moveStageToImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.zPlayMenuStrip.SuspendLayout();
             this.rgbBoxsPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.timeBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tBar)).BeginInit();
             this.controlsMenuStrip.SuspendLayout();
             this.cPlayMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.zBar)).BeginInit();
@@ -171,10 +166,10 @@ namespace Bio
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.rOIToolStripMenuItem,
             this.viewToolStripMenuItem,
-            this.formatToolStripMenuItem,
-            this.copyViewToClipboardToolStripMenuItem,
-            this.goToOriginToolStripMenuItem,
-            this.controlsToolStripMenuItem});
+            this.goToToolStripMenuItem,
+            this.goToImageToolStripMenuItem,
+            this.controlsToolStripMenuItem,
+            this.copyViewToClipboardToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
             this.contextMenuStrip.Size = new System.Drawing.Size(200, 158);
             // 
@@ -192,28 +187,28 @@ namespace Bio
             // setROITextToolStripMenuItem
             // 
             this.setROITextToolStripMenuItem.Name = "setROITextToolStripMenuItem";
-            this.setROITextToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.setROITextToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.setROITextToolStripMenuItem.Text = "Set Text";
             this.setROITextToolStripMenuItem.Click += new System.EventHandler(this.setTextSelectionToolStripMenuItem_Click);
             // 
             // copyROIToolStripMenuItem1
             // 
             this.copyROIToolStripMenuItem1.Name = "copyROIToolStripMenuItem1";
-            this.copyROIToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.copyROIToolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
             this.copyROIToolStripMenuItem1.Text = "Copy";
             this.copyROIToolStripMenuItem1.Click += new System.EventHandler(this.copyROIToolStripMenuItem_Click);
             // 
             // pasteROIToolStripMenuItem1
             // 
             this.pasteROIToolStripMenuItem1.Name = "pasteROIToolStripMenuItem1";
-            this.pasteROIToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.pasteROIToolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
             this.pasteROIToolStripMenuItem1.Text = "Paste";
             this.pasteROIToolStripMenuItem1.Click += new System.EventHandler(this.pasteROIToolStripMenuItem_Click);
             // 
             // deleteROIToolStripMenuItem1
             // 
             this.deleteROIToolStripMenuItem1.Name = "deleteROIToolStripMenuItem1";
-            this.deleteROIToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.deleteROIToolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
             this.deleteROIToolStripMenuItem1.Text = "Delete";
             this.deleteROIToolStripMenuItem1.Click += new System.EventHandler(this.deleteROIToolStripMenuItem_Click);
             // 
@@ -230,79 +225,39 @@ namespace Bio
             // rGBToolStripMenuItem
             // 
             this.rGBToolStripMenuItem.Name = "rGBToolStripMenuItem";
-            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.rGBToolStripMenuItem.Text = "RGB";
             this.rGBToolStripMenuItem.Click += new System.EventHandler(this.rGBToolStripMenuItem_Click);
             // 
             // filteredToolStripMenuItem
             // 
             this.filteredToolStripMenuItem.Name = "filteredToolStripMenuItem";
-            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.filteredToolStripMenuItem.Text = "Filtered";
             this.filteredToolStripMenuItem.Click += new System.EventHandler(this.filteredToolStripMenuItem_Click);
             // 
             // rawToolStripMenuItem
             // 
             this.rawToolStripMenuItem.Name = "rawToolStripMenuItem";
-            this.rawToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rawToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
             this.rawToolStripMenuItem.Text = "Raw";
             this.rawToolStripMenuItem.Click += new System.EventHandler(this.rawToolStripMenuItem_Click);
             // 
-            // formatToolStripMenuItem
+            // goToToolStripMenuItem
             // 
-            this.formatToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bitToolStripMenuItem,
-            this.bitToolStripMenuItem1,
-            this.bitToolStripMenuItem2,
-            this.bitToolStripMenuItem3,
-            this.bitToolStripMenuItem4});
-            this.formatToolStripMenuItem.Name = "formatToolStripMenuItem";
-            this.formatToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.formatToolStripMenuItem.Text = "Format";
+            this.goToToolStripMenuItem.Name = "goToToolStripMenuItem";
+            this.goToToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.goToToolStripMenuItem.Text = "Go To";
+            this.goToToolStripMenuItem.Click += new System.EventHandler(this.goToToolStripMenuItem1_Click);
             // 
-            // bitToolStripMenuItem
+            // goToImageToolStripMenuItem
             // 
-            this.bitToolStripMenuItem.Name = "bitToolStripMenuItem";
-            this.bitToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
-            this.bitToolStripMenuItem.Text = "8 Bit";
-            // 
-            // bitToolStripMenuItem1
-            // 
-            this.bitToolStripMenuItem1.Name = "bitToolStripMenuItem1";
-            this.bitToolStripMenuItem1.Size = new System.Drawing.Size(147, 22);
-            this.bitToolStripMenuItem1.Text = "16 Bit";
-            // 
-            // bitToolStripMenuItem2
-            // 
-            this.bitToolStripMenuItem2.Name = "bitToolStripMenuItem2";
-            this.bitToolStripMenuItem2.Size = new System.Drawing.Size(147, 22);
-            this.bitToolStripMenuItem2.Text = "24 Bit";
-            // 
-            // bitToolStripMenuItem3
-            // 
-            this.bitToolStripMenuItem3.Name = "bitToolStripMenuItem3";
-            this.bitToolStripMenuItem3.Size = new System.Drawing.Size(147, 22);
-            this.bitToolStripMenuItem3.Text = "36 Bit";
-            // 
-            // bitToolStripMenuItem4
-            // 
-            this.bitToolStripMenuItem4.Name = "bitToolStripMenuItem4";
-            this.bitToolStripMenuItem4.Size = new System.Drawing.Size(147, 22);
-            this.bitToolStripMenuItem4.Text = "48 Bit";
-            // 
-            // copyViewToClipboardToolStripMenuItem
-            // 
-            this.copyViewToClipboardToolStripMenuItem.Name = "copyViewToClipboardToolStripMenuItem";
-            this.copyViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.copyViewToClipboardToolStripMenuItem.Text = "Copy View to Clipboard";
-            this.copyViewToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyViewToClipboardToolStripMenuItem_Click);
-            // 
-            // goToOriginToolStripMenuItem
-            // 
-            this.goToOriginToolStripMenuItem.Name = "goToOriginToolStripMenuItem";
-            this.goToOriginToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.goToOriginToolStripMenuItem.Text = "Go To Origin";
-            this.goToOriginToolStripMenuItem.Click += new System.EventHandler(this.goToOriginToolStripMenuItem_Click);
+            this.goToImageToolStripMenuItem.Name = "goToImageToolStripMenuItem";
+            this.goToImageToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.goToImageToolStripMenuItem.Text = "Go To Image";
+            this.goToImageToolStripMenuItem.DropDownOpening += new System.EventHandler(this.goToImageToolStripMenuItem_DropDownOpening);
+            this.goToImageToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.goToImageToolStripMenuItem_DropDownItemClicked);
+            this.goToImageToolStripMenuItem.Click += new System.EventHandler(this.goToImageToolStripMenuItem_Click);
             // 
             // controlsToolStripMenuItem
             // 
@@ -316,7 +271,7 @@ namespace Bio
             // hideControlsToolStripMenuItem1
             // 
             this.hideControlsToolStripMenuItem1.Name = "hideControlsToolStripMenuItem1";
-            this.hideControlsToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.hideControlsToolStripMenuItem1.Size = new System.Drawing.Size(147, 22);
             this.hideControlsToolStripMenuItem1.Text = "Hide Controls";
             this.hideControlsToolStripMenuItem1.Click += new System.EventHandler(this.hideControlsToolStripMenuItem_Click);
             // 
@@ -326,6 +281,13 @@ namespace Bio
             this.hideStatusToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.hideStatusToolStripMenuItem.Text = "Hide Status";
             this.hideStatusToolStripMenuItem.Click += new System.EventHandler(this.HideStatusMenuItem_Click);
+            // 
+            // copyViewToClipboardToolStripMenuItem
+            // 
+            this.copyViewToClipboardToolStripMenuItem.Name = "copyViewToClipboardToolStripMenuItem";
+            this.copyViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.copyViewToClipboardToolStripMenuItem.Text = "Copy View to Clipboard";
+            this.copyViewToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyViewToClipboardToolStripMenuItem_Click);
             // 
             // zPlayMenuStrip
             // 
@@ -463,21 +425,20 @@ namespace Bio
             this.tLabel.TabIndex = 13;
             this.tLabel.Text = "T";
             // 
-            // timeBar
+            // tBar
             // 
-            this.timeBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.tBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.timeBar.AutoSize = false;
-            this.timeBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.timeBar.ContextMenuStrip = this.timePlayMenuStrip;
-            this.timeBar.LargeChange = 1;
-            this.timeBar.Location = new System.Drawing.Point(15, 25);
-            this.timeBar.Margin = new System.Windows.Forms.Padding(0);
-            this.timeBar.Name = "timeBar";
-            this.timeBar.Size = new System.Drawing.Size(413, 25);
-            this.timeBar.TabIndex = 16;
-            this.timeBar.Scroll += new System.EventHandler(this.timeBar_Scroll);
-            this.timeBar.ValueChanged += new System.EventHandler(this.timeBar_ValueChanged);
+            this.tBar.AutoSize = false;
+            this.tBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.tBar.ContextMenuStrip = this.timePlayMenuStrip;
+            this.tBar.LargeChange = 1;
+            this.tBar.Location = new System.Drawing.Point(15, 25);
+            this.tBar.Margin = new System.Windows.Forms.Padding(0);
+            this.tBar.Name = "tBar";
+            this.tBar.Size = new System.Drawing.Size(413, 25);
+            this.tBar.TabIndex = 16;
+            this.tBar.ValueChanged += new System.EventHandler(this.timeBar_ValueChanged);
             // 
             // controlsMenuStrip
             // 
@@ -558,7 +519,6 @@ namespace Bio
             this.zBar.Name = "zBar";
             this.zBar.Size = new System.Drawing.Size(413, 25);
             this.zBar.TabIndex = 12;
-            this.zBar.Scroll += new System.EventHandler(this.zBar_Scroll);
             this.zBar.ValueChanged += new System.EventHandler(this.zBar_ValueChanged);
             // 
             // zLabel
@@ -587,7 +547,6 @@ namespace Bio
             this.cBar.Name = "cBar";
             this.cBar.Size = new System.Drawing.Size(413, 25);
             this.cBar.TabIndex = 15;
-            this.cBar.Scroll += new System.EventHandler(this.cBar_Scroll);
             this.cBar.ValueChanged += new System.EventHandler(this.cBar_ValueChanged);
             // 
             // cLabel
@@ -626,7 +585,7 @@ namespace Bio
             this.trackBarPanel.ContextMenuStrip = this.controlsMenuStrip;
             this.trackBarPanel.Controls.Add(this.cBar);
             this.trackBarPanel.Controls.Add(this.zBar);
-            this.trackBarPanel.Controls.Add(this.timeBar);
+            this.trackBarPanel.Controls.Add(this.tBar);
             this.trackBarPanel.Controls.Add(this.tLabel);
             this.trackBarPanel.Controls.Add(this.zLabel);
             this.trackBarPanel.Controls.Add(this.cLabel);
@@ -728,12 +687,17 @@ namespace Bio
             this.saveCSVFileDialog.Filter = "CSV Files (*.csv)|*.csv|All files (*.*)|*.*";
             this.saveCSVFileDialog.Title = "Save ROIs to CSV";
             // 
+            // moveStageToImageToolStripMenuItem
+            // 
+            this.moveStageToImageToolStripMenuItem.Name = "moveStageToImageToolStripMenuItem";
+            this.moveStageToImageToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.moveStageToImageToolStripMenuItem.Text = "Move Stage To Image";
+            this.moveStageToImageToolStripMenuItem.DropDownOpening += new System.EventHandler(this.goToImageToolStripMenuItem_DropDownOpening);
+            // 
             // ImageView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSize = true;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
             this.Controls.Add(this.trackBarPanel);
             this.Controls.Add(this.statusPanel);
@@ -742,12 +706,13 @@ namespace Bio
             this.MinimumSize = new System.Drawing.Size(100, 100);
             this.Name = "ImageView";
             this.Size = new System.Drawing.Size(428, 368);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ImageView_KeyDown);
             this.timePlayMenuStrip.ResumeLayout(false);
             this.contextMenuStrip.ResumeLayout(false);
             this.zPlayMenuStrip.ResumeLayout(false);
             this.rgbBoxsPanel.ResumeLayout(false);
             this.rgbBoxsPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.timeBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tBar)).EndInit();
             this.controlsMenuStrip.ResumeLayout(false);
             this.cPlayMenuStrip.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.zBar)).EndInit();
@@ -780,7 +745,6 @@ namespace Bio
         private System.Windows.Forms.ToolStripMenuItem playTimeToolStripMenu;
         private System.Windows.Forms.ToolStripMenuItem stopTimeToolStripMenu;
         private System.Windows.Forms.Timer zTimer;
-        private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.ToolStripMenuItem playSpeedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem playSpeedToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem setValueRangeToolStripMenuItem;
@@ -799,7 +763,7 @@ namespace Bio
         private System.Windows.Forms.Label cLabel;
         private System.Windows.Forms.Label zLabel;
         private System.Windows.Forms.Label tLabel;
-        private System.Windows.Forms.TrackBar timeBar;
+        private System.Windows.Forms.TrackBar tBar;
         private System.Windows.Forms.Panel trackBarPanel;
         private System.Windows.Forms.Panel statusPanel;
         private System.Windows.Forms.Label ticksLabel;
@@ -812,7 +776,6 @@ namespace Bio
         private System.Windows.Forms.PictureBox pictureBox;
         private System.Windows.Forms.PictureBox overlayPictureBox;
         private System.Windows.Forms.Panel panel;
-        private System.Windows.Forms.ToolStripMenuItem goToOriginToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveCSVFileDialog;
         private System.Windows.Forms.ToolStripMenuItem rOIToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setROITextToolStripMenuItem;
@@ -823,14 +786,11 @@ namespace Bio
         private System.Windows.Forms.ToolStripMenuItem rGBToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem filteredToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rawToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem formatToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem bitToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem bitToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem bitToolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem bitToolStripMenuItem3;
-        private System.Windows.Forms.ToolStripMenuItem bitToolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem controlsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem hideControlsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem hideStatusToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem goToImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem goToToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem moveStageToImageToolStripMenuItem;
     }
 }

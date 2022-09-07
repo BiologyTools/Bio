@@ -18,6 +18,7 @@ namespace Bio
             log += s + Environment.NewLine;
         }
         public static Recorder recorder = null;
+        public static bool recordMicroscope = true;
         public Recorder()
         {
             InitializeComponent();
@@ -60,6 +61,11 @@ namespace Bio
         private void Recorder_Activated(object sender, EventArgs e)
         {
             textBox.Text = log;
+        }
+
+        private void microRecBox_CheckedChanged(object sender, EventArgs e)
+        {
+            recordMicroscope = microRecBox.Checked;
         }
     }
 }

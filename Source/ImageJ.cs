@@ -21,7 +21,7 @@ namespace Bio
             pr.StartInfo.Arguments = "-macro " + file + " " + param;
             pr.Start();
             processes.Add(pr);
-            Recorder.AddLine("ImageJ.RunMacro(" + file + "," + '"' + '"' + ");");
+            Recorder.AddLine("ImageJ.RunMacro(" + file + "," + '"' + param + '"' + ");");
         }
         public static void RunString(string con, string param, bool headless)
         {
@@ -39,7 +39,7 @@ namespace Bio
             processes.Add(pr);
             do
             {
-
+                pr.WaitForExit();
             } while (!pr.HasExited);
             //TODO
             if (pr.StandardError.BaseStream.Length > 0)

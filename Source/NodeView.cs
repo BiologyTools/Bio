@@ -67,7 +67,6 @@ namespace Bio
                 App.tabsView = new TabsView();
                 App.tabsView.Show();
             }
-            updateTimer.Start();
             //timer.Start();
         }
 
@@ -89,7 +88,7 @@ namespace Bio
             TreeNode images = new TreeNode();
             images.Text = "BioImages";
             images.ForeColor = Color.White;
-            foreach (BioImage item in Table.images)
+            foreach (BioImage item in Images.images)
             {
                 //TreeNode node = new TreeNode();
                 Node tree = new Node(item, Node.DataType.image);
@@ -122,7 +121,7 @@ namespace Bio
 
         public void UpdateNodes()
         {
-            if (Table.images.Count != treeView.Nodes[0].Nodes.Count)
+            if (Images.images.Count != treeView.Nodes[0].Nodes.Count)
             {
                 //If image count is not same as node count we refresh whole tree.
                 InitNodes();
@@ -217,16 +216,11 @@ namespace Bio
             if (node.Type == Node.DataType.image)
             {
                 BioImage im = (BioImage)node.Object;
-                Table.RemoveImage(im);
+                Images.RemoveImage(im);
                 im.Dispose();
             }
             UpdateNodes();
             UpdateOverlay();
-        }
-
-        private void scriptRecorderToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            App.recorder.Show();
         }
 
         private void setTextToolStripMenuItem_Click(object sender, EventArgs e)
@@ -271,35 +265,6 @@ namespace Bio
             about.Show();
         }
 
-        private void tabViewToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-          
-        }
-
-        private void tabToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            App.tabsView.Show();
-        }
-
-        private void windowsViewToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void timer_Tick(object sender, EventArgs e)
-        {
-            App.tabsView.UpdateTabs();
-        }
-
-        private void updateTimer_Tick(object sender, EventArgs e)
-        {
-            //We use a timer to update tabs so that images can be opened by any thread. Without error
-            //caused by accessing tabcontrol from another thread than the one it was created by.
-            if (App.tabsView.IsDisposed || App.tabsView.Disposing || App.tabsView == null)
-                return;
-            App.tabsView.UpdateTabs();
-        }
-
         private void newTabsViewToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TabsView v = new TabsView();
@@ -316,7 +281,7 @@ namespace Bio
                     setTextToolStripMenuItem.Visible = false;
                     BufferInfo buf = (BufferInfo)node.Object;
                     App.viewer.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
-                    App.viewer.UpdateImage();
+                    App.viewer.GoToImage();
                 }
                 else
                 if (node.Type == Node.DataType.roi)
