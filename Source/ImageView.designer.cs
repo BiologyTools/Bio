@@ -168,8 +168,8 @@ namespace Bio
             this.viewToolStripMenuItem,
             this.goToToolStripMenuItem,
             this.goToImageToolStripMenuItem,
-            this.controlsToolStripMenuItem,
-            this.copyViewToClipboardToolStripMenuItem});
+            this.copyViewToClipboardToolStripMenuItem,
+            this.controlsToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
             this.contextMenuStrip.Size = new System.Drawing.Size(200, 158);
             // 

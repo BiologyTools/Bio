@@ -294,12 +294,6 @@
       <DependentUpon>Library.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\Microscope.cs" />
-    <Compile Include="Source\MicroscopeSetup.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Source\MicroscopeSetup.Designer.cs">
-      <DependentUpon>MicroscopeSetup.cs</DependentUpon>
-    </Compile>
     <Compile Include="Source\Recordings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -453,9 +447,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Source\Library.resx">
       <DependentUpon>Library.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Source\MicroscopeSetup.resx">
-      <DependentUpon>MicroscopeSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Source\Recordings.resx">
       <DependentUpon>Recordings.cs</DependentUpon>

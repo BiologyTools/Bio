@@ -115,9 +115,6 @@ namespace Bio
         {
             filters = new Filter();
             init = true;
-            if(MicroscopeSetup.SettingExist("Folder"))
-            fileSystemWatcher.Path = Properties.Settings.Default["Folder"].ToString();
-
         }
 
         public void ResizeView()
