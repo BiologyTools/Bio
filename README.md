@@ -15,8 +15,6 @@ A .NET application for editing & annotating various microscopy imaging formats. 
 
 - Viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
 
-- Editing & saving ROI's in images to OME format image stacks.
-
 - Copy & Paste to quickly annotate images and name them easily by right click.
 
 - Select multiple points by holding down control key, for delete & move tools. 
@@ -47,8 +45,7 @@ A .NET application for editing & annotating various microscopy imaging formats. 
 -  Open script editor and recorder from menu.
 -  Double click on script name in Script runner to run script.
 -  Scripts saved in Scripts folder will be loaded into script runner.
--  Program installer include sample script "Sample.cs" which gets & sets pixels and saves resulting image.
--  Use Script recorder to record program function calls and script runner to turn recorder text into working scripts. (See sample [scripts](https://github.com/BioMicroscopy/BioImage-Scripts)
+-  Use Script recorder to record program function calls and script runner to turn recorder text into working scripts. (See sample [scripts](https://github.com/BioMicroscopy/Bio-Scripts)
 
 ## Sample Tool Script
 
