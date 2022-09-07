@@ -15,8 +15,6 @@ A .NET application for editing & annotating various microscopy imaging formats. 
 
 - Viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
 
-- Editing & saving ROI's in images to OME format image stacks.
-
 - Copy & Paste to quickly annotate images and name them easily by right click.
 
 - Select multiple points by holding down control key, for delete & move tools. 
