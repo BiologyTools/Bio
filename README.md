@@ -2,18 +2,15 @@
 
 # Bio
 
-A .NET application for editing & annotating various microscopy imaging formats. Supports all bioformats supported images like .TIF, .CZI etc. Integrates with ImageJ through ImageJ Macros.
+A .NET application for editing & annotating various microscopy imaging formats. Supports all bioformats supported images. Integrates with ImageJ through ImageJ Macros.
 
 ## Features
 
-
-- Open & Save ImageJ Tiff files and embed ROI's in image Description tag.
-
 - C# scripting with sample tool-script and other sample scripts in "/Scripts/" folder. [See samples](https://github.com/BioMicroscopy/BioImage-Scripts)
 
-- RGB image viewing mode which automatically combines 3 channels into RGB image & shows ROI from each channel which can be configured in ROI Manager.
+- RGB image viewing mode which automatically combines 3 channels into RGB image, also shows ROI from each channel which can be configured in ROI Manager.
 
-- Viewing image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
+- Convenient viewing of image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
 
 - Editing & saving ROI's in images to OME format image stacks.
 
