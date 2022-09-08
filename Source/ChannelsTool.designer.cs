@@ -450,9 +450,9 @@ namespace Bio
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.statsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.statsPanel.Location = new System.Drawing.Point(11, 109);
+            this.statsPanel.Location = new System.Drawing.Point(12, 109);
             this.statsPanel.Name = "statsPanel";
-            this.statsPanel.Size = new System.Drawing.Size(240, 120);
+            this.statsPanel.Size = new System.Drawing.Size(239, 120);
             this.statsPanel.TabIndex = 10;
             // 
             // applyBut

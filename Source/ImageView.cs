@@ -46,7 +46,7 @@ namespace Bio
             // Change parent for overlay PictureBox.
             overlayPictureBox.Parent = pictureBox;
             overlayPictureBox.Location = new Point(0, 0);
-            
+            GoToImage();
             UpdateView();
         }
         ~ImageView()
@@ -1132,14 +1132,6 @@ namespace Bio
                 i++;
             }
             blue.Dispose();
-            
-            //Draw stage position marker.
-            Pen red = new Pen(Brushes.Red, 1 / scale.Width);
-            
-            RectangleD rd = Microscope.GetViewRectangle();
-            rf[0] = ToScreenRectF(rd.X,rd.Y,rd.W,rd.H);
-            g.DrawRectangles(red,rf);
-            red.Dispose();
         }
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
@@ -1723,7 +1715,6 @@ namespace Bio
 
         public void GoToImage()
         {
-
             if (SelectedImage == null)
                 return;
             double dx = SelectedImage.Volume.Width / 2;
@@ -1746,51 +1737,13 @@ namespace Bio
             scale.Height = (float)wy;
             UpdateView();
         }
-        public void GoToStage()
-        {
-            RectangleD d = Microscope.GetViewRectangle();
-            double dx = d.W / 2;
-            double dy = d.H / 2;
-            Origin = new PointD(d.X, d.Y);
-            double wx = pictureBox.Width / ToScreenScaleW(d.W);
-            double wy = pictureBox.Height / ToScreenScaleH(d.H);
-            scale.Width = (float)wy;
-            scale.Height = (float)wy;
-            UpdateView();
-        }
-        public void MoveStageToImage()
-        {
-            Microscope.Stage.SetPosition(SelectedImage.Volume.Location.X, SelectedImage.Volume.Location.Y);
-            UpdateView();
-        }
-        public void MoveStageToImage(int i)
-        {
-            Microscope.Stage.SetPosition(Images[i].Volume.Location.X, Images[i].Volume.Location.Y);
-            UpdateView();
-        }
         private void goToImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             GoToImage();
         }
-        private void goToStageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GoToStage();
-        }
-
-        private void goToToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Microscope.Stage.SetPosition(mouseDown.X, mouseDown.Y);
-            UpdateView();
-        }
-
         private void goToToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Origin = new PointD(mouseDown.X,mouseDown.Y);
-        }
-
-        private void moveStageToImageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MoveStageToImage();
         }
 
         private void goToImageToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -1813,19 +1766,6 @@ namespace Bio
                 if(item.ID.Contains(e.ClickedItem.Text))
                 {
                     GoToImage(i);
-                    return;
-                }
-                i++;
-            }
-        }
-        private void moveStageToImageToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            int i = 0;
-            foreach (var item in Images)
-            {
-                if (item.ID.Contains(e.ClickedItem.Text))
-                {
-                    MoveStageToImage(i);
                     return;
                 }
                 i++;
