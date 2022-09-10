@@ -50,15 +50,10 @@ A .NET application for editing & annotating various microscopy imaging formats. 
 ## Sample Tool Script
 
 //css_reference Bio.dll;
-
 using System;
-
 using System.Windows.Forms;
-
 using System.Drawing;
-
 using Bio;
-
 using System.Threading;
 
 public class Loader
