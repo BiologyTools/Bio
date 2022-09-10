@@ -240,9 +240,9 @@ namespace Bio
             this.channelsBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.channelsBox.ForeColor = System.Drawing.Color.White;
             this.channelsBox.FormattingEnabled = true;
-            this.channelsBox.Location = new System.Drawing.Point(85, 4);
+            this.channelsBox.Location = new System.Drawing.Point(60, 4);
             this.channelsBox.Name = "channelsBox";
-            this.channelsBox.Size = new System.Drawing.Size(165, 21);
+            this.channelsBox.Size = new System.Drawing.Size(190, 21);
             this.channelsBox.TabIndex = 6;
             this.channelsBox.SelectedIndexChanged += new System.EventHandler(this.channelsBox_SelectedIndexChanged);
             // 

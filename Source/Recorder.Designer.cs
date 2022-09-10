@@ -41,7 +41,7 @@
             // 
             this.clearBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.clearBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.clearBut.Location = new System.Drawing.Point(368, 271);
+            this.clearBut.Location = new System.Drawing.Point(311, 271);
             this.clearBut.Name = "clearBut";
             this.clearBut.Size = new System.Drawing.Size(75, 23);
             this.clearBut.TabIndex = 3;
@@ -60,7 +60,7 @@
             this.textBox.Multiline = true;
             this.textBox.Name = "textBox";
             this.textBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox.Size = new System.Drawing.Size(431, 237);
+            this.textBox.Size = new System.Drawing.Size(374, 237);
             this.textBox.TabIndex = 4;
             this.textBox.TextChanged += new System.EventHandler(this.textBox_TextChanged);
             // 
@@ -68,7 +68,7 @@
             // 
             this.delLineBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.delLineBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.delLineBut.Location = new System.Drawing.Point(287, 271);
+            this.delLineBut.Location = new System.Drawing.Point(230, 271);
             this.delLineBut.Name = "delLineBut";
             this.delLineBut.Size = new System.Drawing.Size(75, 23);
             this.delLineBut.TabIndex = 5;
@@ -123,7 +123,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(455, 306);
+            this.ClientSize = new System.Drawing.Size(398, 306);
             this.Controls.Add(this.microRecBox);
             this.Controls.Add(this.topMostBox);
             this.Controls.Add(this.label1);

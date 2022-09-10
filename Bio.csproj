@@ -5,11 +5,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7A6E5506-2296-4820-AA2A-967D4E80D5B2}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <ProjectGuid>{F920DD64-98C8-4BBE-84A7-E21711D7AA4B}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Bio</RootNamespace>
-    <AssemblyName>BioImager</AssemblyName>
+    <AssemblyName>Bio</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -56,7 +56,8 @@
     <ApplicationIcon>Bio.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Bio.Program</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -217,7 +218,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
     <Compile Include="Source\Automation.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -275,12 +275,6 @@
       <DependentUpon>HistogramControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\ImageJ.cs" />
-    <Compile Include="Source\Imager.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Source\Imager.Designer.cs">
-      <DependentUpon>Imager.cs</DependentUpon>
-    </Compile>
     <Compile Include="Source\ImagesView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -300,12 +294,6 @@
       <DependentUpon>Library.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\Microscope.cs" />
-    <Compile Include="Source\MicroscopeSetup.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Source\MicroscopeSetup.Designer.cs">
-      <DependentUpon>MicroscopeSetup.cs</DependentUpon>
-    </Compile>
     <Compile Include="Source\Recordings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -323,12 +311,6 @@
     </Compile>
     <Compile Include="Source\Series.Designer.cs">
       <DependentUpon>Series.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Source\StageTool.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Source\StageTool.Designer.cs">
-      <DependentUpon>StageTool.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\TabsView.cs">
       <SubType>Form</SubType>
@@ -456,9 +438,6 @@
     <EmbeddedResource Include="Source\HistogramControl.resx">
       <DependentUpon>HistogramControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Source\Imager.resx">
-      <DependentUpon>Imager.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Source\ImagesView.resx">
       <DependentUpon>ImagesView.cs</DependentUpon>
     </EmbeddedResource>
@@ -469,9 +448,6 @@
     <EmbeddedResource Include="Source\Library.resx">
       <DependentUpon>Library.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Source\MicroscopeSetup.resx">
-      <DependentUpon>MicroscopeSetup.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Source\Recordings.resx">
       <DependentUpon>Recordings.cs</DependentUpon>
     </EmbeddedResource>
@@ -480,9 +456,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Source\Series.resx">
       <DependentUpon>Series.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Source\StageTool.resx">
-      <DependentUpon>StageTool.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Source\TabsView.resx">
       <DependentUpon>TabsView.cs</DependentUpon>
