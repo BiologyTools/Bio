@@ -48,7 +48,6 @@ A .NET application for editing & annotating various microscopy imaging formats. 
 -  Use Script recorder to record program function calls and script runner to turn recorder text into working scripts. (See sample [scripts](https://github.com/BioMicroscopy/BioImage-Scripts)
 
 ## Sample Tool Script
-
 //css_reference Bio.dll;
 
 using System;
@@ -72,10 +71,10 @@ public class Loader
 				{
 					if (s.type == Bio.Scripting.Event.Down && s.buts == MouseButtons.Left)
 					{
-						ZCT cord = Bio.ImageView.viewer.GetCoordinate();
+						ZCT cord = Bio.App.viewer.GetCoordinate();
 						Bio.Scripting.LogLine(cord.ToString() + " Coordinate");
-						Bio.Annotation an = Bio.Annotation.CreatePoint(cord, s.p.X, s.p.Y);
-						Bio.ImageView.viewer.image.Annotations.Add(an);
+						Bio.ROI an = Bio.ROI.CreatePoint(cord, s.p.X, s.p.Y);
+						Bio.ImageView.SelectedImage.Annotations.Add(an);
 						Bio.Scripting.LogLine(cord.ToString() + " Coordinate");
 						an.Text = "Point" + ind;
 						ind++;
@@ -99,6 +98,7 @@ public class Loader
 		return "OK";
 	}
 }
+
 
 
 
