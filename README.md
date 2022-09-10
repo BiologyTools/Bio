@@ -48,16 +48,22 @@ A .NET application for editing & annotating various microscopy imaging formats. 
 -  Use Script recorder to record program function calls and script runner to turn recorder text into working scripts. (See sample [scripts](https://github.com/BioMicroscopy/BioImage-Scripts)
 
 ## Sample Tool Script
+
 //css_reference Bio.dll;
 
 using System;
+
 using System.Windows.Forms;
+
 using System.Drawing;
+
 using Bio;
+
 using System.Threading;
 
 public class Loader
 {
+
 	//Point ROI Tool Example
 	public string Load()
 	{
