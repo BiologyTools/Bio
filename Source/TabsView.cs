@@ -109,6 +109,7 @@ namespace Bio
             }
             tabControl.TabPages.Add(t);
             tabControl.Dock = DockStyle.Fill;
+            tabControl.SelectedIndex = tabControl.TabCount - 1;
             ResizeView();
         }
         private void Init()
