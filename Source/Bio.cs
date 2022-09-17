@@ -1783,7 +1783,7 @@ namespace Bio
         }
         public static Bitmap RGBTo32Bit(Bitmap b)
         {
-            Bitmap bm = new Bitmap(b.Width, b.Height, PixelFormat.Format32bppArgb);
+            Bitmap bm = new Bitmap(b.Width, b.Height, PixelFormat.Format32bppRgb);
             Graphics g = Graphics.FromImage(bm);
             g.DrawImage(b, 0, 0);
             return bm;
@@ -3045,15 +3045,15 @@ namespace Bio
         {
             if (bitsPerPixel == 8 & RGBChannelCount == 3)
             {
-                BioImage bi = CopyInfo(this,true,true);
+                BioImage bi = CopyInfo(this, true, true);
                 int count = Buffers.Count * 3;
                 bi.sizeC = 3;
                 bi.Coords = new int[SizeZ, 3, SizeT];
-                for (int i = 0; i < count; i+=3)
+                for (int i = 0; i < count; i += 3)
                 {
                     int a = i / 3;
                     Bitmap[] rgb = BufferInfo.RGB24To8((Bitmap)Buffers[a].Image);
-                    bi.Buffers.Add(new BufferInfo(filename, rgb[0], new ZCT(Buffers[a].Coordinate.Z, 0, Buffers[a].Coordinate.T),i));
+                    bi.Buffers.Add(new BufferInfo(filename, rgb[0], new ZCT(Buffers[a].Coordinate.Z, 0, Buffers[a].Coordinate.T), i));
                     bi.Buffers.Add(new BufferInfo(filename, rgb[1], new ZCT(Buffers[a].Coordinate.Z, 1, Buffers[a].Coordinate.T), i + 1));
                     bi.Buffers.Add(new BufferInfo(filename, rgb[2], new ZCT(Buffers[a].Coordinate.Z, 2, Buffers[a].Coordinate.T), i + 2));
                     bi.Coords[Buffers[a].Coordinate.Z, 0, Buffers[a].Coordinate.T] = i;
@@ -3081,7 +3081,7 @@ namespace Bio
                 c.BitsPerPixel = 8;
             }
             bitsPerPixel = 8;
-            AutoThreshold(this,true);
+            AutoThreshold(this, true);
             Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To8Bit();");
         }
         public void To16Bit()
@@ -3104,7 +3104,7 @@ namespace Bio
         }
         public void To24Bit()
         {
-            if(Buffers[0].PixelFormat == PixelFormat.Format48bppRgb)
+            if (Buffers[0].PixelFormat == PixelFormat.Format48bppRgb)
             {
                 //We run 8bit so we get 24 bit rgb.
                 To8Bit();
@@ -3127,14 +3127,14 @@ namespace Bio
                     MessageBox.Show("24 bit RGB conversion requires an image with 3, 8 bit channels. Use stack tools to create 3 channel image.");
                     return;
                 }
-                
-                BioImage bi = CopyInfo(this,true,true);
+
+                BioImage bi = CopyInfo(this, true, true);
                 bi.sizeC = 1;
                 int index = 0;
                 bi.Coords = new int[SizeZ, 3, SizeT];
                 for (int i = 0; i < Buffers.Count; i += 3)
                 {
-                    Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range); 
+                    Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
                     //b = BufferInfo.SwitchRedBlue(b);
                     BufferInfo bf = new BufferInfo(Images.GetImageName(ID), b, Buffers[i].Coordinate, index);
                     bi.Buffers.Add(bf);
@@ -3144,6 +3144,7 @@ namespace Bio
                 bi.bitsPerPixel = 8;
                 AutoThreshold(bi, true);
                 Images.AddImage(bi);
+                App.tabsView.AddTab(bi);
             }
             Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To24Bit();");
         }
@@ -3169,7 +3170,7 @@ namespace Bio
                 MessageBox.Show("48 bit RGB conversion requires an image with 3, 16 bit channels. Use stack tools to create 3 channel image.");
                 return;
             }
-            BioImage bi = CopyInfo(this,true,true);
+            BioImage bi = CopyInfo(this, true, true);
             bi.sizeC = 3;
             int index = 0;
             bi.Coords = new int[SizeZ, 3, SizeT];
@@ -3188,7 +3189,7 @@ namespace Bio
                 index++;
             }
             bi.bitsPerPixel = 16;
-            AutoThreshold(bi,true);
+            AutoThreshold(bi, true);
             Images.AddImage(bi);
             Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To48Bit();");
 

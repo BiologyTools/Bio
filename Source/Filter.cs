@@ -58,6 +58,8 @@ namespace Bio
             if (filterView.SelectedNode==null)
                 return;
             Node n = (Node)filterView.SelectedNode.Tag;
+            if (n == null)
+                return;
             if (n.filt.type == Filt.Type.Base)
             {
                 Filters.Base(ImageView.SelectedImage.ID, n.filt.name, false);
