@@ -482,14 +482,14 @@ namespace Bio
                 int index = b.Coords[zBar.Value, cBar.Value, tBar.Value];
                 if (Mode == ViewMode.Filtered)
                 {
-                    bitmap = b.GetFiltered(coords, RChannel.range, GChannel.range, BChannel.range);
+                    bitmap = b.GetFiltered(coords, b.RChannel.range, b.GChannel.range, b.BChannel.range);
                 }
                 else if (Mode == ViewMode.RGBImage)
                 {
                     PixelFormat px = SelectedImage.Buffers[index].PixelFormat;
                     if (px == PixelFormat.Format8bppIndexed || px == PixelFormat.Format16bppGrayScale)
                     {
-                        bitmap = b.GetRGBBitmap(coords, RChannel.range, GChannel.range, BChannel.range);
+                        bitmap = b.GetRGBBitmap(coords, b.RChannel.range, b.GChannel.range, b.BChannel.range);
                     }
                     else
                     {

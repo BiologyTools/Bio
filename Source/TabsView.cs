@@ -464,6 +464,7 @@ namespace Bio
                 rGBToolStripMenuItem.Checked = false;
             //We update the active Viewer.
             App.viewer = Viewer;
+            ImageView.SelectedIndex = 0;
         }
 
         private void closeToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -625,9 +626,10 @@ namespace Bio
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
+            
             for (int i = 0; i < openFilesDialog.FileNames.Length; i++)
             {
-                if(App.viewer.Images.Count == 0)
+                if(i == 0)
                 {
                     AddTab(BioImage.OpenFile(openFilesDialog.FileNames[0]));
                 }
@@ -639,9 +641,13 @@ namespace Bio
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            foreach (string item in openFilesDialog.FileNames)
+            for (int i = 0; i < openFilesDialog.FileNames.Length; i++)
             {
-                App.viewer.AddImage(BioImage.OpenOME(item));
+                if (i == 0)
+                {
+                    AddTab(BioImage.OpenFile(openFilesDialog.FileNames[0]));
+                }
+                App.viewer.AddImage(BioImage.OpenOME(openFilesDialog.FileNames[i]));
             }
         }
 
@@ -667,6 +673,38 @@ namespace Bio
                 sts[i] = App.viewer.Images[i].ID;
             }
             BioImage.SaveOMESeries(sts, saveOMEFileDialog.FileName);
+        }
+
+        private void saveTabTiffToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveTiffFileDialog.ShowDialog() != DialogResult.OK)
+                return;
+            string[] sts = new string[App.viewer.Images.Count];
+            for (int i = 0; i < sts.Length; i++)
+            {
+                sts[i] = App.viewer.Images[i].Filename;
+            }
+            BioImage.SaveSeries(sts, saveTiffFileDialog.FileName);
+        }
+
+        private void openSeriesToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (openFilesDialog.ShowDialog() != DialogResult.OK)
+                return;
+            BioImage[] bms = null;
+            foreach (string item in openFilesDialog.FileNames)
+            {
+                bms = BioImage.OpenSeries(openFilesDialog.FileName);
+                for (int i = 0; i < bms.Length; i++)
+                {
+                    if (i == 0)
+                    {
+                        AddTab(bms[i]);
+                    }
+                    App.viewer.AddImage(bms[i]);
+                }
+            }
+            
         }
     }
 }
