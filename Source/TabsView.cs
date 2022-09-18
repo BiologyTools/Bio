@@ -701,6 +701,7 @@ namespace Bio
                     {
                         AddTab(bms[i]);
                     }
+                    else
                     App.viewer.AddImage(bms[i]);
                 }
             }

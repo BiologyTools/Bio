@@ -2522,23 +2522,19 @@ namespace Bio
             return FromBytes(bf.Bytes, bf.SizeX, bf.SizeY, bf.RGBChannelsCount, bf.BitsPerPixel, bf.Stride);
         }
         public static BioImage b = null;
-        public static Hashtable list = new Hashtable();
+        public static Dictionary<string, BufferInfo> list = new Dictionary<string, BufferInfo>();
         public static void FromBytes()
         {
             string name = Thread.CurrentThread.Name;
-            BufferInfo bf = (BufferInfo)list[name];
-            bf.Statistics = FromBytes(bf);
+            list[name].Statistics = FromBytes(list[name]);
             list.Remove(name);
         }
         public static void CalcStatistics(BufferInfo bf)
         {
-            //if (list.ContainsKey(bf.ID))
-            //{
-                Thread th = new Thread(FromBytes);
-                th.Name = bf.ID;
-                list.Add(th.Name.ToString(), bf);
-                th.Start();
-            //}
+            Thread th = new Thread(FromBytes);
+            th.Name = bf.ID;
+            list.Add(th.Name.ToString(), bf);
+            th.Start();
         }
         public static void ClearCalcBuffer()
         {
@@ -3074,8 +3070,6 @@ namespace Bio
                 b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
                 Buffers[i].Image = b;
                 Statistics.CalcStatistics(Buffers[i]);
-                //BufferInfo.AddBuffer(Buffers[i],Buffers.Count);
-                //Statistics.FromBuffer(Buffers[i]);
             }
             
             foreach (Channel c in Channels)
@@ -3114,6 +3108,10 @@ namespace Bio
                 To8Bit();
                 return;
             }
+            if(Buffers[0].PixelFormat == PixelFormat.Format16bppGrayScale)
+            {
+                To8Bit();
+            }
             int index = 0;
             List<BufferInfo > buffers = new List<BufferInfo>();
             for (int i = 0; i < Buffers.Count; i+=3)
@@ -3122,8 +3120,6 @@ namespace Bio
                 BufferInfo inf = new BufferInfo(ID, b, Buffers[i].Coordinate, index);
                 buffers.Add(inf);
                 Statistics.CalcStatistics(buffers[index]);
-                //BufferInfo.AddBuffer(Buffers[i], Buffers.Count);
-                //BufferInfo.CalculateStatistics();
                 index++;
             }
             Buffers.Clear();
@@ -3149,7 +3145,6 @@ namespace Bio
                 //BufferInfo.AddBuffer(Buffers[i], Buffers.Count);
                 //BufferInfo.CalculateStatistics();
             }
-
             Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To32Bit();");
         }
         public void To48Bit()
@@ -3159,27 +3154,25 @@ namespace Bio
                 MessageBox.Show("48 bit RGB conversion requires an image with 3, 16 bit channels. Use stack tools to create 3 channel image.");
                 return;
             }
-            BioImage bi = CopyInfo(this,true,true);
-            bi.sizeC = 3;
             int index = 0;
-            bi.Coords = new int[SizeZ, 3, SizeT];
+            List<BufferInfo> buffers = new List<BufferInfo>();
             for (int i = 0; i < Buffers.Count; i += 3)
             {
                 Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
-                //We rotate the data since we store the image data upside down and switch to BGR
-                //Bitmap bm = AForge.Imaging.Image.Convert16bppTo8bpp(b);
-                //Clipboard.SetImage(bm);
-                //b.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                //b = BufferInfo.SwitchRedBlue(b);
-                BufferInfo bf = new BufferInfo(Images.GetImageName(ID), b, Buffers[i].Coordinate, index);
-                bi.Buffers.Add(bf);
-                bi.Coords[Buffers[i].Coordinate.Z, Buffers[i].Coordinate.C, Buffers[i].Coordinate.T] = index;
-                Statistics.CalcStatistics(bf);
+                BufferInfo inf = new BufferInfo(ID, b, Buffers[i].Coordinate, index);
+                buffers.Add(inf);
+                Statistics.CalcStatistics(buffers[index]);
                 index++;
             }
-            bi.bitsPerPixel = 16;
-            AutoThreshold(bi,true);
-            App.tabsView.AddTab(bi);
+            Buffers.Clear();
+            Buffers.AddRange(buffers);
+            bitsPerPixel = 16;
+            foreach (Channel c in Channels)
+            {
+                c.Min = 0;
+                c.Max = ushort.MaxValue;
+            }
+            //AutoThreshold(this,true);
             Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To48Bit();");
         }
         public void Bake(int rmin, int rmax, int gmin, int gmax, int bmin, int bmax)
@@ -3989,7 +3982,7 @@ namespace Bio
                             // specify that it's a page within the multipage file
                             image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                             // specify the page number
-                            buffer = b.Buffers[im].Bytes;
+                            buffer = b.Buffers[im].GetSaveBytes();
                             image.SetField(TiffTag.PAGENUMBER, c + (b.Buffers.Count * fi), b.Buffers.Count * files.Length);
                             for (int i = 0, offset = 0; i < b.SizeY; i++)
                             {
