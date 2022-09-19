@@ -305,7 +305,7 @@ namespace Bio
             // 
             this.rGBToolStripMenuItem.CheckOnClick = true;
             this.rGBToolStripMenuItem.Name = "rGBToolStripMenuItem";
-            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.rGBToolStripMenuItem.Text = "RGB";
             this.rGBToolStripMenuItem.Click += new System.EventHandler(this.rGBToolStripMenuItem_Click);
             // 
@@ -315,7 +315,7 @@ namespace Bio
             this.filteredToolStripMenuItem.CheckOnClick = true;
             this.filteredToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.filteredToolStripMenuItem.Name = "filteredToolStripMenuItem";
-            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.filteredToolStripMenuItem.Text = "Filtered";
             this.filteredToolStripMenuItem.Click += new System.EventHandler(this.filteredToolStripMenuItem_Click);
             // 
@@ -323,7 +323,7 @@ namespace Bio
             // 
             this.rawToolStripMenuItem.CheckOnClick = true;
             this.rawToolStripMenuItem.Name = "rawToolStripMenuItem";
-            this.rawToolStripMenuItem.Size = new System.Drawing.Size(113, 22);
+            this.rawToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.rawToolStripMenuItem.Text = "Raw";
             this.rawToolStripMenuItem.Click += new System.EventHandler(this.rawToolStripMenuItem_Click);
             // 
@@ -339,7 +339,7 @@ namespace Bio
             // setToolToolStripMenuItem
             // 
             this.setToolToolStripMenuItem.Name = "setToolToolStripMenuItem";
-            this.setToolToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.setToolToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.setToolToolStripMenuItem.Text = "Set Tool";
             this.setToolToolStripMenuItem.Click += new System.EventHandler(this.setToolToolStripMenuItem_Click);
             // 
@@ -394,14 +394,14 @@ namespace Bio
             // autoThresholdToolStripMenuItem
             // 
             this.autoThresholdToolStripMenuItem.Name = "autoThresholdToolStripMenuItem";
-            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.autoThresholdToolStripMenuItem.Text = "Auto Threshold All";
             this.autoThresholdToolStripMenuItem.Click += new System.EventHandler(this.autoThresholdToolStripMenuItem_Click);
             // 
             // channelsToolToolStripMenuItem1
             // 
             this.channelsToolToolStripMenuItem1.Name = "channelsToolToolStripMenuItem1";
-            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(172, 22);
+            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.channelsToolToolStripMenuItem1.Text = "Channels Tool";
             this.channelsToolToolStripMenuItem1.Click += new System.EventHandler(this.channelsToolToolStripMenuItem_Click);
             // 
@@ -417,7 +417,7 @@ namespace Bio
             // duplicateToolStripMenuItem
             // 
             this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
-            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.duplicateToolStripMenuItem.Text = "Duplicate";
             this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
             // 
@@ -506,14 +506,14 @@ namespace Bio
             // scriptRunnerToolStripMenuItem
             // 
             this.scriptRunnerToolStripMenuItem.Name = "scriptRunnerToolStripMenuItem";
-            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
             this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click_1);
             // 
             // scriptRecorderToolStripMenuItem
             // 
             this.scriptRecorderToolStripMenuItem.Name = "scriptRecorderToolStripMenuItem";
-            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.scriptRecorderToolStripMenuItem.Text = "Script Recorder";
             this.scriptRecorderToolStripMenuItem.Click += new System.EventHandler(this.scriptRecorderToolStripMenuItem_Click_1);
             // 
@@ -567,6 +567,7 @@ namespace Bio
             this.Text = "Bio";
             this.Activated += new System.EventHandler(this.ImageViewer_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TabsView_FormClosing);
+            this.Load += new System.EventHandler(this.TabsView_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TabsView_KeyDown);
             this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.ImageViewer_PreviewKeyDown);
             this.panel.ResumeLayout(false);

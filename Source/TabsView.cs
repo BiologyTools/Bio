@@ -72,29 +72,52 @@ namespace Bio
         {
             InitializeComponent();
             LoadProperties();
-            Init();
+           
             if (arg.Length == 0)
                 return;
             else
-            {
-                if (arg[0].EndsWith(".cs"))
+            {             
+                for (int i = 0; i < arg.Length; i++)
                 {
-                    App.runner.RunScriptFile(arg[0]);
-                }
-                else
-                {
-                    for (int i = 0; i < arg.Length; i++)
+                    if (arg[0].EndsWith(".cs"))
                     {
-                        if(arg[i].EndsWith(".ijm"))
+                        App.runner.RunScriptFile(arg[0]);
+                        return;
+                    }
+                    if(arg[i].EndsWith(".ijm"))
+                    {
+                        ImageJ.RunMacro(arg[i], "");
+                        return;
+                    }
+                    else
+                    {
+                        int ind = 0;
+                        if (!arg[i].EndsWith("ome.tif") && (arg[i].EndsWith(".tif") || arg[i].EndsWith(".tiff")))
                         {
-                            ImageJ.RunMacro(arg[i], "");
+                            foreach (BioImage item in BioImage.OpenSeries(arg[i]))
+                            {
+                                if (ind == 0)
+                                    AddTab(item);
+                                else
+                                    Viewer.AddImage(item);
+                                ind++;
+                            }
                         }
                         else
-                            BioImage.Open(arg[i]);
+                        {
+                            foreach (BioImage item in BioImage.OpenOMESeries(arg[i]))
+                            {
+                                if (ind == 0)
+                                    AddTab(item);
+                                else
+                                    Viewer.AddImage(item);
+                                ind++;
+                            }
+                        }
                     }
-                    
                 }
             }
+            Init();
         }
         public void AddTab(BioImage b)
         {
@@ -224,10 +247,9 @@ namespace Bio
             saveTiffFileDialog.FileName = Image.Filename;
             if (saveTiffFileDialog.ShowDialog() != DialogResult.OK)
                 return;
-            foreach (string file in saveTiffFileDialog.FileNames)
-            {
-                BioImage.Save(file,Image.ID);
-            }
+            string[] sts = new string[1];
+            sts[0] = ImageView.SelectedImage.ID;
+            BioImage.SaveSeries(sts, saveTiffFileDialog.FileName);
         }
 
         private void ImageViewer_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -511,7 +533,10 @@ namespace Bio
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            AddTab(BioImage.OpenOME(openFilesDialog.FileName));
+            foreach (string sts in openFilesDialog.FileNames)
+            {
+                AddTab(BioImage.OpenOME(sts));
+            }
         }
 
         private void newTabViewToolStripMenuItem_Click(object sender, EventArgs e)
@@ -547,6 +572,7 @@ namespace Bio
         {
             ToolStripMenuItem ts = (ToolStripMenuItem)sender;
             AddTab(BioImage.OpenFile(ts.Text));
+            App.viewer.GoToImage();
         }
         private void TabsView_KeyDown(object sender, KeyEventArgs e)
         {
@@ -615,6 +641,7 @@ namespace Bio
 
         private void stageToolStripMenuItem_Click(object sender, EventArgs e)
         {
+
         }
 
         private void fileSystemWatcher_Created(object sender, FileSystemEventArgs e)
@@ -633,8 +660,10 @@ namespace Bio
                 {
                     AddTab(BioImage.OpenFile(openFilesDialog.FileNames[0]));
                 }
+                else
                 App.viewer.AddImage(BioImage.OpenFile(openFilesDialog.FileNames[i]));
             }
+            App.viewer.GoToImage();
         }
 
         private void addImagesOMEToolStripMenuItem_Click(object sender, EventArgs e)
@@ -647,8 +676,10 @@ namespace Bio
                 {
                     AddTab(BioImage.OpenFile(openFilesDialog.FileNames[0]));
                 }
+                else
                 App.viewer.AddImage(BioImage.OpenOME(openFilesDialog.FileNames[i]));
             }
+            App.viewer.GoToImage();
         }
 
         private void openSeriesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -661,6 +692,7 @@ namespace Bio
             {
                 Viewer.AddImage(bs[i]);
             }
+            App.viewer.GoToImage();
         }
 
         private void saveTabToolStripMenuItem_Click(object sender, EventArgs e)
@@ -705,7 +737,13 @@ namespace Bio
                     App.viewer.AddImage(bms[i]);
                 }
             }
-            
+            App.viewer.GoToImage();
+        }
+
+        private void TabsView_Load(object sender, EventArgs e)
+        {
+            if(App.viewer != null)
+            App.viewer.GoToImage();
         }
     }
 }

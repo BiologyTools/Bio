@@ -1208,12 +1208,14 @@ namespace Bio
             {
                 Bitmap bitmap;
                 bitmap = (Bitmap)value;
-                bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                if (!LittleEndian)
+                    bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 PixelFormat = value.PixelFormat;
                 SizeX = value.Width;
                 SizeY = value.Height;
-                bytes = GetBuffer((Bitmap)value, Stride);
-                bitmap = null;
+                bytes = GetBuffer(bitmap, Stride);
+                if(LittleEndian)
+                    Array.Reverse(bytes);
             }
         }
         private PixelFormat pixelFormat;
@@ -1640,7 +1642,9 @@ namespace Bio
             Bytes = bts;
             if (isRGB && BitsPerPixel == 8)
                 SwitchRedBlue();
-            
+            Bitmap b = (Bitmap)Image.Clone();
+            b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            Image = b;
         }
         public BufferInfo(string file, Image im, ZCT coord, int index)
         {
@@ -1652,6 +1656,9 @@ namespace Bio
             Image = im;
             if (isRGB && BitsPerPixel == 8)
                 SwitchRedBlue();
+            Bitmap b = (Bitmap)Image.Clone();
+            b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            Image = b;
         }
         public BufferInfo(int w, int h, PixelFormat px, byte[] bts, ZCT coord, string id)
         {
@@ -1663,6 +1670,9 @@ namespace Bio
             Bytes = bts;
             if (isRGB && BitsPerPixel == 8)
                 SwitchRedBlue();
+            Bitmap b = (Bitmap)Image.Clone();
+            b.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            Image = b;
         }
         public Statistics UpdateStatistics()
         {
@@ -1749,15 +1759,17 @@ namespace Bio
             bImage.Dispose();
             */
         }
-        public byte[] GetSaveBytes()
+        public byte[] GetSaveBytes(bool littleEndian)
         {
             Bitmap bitmap = (Bitmap)Image.Clone();
+            //if(PixelFormat != PixelFormat.Format48bppRgb || PixelFormat != PixelFormat.Format16bppGrayScale)
             bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat);
             IntPtr ptr = data.Scan0;
             int length = this.bytes.Length;
             byte[] bytes = new byte[length];
             Marshal.Copy(ptr, bytes, 0, length);
+            if(littleEndian)
             Array.Reverse(bytes);
             bitmap.UnlockBits(data);
             bitmap.Dispose();
@@ -1844,6 +1856,10 @@ namespace Bio
             Bitmap bm = AForge.Imaging.Image.Convert8bppTo16bpp((Bitmap)Image);
             bm.RotateFlip(RotateFlipType.Rotate180FlipNone);
             Image = bm;
+        }
+        public void RotateFlip(RotateFlipType rot)
+        {
+            Image.RotateFlip(rot);
         }
         public bool isRGB
         {
@@ -3811,11 +3827,10 @@ namespace Bio
             ImageJDesc j = new ImageJDesc();
             j.FromImage(b);
             string desc = j.GetString();
-            desc += NewLine + "-BioROI:" + b.series + ":" + NewLine;
             //Embed ROI's to image description.
             for (int i = 0; i < b.Annotations.Count; i++)
             {
-                desc += ROIToString(b.Annotations[i]);
+                desc += "-ROI:" + b.series + ":" + ROIToString(b.Annotations[i]) + NewLine;
             }
             foreach (Channel c in b.Channels)
             {
@@ -3872,7 +3887,7 @@ namespace Bio
                         // specify that it's a page within the multipage file
                         image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                         // specify the page number
-                        buffer = b.Buffers[im].GetSaveBytes();
+                        buffer = b.Buffers[im].GetSaveBytes(false);
                         image.SetField(TiffTag.PAGENUMBER, c, b.Buffers.Count);
                         for (int i = 0, offset = 0; i < b.SizeY; i++)
                         {
@@ -3915,11 +3930,10 @@ namespace Bio
                     ExportROIsCSV(f, b.Annotations);
                 }
                 
-                desc += NewLine + "-ROI:" + fi + ":" + NewLine;
                 //Embed ROI's to image description.
                 for (int i = 0; i < b.Annotations.Count; i++)
                 {
-                    desc += ROIToString(b.Annotations[i]);
+                    desc += "-ROI:" + b.series + ":" + ROIToString(b.Annotations[i]) + NewLine;
                 }
                 foreach (Channel c in b.Channels)
                 {
@@ -3958,12 +3972,6 @@ namespace Bio
                             image.SetField(TiffTag.BITSPERSAMPLE, b.bitsPerPixel);
                             image.SetField(TiffTag.SAMPLESPERPIXEL, b.RGBChannelCount);
                             image.SetField(TiffTag.ROWSPERSTRIP, b.SizeY);
-                            /*
-                            if (im % 2 == 0)
-                                image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISBLACK);
-                            else
-                                image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISWHITE);
-                            */
                             image.SetField(TiffTag.ORIENTATION, BitMiracle.LibTiff.Classic.Orientation.TOPLEFT);
                             image.SetField(TiffTag.PLANARCONFIG, PlanarConfig.CONTIG);
                             image.SetField(TiffTag.ROWSPERSTRIP, image.DefaultStripSize(0));
@@ -3982,7 +3990,7 @@ namespace Bio
                             // specify that it's a page within the multipage file
                             image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                             // specify the page number
-                            buffer = b.Buffers[im].GetSaveBytes();
+                            buffer = b.Buffers[im].GetSaveBytes(false);
                             image.SetField(TiffTag.PAGENUMBER, c + (b.Buffers.Count * fi), b.Buffers.Count * files.Length);
                             for (int i = 0, offset = 0; i < b.SizeY; i++)
                             {
@@ -4006,8 +4014,9 @@ namespace Bio
             Tiff image = Tiff.Open(file, "r");
             int pages = image.NumberOfDirectories();
             FieldValue[] f = image.GetField(TiffTag.IMAGEDESCRIPTION);
+            int sp = image.GetField(TiffTag.SAMPLESPERPIXEL)[0].ToInt();
             ImageJDesc imDesc = new ImageJDesc();
-            int count = 0;
+            int count = 1;
             if (f != null)
             {
                 string desc = f[0].ToString();
@@ -4018,10 +4027,10 @@ namespace Bio
                         count = imDesc.channels;
                 }
             }
-            int scount = pages / count;
-            BioImage[] bs = new BioImage[count];
+            int scount = (pages*sp) / count;
+            BioImage[] bs = new BioImage[pages];
             image.Close();
-            for (int i = 0; i < scount; i++)
+            for (int i = 0; i < pages; i++)
             {
                 bs[i] = OpenFile(file, i);
             }
@@ -4167,7 +4176,7 @@ namespace Bio
                 }
                 string[] sts = desc.Split('\n');
                 int index = 0;
-                for (int i = series * b.sizeC; i < sts.Length; i++)
+                for (int i = 0; i < sts.Length; i++)
                 {
                     if (sts[i].StartsWith("-Channel"))
                     {
@@ -4191,7 +4200,8 @@ namespace Bio
                         int serie = int.Parse(val);
                         if (serie == series && sts[i].Length > 7)
                         {
-                            ROI roi = JsonConvert.DeserializeObject<ROI>(sts[i]);
+                            string ro = sts[i].Substring(sts[i].LastIndexOf(':')+1, sts[i].Length - (sts[i].LastIndexOf(':')+1));
+                            ROI roi = StringToROI(ro);
                             b.Annotations.Add(roi);
                         }
                     }
@@ -4226,7 +4236,7 @@ namespace Bio
                 int str = image.ScanlineSize();
                 if (stride != str)
                     throw new InvalidDataException();
-                for (int p = series * b.sizeC; p < b.sizeC * (b.series+1); p++)
+                for (int p = series * b.sizeC; p < (series+1) * b.sizeC; p++)
                 {
                     image.SetDirectory((short)p);
                     byte[] bytes = new byte[stride * SizeY];
@@ -4235,7 +4245,11 @@ namespace Bio
                         image.ReadScanline(bytes, offset, i, 0);
                         offset += stride;
                     }
+                    if (!b.littleEndian)
+                        Array.Reverse(bytes);
                     BufferInfo inf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), p);
+                    if(!b.littleEndian)
+                        inf.RotateFlip(RotateFlipType.Rotate180FlipNone);
                     b.Buffers.Add(inf);
                     Statistics.CalcStatistics(inf);
                     //b.Buffers[b.Buffers.Count - 1].Statistics = Statistics.FromBytes(inf);
@@ -4266,7 +4280,7 @@ namespace Bio
                         }
                     }
                 }
-                image.Dispose();
+                image.Close();
             }
             else
             {
@@ -4310,6 +4324,7 @@ namespace Bio
             AutoThreshold(b,false);
             Recorder.AddLine("Bio.BioImage.Open(" + '"' + file + '"' + ");");
             Images.AddImage(b);
+            
             pr.Close();
             pr.Dispose();
             st.Stop();
@@ -4588,7 +4603,7 @@ namespace Bio
             writer.setId(file);
             for (int bu = 0; bu < b.Buffers.Count; bu++)
             {
-                writer.saveBytes(bu,b.Buffers[bu].GetSaveBytes());
+                writer.saveBytes(bu,b.Buffers[bu].GetSaveBytes(true));
                 pr.UpdateProgressF((float)bu / b.Buffers.Count);
             }
 
@@ -4874,7 +4889,7 @@ namespace Bio
                 writer.setSeries(i);
                 for (int bu = 0; bu < b.Buffers.Count; bu++)
                 {
-                    writer.saveBytes(bu, b.Buffers[bu].GetSaveBytes());
+                    writer.saveBytes(bu, b.Buffers[bu].GetSaveBytes(true));
                     pr.UpdateProgressF((float)bu / b.Buffers.Count);
                 }
                 pr.Close();
@@ -5303,10 +5318,7 @@ namespace Bio
             for (int p = 0; p < pages; p++)
             {
                 byte[] bytes = reader.openBytes(p);
-                if (!b.littleEndian)
-                {
-                    Array.Reverse(bytes);
-                }
+                Array.Reverse(bytes);
                 if (bit48)
                 {
                     //We convert 48bpp plane to 3 16bpp channels
