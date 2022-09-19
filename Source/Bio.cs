@@ -1190,7 +1190,6 @@ namespace Bio
                 bytes = value; 
             }
         }
-
         public byte[] PaddedBytes
         {
             get
@@ -1762,7 +1761,9 @@ namespace Bio
         public byte[] GetSaveBytes(bool littleEndian)
         {
             Bitmap bitmap = (Bitmap)Image.Clone();
-            //if(PixelFormat != PixelFormat.Format48bppRgb || PixelFormat != PixelFormat.Format16bppGrayScale)
+            if(RGBChannelsCount > 1)
+            bitmap = SwitchRedBlue(bitmap);
+            if(littleEndian)
             bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat);
             IntPtr ptr = data.Scan0;
@@ -1859,7 +1860,10 @@ namespace Bio
         }
         public void RotateFlip(RotateFlipType rot)
         {
-            Image.RotateFlip(rot);
+            Bitmap fl = (Bitmap)Image.Clone();
+            fl.RotateFlip(rot);
+            Image = fl;
+            fl.Dispose();
         }
         public bool isRGB
         {
@@ -3087,10 +3091,10 @@ namespace Bio
                 Buffers[i].Image = b;
                 Statistics.CalcStatistics(Buffers[i]);
             }
-            
             foreach (Channel c in Channels)
             {
-                c.Max = 255;
+                c.Min = (int)((((float)c.Min / (float)ushort.MaxValue)) * 255);
+                c.Max = (int)((((float)c.Max / (float)ushort.MaxValue)) * 255);
                 c.BitsPerPixel = 8;
             }
             bitsPerPixel = 8;
@@ -3111,6 +3115,8 @@ namespace Bio
             foreach (Channel c in Channels)
             {
                 c.Max = ushort.MaxValue;
+                c.Min = 0;
+                c.BitsPerPixel = 16;
             }
             bitsPerPixel = 16;
             AutoThreshold(this, false);
@@ -3134,6 +3140,8 @@ namespace Bio
             {
                 Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
                 BufferInfo inf = new BufferInfo(ID, b, Buffers[i].Coordinate, index);
+                inf.SwitchRedBlue();
+                inf.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 buffers.Add(inf);
                 Statistics.CalcStatistics(buffers[index]);
                 index++;
@@ -3144,9 +3152,9 @@ namespace Bio
             foreach (Channel c in Channels)
             {
                 c.Min = 0;
-                c.Max = byte.MaxValue;
+                c.Max = 255;
+                c.BitsPerPixel = 8;
             }
-
             Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To24Bit();");
         }
         public void To32Bit()
@@ -3742,11 +3750,8 @@ namespace Bio
             {
                 if (replaceRFilter == null || replaceGFilter == null || replaceBFilter == null)
                 {
-                    if(SizeC > 0)
                     replaceRFilter = new ReplaceChannel(AForge.Imaging.RGB.R, (Bitmap)Buffers[ri + RChannel.Index].Image);
-                    if(SizeC > 1)
                     replaceGFilter = new ReplaceChannel(AForge.Imaging.RGB.G, (Bitmap)Buffers[ri + GChannel.Index].Image);
-                    if(SizeC > 2)
                     replaceBFilter = new ReplaceChannel(AForge.Imaging.RGB.B, (Bitmap)Buffers[ri + BChannel.Index].Image);
                 }
                 replaceRFilter.ChannelImage = (Bitmap)Buffers[ri + RChannel.Index].Image;
@@ -3843,7 +3848,6 @@ namespace Bio
             Tiff image = Tiff.Open(file, "w");
             int stride = b.Buffers[0].Stride;
             int im = 0;
-            
             int sizec = 1;
             if(!b.isRGB)
             {
@@ -4248,8 +4252,8 @@ namespace Bio
                     if (!b.littleEndian)
                         Array.Reverse(bytes);
                     BufferInfo inf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), p);
-                    if(!b.littleEndian)
-                        inf.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    if (!b.littleEndian)
+                        inf.SwitchRedBlue();
                     b.Buffers.Add(inf);
                     Statistics.CalcStatistics(inf);
                     //b.Buffers[b.Buffers.Count - 1].Statistics = Statistics.FromBytes(inf);

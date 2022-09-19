@@ -1112,7 +1112,7 @@ namespace Bio
         private void DrawView(Graphics g)
         {
             g.TranslateTransform(pictureBox.Width / 2, pictureBox.Height / 2);
-            if (scale.Width == 0)
+            if (scale.Width == 0 || float.IsInfinity(scale.Width))
                 scale = new SizeF(0.00001f, 0.00001f);
             g.ScaleTransform(scale.Width, scale.Height);
             g.FillRectangle(Brushes.LightGray, ToScreenRectF(PointD.MinX, PointD.MinY, PointD.MaxX - PointD.MinX, PointD.MaxY - PointD.MinY));
