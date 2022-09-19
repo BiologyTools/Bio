@@ -656,7 +656,7 @@ namespace Bio
             
             for (int i = 0; i < openFilesDialog.FileNames.Length; i++)
             {
-                if(i == 0)
+                if(i == 0 && tabControl.TabPages.Count == 0)
                 {
                     AddTab(BioImage.OpenFile(openFilesDialog.FileNames[0]));
                 }
@@ -672,7 +672,7 @@ namespace Bio
                 return;
             for (int i = 0; i < openFilesDialog.FileNames.Length; i++)
             {
-                if (i == 0)
+                if (i == 0 && tabControl.TabPages.Count == 0)
                 {
                     AddTab(BioImage.OpenFile(openFilesDialog.FileNames[0]));
                 }
