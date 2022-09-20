@@ -444,12 +444,16 @@ namespace Bio
         private void to24BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Image.To24Bit();
+            //We update the viewer gui since there are less planes now.
+            Viewer.InitGUI();
             Viewer.UpdateImages();
         }
 
         private void to48BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Image.To48Bit();
+            //We update the viewer gui since there are less planes now.
+            Viewer.InitGUI();
             Viewer.UpdateImages();
         }
 

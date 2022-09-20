@@ -371,7 +371,10 @@ namespace Bio
         {
             //image = new BioImage(path, 0);
             zBar.Maximum = SelectedImage.SizeZ - 1;
-            cBar.Maximum = SelectedImage.SizeC - 1;
+            if(SelectedImage.Buffers[0].RGBChannelsCount == 3)
+                cBar.Maximum = 0;
+            else
+                cBar.Maximum = SelectedImage.SizeC - 1;
             if (SelectedImage.SizeT > 1)
             {
                 tBar.Maximum = SelectedImage.SizeT - 1;

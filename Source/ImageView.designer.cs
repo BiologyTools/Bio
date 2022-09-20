@@ -48,10 +48,10 @@ namespace Bio
             this.rawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.goToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.goToImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyViewToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.controlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hideControlsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.hideStatusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyViewToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.zPlayMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.playZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopZToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -171,7 +171,7 @@ namespace Bio
             this.copyViewToClipboardToolStripMenuItem,
             this.controlsToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(200, 158);
+            this.contextMenuStrip.Size = new System.Drawing.Size(200, 136);
             // 
             // rOIToolStripMenuItem
             // 
@@ -259,6 +259,13 @@ namespace Bio
             this.goToImageToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.goToImageToolStripMenuItem_DropDownItemClicked);
             this.goToImageToolStripMenuItem.Click += new System.EventHandler(this.goToImageToolStripMenuItem_Click);
             // 
+            // copyViewToClipboardToolStripMenuItem
+            // 
+            this.copyViewToClipboardToolStripMenuItem.Name = "copyViewToClipboardToolStripMenuItem";
+            this.copyViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
+            this.copyViewToClipboardToolStripMenuItem.Text = "Copy View to Clipboard";
+            this.copyViewToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyViewToClipboardToolStripMenuItem_Click);
+            // 
             // controlsToolStripMenuItem
             // 
             this.controlsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -281,13 +288,6 @@ namespace Bio
             this.hideStatusToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.hideStatusToolStripMenuItem.Text = "Hide Status";
             this.hideStatusToolStripMenuItem.Click += new System.EventHandler(this.HideStatusMenuItem_Click);
-            // 
-            // copyViewToClipboardToolStripMenuItem
-            // 
-            this.copyViewToClipboardToolStripMenuItem.Name = "copyViewToClipboardToolStripMenuItem";
-            this.copyViewToClipboardToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.copyViewToClipboardToolStripMenuItem.Text = "Copy View to Clipboard";
-            this.copyViewToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyViewToClipboardToolStripMenuItem_Click);
             // 
             // zPlayMenuStrip
             // 

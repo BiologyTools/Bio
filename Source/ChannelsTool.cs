@@ -182,8 +182,6 @@ namespace Bio
         private bool pressedX2 = false;
         private void ChannelsTool_MouseMove(object sender, MouseEventArgs e)
         {
-            minBox.Value = SelectedChannel.Min;
-            maxBox.Value = SelectedChannel.Max;
             if (e.Button == MouseButtons.XButton1)
             {
                 if (channelsBox.SelectedIndex < channelsBox.Items.Count-1)
