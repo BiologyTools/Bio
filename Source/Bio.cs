@@ -3184,6 +3184,7 @@ namespace Bio
             {
                 Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
                 BufferInfo inf = new BufferInfo(ID, b, Buffers[i].Coordinate, index);
+                inf.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 buffers.Add(inf);
                 Statistics.CalcStatistics(buffers[index]);
                 index++;
@@ -5322,12 +5323,17 @@ namespace Bio
             for (int p = 0; p < pages; p++)
             {
                 byte[] bytes = reader.openBytes(p);
+                if(!b.littleEndian)
                 Array.Reverse(bytes);
                 if (bit48)
                 {
+                    Array.Reverse(bytes);
                     //We convert 48bpp plane to 3 16bpp channels
                     BufferInfo[] bfs = BufferInfo.RGB48To16(file, SizeX, SizeY, stride, bytes, new ZCT(z, c, t), p*3);
-                    b.Buffers.AddRange(bfs);
+                    //Planes are in BGR order.
+                    b.Buffers.Add(bfs[2]);
+                    b.Buffers.Add(bfs[1]);
+                    b.Buffers.Add(bfs[0]);
                     //We add the buffers to thresholding image statistics calculation threads.
                     Statistics.CalcStatistics(bfs[0]);
                     Statistics.CalcStatistics(bfs[1]);
@@ -5336,6 +5342,7 @@ namespace Bio
                 else
                 {
                     BufferInfo bf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(z, c, t), p);
+                    bf.RotateFlip(RotateFlipType.Rotate180FlipNone);
                     b.Buffers.Add(bf);
                     bf.UpdateStatistics();
                     //We add the buffers to thresholding image statistics calculation threads.

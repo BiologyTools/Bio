@@ -674,7 +674,7 @@ namespace Bio
             {
                 if (i == 0 && tabControl.TabPages.Count == 0)
                 {
-                    AddTab(BioImage.OpenFile(openFilesDialog.FileNames[0]));
+                    AddTab(BioImage.OpenOME(openFilesDialog.FileNames[0]));
                 }
                 else
                 App.viewer.AddImage(BioImage.OpenOME(openFilesDialog.FileNames[i]));
