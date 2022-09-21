@@ -89,6 +89,7 @@ namespace Bio
             this.fileSystemWatcher = new System.IO.FileSystemWatcher();
             this.saveTabTiffToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openSeriesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearRecentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -202,7 +203,8 @@ namespace Bio
             this.saveTabTiffToolStripMenuItem,
             this.saveSeriesToolStripMenuItem,
             this.newTabViewToolStripMenuItem,
-            this.nodeViewToolStripMenuItem});
+            this.nodeViewToolStripMenuItem,
+            this.clearRecentToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -551,6 +553,13 @@ namespace Bio
             this.openSeriesToolStripMenuItem.Text = "Open Series";
             this.openSeriesToolStripMenuItem.Click += new System.EventHandler(this.openSeriesToolStripMenuItem_Click_1);
             // 
+            // clearRecentToolStripMenuItem
+            // 
+            this.clearRecentToolStripMenuItem.Name = "clearRecentToolStripMenuItem";
+            this.clearRecentToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.clearRecentToolStripMenuItem.Text = "Clear Recent";
+            this.clearRecentToolStripMenuItem.Click += new System.EventHandler(this.clearRecentToolStripMenuItem_Click);
+            // 
             // TabsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -639,5 +648,6 @@ namespace Bio
         private System.Windows.Forms.ToolStripMenuItem saveTabToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveTabTiffToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openSeriesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem clearRecentToolStripMenuItem;
     }
 }

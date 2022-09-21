@@ -201,8 +201,9 @@ namespace Bio
             foreach (string item in openFilesDialog.FileNames)
             {
                 AddTab(BioImage.OpenFile(item));
+                if (!App.recent.Contains(item))
+                    App.recent.Add(item);
             }
-            App.recent.AddRange(openFilesDialog.FileNames);
             foreach (string item in App.recent)
             {
                 openRecentToolStripMenuItem.DropDownItems.Add(item, null, ItemClicked);
@@ -748,6 +749,12 @@ namespace Bio
         {
             if(App.viewer != null)
             App.viewer.GoToImage();
+        }
+
+        private void clearRecentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Recent = "";
+            Properties.Settings.Default.Save();
         }
     }
 }
