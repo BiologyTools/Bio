@@ -131,8 +131,11 @@ namespace Bio
         }
         public void AddImage(BioImage im)
         {
-            this.Images.Add(im);
+            Images.Add(im);
+            SelectedIndex = Images.Count - 1;
+            InitGUI();
             UpdateImages();
+            GoToImage(Images.Count - 1);
         }
         private bool showControls = true;
         public bool ShowControls
@@ -510,6 +513,8 @@ namespace Bio
         Bitmap bitmap;
         public void UpdateImage()
         {
+            if (Bitmaps.Count == 0)
+                return;
             ZCT coords = new ZCT(zBar.Value, cBar.Value, tBar.Value);
             bitmap = null;
             GC.Collect();
@@ -536,7 +541,10 @@ namespace Bio
             }
             if (bitmap.PixelFormat == PixelFormat.Format16bppGrayScale || bitmap.PixelFormat == PixelFormat.Format48bppRgb)
                 bitmap = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)bitmap);
-            Bitmaps[SelectedIndex] = bitmap;
+            if (SelectedIndex < Bitmaps.Count)
+                Bitmaps[SelectedIndex] = bitmap;
+            else
+                Bitmaps.Add(bitmap);
         }
         private void channelBoxR_SelectedIndexChanged(object sender, EventArgs e)
         {
