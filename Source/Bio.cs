@@ -1741,7 +1741,7 @@ namespace Bio
         public void SwitchRedBlue()
         {
             if (PixelFormat == PixelFormat.Format8bppIndexed || PixelFormat == PixelFormat.Format16bppGrayScale)
-                throw new ArgumentException("Can't switch Red & Blue in non RGB image");
+                return;
             //BufferInfo bf = new BufferInfo(SizeX, SizeY,PixelFormat, bytes, Coordinate, ID);
             if(PixelFormat == PixelFormat.Format24bppRgb)
             for (int y = 0; y < SizeY; y++)
@@ -1785,17 +1785,32 @@ namespace Bio
         public byte[] GetSaveBytes(bool littleEndian)
         {
             Bitmap bitmap = (Bitmap)Image.Clone();
-            if(RGBChannelsCount > 1)
-            bitmap = SwitchRedBlue(bitmap);
-            if(littleEndian)
+            if (RGBChannelsCount == 3)
+            {
+                bitmap = SwitchRedBlue(bitmap);
+            }
+            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat);
+            IntPtr ptr = data.Scan0;
+            int length = this.bytes.Length;
+            byte[] bytes = new byte[length];
+            Marshal.Copy(ptr, bytes, 0, length);
+            if(!littleEndian)
+            Array.Reverse(bytes);
+            bitmap.UnlockBits(data);
+            bitmap.Dispose();
+            return bytes;
+        }
+        public byte[] GetSaveBytesOME(bool littleEndian)
+        {
+            Bitmap bitmap = (Bitmap)Image.Clone();
             bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat);
             IntPtr ptr = data.Scan0;
             int length = this.bytes.Length;
             byte[] bytes = new byte[length];
             Marshal.Copy(ptr, bytes, 0, length);
-            if(littleEndian)
-            Array.Reverse(bytes);
+            if (littleEndian)
+                Array.Reverse(bytes);
             bitmap.UnlockBits(data);
             bitmap.Dispose();
             return bytes;
@@ -3133,12 +3148,12 @@ namespace Bio
             }
 
             bitsPerPixel = 8;
-            if (Buffers[0].PixelFormat == PixelFormat.Format24bppRgb)
+            foreach (Channel ch in Channels)
             {
-                foreach (Channel ch in Channels)
-                {
-                    ch.BitsPerPixel = 8;
-                }
+                ch.BitsPerPixel = 8;
+            }
+            if (Buffers[0].PixelFormat == PixelFormat.Format24bppRgb)
+            {               
                 for (int i = 0; i < buffers.Count; i++)
                 {
                     Coords[z, c, t] = i;
@@ -3222,6 +3237,10 @@ namespace Bio
                 Buffers.Clear();
                 Buffers.AddRange(buffers);
             }
+            foreach (Channel ch in Channels)
+            {
+                ch.BitsPerPixel = 16;
+            }
             bitsPerPixel = 16;
             AutoThreshold(this, true);
             Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To16Bit();");
@@ -3235,6 +3254,11 @@ namespace Bio
                 {
                     Buffers[i].To8Bit();
                 }
+                bitsPerPixel = 8;
+                foreach (Channel ch in Channels)
+                {
+                    ch.BitsPerPixel = 8;
+                }
                 AutoThreshold(this, true);
                 return;
             }
@@ -3244,16 +3268,10 @@ namespace Bio
                 {
                     Buffers[i].Image = BufferInfo.To24Bit((Bitmap)Buffers[i].Image);
                 }
-                AutoThreshold(this, true);
-                return;
-            }
-            if (Buffers[0].PixelFormat == PixelFormat.Format16bppGrayScale)
-            {
-                for (int i = 0; i < Buffers.Count; i++)
+                bitsPerPixel = 8;
+                foreach (Channel ch in Channels)
                 {
-                    Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
-                    Buffers[i].Image = b;
-                    Buffers[i].To8Bit();
+                    ch.BitsPerPixel = 8;
                 }
                 AutoThreshold(this, true);
                 return;
@@ -3264,13 +3282,15 @@ namespace Bio
             for (int i = 0; i < Buffers.Count; i+=3)
             {
                 Bitmap b = GetRGBBitmap(i, RChannel.range, GChannel.range, BChannel.range);
+                if(bitsPerPixel > 8)
+                b = AForge.Imaging.Image.Convert16bppTo8bpp(b);
                 BufferInfo inf = new BufferInfo(ID, b, Buffers[i].Coordinate, index);
                 inf.SwitchRedBlue();
                 inf.RotateFlip(RotateFlipType.Rotate180FlipNone);
                 buffers.Add(inf);
                 index++;
             }
-            bitsPerPixel = 8;
+            
             int z = 0;
             int t = 0;
             for (int i = 0; i < buffers.Count; i++)
@@ -3287,6 +3307,11 @@ namespace Bio
                     else
                         t = 0;
                 }
+            }
+            bitsPerPixel = 8;
+            foreach (Channel ch in Channels)
+            {
+                ch.BitsPerPixel = 8;
             }
             Buffers.Clear();
             Buffers.AddRange(buffers);
@@ -3973,98 +3998,9 @@ namespace Bio
         }
         public static void SaveFile(string file, string ID)
         {
-            Progress pr = new Progress(file, "Saving");
-            pr.Show();
-            BioImage b = Images.GetImage(ID);
-            string fn = Path.GetFileNameWithoutExtension(file);
-            string dir = Path.GetDirectoryName(file);
-            //Save ROIs to CSV file.
-            if (b.Annotations.Count > 0)
-            {
-                string f = dir + "//" + fn + ".csv";
-                ExportROIsCSV(f, b.Annotations);
-            }
-            ImageJDesc j = new ImageJDesc();
-            j.FromImage(b);
-            string desc = j.GetString();
-            //Embed ROI's to image description.
-            for (int i = 0; i < b.Annotations.Count; i++)
-            {
-                desc += "-ROI:" + b.series + ":" + ROIToString(b.Annotations[i]) + NewLine;
-            }
-            foreach (Channel c in b.Channels)
-            {
-                string cj = JsonConvert.SerializeObject(c.info, Formatting.None);
-                desc += "-Channel:" + b.series + ":" + cj + NewLine;
-            }
-            string json = JsonConvert.SerializeObject(b.imageInfo, Formatting.None);
-            desc += "-ImageInfo:" + b.series + ":" + json + NewLine;
-
-            Tiff image = Tiff.Open(file, "w");
-            int stride = b.Buffers[0].Stride;
-            int im = 0;
-            int sizec = 1;
-            if(!b.isRGB)
-            {
-                sizec = b.SizeC;
-            }
-            byte[] buffer;
-            for (int c = 0; c < sizec; c++)
-            {
-                for (int z = 0; z < b.SizeZ; z++)
-                {
-                    for (int t = 0; t < b.SizeT; t++)
-                    {
-                        image.SetDirectory((short)im);
-                        image.SetField(TiffTag.IMAGEWIDTH, b.SizeX);
-                        image.SetField(TiffTag.IMAGEDESCRIPTION, desc);
-                        image.SetField(TiffTag.IMAGELENGTH, b.SizeY);
-                        image.SetField(TiffTag.BITSPERSAMPLE, b.bitsPerPixel);
-                        image.SetField(TiffTag.SAMPLESPERPIXEL, b.RGBChannelCount);
-                        image.SetField(TiffTag.ROWSPERSTRIP, b.SizeY);
-                        /*
-                        if (im % 2 == 0)
-                            image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISBLACK);
-                        else
-                            image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISWHITE);
-                        */
-                        image.SetField(TiffTag.ORIENTATION, BitMiracle.LibTiff.Classic.Orientation.TOPLEFT);
-                        image.SetField(TiffTag.PLANARCONFIG, PlanarConfig.CONTIG);
-                        image.SetField(TiffTag.ROWSPERSTRIP, image.DefaultStripSize(0));
-                        if (b.physicalSizeX != -1 && b.physicalSizeY != -1)
-                        {
-                            image.SetField(TiffTag.XRESOLUTION, (b.physicalSizeX * b.SizeX) / ((b.physicalSizeX * b.SizeX) * b.physicalSizeX));
-                            image.SetField(TiffTag.YRESOLUTION, (b.physicalSizeY * b.SizeY) / ((b.physicalSizeY * b.SizeY) * b.physicalSizeY));
-                            image.SetField(TiffTag.RESOLUTIONUNIT, ResUnit.NONE);
-                        }
-                        else
-                        {
-                            image.SetField(TiffTag.XRESOLUTION, 100.0);
-                            image.SetField(TiffTag.YRESOLUTION, 100.0);
-                            image.SetField(TiffTag.RESOLUTIONUNIT, ResUnit.INCH);
-                        }
-                        // specify that it's a page within the multipage file
-                        image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
-                        // specify the page number
-                        buffer = b.Buffers[im].GetSaveBytes(true);
-                        image.SetField(TiffTag.PAGENUMBER, c, b.Buffers.Count);
-                        for (int i = 0, offset = 0; i < b.SizeY; i++)
-                        {
-                            image.WriteScanline(buffer, offset, i, 0);
-                            offset += stride;
-                        }
-                        image.WriteDirectory();
-                        pr.UpdateProgressF((float)im / (float)b.ImageCount);
-                        Application.DoEvents();
-                        im++;
-                    }
-                }
-            }
-            //buffer = null;
-            image.Close();
-            image.Dispose();
-            Recorder.AddLine("Bio.BioImage.Save(" + '"' + file + '"' + "," + '"' + ID + '"' + ");");
-            pr.Close();
+            string[] sts = new string[1];
+            sts[0] = file;
+            SaveSeries(sts, ID);
         }
         public static void SaveSeries(string[] files, string ID)
         {
@@ -4147,10 +4083,13 @@ namespace Bio
                                 image.SetField(TiffTag.YRESOLUTION, 100.0);
                                 image.SetField(TiffTag.RESOLUTIONUNIT, ResUnit.INCH);
                             }
+
+                            image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISBLACK);
+
                             // specify that it's a page within the multipage file
                             image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                             // specify the page number
-                            buffer = b.Buffers[im].GetSaveBytes(true);
+                            buffer = b.Buffers[im].GetSaveBytesOME(true);
                             image.SetField(TiffTag.PAGENUMBER, c + (b.Buffers.Count * fi), b.Buffers.Count * files.Length);
                             for (int i = 0, offset = 0; i < b.SizeY; i++)
                             {
@@ -4233,7 +4172,7 @@ namespace Bio
                 int SizeX = image.GetField(TiffTag.IMAGEWIDTH)[0].ToInt();
                 int SizeY = image.GetField(TiffTag.IMAGELENGTH)[0].ToInt();
                 b.bitsPerPixel = image.GetField(TiffTag.BITSPERSAMPLE)[0].ToInt();
-                b.littleEndian = image.IsBigEndian();   
+                b.littleEndian = !image.IsBigEndian();   
                 int RGBChannelCount = image.GetField(TiffTag.SAMPLESPERPIXEL)[0].ToInt();
                 string desc = "";
 
@@ -4502,10 +4441,10 @@ namespace Bio
             loci.formats.meta.IMetadata omexml = service.createOMEXMLMetadata();
             omexml.setImageID("Image:0", series);
             omexml.setPixelsID("Pixels:0", series);
-            if (!BitConverter.IsLittleEndian)
-                omexml.setPixelsBinDataBigEndian(java.lang.Boolean.TRUE, serie, 0);
-            else
+            if (b.littleEndian)
                 omexml.setPixelsBinDataBigEndian(java.lang.Boolean.FALSE, serie, 0);
+            else
+                omexml.setPixelsBinDataBigEndian(java.lang.Boolean.TRUE, serie, 0);
             omexml.setPixelsDimensionOrder(ome.xml.model.enums.DimensionOrder.XYCZT, series);
             if (b.bitsPerPixel > 8)
                 omexml.setPixelsType(ome.xml.model.enums.PixelType.UINT16, series);
@@ -4514,12 +4453,9 @@ namespace Bio
             omexml.setPixelsSizeX(new PositiveInteger(java.lang.Integer.valueOf(b.SizeX)), series);
             omexml.setPixelsSizeY(new PositiveInteger(java.lang.Integer.valueOf(b.SizeY)), series);
             omexml.setPixelsSizeZ(new PositiveInteger(java.lang.Integer.valueOf(b.SizeZ)), series);
-            int samples = 1;
-            if (b.isRGB)
-                samples = 3;
-            omexml.setPixelsSizeC(new PositiveInteger(java.lang.Integer.valueOf(b.SizeC * samples)), series);
+            omexml.setPixelsSizeC(new PositiveInteger(java.lang.Integer.valueOf(b.sizeC)), series);
             omexml.setPixelsSizeT(new PositiveInteger(java.lang.Integer.valueOf(b.SizeT)), series);
-
+            
             
             ome.units.quantity.Length px = new ome.units.quantity.Length(java.lang.Double.valueOf(b.physicalSizeX), ome.units.UNITS.MICROMETER);
             omexml.setPixelsPhysicalSizeX(px, series);
@@ -4540,7 +4476,7 @@ namespace Bio
             {
                 Channel c = b.Channels[channel];
                 omexml.setChannelID("Channel:" + channel + ":" + series, series, channel);
-                omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(samples)), series, channel);
+                omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(1)), series, channel);
                 if (c.Name != "")
                     omexml.setChannelName(c.Name, series, channel);
                 if (c.Color != null)
@@ -4762,16 +4698,16 @@ namespace Bio
                 File.Delete(file);
             writer.setSeries(serie);
             writer.setId(file);
-            for (int bu = 0; bu < b.Buffers.Count; bu++)
-            {
-                writer.saveBytes(bu,b.Buffers[bu].GetSaveBytes(true));
-                pr.UpdateProgressF((float)bu / b.Buffers.Count);
-            }
+            //We just save the first frame to add xml metadata to file.
 
+            writer.saveBytes(0,b.Buffers[0].GetSaveBytesOME(b.littleEndian));
+            pr.UpdateProgressF((float)0 / b.Buffers.Count);
             pr.Close();
             pr.Dispose();
             writer.close();
+
             Recorder.AddLine("Bio.BioImage.SaveOME(" + '"' + file + '"'+ ");");
+
             return b;
         }
         public static void SaveOMESeries(string[] files, string f)
@@ -4783,23 +4719,22 @@ namespace Bio
                 string file = files[fi];
                 BioImage b = Images.GetImage(file);
                 // create OME-XML metadata store
-                
+                loci.formats.MetadataTools.populateMetadata(omexml, 0, f, b.littleEndian, "XYCZT", "UINT16", b.SizeX, b.SizeY, b.SizeZ, b.SizeC, b.SizeT, 3);
+
                 omexml.setImageID("Image:" + serie, serie);
                 omexml.setPixelsID("Pixels:" + serie, serie);
                 omexml.setPixelsDimensionOrder(ome.xml.model.enums.DimensionOrder.XYCZT, serie);
                 if (b.bitsPerPixel > 8)
                     omexml.setPixelsType(ome.xml.model.enums.PixelType.UINT16, serie);
                 else
-                    omexml.setPixelsType(ome.xml.model.enums.PixelType.UINT8, serie);
+                    omexml.setPixelsType(ome.xml.model.enums.PixelType.INT8, serie);
+
                 omexml.setPixelsSizeX(new PositiveInteger(java.lang.Integer.valueOf(b.SizeX)), serie);
                 omexml.setPixelsSizeY(new PositiveInteger(java.lang.Integer.valueOf(b.SizeY)), serie);
                 omexml.setPixelsSizeZ(new PositiveInteger(java.lang.Integer.valueOf(b.SizeZ)), serie);
-                int samples = 1;
-                if (b.isRGB)
-                    samples = 3;
-                omexml.setPixelsSizeC(new PositiveInteger(java.lang.Integer.valueOf(b.SizeC * samples)), serie);
+                omexml.setPixelsSizeC(new PositiveInteger(java.lang.Integer.valueOf(b.SizeC)), serie);
                 omexml.setPixelsSizeT(new PositiveInteger(java.lang.Integer.valueOf(b.SizeT)), serie);
-                if (!BitConverter.IsLittleEndian)
+                if (b.littleEndian)
                     omexml.setPixelsBinDataBigEndian(java.lang.Boolean.TRUE, serie, 0);
                 else
                     omexml.setPixelsBinDataBigEndian(java.lang.Boolean.FALSE, serie, 0);
@@ -4821,7 +4756,7 @@ namespace Bio
                 {
                     Channel c = b.Channels[channel];
                     omexml.setChannelID("Channel:" + channel + ":" + serie, serie, channel);
-                    omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(samples)), serie, channel);
+                    omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(1)), serie, channel);
                     if (c.Name != "")
                         omexml.setChannelName(c.Name, serie, channel);
                     if (c.Color != null)
@@ -5050,7 +4985,8 @@ namespace Bio
                 writer.setSeries(i);
                 for (int bu = 0; bu < b.Buffers.Count; bu++)
                 {
-                    writer.saveBytes(bu, b.Buffers[bu].GetSaveBytes(true));
+                    byte[] bts = b.Buffers[bu].GetSaveBytesOME(b.littleEndian);
+                    writer.saveBytes(0, bts, 0, 0, b.SizeX, b.SizeY);
                     pr.UpdateProgressF((float)bu / b.Buffers.Count);
                 }
                 pr.Close();
