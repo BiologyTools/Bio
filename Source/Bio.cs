@@ -1785,24 +1785,6 @@ namespace Bio
         public byte[] GetSaveBytes(bool littleEndian)
         {
             Bitmap bitmap = (Bitmap)Image.Clone();
-            if (RGBChannelsCount == 3)
-            {
-                bitmap = SwitchRedBlue(bitmap);
-            }
-            BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat);
-            IntPtr ptr = data.Scan0;
-            int length = this.bytes.Length;
-            byte[] bytes = new byte[length];
-            Marshal.Copy(ptr, bytes, 0, length);
-            if(!littleEndian)
-            Array.Reverse(bytes);
-            bitmap.UnlockBits(data);
-            bitmap.Dispose();
-            return bytes;
-        }
-        public byte[] GetSaveBytesOME(bool littleEndian)
-        {
-            Bitmap bitmap = (Bitmap)Image.Clone();
             bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat);
             IntPtr ptr = data.Scan0;
@@ -4089,7 +4071,7 @@ namespace Bio
                             // specify that it's a page within the multipage file
                             image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                             // specify the page number
-                            buffer = b.Buffers[im].GetSaveBytesOME(true);
+                            buffer = b.Buffers[im].GetSaveBytes(true);
                             image.SetField(TiffTag.PAGENUMBER, c + (b.Buffers.Count * fi), b.Buffers.Count * files.Length);
                             for (int i = 0, offset = 0; i < b.SizeY; i++)
                             {
@@ -4700,7 +4682,7 @@ namespace Bio
             writer.setId(file);
             //We just save the first frame to add xml metadata to file.
 
-            writer.saveBytes(0,b.Buffers[0].GetSaveBytesOME(b.littleEndian));
+            writer.saveBytes(0,b.Buffers[0].GetSaveBytes(b.littleEndian));
             pr.UpdateProgressF((float)0 / b.Buffers.Count);
             pr.Close();
             pr.Dispose();
@@ -4985,7 +4967,7 @@ namespace Bio
                 writer.setSeries(i);
                 for (int bu = 0; bu < b.Buffers.Count; bu++)
                 {
-                    byte[] bts = b.Buffers[bu].GetSaveBytesOME(b.littleEndian);
+                    byte[] bts = b.Buffers[bu].GetSaveBytes(b.littleEndian);
                     writer.saveBytes(0, bts, 0, 0, b.SizeX, b.SizeY);
                     pr.UpdateProgressF((float)bu / b.Buffers.Count);
                 }
