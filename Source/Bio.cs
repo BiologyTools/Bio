@@ -1767,8 +1767,6 @@ namespace Bio
         public byte[] GetSaveBytes(bool littleEndian)
         {
             Bitmap bitmap = (Bitmap)Image.Clone();
-            if(RGBChannelsCount > 1)
-            bitmap = SwitchRedBlue(bitmap);
             if(littleEndian)
             bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat);
@@ -4499,7 +4497,7 @@ namespace Bio
             {
                 Channel c = b.Channels[channel];
                 omexml.setChannelID("Channel:" + channel + ":" + series, series, channel);
-                omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(samples)), series, channel);
+                omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(1)), series, channel);
                 if (c.Name != "")
                     omexml.setChannelName(c.Name, series, channel);
                 if (c.Color != null)
@@ -4780,7 +4778,7 @@ namespace Bio
                 {
                     Channel c = b.Channels[channel];
                     omexml.setChannelID("Channel:" + channel + ":" + serie, serie, channel);
-                    omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(samples)), serie, channel);
+                    omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(1)), serie, channel);
                     if (c.Name != "")
                         omexml.setChannelName(c.Name, serie, channel);
                     if (c.Color != null)
