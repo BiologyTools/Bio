@@ -305,7 +305,6 @@ namespace Bio
             set
             {
                 origin = value;
-                App.viewer.UpdateView();
             }
         }
 
@@ -1708,18 +1707,22 @@ namespace Bio
             if (e.KeyCode == Keys.W || e.KeyCode == Keys.NumPad8)
             {
                 Origin = new PointD(Origin.X, Origin.Y + moveAmount);
+                UpdateView();
             }
             if (e.KeyCode == Keys.S || e.KeyCode == Keys.NumPad2)
             {
                 Origin = new PointD(Origin.X, Origin.Y - moveAmount);
+                UpdateView();
             }
             if (e.KeyCode == Keys.A || e.KeyCode == Keys.NumPad4)
             {
                 Origin = new PointD(Origin.X + moveAmount, Origin.Y);
+                UpdateView();
             }
             if (e.KeyCode == Keys.D || e.KeyCode == Keys.NumPad6)
             {
                 Origin = new PointD(Origin.X - moveAmount, Origin.Y);
+                UpdateView();
             }
         }
 

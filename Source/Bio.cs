@@ -3285,6 +3285,13 @@ namespace Bio
             AutoThreshold(this, true);
             Recorder.AddLine("Bio.Table.GetImage(" + '"' + ID + '"' + ")" + "." + "To48Bit();");
         }
+        public void RotateFlip(RotateFlipType rot)
+        {
+            for (int i = 0; i < Buffers.Count; i++)
+            {
+                Buffers[i].RotateFlip(rot);
+            }
+        }
         public void Bake(int rmin, int rmax, int gmin, int gmax, int bmin, int bmax)
         {
             Bake(new IntRange(rmin, rmax), new IntRange(gmin, gmax), new IntRange(bmin, bmax));
