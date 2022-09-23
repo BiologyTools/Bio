@@ -371,7 +371,6 @@ namespace Bio
         }
         public void InitGUI()
         {
-            //image = new BioImage(path, 0);
             zBar.Maximum = SelectedImage.SizeZ - 1;
             if(SelectedImage.Buffers[0].RGBChannelsCount == 3)
                 cBar.Maximum = 0;
@@ -517,6 +516,13 @@ namespace Bio
             ZCT coords = new ZCT(zBar.Value, cBar.Value, tBar.Value);
             bitmap = null;
             GC.Collect();
+            if (zBar.Maximum != SelectedImage.SizeZ - 1 || cBar.Maximum != SelectedImage.SizeC - 1 || tBar.Maximum != SelectedImage.SizeT - 1)
+            {
+                zBar.Value = 0;
+                cBar.Value = 0;
+                tBar.Value = 0;
+                InitGUI();
+            }
             int index = SelectedImage.Coords[zBar.Value, cBar.Value, tBar.Value];
             if (Mode == ViewMode.Filtered)
             {
@@ -1153,6 +1159,7 @@ namespace Bio
                 return;
             selectedImage = SelectedImage;
             PointD p = ToViewSpace(e.Location.X,e.Location.Y);
+            Point ip = SelectedImage.ToImageSpace(p);
             mousePoint = "(" + p.X + ", " + p.Y + ")";
             if (Mode != ViewMode.RGBImage)
             {
@@ -1252,7 +1259,7 @@ namespace Bio
                         ZCT co = SelectedImage.Coordinate;
                         if (b.RGBChannelCount > 1)
                         {
-                            ZCTXY cor = new ZCTXY(co.Z, co.C, co.T, (int)p.X, (int)p.Y);
+                            ZCTXY cor = new ZCTXY(co.Z, co.C, co.T, ip.X, ip.Y);
                             Tools.Tool tool = Tools.currentTool;
                             if (Tools.rEnabled)
                                 b.SetValueRGB(cor, 0, tool.Color.R);
@@ -1265,15 +1272,15 @@ namespace Bio
                         if (Mode == ViewMode.RGBImage)
                         {
                             if (Tools.rEnabled)
-                                SelectedImage.SetValue((int)p.X, (int)p.Y, RChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
+                                SelectedImage.SetValue(ip.X, ip.Y, RChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
                             if (Tools.gEnabled)
-                                SelectedImage.SetValue((int)p.X, (int)p.Y, GChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.G);
+                                SelectedImage.SetValue(ip.X,ip.Y, GChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.G);
                             if (Tools.bEnabled)
-                                SelectedImage.SetValue((int)p.X, (int)p.Y, BChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.B);
+                                SelectedImage.SetValue(ip.X, ip.Y, BChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.B);
                         }
                         else
                         {
-                            SelectedImage.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
+                            SelectedImage.SetValue(ip.X, ip.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
                         }
                         UpdateView();
                     }
@@ -1282,11 +1289,11 @@ namespace Bio
                     {
                         if (SelectedImage.RGBChannelCount > 1)
                         {
-                            SelectedImage.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
+                            SelectedImage.SetValue(ip.X, ip.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
                         }
                         else
                         {
-                            SelectedImage.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
+                            SelectedImage.SetValue(ip.X, ip.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
                         }
                         UpdateView();
                     }
@@ -1295,11 +1302,11 @@ namespace Bio
                     {
                         if (SelectedImage.RGBChannelCount > 1)
                         {
-                            SelectedImage.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
+                            SelectedImage.SetValue(ip.X, ip.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
                         }
                         else
                         {
-                            SelectedImage.SetValue((int)p.X, (int)p.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
+                            SelectedImage.SetValue(ip.X, ip.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
                         }
                         UpdateView();
                     }
@@ -1336,6 +1343,7 @@ namespace Bio
             mouseDownButtons = e.Button;
             mouseUpButtons = MouseButtons.None;
             PointD p = ToViewSpace(e.Location.X, e.Location.Y);
+            Point ip = SelectedImage.ToImageSpace(p);
             pd = new PointD(p.X,p.Y);
             mouseDown = pd;
             down = true;
@@ -1391,30 +1399,30 @@ namespace Bio
             if (e.Button == MouseButtons.Left)
             {
                 Point s = new Point(SelectedImage.SizeX, SelectedImage.SizeY);
-                if ((p.X < s.X && p.Y < s.Y) || (p.X >= 0 && p.Y >= 0))
+                if ((ip.X < s.X && ip.Y < s.Y) || (ip.X >= 0 && ip.Y >= 0))
                 {
                     int zc = SelectedImage.Coordinate.Z;
                     int cc = SelectedImage.Coordinate.C;
                     int tc = SelectedImage.Coordinate.T;
                     if (Mode == ViewMode.RGBImage)
                     {
-                        int r = SelectedImage.GetValueRGB(zc, RChannel.Index, tc, (int)p.X, (int)p.Y, 0);
-                        int g = SelectedImage.GetValueRGB(zc, GChannel.Index, tc, (int)p.X, (int)p.Y, 1);
-                        int b = SelectedImage.GetValueRGB(zc, BChannel.Index, tc, (int)p.X, (int)p.Y, 2);
+                        int r = SelectedImage.GetValueRGB(zc, RChannel.Index, tc, ip.X, ip.Y, 0);
+                        int g = SelectedImage.GetValueRGB(zc, GChannel.Index, tc, ip.X, ip.Y, 1);
+                        int b = SelectedImage.GetValueRGB(zc, BChannel.Index, tc, ip.X, ip.Y, 2);
                         mouseColor = ", " + r + "," + g + "," + b;
                     }
                     else
                     {
                         if (SelectedImage.isRGB)
                         {
-                            int r = SelectedImage.GetValueRGB(zc, RChannel.Index, tc, (int)p.X, (int)p.Y, 0);
-                            int g = SelectedImage.GetValueRGB(zc, GChannel.Index, tc, (int)p.X, (int)p.Y, 1);
-                            int b = SelectedImage.GetValueRGB(zc, BChannel.Index, tc, (int)p.X, (int)p.Y, 2);
+                            int r = SelectedImage.GetValueRGB(zc, RChannel.Index, tc, ip.X, ip.Y, 0);
+                            int g = SelectedImage.GetValueRGB(zc, GChannel.Index, tc, ip.X, ip.Y, 1);
+                            int b = SelectedImage.GetValueRGB(zc, BChannel.Index, tc, ip.X, ip.Y, 2);
                             mouseColor = ", " + r + "," + g + "," + b;
                         }
                         else
                         {
-                            int r = SelectedImage.GetValueRGB(zc, 0, tc, (int)p.X, (int)p.Y, 0);
+                            int r = SelectedImage.GetValueRGB(zc, 0, tc, ip.X, ip.Y, 0);
                             mouseColor = ", " + r;
                         }
                     }

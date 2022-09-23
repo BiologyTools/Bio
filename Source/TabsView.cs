@@ -756,5 +756,27 @@ namespace Bio
             Properties.Settings.Default.Recent = "";
             Properties.Settings.Default.Save();
         }
+
+        private void rotateToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+            if (ImageView.SelectedImage == null)
+                return;
+            string st = e.ClickedItem.Text;
+            RotateFlipType rot = (RotateFlipType)Enum.Parse(typeof(RotateFlipType), st);
+            ImageView.SelectedImage.RotateFlip(rot);
+            ImageView.UpdateImage();
+            ImageView.UpdateView();
+        }
+
+        private void rotateToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            if (rotateToolStripMenuItem.DropDownItems.Count > 0)
+                return;
+            string[] sts = Enum.GetNames(typeof(RotateFlipType));
+            foreach (string item in sts)
+            {
+                rotateToolStripMenuItem.DropDownItems.Add(item);
+            }
+        }
     }
 }
