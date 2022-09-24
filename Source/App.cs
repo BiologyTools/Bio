@@ -63,6 +63,7 @@ namespace Bio
                 if (file.ShowDialog() != DialogResult.OK)
                     return;
                 Properties.Settings.Default.ImageJPath = file.FileName;
+                Properties.Settings.Default.Save();
                 file.Dispose();
             }
             ImageJ.Initialize(Properties.Settings.Default.ImageJPath);

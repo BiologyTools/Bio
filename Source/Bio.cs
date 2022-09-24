@@ -230,12 +230,16 @@ namespace Bio
         {
             return new System.Drawing.Rectangle((int)X, (int)Y, (int)W, (int)H);
         }
-        public bool IntersectsWith(PointD p)
+        public bool IntersectsWith(RectangleD p)
         {
-            if (X <= p.X && (X + W) >= p.X && Y <= p.Y && (Y + H) >= p.Y)
+            if (IntersectsWith(p.X, p.Y) || IntersectsWith(p.X + p.W, p.Y) || IntersectsWith(p.X, p.Y + p.H) || IntersectsWith(p.X + p.W, p.Y + p.H))
                 return true;
             else
                 return false;
+        }
+        public bool IntersectsWith(PointD p)
+        {
+            return IntersectsWith(p.X, p.Y);
         }
         public bool IntersectsWith(double x, double y)
         {
@@ -3985,7 +3989,7 @@ namespace Bio
             //Embed ROI's to image description.
             for (int i = 0; i < b.Annotations.Count; i++)
             {
-                desc += "-ROI:" + b.series + ":" + ROIToString(b.Annotations[i]) + NewLine;
+                desc += "-ROI:" + b.series + ":" + ROIToString(b.Annotations[i]);
             }
             foreach (Channel c in b.Channels)
             {
@@ -4599,7 +4603,7 @@ namespace Bio
                     else
                         omexml.setPointText(i.ToString(), i, series);
                     ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                    b.meta.setPointFontSize(fl, i, series);
+                    omexml.setPointFontSize(fl, i, series);
                     ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                     omexml.setPointStrokeColor(col, i, series);
                     ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
@@ -4866,7 +4870,7 @@ namespace Bio
                     omexml.setROIName(an.roiName, i);
                     if (an.type == ROI.Type.Point)
                     {
-                        if (an.id == "")
+                        if (an.id != "")
                             omexml.setPointID(an.id, i, serie);
                         else
                             omexml.setPointID("Shape:" + i + ":" + serie, i, serie);
@@ -4880,7 +4884,7 @@ namespace Bio
                         else
                             omexml.setPointText(i.ToString(), i, serie);
                         ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        b.meta.setPointFontSize(fl, i, serie);
+                        omexml.setPointFontSize(fl, i, serie);
                         ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
                         omexml.setPointStrokeColor(col, i, serie);
                         ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
@@ -4891,7 +4895,7 @@ namespace Bio
                     else
                     if (an.type == ROI.Type.Polygon || an.type == ROI.Type.Freeform)
                     {
-                        if (an.id == "")
+                        if (an.id != "")
                             omexml.setPolygonID(an.id, i, serie);
                         else
                             omexml.setPolygonID("Shape:" + i + ":" + serie, i, serie);
@@ -4943,7 +4947,7 @@ namespace Bio
                     else
                     if (an.type == ROI.Type.Line)
                     {
-                        if (an.id == "")
+                        if (an.id != "")
                             omexml.setLineID(an.id, i, serie);
                         else
                             omexml.setLineID("Shape:" + i + ":" + serie, i, serie);
@@ -4971,7 +4975,7 @@ namespace Bio
                     if (an.type == ROI.Type.Ellipse)
                     {
 
-                        if (an.id == "")
+                        if (an.id != "")
                             omexml.setEllipseID(an.id, i, serie);
                         else
                             omexml.setEllipseID("Shape:" + i + ":" + serie, i, serie);
@@ -5080,6 +5084,7 @@ namespace Bio
             b.id = file;
             int SizeX = reader.getSizeX();
             int SizeY = reader.getSizeY();
+            int SizeZ = reader.getSizeY();
             b.sizeC = reader.getSizeC();
             b.sizeZ = reader.getSizeZ();
             b.sizeT = reader.getSizeT();
@@ -5187,7 +5192,54 @@ namespace Bio
                 }
                 b.Channels.Add(ch);
             }
+            try
+            {
+                bool hasPhysical = false;
+                if (b.meta.getPixelsPhysicalSizeX(b.series) != null)
+                {
+                    b.physicalSizeX = b.meta.getPixelsPhysicalSizeX(b.series).value().doubleValue();
+                    hasPhysical = true;
+                }
+                if (b.meta.getPixelsPhysicalSizeY(b.series) != null)
+                {
+                    b.physicalSizeY = b.meta.getPixelsPhysicalSizeY(b.series).value().doubleValue();
+                }
+                if (b.meta.getPixelsPhysicalSizeZ(b.series) != null)
+                {
+                    b.physicalSizeZ = b.meta.getPixelsPhysicalSizeZ(b.series).value().doubleValue();
+                }
+                else
+                {
+                    b.physicalSizeZ = 1;
+                }
+                if (b.meta.getStageLabelX(b.series) != null)
+                    b.stageSizeX = b.meta.getStageLabelX(b.series).value().doubleValue();
+                if (b.meta.getStageLabelY(b.series) != null)
+                    b.stageSizeY = b.meta.getStageLabelY(b.series).value().doubleValue();
+                if (b.meta.getStageLabelZ(b.series) != null)
+                    b.stageSizeZ = b.meta.getStageLabelZ(b.series).value().doubleValue();
+                else
+                    b.stageSizeZ = 1;
+                if (!hasPhysical)
+                {
+                    b.physicalSizeX = b.stageSizeX / b.SizeX;
+                    b.physicalSizeY = b.stageSizeX / b.SizeX;
+                    b.physicalSizeZ = b.stageSizeX / b.SizeX;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
+            try
+            {
+                b.Volume = new VolumeD(new Point3D(b.stageSizeX, b.stageSizeY, b.stageSizeZ), new Point3D(b.physicalSizeX * SizeX, b.physicalSizeY * SizeY, b.physicalSizeZ * SizeZ));
+            }
+            catch (Exception)
+            {
+                //Volume is used only for stage coordinates if error is thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
+            }
             int rc = b.meta.getROICount();
             for (int i = 0; i < rc; i++)
             {
@@ -5203,8 +5255,6 @@ namespace Bio
                 {
                     Console.WriteLine(e.Message.ToString());
                 }
-
-
                 for (int sc = 0; sc < scount; sc++)
                 {
                     string type = b.meta.getShapeType(i, sc);
@@ -5454,6 +5504,7 @@ namespace Bio
                         an.AddPoint(new PointD(b.meta.getLabelX(i, sc).doubleValue(), b.meta.getLabelY(i, sc).doubleValue()));
                         an.Text = b.meta.getLabelText(i, sc);
                     }
+                    if (b.Volume.Intersects(an.BoundingBox))
                     b.Annotations.Add(an);
                 }
             }
@@ -5544,54 +5595,7 @@ namespace Bio
                 }
             }
 
-            try
-            {
-                bool hasPhysical = false;
-                if (b.meta.getPixelsPhysicalSizeX(b.series) != null)
-                {
-                    b.physicalSizeX = b.meta.getPixelsPhysicalSizeX(b.series).value().doubleValue();
-                    hasPhysical = true;
-                }
-                if (b.meta.getPixelsPhysicalSizeY(b.series) != null)
-                {
-                    b.physicalSizeY = b.meta.getPixelsPhysicalSizeY(b.series).value().doubleValue();
-                }
-                if (b.meta.getPixelsPhysicalSizeZ(b.series) != null)
-                {
-                    b.physicalSizeZ = b.meta.getPixelsPhysicalSizeZ(b.series).value().doubleValue();
-                }
-                else
-                {
-                    b.physicalSizeZ = 1;
-                }
-                if (b.meta.getStageLabelX(b.series) != null)
-                    b.stageSizeX = b.meta.getStageLabelX(b.series).value().doubleValue();
-                if (b.meta.getStageLabelY(b.series) != null)
-                    b.stageSizeY = b.meta.getStageLabelY(b.series).value().doubleValue();
-                if (b.meta.getStageLabelZ(b.series) != null)
-                    b.stageSizeZ = b.meta.getStageLabelZ(b.series).value().doubleValue();
-                else
-                    b.stageSizeZ = 1;
-                if (!hasPhysical)
-                {
-                    b.physicalSizeX = b.stageSizeX / b.SizeX;
-                    b.physicalSizeY = b.stageSizeX / b.SizeX;
-                    b.physicalSizeZ = b.stageSizeX / b.SizeX;
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            try
-            {
-                b.Volume = new VolumeD(new Point3D(b.stageSizeX, b.stageSizeY, b.stageSizeZ), new Point3D(b.physicalSizeX * b.SizeX, b.physicalSizeY * b.SizeY, b.physicalSizeZ * b.SizeZ));
-            }
-            catch (Exception)
-            {
-                //Volume is used only for stage coordinates if error is thrown it is because this image doens't have any size information or it is incomplete as read by Bioformats.
-            }
+            
             reader.close();
             //We wait for threshold image statistics calculation
             do

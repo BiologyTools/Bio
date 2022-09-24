@@ -956,151 +956,150 @@ namespace Bio
             Pen mag = null;
             Pen blue = null;
             Brush b = null;
-            
             bool bounds = showBounds;
             bool labels = showText;
-
             ZCT cor = GetCoordinate();
-            List<ROI> ans = SelectedImage.GetAnnotations(cor);
-            foreach (ROI an in ans)
+            foreach (BioImage bi in Images)
             {
-                pen = new Pen(an.strokeColor, (float)an.strokeWidth / scale.Width);
-                red = new Pen(Brushes.Red, (float)an.strokeWidth / scale.Width);
-                mag = new Pen(Brushes.Magenta, (float)an.strokeWidth / scale.Width);
-                green = new Pen(Brushes.Green, (float)an.strokeWidth / scale.Width);
-                blue = new Pen(Brushes.Blue, (float)an.strokeWidth / scale.Width);
-                Font fo = new Font(an.font.FontFamily, (float)an.strokeWidth / scale.Width);
-                if (an.selected)
+                foreach (ROI an in bi.Annotations)
                 {
-                    b = new SolidBrush(Color.Magenta);
-                }
-                else
-                    b = new SolidBrush(an.strokeColor);
-                PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
-                if (an.type == ROI.Type.Point)
-                {
-                    g.DrawLine(pen, ToScreenSpace(an.Point.ToPointF()), ToScreenSpace(new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1)));
-                    g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
-                }
-                else
-                if (an.type == ROI.Type.Line)
-                {
-                    g.DrawLine(pen, ToScreenSpace(an.GetPoint(0).ToPointF()), ToScreenSpace(an.GetPoint(1).ToPointF()));
-                    g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
-                }
-                else
-                if (an.type == ROI.Type.Rectangle && an.Rect.W > 0 && an.Rect.H > 0)
-                {
-                    RectangleF[] rects = new RectangleF[1];
-                    rects[0] = an.Rect.ToRectangleF();
-                    g.DrawRectangles(pen, ToScreenSpace(rects));
-                    g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
-                }
-                else
-                if (an.type == ROI.Type.Ellipse)
-                {
-                    g.DrawEllipse(pen, ToScreenSpace(an.Rect.ToRectangleF()));
-                    g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
-                }
-                else
-                if (an.type == ROI.Type.Polygon && an.closed)
-                {
-                    g.DrawPolygon(pen, ToScreenSpace(an.GetPointsF()));
-                    g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
-                }
-                else
-                if (an.type == ROI.Type.Polygon && !an.closed)
-                {
-                    PointF[] points = an.GetPointsF();
-                    if (points.Length == 1)
+                    pen = new Pen(an.strokeColor, (float)an.strokeWidth / scale.Width);
+                    red = new Pen(Brushes.Red, (float)an.strokeWidth / scale.Width);
+                    mag = new Pen(Brushes.Magenta, (float)an.strokeWidth / scale.Width);
+                    green = new Pen(Brushes.Green, (float)an.strokeWidth / scale.Width);
+                    blue = new Pen(Brushes.Blue, (float)an.strokeWidth / scale.Width);
+                    Font fo = new Font(an.font.FontFamily, (float)an.strokeWidth / scale.Width);
+                    if (an.selected)
                     {
-                        g.DrawLine(pen, ToScreenSpace(an.Point.ToPointF()), ToScreenSpace(new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1)));
+                        b = new SolidBrush(Color.Magenta);
                     }
                     else
-                        g.DrawLines(pen, ToScreenSpace(points));
-                    g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
-                }
-                else
-                if (an.type == ROI.Type.Polyline)
-                {
-                    g.DrawLines(pen, ToScreenSpace(an.GetPointsF()));
-                    g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
-                }
-
-                else
-                if (an.type == ROI.Type.Freeform && an.closed)
-                {
-                    PointF[] points = an.GetPointsF();
-                    if (points.Length > 1)
-                        if (points.Length == 1)
-                        {
-                            g.DrawLine(pen, ToScreenSpace(an.Point.ToPointF()), ToScreenSpace(new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1)));
-                        }
-                        else
-                            g.DrawPolygon(pen, ToScreenSpace(an.GetPointsF()));
-                }
-                else
-                if (an.type == ROI.Type.Freeform && !an.closed)
-                {
-                    PointF[] points = an.GetPointsF();
-                    if (points.Length > 1)
+                        b = new SolidBrush(an.strokeColor);
+                    PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
+                    if (an.type == ROI.Type.Point)
+                    {
+                        g.DrawLine(pen, ToScreenSpace(an.Point.ToPointF()), ToScreenSpace(new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1)));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                    }
+                    else
+                    if (an.type == ROI.Type.Line)
+                    {
+                        g.DrawLine(pen, ToScreenSpace(an.GetPoint(0).ToPointF()), ToScreenSpace(an.GetPoint(1).ToPointF()));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                    }
+                    else
+                    if (an.type == ROI.Type.Rectangle && an.Rect.W > 0 && an.Rect.H > 0)
+                    {
+                        RectangleF[] rects = new RectangleF[1];
+                        rects[0] = an.Rect.ToRectangleF();
+                        g.DrawRectangles(pen, ToScreenSpace(rects));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                    }
+                    else
+                    if (an.type == ROI.Type.Ellipse)
+                    {
+                        g.DrawEllipse(pen, ToScreenSpace(an.Rect.ToRectangleF()));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                    }
+                    else
+                    if (an.type == ROI.Type.Polygon && an.closed)
+                    {
+                        g.DrawPolygon(pen, ToScreenSpace(an.GetPointsF()));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                    }
+                    else
+                    if (an.type == ROI.Type.Polygon && !an.closed)
+                    {
+                        PointF[] points = an.GetPointsF();
                         if (points.Length == 1)
                         {
                             g.DrawLine(pen, ToScreenSpace(an.Point.ToPointF()), ToScreenSpace(new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1)));
                         }
                         else
                             g.DrawLines(pen, ToScreenSpace(points));
-                }
-                if (an.type == ROI.Type.Label)
-                {
-                    g.DrawString(an.Text, fo, b, ToScreenSpace(an.Point.ToPointF()));
-                    g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
-                }
-                if (labels)
-                {
-                    //Lets draw the text of this ROI in the middle of the RO
-                    float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
-                    float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
-                    g.DrawString(an.Text, fo, b, ToScreenSpace(new PointF(fw, fh)));
-                }
-                if (bounds)
-                {
-                    RectangleF[] rects = new RectangleF[1];
-                    rects[0] = an.BoundingBox.ToRectangleF();
-                    g.DrawRectangles(green, ToScreenSpace(rects));
-                }
-                if (an.selected)
-                {
-                    //Lets draw the bounding box.
-                    RectangleF[] bo = new RectangleF[1];
-                    bo[0] = an.BoundingBox.ToRectangleF();
-                    g.DrawRectangles(mag, ToScreenSpace(bo));
-                    //Lets draw the selectBoxes.
-                    List<RectangleF> rects = new List<RectangleF>();
-                    RectangleF[] sels = an.GetSelectBoxes(scale.Width);
-                    for (int i = 0; i < an.selectedPoints.Count; i++)
-                    {
-                        if (an.selectedPoints[i] < an.GetPointCount())
-                        {
-                            rects.Add(sels[an.selectedPoints[i]]);
-                        }
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
                     }
-                    if (rects.Count > 0)
-                        g.DrawRectangles(blue, ToScreenSpace(rects.ToArray()));
-                    rects.Clear();
-                    //Lets draw the text of this ROI in the middle of the ROI
-                    float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
-                    float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
-                    g.DrawString(an.Text, fo, b, ToScreenSpace(new PointF(fw, fh)));
-                }
-                pen.Dispose();
-                red.Dispose();
-                mag.Dispose();
-                green.Dispose();
-                blue.Dispose();
-                b.Dispose();
-            }
+                    else
+                    if (an.type == ROI.Type.Polyline)
+                    {
+                        g.DrawLines(pen, ToScreenSpace(an.GetPointsF()));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                    }
 
+                    else
+                    if (an.type == ROI.Type.Freeform && an.closed)
+                    {
+                        PointF[] points = an.GetPointsF();
+                        if (points.Length > 1)
+                            if (points.Length == 1)
+                            {
+                                g.DrawLine(pen, ToScreenSpace(an.Point.ToPointF()), ToScreenSpace(new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1)));
+                            }
+                            else
+                                g.DrawPolygon(pen, ToScreenSpace(an.GetPointsF()));
+                    }
+                    else
+                    if (an.type == ROI.Type.Freeform && !an.closed)
+                    {
+                        PointF[] points = an.GetPointsF();
+                        if (points.Length > 1)
+                            if (points.Length == 1)
+                            {
+                                g.DrawLine(pen, ToScreenSpace(an.Point.ToPointF()), ToScreenSpace(new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1)));
+                            }
+                            else
+                                g.DrawLines(pen, ToScreenSpace(points));
+                    }
+                    if (an.type == ROI.Type.Label)
+                    {
+                        g.DrawString(an.Text, fo, b, ToScreenSpace(an.Point.ToPointF()));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                    }
+                    if (labels)
+                    {
+                        //Lets draw the text of this ROI in the middle of the RO
+                        float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
+                        float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
+                        g.DrawString(an.Text, fo, b, ToScreenSpace(new PointF(fw, fh)));
+                    }
+                    if (bounds)
+                    {
+                        RectangleF[] rects = new RectangleF[1];
+                        rects[0] = an.BoundingBox.ToRectangleF();
+                        g.DrawRectangles(green, ToScreenSpace(rects));
+                    }
+                    if (an.selected)
+                    {
+                        //Lets draw the bounding box.
+                        RectangleF[] bo = new RectangleF[1];
+                        bo[0] = an.BoundingBox.ToRectangleF();
+                        g.DrawRectangles(mag, ToScreenSpace(bo));
+                        //Lets draw the selectBoxes.
+                        List<RectangleF> rects = new List<RectangleF>();
+                        RectangleF[] sels = an.GetSelectBoxes(scale.Width);
+                        for (int i = 0; i < an.selectedPoints.Count; i++)
+                        {
+                            if (an.selectedPoints[i] < an.GetPointCount())
+                            {
+                                rects.Add(sels[an.selectedPoints[i]]);
+                            }
+                        }
+                        if (rects.Count > 0)
+                            g.DrawRectangles(blue, ToScreenSpace(rects.ToArray()));
+                        rects.Clear();
+                        //Lets draw the text of this ROI in the middle of the ROI
+                        float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
+                        float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
+                        g.DrawString(an.Text, fo, b, ToScreenSpace(new PointF(fw, fh)));
+                    }
+                    pen.Dispose();
+                    red.Dispose();
+                    mag.Dispose();
+                    green.Dispose();
+                    blue.Dispose();
+                    b.Dispose();
+                }
+            }
         }
         private void overlayPictureBox_Paint(object sender, PaintEventArgs e)
         {
@@ -1372,26 +1371,29 @@ namespace Bio
 
             if (Tools.currentTool.type == Tools.Tool.Type.move)
             {
-                foreach (ROI an in AnnotationsRGB)
+                foreach (BioImage bi in Images)
                 {
-                    if (an.GetSelectBound().IntersectsWith(p.X, p.Y))
+                    foreach (ROI an in bi.Annotations)
                     {
-                        selectedAnnotations.Add(an);
-                        an.selected = true;
-
-                        RectangleF r = new RectangleF((float)p.X, (float)p.Y, 1, 1);
-                        RectangleF[] sels = an.GetSelectBoxes(scale.Width);
-                        for (int i = 0; i < sels.Length; i++)
+                        if (an.GetSelectBound().IntersectsWith(p.X, p.Y))
                         {
-                            if (sels[i].IntersectsWith(r))
+                            selectedAnnotations.Add(an);
+                            an.selected = true;
+
+                            RectangleF r = new RectangleF((float)p.X, (float)p.Y, 1, 1);
+                            RectangleF[] sels = an.GetSelectBoxes(scale.Width);
+                            for (int i = 0; i < sels.Length; i++)
                             {
-                                an.selectedPoints.Add(i);
+                                if (sels[i].IntersectsWith(r))
+                                {
+                                    an.selectedPoints.Add(i);
+                                }
                             }
                         }
+                        else
+                            if (!Ctrl)
+                            an.selected = false;
                     }
-                    else
-                        if (!Ctrl)
-                        an.selected = false;
                 }
                 UpdateOverlay();
             }
