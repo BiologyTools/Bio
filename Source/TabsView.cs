@@ -72,7 +72,8 @@ namespace Bio
         {
             InitializeComponent();
             LoadProperties();
-           
+            Init();
+            int im = Images.images.Count;
             if (arg.Length == 0)
                 return;
             else
@@ -91,33 +92,10 @@ namespace Bio
                     }
                     else
                     {
-                        int ind = 0;
-                        if (!arg[i].EndsWith("ome.tif") && (arg[i].EndsWith(".tif") || arg[i].EndsWith(".tiff")))
-                        {
-                            foreach (BioImage item in BioImage.OpenSeries(arg[i]))
-                            {
-                                if (ind == 0)
-                                    AddTab(item);
-                                else
-                                    Viewer.AddImage(item);
-                                ind++;
-                            }
-                        }
-                        else
-                        {
-                            foreach (BioImage item in BioImage.OpenOMESeries(arg[i]))
-                            {
-                                if (ind == 0)
-                                    AddTab(item);
-                                else
-                                    Viewer.AddImage(item);
-                                ind++;
-                            }
-                        }
+                        AddTab(BioImage.OpenOME(arg[i]));
                     }
                 }
             }
-            Init();
         }
         public void AddTab(BioImage b)
         {
@@ -198,11 +176,13 @@ namespace Bio
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
+            int img = Images.images.Count;
             foreach (string item in openFilesDialog.FileNames)
             {
-                AddTab(BioImage.OpenFile(item));
-                if (!App.recent.Contains(item))
-                    App.recent.Add(item);
+                BioImage im = BioImage.OpenFile(item);
+                AddTab(im);
+                if (!App.recent.Contains(im.ID))
+                    App.recent.Add(im.ID);
             }
             foreach (string item in App.recent)
             {
@@ -324,6 +304,7 @@ namespace Bio
             Viewer.Mode = ImageView.ViewMode.RGBImage;
             filteredToolStripMenuItem.Checked = false;
             rawToolStripMenuItem.Checked = false;
+            emissionToolStripMenuItem.Checked = false;
             Viewer.UpdateStatus();
         }
 
@@ -334,6 +315,7 @@ namespace Bio
             Viewer.Mode = ImageView.ViewMode.Filtered;
             rGBToolStripMenuItem.Checked = false;
             rawToolStripMenuItem.Checked = false;
+            emissionToolStripMenuItem.Checked = false;
             Viewer.UpdateStatus();
         }
 
@@ -344,6 +326,7 @@ namespace Bio
             Viewer.Mode = ImageView.ViewMode.Raw;
             rGBToolStripMenuItem.Checked = false;
             filteredToolStripMenuItem.Checked = false;
+            emissionToolStripMenuItem.Checked = false;
             Viewer.UpdateStatus();
         }
 
@@ -351,7 +334,11 @@ namespace Bio
         {
             if (Viewer == null)
                 return;
-            BioImage.AutoThresholdThread(ImageView.SelectedImage);
+            BioImage.AutoThreshold(ImageView.SelectedImage, true);
+            if (ImageView.SelectedImage.bitsPerPixel > 8)
+                ImageView.SelectedImage.StackThreshold(true);
+            else
+                ImageView.SelectedImage.StackThreshold(false);
         }
 
         public void UpdateViewMode(ImageView.ViewMode v)
@@ -433,12 +420,14 @@ namespace Bio
         private void bit8ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Image.To8Bit();
+            Viewer.InitGUI();
             Viewer.UpdateImages();
         }
 
         private void bit16ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Image.To16Bit();
+            Viewer.InitGUI();
             Viewer.UpdateImages();
         }
 
@@ -461,6 +450,8 @@ namespace Bio
         private void to32BitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Image.To32Bit();
+            Viewer.InitGUI();
+            Viewer.UpdateImages();
         }
 
         private void toWindowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -578,9 +569,12 @@ namespace Bio
             ToolStripMenuItem ts = (ToolStripMenuItem)sender;
             AddTab(BioImage.OpenFile(ts.Text));
             App.viewer.GoToImage();
+            SaveProperties();
         }
         private void TabsView_KeyDown(object sender, KeyEventArgs e)
         {
+            if (Viewer == null)
+                return;
             double moveAmount = 1500 * (1 / ImageView.scale.Width);
             if (e.KeyCode == Keys.C && e.Control)
             {
@@ -618,6 +612,7 @@ namespace Bio
             {
                 Viewer.Origin = new PointD(Viewer.Origin.X + moveAmount, Viewer.Origin.Y);
             }
+           
             Viewer.UpdateStatus();
             Viewer.UpdateView();
         }
@@ -755,6 +750,8 @@ namespace Bio
         {
             Properties.Settings.Default.Recent = "";
             Properties.Settings.Default.Save();
+            openRecentToolStripMenuItem.DropDownItems.Clear();
+
         }
 
         private void rotateToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -777,6 +774,18 @@ namespace Bio
             {
                 rotateToolStripMenuItem.DropDownItems.Add(item);
             }
+        }
+
+        private void emissionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (Viewer == null)
+                return;
+            Viewer.Mode = ImageView.ViewMode.Emission;
+            rGBToolStripMenuItem.Checked = false;
+            rawToolStripMenuItem.Checked = false;
+            filteredToolStripMenuItem.Checked = false;
+            emissionToolStripMenuItem.Checked = true;
+            Viewer.UpdateStatus();
         }
     }
 }

@@ -390,7 +390,8 @@ namespace Bio
                 if (r.Width <= 2 || r.Height <= 2)
                     return;
                 BufferInfo bf = ImageView.SelectedImage.Buffers[ImageView.SelectedImage.Coords[coord.Z, coord.C, coord.T]].GetCropBuffer(r);
-                Statistics st = Statistics.FromBytes(bf);
+                Statistics[] sts = Statistics.FromBytes(bf);
+                Statistics st = sts[0];
                 Bitmap crop = (Bitmap)bf.Image;
                 Threshold th;
                 if(magicSel.Numeric)

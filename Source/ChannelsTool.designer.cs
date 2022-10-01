@@ -62,6 +62,7 @@ namespace Bio
             this.stackHistoBox = new System.Windows.Forms.CheckBox();
             this.statsPanel = new System.Windows.Forms.Panel();
             this.applyBut = new System.Windows.Forms.Button();
+            this.resetBut = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.minBox)).BeginInit();
             this.minContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.maxBox)).BeginInit();
@@ -300,7 +301,7 @@ namespace Bio
             "4096",
             "16383",
             "65535"});
-            this.maxUintBox2.Location = new System.Drawing.Point(175, 263);
+            this.maxUintBox2.Location = new System.Drawing.Point(175, 286);
             this.maxUintBox2.Name = "maxUintBox2";
             this.maxUintBox2.Size = new System.Drawing.Size(77, 21);
             this.maxUintBox2.TabIndex = 16;
@@ -317,7 +318,7 @@ namespace Bio
             0,
             0,
             0});
-            this.maxGraphBox.Location = new System.Drawing.Point(175, 288);
+            this.maxGraphBox.Location = new System.Drawing.Point(175, 311);
             this.maxGraphBox.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -343,7 +344,7 @@ namespace Bio
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label5.AutoSize = true;
             this.label5.ForeColor = System.Drawing.Color.White;
-            this.label5.Location = new System.Drawing.Point(142, 290);
+            this.label5.Location = new System.Drawing.Point(142, 313);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(27, 13);
             this.label5.TabIndex = 14;
@@ -359,7 +360,7 @@ namespace Bio
             0,
             0,
             0});
-            this.minGraphBox.Location = new System.Drawing.Point(39, 288);
+            this.minGraphBox.Location = new System.Drawing.Point(39, 311);
             this.minGraphBox.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -375,7 +376,7 @@ namespace Bio
             this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label6.AutoSize = true;
             this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(10, 290);
+            this.label6.Location = new System.Drawing.Point(10, 313);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(24, 13);
             this.label6.TabIndex = 12;
@@ -387,7 +388,7 @@ namespace Bio
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(12, 241);
+            this.label7.Location = new System.Drawing.Point(12, 264);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(118, 13);
             this.label7.TabIndex = 11;
@@ -398,7 +399,7 @@ namespace Bio
             this.binBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.binBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.binBox.ForeColor = System.Drawing.Color.White;
-            this.binBox.Location = new System.Drawing.Point(39, 264);
+            this.binBox.Location = new System.Drawing.Point(39, 287);
             this.binBox.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -424,7 +425,7 @@ namespace Bio
             this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label8.AutoSize = true;
             this.label8.ForeColor = System.Drawing.Color.White;
-            this.label8.Location = new System.Drawing.Point(10, 266);
+            this.label8.Location = new System.Drawing.Point(10, 289);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(22, 13);
             this.label8.TabIndex = 17;
@@ -436,7 +437,7 @@ namespace Bio
             this.stackHistoBox.AutoSize = true;
             this.stackHistoBox.Checked = true;
             this.stackHistoBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.stackHistoBox.Location = new System.Drawing.Point(148, 240);
+            this.stackHistoBox.Location = new System.Drawing.Point(148, 263);
             this.stackHistoBox.Name = "stackHistoBox";
             this.stackHistoBox.Size = new System.Drawing.Size(104, 17);
             this.stackHistoBox.TabIndex = 19;
@@ -452,7 +453,7 @@ namespace Bio
             this.statsPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.statsPanel.Location = new System.Drawing.Point(12, 109);
             this.statsPanel.Name = "statsPanel";
-            this.statsPanel.Size = new System.Drawing.Size(239, 120);
+            this.statsPanel.Size = new System.Drawing.Size(243, 148);
             this.statsPanel.TabIndex = 10;
             // 
             // applyBut
@@ -460,20 +461,34 @@ namespace Bio
             this.applyBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.applyBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.applyBut.ForeColor = System.Drawing.Color.White;
-            this.applyBut.Location = new System.Drawing.Point(175, 314);
+            this.applyBut.Location = new System.Drawing.Point(92, 337);
             this.applyBut.Name = "applyBut";
             this.applyBut.Size = new System.Drawing.Size(77, 23);
             this.applyBut.TabIndex = 20;
-            this.applyBut.Text = "Bake";
+            this.applyBut.Text = "Apply";
             this.applyBut.UseVisualStyleBackColor = false;
             this.applyBut.Click += new System.EventHandler(this.applyBut_Click);
+            // 
+            // resetBut
+            // 
+            this.resetBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.resetBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.resetBut.ForeColor = System.Drawing.Color.White;
+            this.resetBut.Location = new System.Drawing.Point(175, 337);
+            this.resetBut.Name = "resetBut";
+            this.resetBut.Size = new System.Drawing.Size(77, 23);
+            this.resetBut.TabIndex = 21;
+            this.resetBut.Text = "Reset";
+            this.resetBut.UseVisualStyleBackColor = false;
+            this.resetBut.Click += new System.EventHandler(this.updateBut_Click);
             // 
             // ChannelsTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(259, 346);
+            this.ClientSize = new System.Drawing.Size(263, 369);
+            this.Controls.Add(this.resetBut);
             this.Controls.Add(this.applyBut);
             this.Controls.Add(this.stackHistoBox);
             this.Controls.Add(this.binBox);
@@ -551,5 +566,6 @@ namespace Bio
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
+        private System.Windows.Forms.Button resetBut;
     }
 }

@@ -83,7 +83,6 @@ namespace Bio
             this.cTimer = new System.Windows.Forms.Timer(this.components);
             this.trackBarPanel = new System.Windows.Forms.Panel();
             this.statusPanel = new System.Windows.Forms.Panel();
-            this.ticksLabel = new System.Windows.Forms.Label();
             this.showControlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.HideStatusMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -601,22 +600,11 @@ namespace Bio
             | System.Windows.Forms.AnchorStyles.Right)));
             this.statusPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.statusPanel.ContextMenuStrip = this.contextMenuStrip;
-            this.statusPanel.Controls.Add(this.ticksLabel);
             this.statusPanel.Controls.Add(this.statusLabel);
             this.statusPanel.Location = new System.Drawing.Point(0, 0);
             this.statusPanel.Name = "statusPanel";
             this.statusPanel.Size = new System.Drawing.Size(428, 25);
             this.statusPanel.TabIndex = 18;
-            // 
-            // ticksLabel
-            // 
-            this.ticksLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ticksLabel.AutoSize = true;
-            this.ticksLabel.ForeColor = System.Drawing.Color.White;
-            this.ticksLabel.Location = new System.Drawing.Point(335, 6);
-            this.ticksLabel.Name = "ticksLabel";
-            this.ticksLabel.Size = new System.Drawing.Size(0, 13);
-            this.ticksLabel.TabIndex = 4;
             // 
             // showControlsToolStripMenuItem
             // 
@@ -766,7 +754,6 @@ namespace Bio
         private System.Windows.Forms.TrackBar tBar;
         private System.Windows.Forms.Panel trackBarPanel;
         private System.Windows.Forms.Panel statusPanel;
-        private System.Windows.Forms.Label ticksLabel;
         private System.Windows.Forms.ToolStripMenuItem copyViewToClipboardToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showControlsToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip controlsMenuStrip;
