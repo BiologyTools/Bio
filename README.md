@@ -8,9 +8,9 @@ A .NET application for editing & annotating various microscopy imaging formats. 
 
 - C# scripting with sample tool-script and other sample scripts in "/Scripts/" folder. [See samples](https://github.com/BioMicroscopy/BioImage-Scripts)
 
-- RGB image viewing mode which automatically combines 3 channels into RGB image, also shows ROI from each channel which can be configured in ROI Manager.
+- Multiple view modes like Emission, and Filtered. ROI's shown for each channel can be configured in ROI Manager.
 
-- Convenient viewing of image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
+- Convenient viewing of image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes. Supports viewing 
 
 - Editing & saving ROI's in images to OME format image stacks.
 
@@ -22,7 +22,7 @@ A .NET application for editing & annotating various microscopy imaging formats. 
 
 - Easy freeform annotation with magic select tool which selects based on blob detection.
 
-- Use AForge filters by opening filters tool window and right click to apply. Currently supports only some AForge filters as many of them do not support 16bit and 48bit images. Convert to 8bit image to make use of more filters. Applyed filters can be easily recorded and used in scripts.
+- Use AForge filters by opening filters tool window and right click to apply. Currently supports only some AForge filters as many of them do not support 16bit and 48bit images. Convert to 8bit image to make use of more filters. Applyed filters can be easily recorded and used in scripts. Bio impliments some filters like crop for 16 & 48 bit images.
 
 ## Dependencies
 - [BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
