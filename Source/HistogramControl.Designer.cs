@@ -35,8 +35,6 @@
             this.setMinAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setMaxAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyViewToClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.setGraphMinToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.setGraphMaxToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,11 +45,9 @@
             this.setMaxToolStripMenuItem,
             this.setMinAllToolStripMenuItem,
             this.setMaxAllToolStripMenuItem,
-            this.setGraphMinToolStripMenuItem,
-            this.setGraphMaxToolStripMenuItem,
             this.copyViewToClipboardToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(200, 180);
+            this.contextMenuStrip.Size = new System.Drawing.Size(200, 136);
             // 
             // setMinToolStripMenuItem
             // 
@@ -88,20 +84,6 @@
             this.copyViewToClipboardToolStripMenuItem.Text = "Copy View to Clipboard";
             this.copyViewToClipboardToolStripMenuItem.Click += new System.EventHandler(this.copyViewToClipboardToolStripMenuItem_Click);
             // 
-            // setGraphMinToolStripMenuItem
-            // 
-            this.setGraphMinToolStripMenuItem.Name = "setGraphMinToolStripMenuItem";
-            this.setGraphMinToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.setGraphMinToolStripMenuItem.Text = "Set Graph Min";
-            this.setGraphMinToolStripMenuItem.Click += new System.EventHandler(this.setGraphMinToolStripMenuItem_Click);
-            // 
-            // setGraphMaxToolStripMenuItem
-            // 
-            this.setGraphMaxToolStripMenuItem.Name = "setGraphMaxToolStripMenuItem";
-            this.setGraphMaxToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
-            this.setGraphMaxToolStripMenuItem.Text = "Set Graph Max";
-            this.setGraphMaxToolStripMenuItem.Click += new System.EventHandler(this.setGraphMaxToolStripMenuItem_Click);
-            // 
             // HistogramControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -127,7 +109,5 @@
         private System.Windows.Forms.ToolStripMenuItem copyViewToClipboardToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setMaxAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setMinAllToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem setGraphMinToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem setGraphMaxToolStripMenuItem;
     }
 }

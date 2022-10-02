@@ -46,6 +46,15 @@ namespace Bio
         {
             BioImage.Initialize();
             Microscope.Initialize();
+            tools = new Tools();
+            stackTools = new StackTools();
+            manager = new ROIManager();
+            runner = new Scripting();
+            recorder = new Recorder();
+            seriesTool = new Series();
+            recordings = new Recordings();
+            automation = new Automation();
+            lib = new Library();
             if(Properties.Settings.Default.ImageJPath == "")
             {
                 MessageBox.Show("ImageJ path not set. Set the ImageJ executable location.");
@@ -58,14 +67,7 @@ namespace Bio
                 file.Dispose();
             }
             ImageJ.Initialize(Properties.Settings.Default.ImageJPath);
-            tools = new Tools();
-            stackTools = new StackTools();
-            manager = new ROIManager();
-            runner = new Scripting();
-            recorder = new Recorder();
-            seriesTool = new Series();
-            recordings = new Recordings();
-            automation = new Automation();
+            //channelsTool = new ChannelsTool();
         }
         public static void AddROI(string an)
         {

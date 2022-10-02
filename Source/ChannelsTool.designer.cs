@@ -255,11 +255,8 @@ namespace Bio
             this.maxUintBox.Items.AddRange(new object[] {
             "255",
             "1023",
-            "2047",
-            "4095",
-            "8191",
+            "4096",
             "16383",
-            "32767",
             "65535"});
             this.maxUintBox.Location = new System.Drawing.Point(173, 29);
             this.maxUintBox.Name = "maxUintBox";
@@ -301,11 +298,8 @@ namespace Bio
             this.maxUintBox2.Items.AddRange(new object[] {
             "255",
             "1023",
-            "2047",
-            "4095",
-            "8191",
+            "4096",
             "16383",
-            "32767",
             "65535"});
             this.maxUintBox2.Location = new System.Drawing.Point(175, 286);
             this.maxUintBox2.Name = "maxUintBox2";
@@ -518,7 +512,6 @@ namespace Bio
             this.Controls.Add(this.label1);
             this.ForeColor = System.Drawing.Color.White;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(279, 408);
             this.Name = "ChannelsTool";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Channels Tool";
@@ -526,7 +519,6 @@ namespace Bio
             this.Activated += new System.EventHandler(this.ChannelsTool_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ChannelsTool_FormClosing);
             this.ResizeEnd += new System.EventHandler(this.ChannelsTool_ResizeEnd);
-            this.SizeChanged += new System.EventHandler(this.ChannelsTool_ResizeEnd);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ChannelsTool_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ChannelsTool_MouseMove);
             ((System.ComponentModel.ISupportInitialize)(this.minBox)).EndInit();
