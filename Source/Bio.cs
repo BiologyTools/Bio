@@ -3,12 +3,12 @@ using AForge.Imaging.Filters;
 using BitMiracle.LibTiff.Classic;
 using loci.common.services;
 using loci.formats;
+using loci.formats.meta;
 using loci.formats.services;
+using Newtonsoft.Json;
 using ome.xml.model.primitives;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -17,7 +17,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
-using loci.formats.meta;
 
 namespace Bio
 {
@@ -299,10 +298,8 @@ namespace Bio
             {
                 if (Points.Count == 0)
                     return new RectangleD(0, 0, 0, 0);
-                if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform || type == Type.Label)
+                if (type == Type.Line || type == Type.Polyline || type == Type.Polygon || type == Type.Freeform || type == Type.Label || type == Type.Rectangle || type == Type.Ellipse)
                     return BoundingBox;
-                if (type == Type.Rectangle || type == Type.Ellipse)
-                    return new RectangleD(Points[0].X, Points[0].Y, Points[1].X - Points[0].X, Points[2].Y - Points[0].Y);
                 else
                     return new RectangleD(Points[0].X, Points[0].Y, 1, 1);
             }
@@ -388,7 +385,7 @@ namespace Bio
         }
 
         public Type type;
-        public float selectBoxSize = 1.5f;
+        public float selectBoxSize = 0.5f;
         private List<PointD> Points = new List<PointD>();
         public List<PointD> PointsD
         {
@@ -501,6 +498,14 @@ namespace Bio
         {
             float f = (selectBoxSize) / 2;
             selectBoxs.Clear();
+            if (type == Type.Rectangle || type == Type.Ellipse)
+            {
+                selectBoxs.Add(new RectangleF((float)Points[0].X - f, (float)Points[0].Y - f, selectBoxSize, selectBoxSize));
+                selectBoxs.Add(new RectangleF((float)((Points[0].X + W) - f), (float)Points[0].Y - f, selectBoxSize, selectBoxSize));
+                selectBoxs.Add(new RectangleF((float)Points[0].X - f, (float)((Points[0].Y + H) - f), selectBoxSize, selectBoxSize));
+                selectBoxs.Add(new RectangleF((float)((Points[0].X + W) - f), (float)((Points[0].Y + H) - f), selectBoxSize, selectBoxSize));
+            }
+            else
             for (int i = 0; i < Points.Count; i++)
             {
                 selectBoxs.Add(new RectangleF((float)Points[i].X - f, (float)Points[i].Y - f, selectBoxSize, selectBoxSize));
@@ -658,6 +663,14 @@ namespace Bio
         {
             float f = selectBoxSize / 2;
             selectBoxs.Clear();
+            if(type == Type.Rectangle || type == Type.Ellipse)
+            {
+                selectBoxs.Add(new RectangleF((float)Points[0].X - f, (float)Points[0].Y - f, selectBoxSize, selectBoxSize));
+                selectBoxs.Add(new RectangleF((float)((Points[0].X + W)- f), (float)Points[0].Y - f, selectBoxSize, selectBoxSize));
+                selectBoxs.Add(new RectangleF((float)Points[0].X - f, (float)((Points[0].Y + H) - f), selectBoxSize, selectBoxSize));
+                selectBoxs.Add(new RectangleF((float)((Points[0].X + W) - f), (float)((Points[0].Y + H) - f), selectBoxSize, selectBoxSize));
+            }
+            else
             for (int i = 0; i < Points.Count; i++)
             {
                 selectBoxs.Add(new RectangleF((float)Points[i].X - f, (float)Points[i].Y - f, selectBoxSize, selectBoxSize));
@@ -850,26 +863,90 @@ namespace Bio
                 }
             }
         }
-        public static System.Drawing.Color SpectralColor(double l) // RGB <0,1> <- lambda l <400,700> [nm]
+
+        static private double Gamma = 0.80;
+        static private double IntensityMax = 255;
+        /**
+         * Taken from Earl F. Glynn's web page:
+         * <a href="http://www.efg2.com/Lab/ScienceAndEngineering/Spectra.htm">Spectra Lab Report</a>
+         */
+        
+        public static System.Drawing.Color SpectralColor(double Wavelength)
         {
-            double t;
-            double r = 0;
-            double g = 0;
-            double b = 0;
-            if ((l >= 400.0) && (l < 410.0)) { t = (l - 400.0) / (410.0 - 400.0); r = +(0.33 * t) - (0.20 * t * t); }
-            else if ((l >= 410.0) && (l < 475.0)) { t = (l - 410.0) / (475.0 - 410.0); r = 0.14 - (0.13 * t * t); }
-            else if ((l >= 545.0) && (l < 595.0)) { t = (l - 545.0) / (595.0 - 545.0); r = +(1.98 * t) - (t * t); }
-            else if ((l >= 595.0) && (l < 650.0)) { t = (l - 595.0) / (650.0 - 595.0); r = 0.98 + (0.06 * t) - (0.40 * t * t); }
-            else if ((l >= 650.0) && (l < 700.0)) { t = (l - 650.0) / (700.0 - 650.0); r = 0.65 - (0.84 * t) + (0.20 * t * t); }
-            if ((l >= 415.0) && (l < 475.0)) { t = (l - 415.0) / (475.0 - 415.0); g = +(0.80 * t * t); }
-            else if ((l >= 475.0) && (l < 590.0)) { t = (l - 475.0) / (590.0 - 475.0); g = 0.8 + (0.76 * t) - (0.80 * t * t); }
-            else if ((l >= 585.0) && (l < 639.0)) { t = (l - 585.0) / (639.0 - 585.0); g = 0.84 - (0.84 * t); }
-            if ((l >= 400.0) && (l < 475.0)) { t = (l - 400.0) / (475.0 - 400.0); b = +(2.20 * t) - (1.50 * t * t); }
-            else if ((l >= 475.0) && (l < 560.0)) { t = (l - 475.0) / (560.0 - 475.0); b = 0.7 - (t) + (0.30 * t * t); }
-            r *= 255;
-            g *= 255;
-            b *= 255;
-            return System.Drawing.Color.FromArgb(255, (int)r, (int)g, (int)b);
+            double factor;
+            double Red, Green, Blue;
+
+            if ((Wavelength >= 380) && (Wavelength < 440))
+            {
+                Red = -(Wavelength - 440) / (440 - 380);
+                Green = 0.0;
+                Blue = 1.0;
+            }
+            else if ((Wavelength >= 440) && (Wavelength < 490))
+            {
+                Red = 0.0;
+                Green = (Wavelength - 440) / (490 - 440);
+                Blue = 1.0;
+            }
+            else if ((Wavelength >= 490) && (Wavelength < 510))
+            {
+                Red = 0.0;
+                Green = 1.0;
+                Blue = -(Wavelength - 510) / (510 - 490);
+            }
+            else if ((Wavelength >= 510) && (Wavelength < 580))
+            {
+                Red = (Wavelength - 510) / (580 - 510);
+                Green = 1.0;
+                Blue = 0.0;
+            }
+            else if ((Wavelength >= 580) && (Wavelength < 645))
+            {
+                Red = 1.0;
+                Green = -(Wavelength - 645) / (645 - 580);
+                Blue = 0.0;
+            }
+            else if ((Wavelength >= 645) && (Wavelength < 781))
+            {
+                Red = 1.0;
+                Green = 0.0;
+                Blue = 0.0;
+            }
+            else
+            {
+                Red = 0.0;
+                Green = 0.0;
+                Blue = 0.0;
+            }
+
+            // Let the intensity fall off near the vision limits
+
+            if ((Wavelength >= 380) && (Wavelength < 420))
+            {
+                factor = 0.3 + 0.7 * (Wavelength - 380) / (420 - 380);
+            }
+            else if ((Wavelength >= 420) && (Wavelength < 701))
+            {
+                factor = 1.0;
+            }
+            else if ((Wavelength >= 701) && (Wavelength < 781))
+            {
+                factor = 0.3 + 0.7 * (780 - Wavelength) / (780 - 700);
+            }
+            else
+            {
+                factor = 0.0;
+            }
+
+
+            
+
+            // Don't want 0^x = 1 for x <> 0
+            int r = Red == 0.0 ? 0 : (int)Math.Round(IntensityMax * Math.Pow(Red * factor, Gamma));
+            int g = Green == 0.0 ? 0 : (int)Math.Round(IntensityMax * Math.Pow(Green * factor, Gamma));
+            int b = Blue == 0.0 ? 0 : (int)Math.Round(IntensityMax * Math.Pow(Blue * factor, Gamma));
+
+            return System.Drawing.Color.FromArgb(255, r, g, b);
         }
         public string Name
         {
@@ -1734,17 +1811,14 @@ namespace Bio
         public static Bitmap GetEmissionBitmap(BufferInfo[] bfs, Channel[] chans)
         {
             Bitmap[] bms = new Bitmap[bfs.Length];
-            for (int i = 0; i < chans.Length; i++)
+            Bitmap bm = new Bitmap(bfs[0].SizeX, bfs[0].SizeY,PixelFormat.Format24bppRgb);
+            Merge m = new Merge(bm);
+            for (int i = 0; i < bfs.Length; i++)
             {
-                bms[i] = GetEmissionBitmap(bfs[i], chans[i].range, chans[i].EmissionColor);
+                m.OverlayImage = bm;
+                bm = m.Apply(GetEmissionBitmap(bfs[i], chans[i].range, chans[i].EmissionColor));
             }
-            Merge m = new Merge(bms[0]);
-            Bitmap res = m.Apply(bms[1]);
-            m = new Merge(res);
-            if(chans.Length > 2)
-                return m.Apply(bms[2]);
-            else
-            return res;
+            return bm;
         }
         public static BufferInfo RGB8To24(BufferInfo[] bfs)
         {
@@ -4766,20 +4840,13 @@ namespace Bio
         public Bitmap GetEmission(ZCT coord, IntRange rf, IntRange gf, IntRange bf)
         {
             int index = Coords[coord.Z, coord.C, coord.T];
-            if (Buffers[0].RGBChannelsCount == 1)
+            BufferInfo[] bs = new BufferInfo[Channels.Count];
+            for (int c = 0; c < Channels.Count; c++)
             {
-                BufferInfo[] bs = new BufferInfo[3];
-                index = Coords[coord.Z, RChannel.Index, coord.T];
-                bs[0] = Buffers[index];
-                index = Coords[coord.Z, GChannel.Index, coord.T];
-                bs[1] = Buffers[index];
-                index = Coords[coord.Z, BChannel.Index, coord.T];
-                bs[2] = Buffers[index];
-                Clipboard.SetImage(bs[2].Image);
-                return BufferInfo.GetEmissionBitmap(bs,Channels.ToArray());
+                index = Coords[coord.Z, c, coord.T];
+                bs[c] = Buffers[index];
             }
-            else
-                return (Bitmap)Buffers[index].Image;
+            return BufferInfo.GetEmissionBitmap(bs,Channels.ToArray());
         }
         public Bitmap GetRGBBitmap(ZCT coord, IntRange rf, IntRange gf, IntRange bf)
         {
@@ -6467,7 +6534,7 @@ namespace Bio
                 else
                     str2 = RGBChannelCount * SizeX;
                 if (str2 != str)
-                    throw new InvalidDataException("Stride is not correct.");
+                    stride = str;
                 for (int p = serie * pages; p < (serie + 1) * pages; p++)
                 {
                     image.SetDirectory((short)p);
@@ -6590,6 +6657,27 @@ namespace Bio
             else
                 return 16;
         }
+        public static int GetBitsPerPixelIndex(int bt)
+        {
+            if (bt <= 255)
+                return 0;
+            if (bt <= 512)
+                return 1;
+            else if (bt <= 1023)
+                return 2;
+            else if (bt <= 2047)
+                return 3;
+            else if (bt <= 4095)
+                return 4;
+            else if (bt <= 8191)
+                return 5;
+            else if (bt <= 16383)
+                return 6;
+            else if (bt <= 32767)
+                return 7;
+            else
+                return 8;
+        }
         public static int GetBitMaxValue(int bt)
         {
             if (bt == 8)
@@ -6607,6 +6695,27 @@ namespace Bio
             else if (bt == 14)
                 return 16383;
             else if (bt == 15)
+                return 32767;
+            else
+                return 65535;
+        }
+        public static int RoundBitMaxValue(float bt)
+        {
+            if (bt <= 255)
+                return 255;
+            if (bt <= 512)
+                return 512;
+            else if (bt <= 1023)
+                return 1023;
+            else if (bt <= 2047)
+                return 2047;
+            else if (bt <= 4095)
+                return 4095;
+            else if (bt <= 8191)
+                return 8191;
+            else if (bt <= 16383)
+                return 16383;
+            else if (bt <= 32767)
                 return 32767;
             else
                 return 65535;

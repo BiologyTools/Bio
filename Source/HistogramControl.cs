@@ -105,7 +105,7 @@ namespace Bio
         {
             get
             {
-                return mouseX;
+                return mouseY;
             }
         }
         private float mouseValX = 0;
@@ -156,22 +156,27 @@ namespace Bio
         {
             if (graphMax == 0)
                 graphMax = ushort.MaxValue;
-            g.Clear(Color.LightGray);
-            g.TranslateTransform(-graphMin, 0);
-            string st = "";
             fx = ((float)this.Width) / ((float)graphMax);
+            g.Clear(Color.LightGray);
+            g.ResetTransform();
+            g.TranslateTransform(-graphMin * fx, 0);
+            string st = "";
             float maxmedian = 0;
             int maxChan = 0;
             for (int cc = 0; cc < ImageView.SelectedImage.Channels.Count; cc++)
             {
-                float f = ImageView.SelectedImage.Channels[cc].stats[0].StackMedian;
+                float f;
+                if(ImageView.SelectedImage.RGBChannelCount == 1)
+                    f = ImageView.SelectedImage.Channels[cc].stats[0].StackMedian;
+                else
+                    f = ImageView.SelectedImage.Channels[cc].stats[cc].StackMedian;
                 if (maxmedian < f)
                 {
                     maxmedian = f;
                     maxChan = cc;
                 }
             }
-            fy = ((float)this.Height) / (float)ImageView.SelectedImage.Channels[maxChan].stats[0].StackMedian;
+            fy = ((float)this.Height) / maxmedian;
             for (int c = 0; c < ImageView.SelectedImage.Channels.Count; c++)
             {
                 Channel channel = ImageView.SelectedImage.Channels[c];
@@ -189,9 +194,9 @@ namespace Bio
                 int light = 50;
                 if(channel.Emission != -1)
                 {
-                    pen = new Pen(SpectralColor(channel.Emission), bin * fx);
+                    pen = new Pen(Channel.SpectralColor(channel.Emission), bin * fx);
                     pen.Color = Color.FromArgb(light, pen.Color);
-                    pend = new Pen(SpectralColor(channel.Emission), bin * fx);
+                    pend = new Pen(Channel.SpectralColor(channel.Emission), bin * fx);
                     pend.Color = Color.FromArgb(dark, pen.Color);
                 }
                 else
@@ -217,15 +222,13 @@ namespace Bio
                 int gmax = graphMax;
                 if (App.Image.bitsPerPixel <= 8)
                     gmax = 255;
-
-
                 float sumbins = 0;
                 float sumbin = 0;
                 int binind = 0;
                 int bininds = 0;
                 PointF? prevs = null;
                 PointF? prev = null;
-                for (float x = 0; x < gmax; x++)
+                for (float x = 0; x < gmax + graphMin; x++)
                 {
                     if (StackHistogram && c == ImageView.SelectedImage.Channels.Count-1)
                     {
@@ -277,29 +280,65 @@ namespace Bio
             float tick = 6;
             if (axisTicks)
             {
-                if (axisNumbers)
+                if (graphMax <= 65535)
                 {
-                    for (float x = 0; x < graphMax; x += 2000)
+                    for (float x = 0; x < graphMax; x += 10000)
                     {
+                        g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick + 6));
                         SizeF s = g.MeasureString(x.ToString(), SystemFonts.DefaultFont);
-                        g.DrawString(x.ToString(), SystemFonts.DefaultFont, Brushes.Black, (fx * x) - (s.Width/2), tick + 6);
-                        g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick + 3));
+                        g.DrawString(x.ToString(), SystemFonts.DefaultFont, Brushes.Black, (fx * x) - (s.Width / 2), tick + 6);
+                    }
+                    for (float x = 0; x < graphMax; x += 5000)
+                    {
+                        g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick + 4));
                     }
                     for (float x = 0; x < graphMax; x += 1000)
                     {
                         g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick));
                     }
                 }
-                if (graphMax <= 16383)
-                for (float x = 0; x < graphMax; x += 100)
+                if (graphMax <= 32767)
                 {
-                    g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick));
+                    for (float x = 0; x < graphMax; x += 5000)
+                    {
+                        g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick + 4));
+                        SizeF s = g.MeasureString(x.ToString(), SystemFonts.DefaultFont);
+                        g.DrawString(x.ToString(), SystemFonts.DefaultFont, Brushes.Black, (fx * x) - (s.Width / 2), tick + 6);
+                    }
+                    for (float x = 0; x < graphMax; x += 1000)
+                    {
+                        g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick + 2));
+                        if (graphMax <= 8191)
+                        {
+                            SizeF s = g.MeasureString(x.ToString(), SystemFonts.DefaultFont);
+                            g.DrawString(x.ToString(), SystemFonts.DefaultFont, Brushes.Black, (fx * x) - (s.Width / 2), tick + 6);
+                        }
+                    }
+                }
+                if (graphMax <= 8191)
+                {
+                    for (float x = 0; x < graphMax; x += 1000)
+                    {
+                        g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick + 4));
+                        SizeF s = g.MeasureString(x.ToString(), SystemFonts.DefaultFont);
+                        g.DrawString(x.ToString(), SystemFonts.DefaultFont, Brushes.Black, (fx * x) - (s.Width / 2), tick + 6);
+                    }
+                    for (float x = 0; x < graphMax; x += 500)
+                    {
+                        g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick + 2));
+                    }
+                    for (float x = 0; x < graphMax; x += 100)
+                    {
+                        g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick));
+                    }
                 }
                 if (graphMax <= 255)
                 {
                     for (float x = 0; x < graphMax; x += 50)
                     {
-                        g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), 4));
+                        g.DrawLine(Pens.Black, new PointF((fx * x), 0), new PointF((fx * x), tick + 4));
+                        SizeF s = g.MeasureString(x.ToString(), SystemFonts.DefaultFont);
+                        g.DrawString(x.ToString(), SystemFonts.DefaultFont, Brushes.Black, (fx * x) - (s.Width / 2), tick + 6);
                     }
                     for (float x = 0; x < graphMax; x += 10)
                     {
@@ -307,18 +346,19 @@ namespace Bio
                     }
                 }
             }
-
-            if (ImageView.SelectedImage.RGBChannelCount == 3)
-                st =
-                    "(" + (mouseX / fx).ToString() +
-                    ",R:" + ImageView.SelectedImage.Channels[2].stats[2].StackValues[(int)(mouseX / fx)].ToString() +
-                    ",G:" + ImageView.SelectedImage.Channels[1].stats[1].StackValues[(int)(mouseX / fx)].ToString() +
-                    ",B:" + ImageView.SelectedImage.Channels[0].stats[0].StackValues[(int)(mouseX / fx)].ToString() + ")";
-            else
-                st = "(" + (mouseX / fx).ToString() + "," + ImageView.SelectedImage.Channels[0].stats[0].StackValues[(int)(mouseX / fx)].ToString() + ")";
-            SizeF sf = g.MeasureString(st, SystemFonts.DefaultFont);
-            g.DrawString(st, SystemFonts.DefaultFont, Brushes.Black, mouseX, mouseY + sf.Height);
-
+            if (mouseX / fx < ushort.MaxValue)
+            {
+                if (ImageView.SelectedImage.RGBChannelCount == 3)
+                    st =
+                        "(" + (mouseX / fx).ToString() +
+                        ",R:" + ImageView.SelectedImage.Channels[0].stats[0].StackValues[(int)(mouseX / fx)].ToString() +
+                        ",G:" + ImageView.SelectedImage.Channels[1].stats[1].StackValues[(int)(mouseX / fx)].ToString() +
+                        ",B:" + ImageView.SelectedImage.Channels[2].stats[2].StackValues[(int)(mouseX / fx)].ToString() + ")";
+                else
+                    st = "(" + (mouseX / fx).ToString() + "," + ImageView.SelectedImage.Channels[0].stats[0].StackValues[(int)(mouseX / fx)].ToString() + ")";
+                SizeF sf = g.MeasureString(st, SystemFonts.DefaultFont);
+                g.DrawString(st, SystemFonts.DefaultFont, Brushes.Black, mouseX, mouseY + sf.Height);
+            }
             e.Graphics.DrawImage(bm, 0, 0);
         }
 
@@ -383,26 +423,17 @@ namespace Bio
                 c.Min = (int)MouseValX;
             }
         }
-        Color SpectralColor(double l) // RGB <0,1> <- lambda l <400,700> [nm]
+
+        private void setGraphMinToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            double t;
-            double r = 0;
-            double g = 0;
-            double b = 0;
-            if ((l >= 400.0) && (l < 410.0)) { t = (l - 400.0) / (410.0 - 400.0); r = +(0.33 * t) - (0.20 * t * t); }
-            else if ((l >= 410.0) && (l < 475.0)) { t = (l - 410.0) / (475.0 - 410.0); r = 0.14 - (0.13 * t * t); }
-            else if ((l >= 545.0) && (l < 595.0)) { t = (l - 545.0) / (595.0 - 545.0); r = +(1.98 * t) - (t * t); }
-            else if ((l >= 595.0) && (l < 650.0)) { t = (l - 595.0) / (650.0 - 595.0); r = 0.98 + (0.06 * t) - (0.40 * t * t); }
-            else if ((l >= 650.0) && (l < 700.0)) { t = (l - 650.0) / (700.0 - 650.0); r = 0.65 - (0.84 * t) + (0.20 * t * t); }
-            if ((l >= 415.0) && (l < 475.0)) { t = (l - 415.0) / (475.0 - 415.0); g = +(0.80 * t * t); }
-            else if ((l >= 475.0) && (l < 590.0)) { t = (l - 475.0) / (590.0 - 475.0); g = 0.8 + (0.76 * t) - (0.80 * t * t); }
-            else if ((l >= 585.0) && (l < 639.0)) { t = (l - 585.0) / (639.0 - 585.0); g = 0.84 - (0.84 * t); }
-            if ((l >= 400.0) && (l < 475.0)) { t = (l - 400.0) / (475.0 - 400.0); b = +(2.20 * t) - (1.50 * t * t); }
-            else if ((l >= 475.0) && (l < 560.0)) { t = (l - 475.0) / (560.0 - 475.0); b = 0.7 - (t) + (0.30 * t * t); }
-            r *= 255;
-            g *= 255;
-            b *= 255;
-            return Color.FromArgb(255, (int)r, (int)g, (int)b);
+            graphMin = (int)MouseValX;
+            Invalidate();
+        }
+
+        private void setGraphMaxToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            graphMax = (int)MouseValX;
+            Invalidate();
         }
     }
 }

@@ -45,8 +45,10 @@ namespace Bio
             channelsBox.SelectedIndex = 0;
             minBox.Value = (int)Channels[0].stats[0].StackMin;
             maxBox.Value = (int)Channels[0].stats[0].StackMax;
+            int max = BioImage.RoundBitMaxValue(Channels[0].stats[0].StackMax);
             hist = new HistogramControl(Channels[channelsBox.SelectedIndex]);
-            hist.GraphMax = (int)maxBox.Value;
+            hist.GraphMax = max;
+            maxGraphBox.Value = max;
             MouseWheel += new System.Windows.Forms.MouseEventHandler(ChannelsTool_MouseWheel);
             statsPanel.Controls.Add(hist);
         }
@@ -140,6 +142,8 @@ namespace Bio
         {
             minBox.Value = SelectedChannel.Min;
             maxBox.Value = SelectedChannel.Max;
+            minGraphBox.Value = hist.GraphMin;
+            maxGraphBox.Value = hist.GraphMax;
             UpdateItems();
             hist.UpdateView();
         }
@@ -228,23 +232,48 @@ namespace Bio
             if (e.Delta == 0)
                 return;
             int i = 100;
-            if (maxGraphBox.Value < 255)
-                i = 10;
-            if (e.Delta > 0)
+            if (maxGraphBox.Value <= 255)
             {
-                if (maxGraphBox.Value + i < maxGraphBox.Maximum)
+                i = 10;
+                binBox.Value = 1;
+            }
+            if (!ImageView.Ctrl)
+            {
+                if (e.Delta > 0)
                 {
-                    maxGraphBox.Value += i;
+                    if (maxGraphBox.Value + i <= maxGraphBox.Maximum)
+                    {
+                        maxGraphBox.Value += i;
+                        hist.Invalidate();
+                        return;
+                    }
+                }
+                else
+                if (maxGraphBox.Value - i >= maxGraphBox.Minimum)
+                {
+                    maxGraphBox.Value -= i;
                     hist.Invalidate();
                     return;
                 }
             }
             else
-            if (maxGraphBox.Value - i > maxGraphBox.Minimum)
             {
-                maxGraphBox.Value -= i;
-                hist.Invalidate();
-                return;
+                if (e.Delta > 0)
+                {
+                    if (minGraphBox.Value + i <= minGraphBox.Maximum)
+                    {
+                        minGraphBox.Value += i;
+                        hist.Invalidate();
+                        return;
+                    }
+                }
+                else
+                if (minGraphBox.Value - i >= minGraphBox.Minimum)
+                {
+                    minGraphBox.Value -= i;
+                    hist.Invalidate();
+                    return;
+                }
             }
         }
 
@@ -312,6 +341,7 @@ namespace Bio
             if (ImageView.SelectedImage.bitsPerPixel > 8)
             {
                 ImageView.SelectedImage.StackThreshold(true);
+                if(channelsBox.SelectedIndex != -1)
                 if (ImageView.SelectedImage.RGBChannelCount == 1)
                 {
                     maxBox.Value = (decimal)ImageView.SelectedImage.Channels[channelsBox.SelectedIndex].stats[0].StackMax;
