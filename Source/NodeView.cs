@@ -53,8 +53,8 @@ namespace Bio
         }
         public NodeView(string[] args)
         {
-            Init();
             InitializeComponent();
+            Init();
             InitNodes();
             App.nodeView = this;
             if (args.Length > 0)
@@ -74,8 +74,6 @@ namespace Bio
         {
             App.Initialize();
             Filters.Init();
-            App.runner = new Scripting();
-            App.recorder = new Recorder();
         }
         public void UpdateOverlay()
         {

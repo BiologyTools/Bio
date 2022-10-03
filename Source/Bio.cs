@@ -1733,18 +1733,14 @@ namespace Bio
         }
         public static Bitmap GetEmissionBitmap(BufferInfo[] bfs, Channel[] chans)
         {
-            Bitmap[] bms = new Bitmap[bfs.Length];
+            Bitmap bm = new Bitmap(bfs[0].SizeX, bfs[0].SizeY, PixelFormat.Format24bppRgb);
+            Merge m = new Merge(bm);
             for (int i = 0; i < chans.Length; i++)
             {
-                bms[i] = GetEmissionBitmap(bfs[i], chans[i].range, chans[i].EmissionColor);
+                m.OverlayImage = bm;
+                bm = m.Apply(GetEmissionBitmap(bfs[i], chans[i].range, chans[i].EmissionColor));
             }
-            Merge m = new Merge(bms[0]);
-            Bitmap res = m.Apply(bms[1]);
-            m = new Merge(res);
-            if(chans.Length > 2)
-                return m.Apply(bms[2]);
-            else
-            return res;
+            return bm;
         }
         public static BufferInfo RGB8To24(BufferInfo[] bfs)
         {
@@ -4765,21 +4761,21 @@ namespace Bio
         }
         public Bitmap GetEmission(ZCT coord, IntRange rf, IntRange gf, IntRange bf)
         {
-            int index = Coords[coord.Z, coord.C, coord.T];
-            if (Buffers[0].RGBChannelsCount == 1)
+            if (RGBChannelCount == 1)
             {
-                BufferInfo[] bs = new BufferInfo[3];
-                index = Coords[coord.Z, RChannel.Index, coord.T];
-                bs[0] = Buffers[index];
-                index = Coords[coord.Z, GChannel.Index, coord.T];
-                bs[1] = Buffers[index];
-                index = Coords[coord.Z, BChannel.Index, coord.T];
-                bs[2] = Buffers[index];
-                Clipboard.SetImage(bs[2].Image);
-                return BufferInfo.GetEmissionBitmap(bs,Channels.ToArray());
+                BufferInfo[] bs = new BufferInfo[Channels.Count];
+                for (int c = 0; c < Channels.Count; c++)
+                {
+                    int index = Coords[coord.Z, c, coord.T];
+                    bs[c] = Buffers[index];
+                }
+                return BufferInfo.GetEmissionBitmap(bs, Channels.ToArray());
             }
-            else
-                return (Bitmap)Buffers[index].Image;
+            else 
+            {
+                int index = Coords[coord.Z, coord.C, coord.T];
+                return (Bitmap)Buffers[index].Image; 
+            }
         }
         public Bitmap GetRGBBitmap(ZCT coord, IntRange rf, IntRange gf, IntRange bf)
         {

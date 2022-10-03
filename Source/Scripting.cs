@@ -197,7 +197,8 @@ namespace Bio
         public void RefreshItems()
         {
             Scripts.Clear();
-            foreach (string file in Directory.GetFiles("Scripts"))
+            string st = Application.StartupPath;
+            foreach (string file in Directory.GetFiles(st + "/Scripts"))
             {
                 if (!Scripts.ContainsKey(Path.GetFileName(file)))
                 {
@@ -210,7 +211,7 @@ namespace Bio
                     Scripts.Add(lv.Text, sc);
                 }
             }
-            foreach (string file in Directory.GetFiles("Tools"))
+            foreach (string file in Directory.GetFiles(st + "/Tools"))
             {
                 if (file.EndsWith(".cs"))
                 {

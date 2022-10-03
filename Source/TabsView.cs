@@ -73,14 +73,13 @@ namespace Bio
             InitializeComponent();
             LoadProperties();
             Init();
-            int im = Images.images.Count;
             if (arg.Length == 0)
                 return;
             else
             {             
                 for (int i = 0; i < arg.Length; i++)
                 {
-                    if (arg[0].EndsWith(".cs"))
+                    if (arg[i].EndsWith(".cs"))
                     {
                         App.runner.RunScriptFile(arg[0]);
                         return;

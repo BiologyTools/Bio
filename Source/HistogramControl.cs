@@ -164,14 +164,18 @@ namespace Bio
             int maxChan = 0;
             for (int cc = 0; cc < ImageView.SelectedImage.Channels.Count; cc++)
             {
-                float f = ImageView.SelectedImage.Channels[cc].stats[0].StackMedian;
+                float f;
+                if(ImageView.SelectedImage.RGBChannelCount == 3)
+                    f = ImageView.SelectedImage.Channels[cc].stats[cc].StackMedian;
+                else
+                    f = ImageView.SelectedImage.Channels[cc].stats[0].StackMedian;
                 if (maxmedian < f)
                 {
                     maxmedian = f;
                     maxChan = cc;
                 }
             }
-            fy = ((float)this.Height) / (float)ImageView.SelectedImage.Channels[maxChan].stats[0].StackMedian;
+            fy = ((float)this.Height) / maxmedian;
             for (int c = 0; c < ImageView.SelectedImage.Channels.Count; c++)
             {
                 Channel channel = ImageView.SelectedImage.Channels[c];
