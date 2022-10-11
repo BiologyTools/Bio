@@ -388,7 +388,7 @@ namespace Bio
         }
 
         public Type type;
-        public float selectBoxSize = 1.5f;
+        public float selectBoxSize = 3f;
         private List<PointD> Points = new List<PointD>();
         public List<PointD> PointsD
         {
@@ -501,6 +501,7 @@ namespace Bio
         {
             float f = (selectBoxSize) / 2;
             selectBoxs.Clear();
+            
             for (int i = 0; i < Points.Count; i++)
             {
                 selectBoxs.Add(new RectangleF((float)Points[i].X - f, (float)Points[i].Y - f, selectBoxSize, selectBoxSize));
@@ -2167,7 +2168,7 @@ namespace Bio
                     }
                 }
             else
-            if (PixelFormat == PixelFormat.Format32bppArgb)
+            if (PixelFormat == PixelFormat.Format32bppArgb || PixelFormat == PixelFormat.Format32bppRgb)
                 for (int y = 0; y < SizeY; y++)
                 {
                     for (int x = 0; x < Stride; x += 4)
@@ -4930,7 +4931,7 @@ namespace Bio
             }
             string json = JsonConvert.SerializeObject(b.imageInfo, Formatting.None);
             desc += "-ImageInfo:" + b.series + ":" + json + NewLine;
-
+            
             Tiff image = Tiff.Open(file, "w");
             int stride = b.Buffers[0].Stride;
             int im = 0;
@@ -4953,12 +4954,6 @@ namespace Bio
                         image.SetField(TiffTag.BITSPERSAMPLE, b.bitsPerPixel);
                         image.SetField(TiffTag.SAMPLESPERPIXEL, b.RGBChannelCount);
                         image.SetField(TiffTag.ROWSPERSTRIP, b.SizeY);
-                        /*
-                        if (im % 2 == 0)
-                            image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISBLACK);
-                        else
-                            image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISWHITE);
-                        */
                         image.SetField(TiffTag.ORIENTATION, BitMiracle.LibTiff.Classic.Orientation.TOPLEFT);
                         image.SetField(TiffTag.PLANARCONFIG, PlanarConfig.CONTIG);
                         image.SetField(TiffTag.ROWSPERSTRIP, image.DefaultStripSize(0));
@@ -4991,7 +4986,6 @@ namespace Bio
                     }
                 }
             }
-            //buffer = null;
             image.Dispose();
             Recorder.AddLine("Bio.BioImage.Save(" + '"' + file + '"' + "," + '"' + ID + '"' + ");");
             pr.Close();
@@ -5080,7 +5074,7 @@ namespace Bio
                             // specify that it's a page within the multipage file
                             image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                             // specify the page number
-                            buffer = b.Buffers[im].GetSaveBytes(false);
+                            buffer = b.Buffers[im].GetSaveBytes(true);
                             image.SetField(TiffTag.PAGENUMBER, c + (b.Buffers.Count * fi), b.Buffers.Count * files.Length);
                             for (int i = 0, offset = 0; i < b.SizeY; i++)
                             {
@@ -6468,13 +6462,13 @@ namespace Bio
                 {
                     image.SetDirectory((short)p);
                     byte[] bytes = new byte[stride * SizeY];
+                    if (!b.littleEndian)
+                        Array.Reverse(bytes);
                     for (int im = 0, offset = 0; im < SizeY; im++)
                     {
                         image.ReadScanline(bytes, offset, im, 0);
                         offset += stride;
                     }
-                    if (b.littleEndian)
-                        Array.Reverse(bytes);
                     BufferInfo inf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), p);
                     inf.RotateFlip(RotateFlipType.Rotate180FlipNone);
                     b.Buffers.Add(inf);
@@ -6645,6 +6639,72 @@ namespace Bio
             {
                 Open(file);
             }
+        }
+
+        public static void Update(BioImage b)
+        {
+            string file = b.ID;
+            int pages = b.Buffers.Count;
+            int stride = b.Buffers[0].Stride;
+            int SizeX = b.Buffers[0].SizeX;
+            int SizeY = b.Buffers[0].SizeY;
+            PixelFormat pixelFormat = b.Buffers[0].PixelFormat;
+            for (int i = 0; i < pages; i++)
+            {
+                b.Buffers[i].Dispose();
+            }
+            b.Buffers.Clear();
+            Progress pr = new Progress(file,"Updating:");
+            pr.Show();
+            if (file.EndsWith("ome.tif") || file.EndsWith(".tif"))
+            {
+                Tiff image = Tiff.Open(file, "r");
+                for (int p = serie * pages; p < (serie + 1) * pages; p++)
+                {
+                    image.SetDirectory((short)p);
+                    byte[] bytes = new byte[stride * SizeY];
+                    if (!b.littleEndian)
+                        Array.Reverse(bytes);
+                    for (int im = 0, offset = 0; im < SizeY; im++)
+                    {
+                        image.ReadScanline(bytes, offset, im, 0);
+                        offset += stride;
+                    }
+                    BufferInfo inf = new BufferInfo(file, SizeX, SizeY, pixelFormat, bytes, new ZCT(0, 0, 0), p);
+                    inf.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    b.Buffers.Add(inf);
+                    Statistics.CalcStatistics(inf);
+                    pr.UpdateProgressF((float)((double)p / (double)pages));
+                    Application.DoEvents();
+                }
+                image.Close();
+            }
+            else
+            {
+                reader.setId(file);
+                for (int p = 0; p < pages; p++)
+                {
+                    byte[] bytes = reader.openBytes(p);
+                    if (!b.littleEndian)
+                        Array.Reverse(bytes);
+                    BufferInfo bf = new BufferInfo(file, SizeX, SizeY, pixelFormat, bytes, new ZCT(0, 0, 0), p);
+                    if (b.littleEndian)
+                        bf.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                    b.Buffers.Add(bf);
+                    //We add the buffers to thresholding image statistics calculation threads.
+                    Statistics.CalcStatistics(bf);
+                    pr.UpdateProgressF(((float)p / (float)pages));
+                    Application.DoEvents();
+                }
+                reader.close();
+            }
+            b.UpdateCoords(b.SizeZ, b.SizeC, b.SizeT);
+            pr.Close();
+            pr.Dispose();
+        }
+        public void Update()
+        {
+            Update(this);
         }
 
         private static List<string> openfile = new List<string>();

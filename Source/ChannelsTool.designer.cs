@@ -388,7 +388,7 @@ namespace Bio
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(12, 264);
+            this.label7.Location = new System.Drawing.Point(8, 265);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(118, 13);
             this.label7.TabIndex = 11;
@@ -437,11 +437,11 @@ namespace Bio
             this.stackHistoBox.AutoSize = true;
             this.stackHistoBox.Checked = true;
             this.stackHistoBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.stackHistoBox.Location = new System.Drawing.Point(148, 263);
+            this.stackHistoBox.Location = new System.Drawing.Point(132, 264);
             this.stackHistoBox.Name = "stackHistoBox";
-            this.stackHistoBox.Size = new System.Drawing.Size(104, 17);
+            this.stackHistoBox.Size = new System.Drawing.Size(134, 17);
             this.stackHistoBox.TabIndex = 19;
-            this.stackHistoBox.Text = "Stack Histogram";
+            this.stackHistoBox.Text = "Mean Stack Histogram";
             this.stackHistoBox.UseVisualStyleBackColor = true;
             this.stackHistoBox.CheckedChanged += new System.EventHandler(this.stackHistoBox_CheckedChanged);
             // 

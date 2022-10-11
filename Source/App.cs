@@ -22,6 +22,7 @@ namespace Bio
         public static Series seriesTool = null;
         public static Recordings recordings = null;
         public static Automation automation = null;
+        public static BioConsole console = null;
         public static Library lib = null;
         public static List<string> recent = new List<string>();
 
@@ -66,6 +67,7 @@ namespace Bio
             seriesTool = new Series();
             recordings = new Recordings();
             automation = new Automation();
+            console = new BioConsole();
         }
         public static void AddROI(string an)
         {

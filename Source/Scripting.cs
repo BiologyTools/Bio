@@ -36,6 +36,7 @@ namespace Bio
             public object obj;
             public string output = "";
             public bool done = false;
+            public static List<string> usings = new List<string>();
             public Exception ex = null;
             public Thread thread;
             public ScriptType type = ScriptType.script;
@@ -60,8 +61,8 @@ namespace Bio
                 Thread t = new Thread(new ThreadStart(RunScript));
                 t.Start();
             }
-
             private static string scriptName = "";
+            private static string str = "";
             private static void RunScript()
             {
                 Script rn = Scripts[scriptName];
@@ -93,6 +94,38 @@ namespace Bio
                     {
                         rn.ex = e;
                     }
+                }
+            }
+            public static object RunString(string st)
+            {
+                try
+                {
+                    string loader =
+                  @"//css_reference Bio.dll;
+                    using System;
+                    using System.Windows.Forms;
+                    using System.Drawing;
+                    using System.Threading;
+                    using Bio;";
+                    foreach (string s in usings)
+                    {
+                        loader += usings + Environment.NewLine;
+                    }
+                    loader += @"
+                    public class Loader
+                    {
+                        public object Load()
+                        {" +
+                            st + @";
+                        }
+                    }";
+                    dynamic script = CSScript.Evaluator.LoadCode(loader);
+                    return script.Load();
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message, e.Source);
+                    return e;
                 }
             }
             public void Run()
@@ -280,6 +313,7 @@ namespace Bio
             timer.Start();
             codeview = new CodeView();
             codeview.Dock = DockStyle.Fill;
+            scriptLabel.Text = "NewScript.cs";
             //splitContainer.Dock = DockStyle.Fill;
             textBox = codeview.TextBox;
             splitContainer.Panel1.Controls.Add(codeview);
@@ -296,6 +330,10 @@ namespace Bio
             Script sc = new Script(file);
             Scripts.Add(sc.name, sc);
             RunByName(sc.name);
+        }
+        public static void RunString(string st)
+        {
+            Script.RunString(st);
         }
         public void Run()
         {
@@ -379,7 +417,12 @@ namespace Bio
 
         private void runButton_Click(object sender, EventArgs e)
         {
-            Run();
+            if (scriptLabel.Text.EndsWith(".ijm"))
+            {
+                ImageJ.RunString(textBox.Text, ImageView.SelectedImage.ID, headlessBox.Checked);
+            }
+            else
+                Run();
         }
 
         private void scriptLoadBut_Click(object sender, EventArgs e)

@@ -786,5 +786,10 @@ namespace Bio
             emissionToolStripMenuItem.Checked = true;
             Viewer.UpdateStatus();
         }
+
+        private void consoleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            App.console.Show();
+        }
     }
 }

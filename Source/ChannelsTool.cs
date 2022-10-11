@@ -47,6 +47,7 @@ namespace Bio
             maxBox.Value = (int)Channels[0].stats[0].StackMax;
             hist = new HistogramControl(Channels[channelsBox.SelectedIndex]);
             hist.GraphMax = (int)maxBox.Value;
+            maxGraphBox.Value = (int)maxBox.Value;
             MouseWheel += new System.Windows.Forms.MouseEventHandler(ChannelsTool_MouseWheel);
             statsPanel.Controls.Add(hist);
         }

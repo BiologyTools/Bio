@@ -60,9 +60,9 @@ namespace Bio
         }
         public void UpdateLines(bool refresh)
         {
-            lineBox.Text = "";
             if (refresh)
             {
+                lineBox.Text = "";
                 Graphics g = textBox.CreateGraphics();
                 for (int i = 0; i < textBox.Lines.Length; i++)
                 {
@@ -396,6 +396,7 @@ namespace Bio
         private void textBox_FontChanged(object sender, EventArgs e)
         {
             lineBox.Font = textBox.Font;
+            UpdateLines(true);
         }
 
         private void CodeView_Resize(object sender, EventArgs e)

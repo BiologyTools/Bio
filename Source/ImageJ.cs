@@ -36,23 +36,39 @@ namespace Bio
             else
                 pr.StartInfo.Arguments = "-macro " + p + " " + param;
             pr.Start();
+            File.Delete(Path.GetDirectoryName(ImageJPath) + "/done.txt");
             processes.Add(pr);
             do
             {
-                pr.WaitForExit();
+                if (File.Exists(Path.GetDirectoryName(ImageJPath) + "/done.txt"))
+                {
+                    do
+                    {
+                        try
+                        {
+                            File.Delete(Path.GetDirectoryName(ImageJPath) + "/done.txt");
+                        }
+                        catch (Exception)
+                        {
+                        
+                        }
+                    } while (File.Exists(Path.GetDirectoryName(ImageJPath) + "/done.txt"));
+                    pr.Kill();
+                    break;
+                }
             } while (!pr.HasExited);
-            //TODO
-            if (pr.StandardError.BaseStream.Length > 0)
-            {
-                string stder = pr.StandardError.ReadToEnd();
-            }
-            if (pr.StandardOutput.BaseStream.Length > 0)
-            {
-                string stdout = pr.StandardOutput.ReadToEnd();
-            }
-            File.Delete(p);
-        }
 
+        }
+        public static void RunOnImage(string con, string param, bool headless)
+        {
+            string st =
+            "run(\"Bio-Formats Importer\", \"open=\" + getArgument + \" autoscale color_mode=Default open_all_series display_metadata display_rois rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT\");" +
+            con + 
+            "run(\"Bio-Formats Exporter\", \"save=F:/TESTIMAGES/CZI/16Bit-ZStack.ome.tif export compression=Uncompressed\");" +
+            "dir = getDir(\"startup\");" +
+            "File.saveString(\"done\", dir + \"/done.txt\");";
+            RunString(st, param, headless);
+        }
         public static void Initialize(string path)
         {
             ImageJPath = path;

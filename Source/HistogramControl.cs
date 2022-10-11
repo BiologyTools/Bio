@@ -157,6 +157,7 @@ namespace Bio
             if (graphMax == 0)
                 graphMax = ushort.MaxValue;
             g.Clear(Color.LightGray);
+            g.ResetTransform();
             g.TranslateTransform(-graphMin, 0);
             string st = "";
             fx = ((float)this.Width) / ((float)graphMax);

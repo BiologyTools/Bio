@@ -996,16 +996,17 @@ namespace Bio
                     else
                         b = new SolidBrush(an.strokeColor);
                     PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
+                    float width = (float)8 / scale.Width;
                     if (an.type == ROI.Type.Point)
                     {
                         g.DrawLine(pen, ToScreenSpace(an.Point.ToPointF()), ToScreenSpace(new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1)));
-                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(width)));
                     }
                     else
                     if (an.type == ROI.Type.Line)
                     {
                         g.DrawLine(pen, ToScreenSpace(an.GetPoint(0).ToPointF()), ToScreenSpace(an.GetPoint(1).ToPointF()));
-                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(width)));
                     }
                     else
                     if (an.type == ROI.Type.Rectangle && an.Rect.W > 0 && an.Rect.H > 0)
@@ -1013,19 +1014,19 @@ namespace Bio
                         RectangleF[] rects = new RectangleF[1];
                         rects[0] = an.Rect.ToRectangleF();
                         g.DrawRectangles(pen, ToScreenSpace(rects));
-                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(width)));
                     }
                     else
                     if (an.type == ROI.Type.Ellipse)
                     {
                         g.DrawEllipse(pen, ToScreenSpace(an.Rect.ToRectangleF()));
-                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(width)));
                     }
                     else
                     if (an.type == ROI.Type.Polygon && an.closed)
                     {
                         g.DrawPolygon(pen, ToScreenSpace(an.GetPointsF()));
-                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(width)));
                     }
                     else
                     if (an.type == ROI.Type.Polygon && !an.closed)
@@ -1037,13 +1038,13 @@ namespace Bio
                         }
                         else
                             g.DrawLines(pen, ToScreenSpace(points));
-                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(width)));
                     }
                     else
                     if (an.type == ROI.Type.Polyline)
                     {
                         g.DrawLines(pen, ToScreenSpace(an.GetPointsF()));
-                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(scale.Width)));
+                        g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(width)));
                     }
 
                     else
@@ -1096,7 +1097,7 @@ namespace Bio
                         g.DrawRectangles(mag, ToScreenSpace(bo));
                         //Lets draw the selectBoxes.
                         List<RectangleF> rects = new List<RectangleF>();
-                        RectangleF[] sels = an.GetSelectBoxes(scale.Width);
+                        RectangleF[] sels = an.GetSelectBoxes(width);
                         for (int i = 0; i < an.selectedPoints.Count; i++)
                         {
                             if (an.selectedPoints[i] < an.GetPointCount())
