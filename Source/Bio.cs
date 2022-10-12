@@ -18,6 +18,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using loci.formats.meta;
+using System.Runtime.Serialization;
+using System.Text;
 
 namespace Bio
 {
@@ -2204,6 +2206,7 @@ namespace Bio
         }
         public byte[] GetSaveBytes(bool littleEndian)
         {
+            BufferInfo bf = this.Copy();
             Bitmap bitmap = (Bitmap)Image.Clone();
             if (littleEndian)
                 bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
@@ -3873,6 +3876,7 @@ namespace Bio
                     GC.Collect();
                     Statistics.CalcStatistics(Buffers[i]);
                 }
+                Channels.RemoveAt(0);
             }
             else
             if (Buffers[0].PixelFormat == PixelFormat.Format48bppRgb)
@@ -4940,6 +4944,7 @@ namespace Bio
             {
                 sizec = b.SizeC;
             }
+
             byte[] buffer;
             for (int c = 0; c < sizec; c++)
             {
@@ -4957,6 +4962,7 @@ namespace Bio
                         image.SetField(TiffTag.ORIENTATION, BitMiracle.LibTiff.Classic.Orientation.TOPLEFT);
                         image.SetField(TiffTag.PLANARCONFIG, PlanarConfig.CONTIG);
                         image.SetField(TiffTag.ROWSPERSTRIP, image.DefaultStripSize(0));
+                        image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISBLACK);
                         if (b.physicalSizeX != -1 && b.physicalSizeY != -1)
                         {
                             image.SetField(TiffTag.XRESOLUTION, (b.physicalSizeX * b.SizeX) / ((b.physicalSizeX * b.SizeX) * b.physicalSizeX));
@@ -5027,8 +5033,8 @@ namespace Bio
                 string json = JsonConvert.SerializeObject(b.imageInfo, Formatting.None);
                 desc += "-ImageInfo:" + fi + ":" + json + NewLine;
             }
-            Tiff image = Tiff.Open(ID, "w");
 
+            Tiff image = Tiff.Open(ID, "w");
             for (int fi = 0; fi < files.Length; fi++)
             {
                 int im = 0;
@@ -5049,7 +5055,7 @@ namespace Bio
                     {
                         for (int t = 0; t < b.SizeT; t++)
                         {
-                            image.SetDirectory((short)(c + (b.Buffers.Count * fi)));
+                            image.SetDirectory((short)(im + (b.Buffers.Count * fi)));
                             image.SetField(TiffTag.IMAGEWIDTH, b.SizeX);
                             image.SetField(TiffTag.IMAGEDESCRIPTION, desc);
                             image.SetField(TiffTag.IMAGELENGTH, b.SizeY);
@@ -5058,6 +5064,7 @@ namespace Bio
                             image.SetField(TiffTag.ROWSPERSTRIP, b.SizeY);
                             image.SetField(TiffTag.ORIENTATION, BitMiracle.LibTiff.Classic.Orientation.TOPLEFT);
                             image.SetField(TiffTag.PLANARCONFIG, PlanarConfig.CONTIG);
+                            image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISBLACK);
                             image.SetField(TiffTag.ROWSPERSTRIP, image.DefaultStripSize(0));
                             if (b.physicalSizeX != -1 && b.physicalSizeY != -1)
                             {
@@ -5075,7 +5082,7 @@ namespace Bio
                             image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                             // specify the page number
                             buffer = b.Buffers[im].GetSaveBytes(true);
-                            image.SetField(TiffTag.PAGENUMBER, c + (b.Buffers.Count * fi), b.Buffers.Count * files.Length);
+                            image.SetField(TiffTag.PAGENUMBER, im + (b.Buffers.Count * fi), b.Buffers.Count * files.Length);
                             for (int i = 0, offset = 0; i < b.SizeY; i++)
                             {
                                 image.WriteScanline(buffer, offset, i, 0);
@@ -5090,8 +5097,8 @@ namespace Bio
                 }
                 pr.Close();
             }
-            //buffer = null;
             image.Dispose();
+
         }
         public static BioImage[] OpenSeries(string file)
         {
@@ -5320,7 +5327,7 @@ namespace Bio
                 int str = image.ScanlineSize();
                 if (stride != str)
                     throw new InvalidDataException();
-                for (int p = series * b.sizeC; p < (series + 1) * b.sizeC; p++)
+                for (int p = 0; p < pages; p++)
                 {
                     image.SetDirectory((short)p);
                     byte[] bytes = new byte[stride * SizeY];
@@ -5333,8 +5340,6 @@ namespace Bio
                         Array.Reverse(bytes);
                     BufferInfo inf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(0, 0, 0), p);
                     inf.RotateFlip(RotateFlipType.Rotate180FlipNone);
-                    if (!b.littleEndian)
-                        inf.SwitchRedBlue();
                     b.Buffers.Add(inf);
                     Statistics.CalcStatistics(inf);
                     //b.Buffers[b.Buffers.Count - 1].Statistics = Statistics.FromBytes(inf);
@@ -5407,9 +5412,12 @@ namespace Bio
 
             Statistics.ClearCalcBuffer();
             AutoThreshold(b, false);
+            if (b.bitsPerPixel > 8)
+                b.StackThreshold(true);
+            else
+                b.StackThreshold(false);
             Recorder.AddLine("Bio.BioImage.Open(" + '"' + file + '"' + ");");
             Images.AddImage(b);
-
             pr.Close();
             pr.Dispose();
             st.Stop();

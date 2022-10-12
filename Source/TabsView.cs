@@ -224,7 +224,7 @@ namespace Bio
         {
             if (Image == null)
                 return;
-            saveTiffFileDialog.FileName = Image.Filename;
+            saveTiffFileDialog.FileName = Path.GetFileNameWithoutExtension(Image.Filename);
             if (saveTiffFileDialog.ShowDialog() != DialogResult.OK)
                 return;
             string[] sts = new string[1];
@@ -371,6 +371,7 @@ namespace Bio
         {
             if (Image == null)
                 return;
+            saveOMEFileDialog.FileName = Path.GetFileNameWithoutExtension(ImageView.SelectedImage.Filename);
             if (saveOMEFileDialog.ShowDialog() != DialogResult.OK)
                 return;
             foreach (string file in saveOMEFileDialog.FileNames)
@@ -750,7 +751,7 @@ namespace Bio
             Properties.Settings.Default.Recent = "";
             Properties.Settings.Default.Save();
             openRecentToolStripMenuItem.DropDownItems.Clear();
-
+            App.recent.Clear();
         }
 
         private void rotateToolStripMenuItem_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
