@@ -10,7 +10,7 @@ A .NET application for editing & annotating various microscopy imaging formats. 
 
 - Multiple view modes like Emission, and Filtered. ROI's shown for each channel can be configured in ROI Manager.
 
-- Convenient viewing of image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes. Supports viewing 
+- Convenient viewing of image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
 
 - Editing & saving ROI's in images to OME format image stacks.
 
