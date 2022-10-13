@@ -2,7 +2,7 @@
 
 # Bio
 
-A .NET application for editing & annotating various microscopy imaging formats. Supports all bioformats supported images. Integrates with ImageJ through ImageJ Macros.
+A .NET application for editing & annotating various microscopy imaging formats. Supports all bioformats supported images. Integrates with ImageJ, running ImageJ filters & macro functions.
 
 ## Features
 
