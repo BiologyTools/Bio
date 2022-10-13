@@ -8,6 +8,8 @@ A .NET application for editing & annotating various microscopy imaging formats. 
 
 - C# scripting with sample tool-script and other sample scripts in "/Scripts/" folder. [See samples](https://github.com/BioMicroscopy/BioImage-Scripts)
 
+- Supports running ImageJ macros commands on images open in Bio. New Console to run ImageJ macro commands and Bio C# functions.
+
 - Multiple view modes like Emission, and Filtered. ROI's shown for each channel can be configured in ROI Manager.
 
 - Convenient viewing of image stacks with scroll wheel moving Z-plane and mouse side buttons scrolling C-planes.
