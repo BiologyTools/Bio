@@ -367,7 +367,7 @@ namespace Bio
                         an.selectedPoints.Clear();
                         ImageView.selectedAnnotations.Add(an);
                         an.selected = true;
-                        RectangleF[] sels = an.GetSelectBoxes(ImageView.scale.Width);
+                        RectangleF[] sels = an.GetSelectBoxes(App.viewer.scale.Width);
                         for (int i = 0; i < sels.Length; i++)
                         {
                             if (sels[i].IntersectsWith(r))
@@ -504,7 +504,7 @@ namespace Bio
                         an.selectedPoints.Clear();
                         ImageView.selectedAnnotations.Add(an);
                         an.selected = true;
-                        RectangleF[] sels = an.GetSelectBoxes(ImageView.scale.Width);
+                        RectangleF[] sels = an.GetSelectBoxes(App.viewer.scale.Width);
                         for (int i = 0; i < sels.Length; i++)
                         {
                             if (sels[i].IntersectsWith(r))

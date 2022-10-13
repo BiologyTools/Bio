@@ -575,7 +575,7 @@ namespace Bio
         {
             if (Viewer == null)
                 return;
-            double moveAmount = 1500 * (1 / ImageView.scale.Width);
+            double moveAmount = 1500 * (1 / App.viewer.scale.Width);
             if (e.KeyCode == Keys.C && e.Control)
             {
                 Viewer.CopySelection();
@@ -588,13 +588,13 @@ namespace Bio
             }
             if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.NumPad7)
             {
-                ImageView.scale.Width -= 0.1f;
-                ImageView.scale.Height -= 0.1f;
+                App.viewer.scale.Width -= 0.1f;
+                App.viewer.scale.Height -= 0.1f;
             }
             if (e.KeyCode == Keys.Add || e.KeyCode == Keys.NumPad9)
             {
-                ImageView.scale.Width += 0.1f;
-                ImageView.scale.Height += 0.1f;
+                App.viewer.scale.Width += 0.1f;
+                App.viewer.scale.Height += 0.1f;
             }
             if (e.KeyCode == Keys.W || e.KeyCode == Keys.NumPad8)
             {

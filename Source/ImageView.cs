@@ -111,7 +111,7 @@ namespace Bio
         public bool loopC = true;
         private double pxWmicron = 0.004;
         private double pxHmicron = 0.004;
-        public static SizeF scale = new SizeF(1, 1);
+        public SizeF scale = new SizeF(1, 1);
         public void SetCoordinate(int z, int c, int t)
         {
             if (SelectedImage == null)
