@@ -1395,7 +1395,7 @@ namespace Bio
                 }
                 ind++;
             }
-            if (!Ctrl)
+            if (!Ctrl || e.Button == MouseButtons.Right)
             {
                 foreach (ROI item in selectedAnnotations)
                 {

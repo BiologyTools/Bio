@@ -410,6 +410,7 @@ namespace Bio
         public string id = "";
         public string roiID = "";
         public string roiName = "";
+        public int serie = 0;
         private string text = "";
 
         public double strokeWidth = 1;
@@ -519,7 +520,7 @@ namespace Bio
             Recorder.AddLine("ROI.CreatePoint(new ZCT(" + coord.Z + "," + coord.C + "," + coord.T + "), " + x + "," + y + ");");
             return an;
         }
-        public static ROI CreatePoint(int z, int c, int t, double x, double y)
+        public static ROI CreatePoint(int s,int z, int c, int t, double x, double y)
         {
             return CreatePoint(new ZCT(z, c, t), x, y);
         }
@@ -1827,7 +1828,7 @@ namespace Bio
                 }
             }
         }
-        public static unsafe Bitmap GetFiltered(int w, int h, int stride, PixelFormat px, byte[] bts, IntRange rr, IntRange rg, IntRange rb)
+        public static Bitmap GetFiltered(int w, int h, int stride, PixelFormat px, byte[] bts, IntRange rr, IntRange rg, IntRange rb)
         {
             if (px == PixelFormat.Format24bppRgb)
             {
@@ -2207,9 +2208,9 @@ namespace Bio
         public byte[] GetSaveBytes(bool littleEndian)
         {
             BufferInfo bf = this.Copy();
-            Bitmap bitmap = (Bitmap)Image.Clone();
             if (littleEndian)
-                bitmap.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                bf.RotateFlip(RotateFlipType.Rotate180FlipNone);
+            Bitmap bitmap = (Bitmap)bf.Image;
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat);
             IntPtr ptr = data.Scan0;
             int length = this.bytes.Length;
@@ -3685,6 +3686,8 @@ namespace Bio
         }
         public void To8Bit()
         {
+            if (Buffers[0].RGBChannelsCount == 4)
+                To24Bit();
             PixelFormat px = Buffers[0].PixelFormat;
             if (px == PixelFormat.Format8bppIndexed)
                 return;
@@ -3775,6 +3778,8 @@ namespace Bio
         }
         public void To16Bit()
         {
+            if (Buffers[0].RGBChannelsCount == 4)
+                To24Bit();
             if (Buffers[0].PixelFormat == PixelFormat.Format16bppGrayScale)
                 return;
             bitsPerPixel = 16;
@@ -3987,6 +3992,8 @@ namespace Bio
         }
         public void To48Bit()
         {
+            if (Buffers[0].RGBChannelsCount == 4)
+                To24Bit();
             if (Buffers[0].PixelFormat == PixelFormat.Format48bppRgb)
                 return;
             if (Buffers[0].PixelFormat == PixelFormat.Format8bppIndexed || Buffers[0].PixelFormat == PixelFormat.Format16bppGrayScale)
@@ -5081,7 +5088,13 @@ namespace Bio
                             // specify that it's a page within the multipage file
                             image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                             // specify the page number
-                            buffer = b.Buffers[im].GetSaveBytes(true);
+
+                            if (b.RGBChannelCount > 1)
+                            {
+                                buffer = b.Buffers[im].GetSaveBytes(false);
+                            }
+                            else
+                                buffer = b.Buffers[im].GetSaveBytes(true);
                             image.SetField(TiffTag.PAGENUMBER, im + (b.Buffers.Count * fi), b.Buffers.Count * files.Length);
                             for (int i = 0, offset = 0; i < b.SizeY; i++)
                             {
@@ -5291,7 +5304,8 @@ namespace Bio
                         int serie = int.Parse(val);
                         if (serie == series && sts[i].Length > 7)
                         {
-                            string ro = sts[i].Substring(sts[i].LastIndexOf(':') + 1, sts[i].Length - (sts[i].LastIndexOf(':') + 1));
+                            string s = sts[i].Substring(sts[i].IndexOf("ROI:") + 4, sts[i].Length - (sts[i].IndexOf("ROI:") + 4));
+                            string ro = s.Substring(s.IndexOf(":") + 1, s.Length - (s.IndexOf(':') + 1));
                             ROI roi = StringToROI(ro);
                             b.Annotations.Add(roi);
                         }
@@ -5395,7 +5409,7 @@ namespace Bio
                 b.Channels.Add(ch);
                 b.Coords = new int[b.SizeZ, b.SizeC, b.sizeT];
             }
-            if (b.stageSizeX == 0)
+            if (b.physicalSizeX == 0)
             {
                 b.stageSizeX = 0.04 * b.SizeX;
                 b.stageSizeY = 0.04 * b.SizeY;
@@ -7157,13 +7171,12 @@ namespace Bio
                 else
                     pts += points[j].X.ToString() + "," + points[j].Y.ToString() + " ";
             }
-
             char sep = (char)34;
             string sColor = sep.ToString() + an.strokeColor.A.ToString() + ',' + an.strokeColor.R.ToString() + ',' + an.strokeColor.G.ToString() + ',' + an.strokeColor.B.ToString() + sep.ToString();
             string bColor = sep.ToString() + an.fillColor.A.ToString() + ',' + an.fillColor.R.ToString() + ',' + an.fillColor.G.ToString() + ',' + an.fillColor.B.ToString() + sep.ToString();
 
             string line = an.roiID + ',' + an.roiName + ',' + an.type.ToString() + ',' + an.id + ',' + an.shapeIndex.ToString() + ',' +
-                an.Text + ',' + an.coord.Z.ToString() + ',' + an.coord.C.ToString() + ',' + an.coord.T.ToString() + ',' + an.X.ToString() + ',' + an.Y.ToString() + ',' +
+                an.Text + ',' + an.serie + ',' + an.coord.Z.ToString() + ',' + an.coord.C.ToString() + ',' + an.coord.T.ToString() + ',' + an.X.ToString() + ',' + an.Y.ToString() + ',' +
                 an.W.ToString() + ',' + an.H.ToString() + ',' + sep.ToString() + pts + sep.ToString() + ',' + sColor + ',' + an.strokeWidth.ToString() + ',' + bColor + ',' + an.font.Size.ToString() + ',' + NewLine;
             return line;
         }
@@ -7195,9 +7208,9 @@ namespace Bio
                     continue;
                 }
 
-                if (c == ',' && !inSep)
+                if ((c == ',') && !inSep)
                 {
-                    //ROIID,ROINAME,TYPE,ID,SHAPEINDEX,TEXT,S,C,Z,T,X,Y,W,H,POINTS,STROKECOLOR,STROKECOLORW,FILLCOLOR,FONTSIZE
+                    //ROIID,ROINAME,TYPE,ID,SHAPEINDEX,TEXT,C,Z,T,X,Y,W,H,POINTS,STROKECOLOR,STROKECOLORW,FILLCOLOR,FONTSIZE
                     if (col == 0)
                     {
                         //ROIID
@@ -7236,67 +7249,72 @@ namespace Bio
                     else
                     if (col == 6)
                     {
-                        an.coord.Z = int.Parse(val);
+                        an.serie = int.Parse(val);
                     }
                     else
                     if (col == 7)
                     {
-                        an.coord.C = int.Parse(val);
+                        an.coord.Z = int.Parse(val);
                     }
                     else
                     if (col == 8)
                     {
-                        an.coord.T = int.Parse(val);
+                        an.coord.C = int.Parse(val);
                     }
                     else
                     if (col == 9)
                     {
-                        x = double.Parse(val);
+                        an.coord.T = int.Parse(val);
                     }
                     else
                     if (col == 10)
                     {
-                        y = double.Parse(val);
+                        x = double.Parse(val);
                     }
                     else
                     if (col == 11)
                     {
-                        w = double.Parse(val);
+                        y = double.Parse(val);
                     }
                     else
                     if (col == 12)
                     {
-                        h = double.Parse(val);
+                        w = double.Parse(val);
                     }
                     else
                     if (col == 13)
+                    {
+                        h = double.Parse(val);
+                    }
+                    else
+                    if (col == 14)
                     {
                         //POINTS
                         an.AddPoints(an.stringToPoints(val));
                         an.Rect = new RectangleD(x, y, w, h);
                     }
                     else
-                    if (col == 14)
+                    if (col == 15)
                     {
                         //STROKECOLOR
                         string[] st = val.Split(',');
                         an.strokeColor = System.Drawing.Color.FromArgb(int.Parse(st[0]), int.Parse(st[1]), int.Parse(st[2]), int.Parse(st[3]));
                     }
                     else
-                    if (col == 15)
+                    if (col == 16)
                     {
                         //STROKECOLORW
                         an.strokeWidth = double.Parse(val);
                     }
                     else
-                    if (col == 16)
+                    if (col == 17)
                     {
                         //FILLCOLOR
                         string[] st = val.Split(',');
                         an.fillColor = System.Drawing.Color.FromArgb(int.Parse(st[0]), int.Parse(st[1]), int.Parse(st[2]), int.Parse(st[3]));
                     }
                     else
-                    if (col == 17)
+                    if (col == 18)
                     {
                         //FONTSIZE
                         double s = double.Parse(val);

@@ -69,6 +69,19 @@ namespace Bio
             automation = new Automation();
             console = new BioConsole();
         }
+
+        public static void Hide()
+        {
+            tools.Hide();
+            stackTools.Hide();
+            manager.Hide();
+            runner.Hide();
+            recorder.Hide();
+            seriesTool.Hide();
+            recordings.Hide();
+            console.Hide();
+        }
+
         public static void AddROI(string an)
         {
             Annotations.Add(BioImage.StringToROI(an));

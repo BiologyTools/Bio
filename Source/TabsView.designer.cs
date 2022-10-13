@@ -94,6 +94,7 @@ namespace Bio
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileSystemWatcher = new System.IO.FileSystemWatcher();
             this.consoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.switchRedBlueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -333,7 +334,7 @@ namespace Bio
             // 
             this.rGBToolStripMenuItem.CheckOnClick = true;
             this.rGBToolStripMenuItem.Name = "rGBToolStripMenuItem";
-            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.rGBToolStripMenuItem.Text = "RGB";
             this.rGBToolStripMenuItem.Click += new System.EventHandler(this.rGBToolStripMenuItem_Click);
             // 
@@ -343,7 +344,7 @@ namespace Bio
             this.filteredToolStripMenuItem.CheckOnClick = true;
             this.filteredToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.filteredToolStripMenuItem.Name = "filteredToolStripMenuItem";
-            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.filteredToolStripMenuItem.Text = "Filtered";
             this.filteredToolStripMenuItem.Click += new System.EventHandler(this.filteredToolStripMenuItem_Click);
             // 
@@ -351,14 +352,14 @@ namespace Bio
             // 
             this.rawToolStripMenuItem.CheckOnClick = true;
             this.rawToolStripMenuItem.Name = "rawToolStripMenuItem";
-            this.rawToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.rawToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.rawToolStripMenuItem.Text = "Raw";
             this.rawToolStripMenuItem.Click += new System.EventHandler(this.rawToolStripMenuItem_Click);
             // 
             // emissionToolStripMenuItem
             // 
             this.emissionToolStripMenuItem.Name = "emissionToolStripMenuItem";
-            this.emissionToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.emissionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.emissionToolStripMenuItem.Text = "Emission";
             this.emissionToolStripMenuItem.Click += new System.EventHandler(this.emissionToolStripMenuItem_Click);
             // 
@@ -374,7 +375,7 @@ namespace Bio
             // setToolToolStripMenuItem
             // 
             this.setToolToolStripMenuItem.Name = "setToolToolStripMenuItem";
-            this.setToolToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.setToolToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.setToolToolStripMenuItem.Text = "Set Tool";
             this.setToolToolStripMenuItem.Click += new System.EventHandler(this.setToolToolStripMenuItem_Click);
             // 
@@ -421,7 +422,8 @@ namespace Bio
             // 
             this.channelsToolToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.autoThresholdToolStripMenuItem,
-            this.channelsToolToolStripMenuItem1});
+            this.channelsToolToolStripMenuItem1,
+            this.switchRedBlueToolStripMenuItem});
             this.channelsToolToolStripMenuItem.Name = "channelsToolToolStripMenuItem";
             this.channelsToolToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
             this.channelsToolToolStripMenuItem.Text = "Channels";
@@ -429,14 +431,14 @@ namespace Bio
             // autoThresholdToolStripMenuItem
             // 
             this.autoThresholdToolStripMenuItem.Name = "autoThresholdToolStripMenuItem";
-            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.autoThresholdToolStripMenuItem.Text = "Auto Threshold All";
             this.autoThresholdToolStripMenuItem.Click += new System.EventHandler(this.autoThresholdToolStripMenuItem_Click);
             // 
             // channelsToolToolStripMenuItem1
             // 
             this.channelsToolToolStripMenuItem1.Name = "channelsToolToolStripMenuItem1";
-            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(172, 22);
+            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.channelsToolToolStripMenuItem1.Text = "Channels Tool";
             this.channelsToolToolStripMenuItem1.Click += new System.EventHandler(this.channelsToolToolStripMenuItem_Click);
             // 
@@ -506,35 +508,35 @@ namespace Bio
             // bit8ToolStripMenuItem
             // 
             this.bit8ToolStripMenuItem.Name = "bit8ToolStripMenuItem";
-            this.bit8ToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.bit8ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.bit8ToolStripMenuItem.Text = "To 8 Bit";
             this.bit8ToolStripMenuItem.Click += new System.EventHandler(this.bit8ToolStripMenuItem_Click);
             // 
             // bit16ToolStripMenuItem
             // 
             this.bit16ToolStripMenuItem.Name = "bit16ToolStripMenuItem";
-            this.bit16ToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.bit16ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.bit16ToolStripMenuItem.Text = "To 16 Bit";
             this.bit16ToolStripMenuItem.Click += new System.EventHandler(this.bit16ToolStripMenuItem_Click);
             // 
             // to24BitToolStripMenuItem
             // 
             this.to24BitToolStripMenuItem.Name = "to24BitToolStripMenuItem";
-            this.to24BitToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.to24BitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.to24BitToolStripMenuItem.Text = "To 24 Bit";
             this.to24BitToolStripMenuItem.Click += new System.EventHandler(this.to24BitToolStripMenuItem_Click);
             // 
             // to36BitToolStripMenuItem
             // 
             this.to36BitToolStripMenuItem.Name = "to36BitToolStripMenuItem";
-            this.to36BitToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.to36BitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.to36BitToolStripMenuItem.Text = "To 32 Bit";
             this.to36BitToolStripMenuItem.Click += new System.EventHandler(this.to32BitToolStripMenuItem_Click);
             // 
             // to48BitToolStripMenuItem
             // 
             this.to48BitToolStripMenuItem.Name = "to48BitToolStripMenuItem";
-            this.to48BitToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.to48BitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.to48BitToolStripMenuItem.Text = "To 48 Bit";
             this.to48BitToolStripMenuItem.Click += new System.EventHandler(this.to48BitToolStripMenuItem_Click);
             // 
@@ -595,6 +597,13 @@ namespace Bio
             this.consoleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.consoleToolStripMenuItem.Text = "Console";
             this.consoleToolStripMenuItem.Click += new System.EventHandler(this.consoleToolStripMenuItem_Click);
+            // 
+            // switchRedBlueToolStripMenuItem
+            // 
+            this.switchRedBlueToolStripMenuItem.Name = "switchRedBlueToolStripMenuItem";
+            this.switchRedBlueToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.switchRedBlueToolStripMenuItem.Text = "Switch Red Blue";
+            this.switchRedBlueToolStripMenuItem.Click += new System.EventHandler(this.switchRedBlueToolStripMenuItem_Click);
             // 
             // TabsView
             // 
@@ -689,5 +698,6 @@ namespace Bio
         private System.Windows.Forms.ToolStripMenuItem stackToolsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem emissionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem consoleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem switchRedBlueToolStripMenuItem;
     }
 }

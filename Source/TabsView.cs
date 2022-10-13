@@ -792,5 +792,13 @@ namespace Bio
         {
             App.console.Show();
         }
+
+        private void switchRedBlueToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            foreach (BufferInfo bf in ImageView.SelectedImage.Buffers)
+            {
+                bf.SwitchRedBlue();
+            }
+        }
     }
 }
