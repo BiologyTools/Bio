@@ -29,11 +29,14 @@ namespace Bio
             ImageJ.RunOnImage(textBox.Text, ImageView.SelectedImage.ID, headlessBox.Checked);
             consoleBox.Text += textBox.Text + Environment.NewLine;
             textBox.Text = "";
-            string filename = System.IO.Path.GetFileNameWithoutExtension(ImageView.SelectedImage.ID);
+            string filename = "";
             if (ImageView.SelectedImage.ID.EndsWith(".ome.tif"))
             {
-                filename = ImageView.SelectedImage.ID.Replace(".ome.tif", "");
+                filename = System.IO.Path.GetFileNameWithoutExtension(ImageView.SelectedImage.ID);
+                filename = filename.Remove(filename.Length - 4, 4);
             }
+            else
+                filename = System.IO.Path.GetFileNameWithoutExtension(ImageView.SelectedImage.ID);
             string file = System.IO.Path.GetDirectoryName(ImageView.SelectedImage.ID) + "/" + filename + ".ome.tif";
             if (ImageView.SelectedImage.ID.EndsWith(".ome.tif"))
                 ImageView.SelectedImage.Update();
