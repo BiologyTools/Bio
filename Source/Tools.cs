@@ -161,7 +161,7 @@ namespace Bio
         }
         public void UpdateView()
         {
-            App.viewer.UpdateStatus();
+            App.viewer.UpdateView();
         }
         public void UpdateSelected()
         {
@@ -205,7 +205,7 @@ namespace Bio
                 else
                 {
                     //If we click on a point 1 we close this polygon
-                    RectangleD d = new RectangleD(e.X, e.Y, anno.selectBoxSize, anno.selectBoxSize);
+                    RectangleD d = new RectangleD(e.X, e.Y, ROI.selectBoxSize, ROI.selectBoxSize);
                     if (d.IntersectsWith(anno.Point))
                     {
                         anno.closed = true;
@@ -356,13 +356,13 @@ namespace Bio
                 anno = new ROI();
             }
             else
-            if (currentTool.type == Tool.Type.rectSel)
+            if (currentTool.type == Tool.Type.rectSel && buts == MouseButtons.Left)
             {
                 ImageView.selectedAnnotations.Clear();
                 RectangleF r = GetTool(Tool.Type.rectSel).RectangleF;
                 foreach (ROI an in App.viewer.AnnotationsRGB)
                 {
-                    if (an.GetSelectBound().ToRectangleF().IntersectsWith(r))
+                    if (an.GetSelectBound(App.viewer.GetScale()).ToRectangleF().IntersectsWith(r))
                     {
                         an.selectedPoints.Clear();
                         ImageView.selectedAnnotations.Add(an);
@@ -499,7 +499,7 @@ namespace Bio
                 RectangleF r = Tools.GetTool(Tools.Tool.Type.rectSel).RectangleF;
                 foreach (ROI an in App.viewer.AnnotationsRGB)
                 {
-                    if (an.GetSelectBound().ToRectangleF().IntersectsWith(r))
+                    if (an.GetSelectBound(App.viewer.GetScale()).ToRectangleF().IntersectsWith(r))
                     {
                         an.selectedPoints.Clear();
                         ImageView.selectedAnnotations.Add(an);
@@ -560,8 +560,6 @@ namespace Bio
             if (Tools.currentTool.type == Tools.Tool.Type.pan && (buts == MouseButtons.Middle || buts == MouseButtons.Left))
             {
                 PointD pf = new PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
-                if (pf.X > 50 && pf.Y > 50)
-                    return;
                 App.viewer.Origin = new PointD(App.viewer.Origin.X + pf.X, App.viewer.Origin.Y + pf.Y);
                 UpdateView();
             }

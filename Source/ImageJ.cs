@@ -92,6 +92,39 @@ namespace Bio
                 App.tabsView.AddTab(BioImage.OpenFile(ffile));
             }
         }
+        public static void RunOnImage(string con)
+        {
+            string filename = "";
+            string dir = Path.GetDirectoryName(ImageView.SelectedImage.ID);
+            if (ImageView.SelectedImage.ID.EndsWith(".ome.tif"))
+            {
+                filename = Path.GetFileNameWithoutExtension(ImageView.SelectedImage.ID);
+                filename = filename.Remove(filename.Length - 4, 4);
+            }
+            else
+                filename = Path.GetFileNameWithoutExtension(ImageView.SelectedImage.ID);
+            string file = dir + "\\" + filename + "-temp" + ".ome.tif";
+            file = file.Replace("\\", "/");
+            string st =
+            "run(\"Bio-Formats Importer\", \"open=\" + getArgument + \" autoscale color_mode=Default open_all_series display_rois rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT\"); " + con +
+            "run(\"Bio-Formats Exporter\", \"save=" + file + " export compression=Uncompressed\"); " +
+            "dir = getDir(\"startup\"); " +
+            "File.saveString(\"done\", dir + \"/done.txt\");";
+            //We save the image as a temp image as otherwise imagej won't export due to file access error.
+            RunString(st, file, false);
+            string ffile = dir + "/" + filename + ".ome.tif";
+            File.Delete(ffile);
+            File.Copy(file, ffile);
+            File.Delete(file);
+            if (ImageView.SelectedImage.ID.EndsWith(".ome.tif"))
+            {
+                ImageView.SelectedImage.Update();
+            }
+            else
+            {
+                App.tabsView.AddTab(BioImage.OpenFile(ffile));
+            }
+        }
         public static void Initialize(string path)
         {
             ImageJPath = path;

@@ -291,7 +291,6 @@ namespace Bio
                 }
                 else
                     UpdatePoint(value, 0);
-                UpdateSelectBoxs();
                 UpdateBoundingBox();
             }
         }
@@ -330,7 +329,6 @@ namespace Bio
                     Points[2] = new PointD(value.X, value.Y + value.H);
                     Points[3] = new PointD(value.X + value.W, value.Y + value.H);
                 }
-                UpdateSelectBoxs();
                 UpdateBoundingBox();
             }
         }
@@ -390,7 +388,7 @@ namespace Bio
         }
 
         public Type type;
-        public float selectBoxSize = 3f;
+        public static float selectBoxSize = 8f;
         private List<PointD> Points = new List<PointD>();
         public List<PointD> PointsD
         {
@@ -445,7 +443,6 @@ namespace Bio
         {
             ROI copy = new ROI();
             copy.type = type;
-            copy.selectBoxSize = selectBoxSize;
             copy.id = id;
             copy.roiID = roiID;
             copy.roiName = roiName;
@@ -477,7 +474,6 @@ namespace Bio
                 if (type == Type.Label)
                 {
                     UpdateBoundingBox();
-                    UpdateSelectBoxs();
                 }
             }
         }
@@ -488,9 +484,10 @@ namespace Bio
                 return TextRenderer.MeasureText(text, font);
             }
         }
-        public RectangleD GetSelectBound()
+        public RectangleD GetSelectBound(double scale)
         {
-            return new RectangleD(BoundingBox.X - selectBoxSize, BoundingBox.Y - selectBoxSize, BoundingBox.W + selectBoxSize, BoundingBox.H + selectBoxSize);
+            double f = scale / 2;
+            return new RectangleD(BoundingBox.X - f, BoundingBox.Y - f, BoundingBox.W + scale, BoundingBox.H + scale);
         }
         public ROI()
         {
@@ -500,14 +497,13 @@ namespace Bio
             BoundingBox = new RectangleD(0, 0, 1, 1);
         }
 
-        public RectangleF[] GetSelectBoxes(float size)
+        public RectangleF[] GetSelectBoxes(double s)
         {
-            float f = (selectBoxSize) / 2;
+            double f = s / 2;
             selectBoxs.Clear();
-            
             for (int i = 0; i < Points.Count; i++)
             {
-                selectBoxs.Add(new RectangleF((float)Points[i].X - f, (float)Points[i].Y - f, selectBoxSize, selectBoxSize));
+                selectBoxs.Add(new RectangleF((float)(Points[i].X - f), (float)(Points[i].Y - f), (float)s, (float)s));
             }
             return selectBoxs.ToArray();
         }
@@ -578,7 +574,6 @@ namespace Bio
                 Points[i] = p;
             }
             UpdateBoundingBox();
-            UpdateSelectBoxs();
         }
         public PointD GetPoint(int i)
         {
@@ -601,13 +596,11 @@ namespace Bio
         public void AddPoint(PointD p)
         {
             Points.Add(p);
-            UpdateSelectBoxs();
             UpdateBoundingBox();
         }
         public void AddPoints(PointD[] p)
         {
             Points.AddRange(p);
-            UpdateSelectBoxs();
             UpdateBoundingBox();
         }
         public void RemovePoints(int[] indexs)
@@ -626,7 +619,6 @@ namespace Bio
             }
             Points = inds;
             UpdateBoundingBox();
-            UpdateSelectBoxs();
         }
         public int GetPointCount()
         {
@@ -657,15 +649,6 @@ namespace Bio
                     pts += ps[j].X.ToString() + "," + ps[j].Y.ToString() + " ";
             }
             return pts;
-        }
-        public void UpdateSelectBoxs()
-        {
-            float f = selectBoxSize / 2;
-            selectBoxs.Clear();
-            for (int i = 0; i < Points.Count; i++)
-            {
-                selectBoxs.Add(new RectangleF((float)Points[i].X - f, (float)Points[i].Y - f, selectBoxSize, selectBoxSize));
-            }
         }
         public void UpdateBoundingBox()
         {
@@ -2117,11 +2100,6 @@ namespace Bio
             pixelFormat = im.PixelFormat;
             Coordinate = coord;
             Image = im;
-            if (isRGB)
-                SwitchRedBlue();
-            Bitmap b = (Bitmap)Image.Clone();
-            b.RotateFlip(RotateFlipType.Rotate180FlipNone);
-            Image = b;
         }
         public BufferInfo(int w, int h, PixelFormat px, byte[] bts, ZCT coord, string id)
         {
@@ -2209,7 +2187,10 @@ namespace Bio
         {
             BufferInfo bf = this.Copy();
             if (littleEndian)
+            {
                 bf.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                bf.SwitchRedBlue();
+            }
             Bitmap bitmap = (Bitmap)bf.Image;
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat);
             IntPtr ptr = data.Scan0;
@@ -4111,11 +4092,28 @@ namespace Bio
                 ZCT co = Buffers[i].Coordinate;
                 Bitmap b = GetFiltered(i, rf, gf, bf);
                 BufferInfo inf = new BufferInfo(bm.ID, b, co, i);
+                Statistics.CalcStatistics(inf);
                 bm.Coords[co.Z, co.C, co.T] = i;
                 bm.Buffers.Add(inf);
             }
+            foreach (Channel item in bm.Channels)
+            {
+                item.Min = 0;
+                if (bm.bitsPerPixel > 8)
+                    item.Max = ushort.MaxValue;
+                else
+                    item.Max = 255;
+            }
+            //We wait for threshold image statistics calculation
+            do
+            {
+                Thread.Sleep(50);
+            } while (Buffers[Buffers.Count - 1].Stats == null);
+            AutoThreshold(bm, false);
+            Statistics.ClearCalcBuffer();
             Images.AddImage(bm);
-            Recorder.AddLine("App.Image.Bake(" + rf.Min + "," + rf.Max + "," + gf.Min + "," + gf.Max + "," + bf.Min + "," + bf.Max + ");");
+            App.tabsView.AddTab(bm);
+            Recorder.AddLine("ImageView.SelectedImage.Bake(" + rf.Min + "," + rf.Max + "," + gf.Min + "," + gf.Max + "," + bf.Min + "," + bf.Max + ");");
         }
         public void UpdateCoords()
         {
@@ -5108,13 +5106,7 @@ namespace Bio
                             // specify that it's a page within the multipage file
                             image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                             // specify the page number
-
-                            if (b.RGBChannelCount > 1)
-                            {
-                                buffer = b.Buffers[im].GetSaveBytes(false);
-                            }
-                            else
-                                buffer = b.Buffers[im].GetSaveBytes(true);
+                            buffer = b.Buffers[im].GetSaveBytes(false);
                             image.SetField(TiffTag.PAGENUMBER, im + (b.Buffers.Count * fi), b.Buffers.Count * files.Length);
                             for (int i = 0, offset = 0; i < b.SizeY; i++)
                             {

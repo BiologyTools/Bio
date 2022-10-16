@@ -426,12 +426,7 @@ namespace Bio
         }
         public void UpdateSelectBoxSize(float size)
         {
-            if (SelectedImage == null)
-                return;
-            foreach (ROI item in SelectedImage.Annotations)
-            {
-                item.selectBoxSize = size;
-            }
+            ROI.selectBoxSize = size;
         }
         public void UpdateOverlay()
         {
@@ -990,7 +985,7 @@ namespace Bio
                     mag = new Pen(Brushes.Magenta, (float)an.strokeWidth / scale.Width);
                     green = new Pen(Brushes.Green, (float)an.strokeWidth / scale.Width);
                     blue = new Pen(Brushes.Blue, (float)an.strokeWidth / scale.Width);
-                    Font fo = new Font(an.font.FontFamily, (float)an.strokeWidth / scale.Width);
+                    Font fo = new Font(an.font.FontFamily, (float)(an.strokeWidth / scale.Width) * an.font.Size);
                     if (an.selected)
                     {
                         b = new SolidBrush(Color.Magenta);
@@ -998,7 +993,7 @@ namespace Bio
                     else
                         b = new SolidBrush(an.strokeColor);
                     PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
-                    float width = (float)8 / scale.Width;
+                    float width = (float)ToViewSizeW(ROI.selectBoxSize / scale.Width);
                     if (an.type == ROI.Type.Point)
                     {
                         g.DrawLine(pen, ToScreenSpace(an.Point.ToPointF()), ToScreenSpace(new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1)));
@@ -1083,6 +1078,7 @@ namespace Bio
                         //Lets draw the text of this ROI in the middle of the RO
                         float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
                         float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
+
                         g.DrawString(an.Text, fo, b, ToScreenSpace(new PointF(fw, fh)));
                     }
                     if (bounds)
@@ -1146,7 +1142,6 @@ namespace Bio
             else
                 Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(0, 0, 0, 0);
         }
-
         private void DrawView(Graphics g)
         {
             if (update)
@@ -1157,7 +1152,7 @@ namespace Bio
                 return;
             g.TranslateTransform(pictureBox.Width / 2, pictureBox.Height / 2);
             if (scale.Width == 0 || float.IsInfinity(scale.Width))
-                scale = new SizeF(0.00001f, 0.00001f);
+                scale = new SizeF(1,1);
             g.ScaleTransform(scale.Width, scale.Height);
             g.FillRectangle(Brushes.LightGray, ToScreenRectF(PointD.MinX, PointD.MinY, PointD.MaxX - PointD.MinX, PointD.MaxY - PointD.MinY));
             RectangleF[] rf = new RectangleF[1];
@@ -1182,7 +1177,10 @@ namespace Bio
         {
             DrawView(e.Graphics);
         }
-
+        public double GetScale()
+        {
+            return ToViewSizeW(ROI.selectBoxSize / scale.Width);
+        }
         private void rgbPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             if (SelectedImage == null)
@@ -1411,17 +1409,19 @@ namespace Bio
 
             if (Tools.currentTool.type == Tools.Tool.Type.move)
             {
+                float width = (float)ToViewSizeW(ROI.selectBoxSize / scale.Width);
                 foreach (BioImage bi in Images)
                 {
                     foreach (ROI an in bi.Annotations)
                     {
-                        if (an.GetSelectBound().IntersectsWith(p.X, p.Y))
+                        if (an.GetSelectBound(width).IntersectsWith(p.X, p.Y))
                         {
                             selectedAnnotations.Add(an);
                             an.selected = true;
 
                             RectangleF r = new RectangleF((float)p.X, (float)p.Y, 1, 1);
-                            RectangleF[] sels = an.GetSelectBoxes(scale.Width);
+                            
+                            RectangleF[] sels = an.GetSelectBoxes(width);
                             for (int i = 0; i < sels.Length; i++)
                             {
                                 if (sels[i].IntersectsWith(r))

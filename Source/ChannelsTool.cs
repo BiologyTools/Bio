@@ -143,6 +143,7 @@ namespace Bio
             maxBox.Value = SelectedChannel.Max;
             UpdateItems();
             hist.UpdateView();
+
         }
 
         private void ChannelsTool_ResizeEnd(object sender, EventArgs e)
@@ -267,7 +268,7 @@ namespace Bio
 
         private void applyBut_Click(object sender, EventArgs e)
         {
-            App.Image.Bake(App.Image.RChannel.range, App.Image.GChannel.range, App.Image.BChannel.range);
+            ImageView.SelectedImage.Bake(ImageView.SelectedImage.RChannel.range, ImageView.SelectedImage.GChannel.range, ImageView.SelectedImage.BChannel.range);
         }
 
         private void minToolStripMenuItem_Click(object sender, EventArgs e)
