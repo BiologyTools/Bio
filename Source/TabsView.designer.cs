@@ -95,6 +95,8 @@ namespace Bio
             this.fileSystemWatcher = new System.IO.FileSystemWatcher();
             this.consoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.switchRedBlueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createFunctionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -550,6 +552,8 @@ namespace Bio
             // scriptToolStripMenuItem
             // 
             this.scriptToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.runToolStripMenuItem,
+            this.createFunctionToolStripMenuItem,
             this.consoleToolStripMenuItem,
             this.scriptRunnerToolStripMenuItem,
             this.scriptRecorderToolStripMenuItem});
@@ -604,6 +608,20 @@ namespace Bio
             this.switchRedBlueToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.switchRedBlueToolStripMenuItem.Text = "Switch Red Blue";
             this.switchRedBlueToolStripMenuItem.Click += new System.EventHandler(this.switchRedBlueToolStripMenuItem_Click);
+            // 
+            // createFunctionToolStripMenuItem
+            // 
+            this.createFunctionToolStripMenuItem.Name = "createFunctionToolStripMenuItem";
+            this.createFunctionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.createFunctionToolStripMenuItem.Text = "Functions Tool";
+            this.createFunctionToolStripMenuItem.Click += new System.EventHandler(this.createFunctionToolStripMenuItem_Click);
+            // 
+            // runToolStripMenuItem
+            // 
+            this.runToolStripMenuItem.Name = "runToolStripMenuItem";
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.runToolStripMenuItem.Text = "Run Function";
+            this.runToolStripMenuItem.DropDownOpening += new System.EventHandler(this.runToolStripMenuItem_DropDownOpening);
             // 
             // TabsView
             // 
@@ -699,5 +717,7 @@ namespace Bio
         private System.Windows.Forms.ToolStripMenuItem emissionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem consoleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem switchRedBlueToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem createFunctionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem;
     }
 }

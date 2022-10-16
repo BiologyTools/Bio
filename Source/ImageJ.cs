@@ -57,17 +57,26 @@ namespace Bio
                     break;
                 }
             } while (!pr.HasExited);
-
+            File.Delete(p);
         }
         public static void RunOnImage(string con, string param, bool headless)
         {
+            string file = Path.GetDirectoryName(ImageView.SelectedImage.ID) + "\\" + Path.GetFileNameWithoutExtension(ImageView.SelectedImage.ID) + ".ome.tif";
             string st =
-            "run(\"Bio-Formats Importer\", \"open=\" + getArgument + \" autoscale color_mode=Default open_all_series display_metadata display_rois rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT\");" +
-            con + 
-            "run(\"Bio-Formats Exporter\", \"save=F:/TESTIMAGES/CZI/16Bit-ZStack.ome.tif export compression=Uncompressed\");" +
-            "dir = getDir(\"startup\");" +
+            "run(\"Bio-Formats Importer\", \"open=\" + getArgument + \" autoscale color_mode=Default open_all_series display_rois rois_import=[ROI manager] view=Hyperstack stack_order=XYCZT\"); " + con + 
+            "run(\"Bio-Formats Exporter\", \"save=" + file + " export compression=Uncompressed\"); " +
+            "dir = getDir(\"startup\"); " +
             "File.saveString(\"done\", dir + \"/done.txt\");";
             RunString(st, param, headless);
+            if (ImageView.SelectedImage.ID.EndsWith(".ome.tif"))
+            {
+                ImageView.SelectedImage.Update();
+                App.viewer.UpdateImage();
+            }
+            else
+            {
+                App.tabsView.AddTab(BioImage.OpenFile(file));
+            }
         }
         public static void Initialize(string path)
         {

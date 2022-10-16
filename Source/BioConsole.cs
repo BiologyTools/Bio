@@ -40,5 +40,11 @@ namespace Bio
         {
             this.TopMost = topMostBox.Checked;
         }
+
+        private void BioConsole_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+            this.Hide();
+        }
     }
 }

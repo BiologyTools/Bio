@@ -51,7 +51,7 @@ namespace Bio
             this.textBox.Location = new System.Drawing.Point(0, 0);
             this.textBox.Multiline = true;
             this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(429, 65);
+            this.textBox.Size = new System.Drawing.Size(429, 67);
             this.textBox.TabIndex = 18;
             // 
             // runBut
@@ -59,7 +59,7 @@ namespace Bio
             this.runBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.runBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.runBut.ForeColor = System.Drawing.Color.White;
-            this.runBut.Location = new System.Drawing.Point(378, 233);
+            this.runBut.Location = new System.Drawing.Point(378, 237);
             this.runBut.Name = "runBut";
             this.runBut.Size = new System.Drawing.Size(56, 23);
             this.runBut.TabIndex = 21;
@@ -75,7 +75,7 @@ namespace Bio
             this.consoleBox.Location = new System.Drawing.Point(0, 0);
             this.consoleBox.Multiline = true;
             this.consoleBox.Name = "consoleBox";
-            this.consoleBox.Size = new System.Drawing.Size(429, 157);
+            this.consoleBox.Size = new System.Drawing.Size(429, 159);
             this.consoleBox.TabIndex = 22;
             // 
             // splitContainer
@@ -94,8 +94,8 @@ namespace Bio
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.textBox);
-            this.splitContainer.Size = new System.Drawing.Size(429, 226);
-            this.splitContainer.SplitterDistance = 157;
+            this.splitContainer.Size = new System.Drawing.Size(429, 230);
+            this.splitContainer.SplitterDistance = 159;
             this.splitContainer.TabIndex = 23;
             // 
             // imagejBut
@@ -103,7 +103,7 @@ namespace Bio
             this.imagejBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.imagejBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.imagejBut.ForeColor = System.Drawing.Color.White;
-            this.imagejBut.Location = new System.Drawing.Point(299, 233);
+            this.imagejBut.Location = new System.Drawing.Point(299, 237);
             this.imagejBut.Name = "imagejBut";
             this.imagejBut.Size = new System.Drawing.Size(73, 23);
             this.imagejBut.TabIndex = 24;
@@ -115,7 +115,7 @@ namespace Bio
             // 
             this.headlessBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.headlessBox.AutoSize = true;
-            this.headlessBox.Location = new System.Drawing.Point(223, 237);
+            this.headlessBox.Location = new System.Drawing.Point(223, 241);
             this.headlessBox.Name = "headlessBox";
             this.headlessBox.Size = new System.Drawing.Size(70, 17);
             this.headlessBox.TabIndex = 25;
@@ -126,7 +126,7 @@ namespace Bio
             // 
             this.topMostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.topMostBox.AutoSize = true;
-            this.topMostBox.Location = new System.Drawing.Point(11, 237);
+            this.topMostBox.Location = new System.Drawing.Point(11, 241);
             this.topMostBox.Name = "topMostBox";
             this.topMostBox.Size = new System.Drawing.Size(71, 17);
             this.topMostBox.TabIndex = 26;
@@ -139,7 +139,7 @@ namespace Bio
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(439, 263);
+            this.ClientSize = new System.Drawing.Size(439, 267);
             this.Controls.Add(this.topMostBox);
             this.Controls.Add(this.headlessBox);
             this.Controls.Add(this.imagejBut);
@@ -149,6 +149,7 @@ namespace Bio
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "BioConsole";
             this.Text = "Bio & ImageJ Console";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BioConsole_FormClosing);
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel1.PerformLayout();
             this.splitContainer.Panel2.ResumeLayout(false);

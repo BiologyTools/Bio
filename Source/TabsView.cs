@@ -91,7 +91,7 @@ namespace Bio
                     }
                     else
                     {
-                        AddTab(BioImage.OpenOME(arg[i]));
+                        AddTab(BioImage.OpenFile(arg[i]));
                     }
                 }
             }
@@ -744,6 +744,7 @@ namespace Bio
         {
             if(App.viewer != null)
             App.viewer.GoToImage();
+            Function.Initialize();
         }
 
         private void clearRecentToolStripMenuItem_Click(object sender, EventArgs e)
@@ -798,6 +799,24 @@ namespace Bio
             foreach (BufferInfo bf in ImageView.SelectedImage.Buffers)
             {
                 bf.SwitchRedBlue();
+            }
+        }
+        private void createFunctionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FunctionForm f = new FunctionForm(new Function());
+            f.Show();
+        }
+        private void DropDownItemClicked(object sender, EventArgs e)
+        {
+            ToolStripMenuItem ts = (ToolStripMenuItem)sender;
+            Function.Functions[ts.Text].PerformFunction(true);
+        }
+        private void runToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            runToolStripMenuItem.DropDownItems.Clear();
+            foreach (var item in Function.Functions)
+            {
+                runToolStripMenuItem.DropDownItems.Add(item.Value.Name,null, DropDownItemClicked);
             }
         }
     }

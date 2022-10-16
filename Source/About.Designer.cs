@@ -42,9 +42,9 @@
             this.versionLabel.AutoSize = true;
             this.versionLabel.Location = new System.Drawing.Point(9, 148);
             this.versionLabel.Name = "versionLabel";
-            this.versionLabel.Size = new System.Drawing.Size(69, 13);
+            this.versionLabel.Size = new System.Drawing.Size(42, 13);
             this.versionLabel.TabIndex = 0;
-            this.versionLabel.Text = "Version 2.3.3";
+            this.versionLabel.Text = "Version";
             // 
             // label2
             // 

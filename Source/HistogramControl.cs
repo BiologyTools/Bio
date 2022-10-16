@@ -320,7 +320,12 @@ namespace Bio
                     ",G:" + ImageView.SelectedImage.Channels[1].stats[1].StackValues[(int)(mouseX / fx)].ToString() +
                     ",B:" + ImageView.SelectedImage.Channels[0].stats[0].StackValues[(int)(mouseX / fx)].ToString() + ")";
             else
-                st = "(" + (mouseX / fx).ToString() + "," + ImageView.SelectedImage.Channels[0].stats[0].StackValues[(int)(mouseX / fx)].ToString() + ")";
+            {
+                int x = (int)(mouseX / fx);   
+                if(ImageView.SelectedImage.bitsPerPixel < 8 && ImageView.SelectedImage.Channels[0].stats[0].StackValues.Length < 255)
+                    st = "(" + (mouseX / fx).ToString() + "," + ImageView.SelectedImage.Channels[0].stats[0].StackValues[x].ToString() + ")";
+                
+            }
             SizeF sf = g.MeasureString(st, SystemFonts.DefaultFont);
             g.DrawString(st, SystemFonts.DefaultFont, Brushes.Black, mouseX, mouseY + sf.Height);
 

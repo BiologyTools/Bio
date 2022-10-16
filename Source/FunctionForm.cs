@@ -12,11 +12,12 @@ using System.Windows.Forms;
 using SharpDX.XInput;
 using WindowsInput;
 using WindowsInput.Native;
+using System.IO;
 using Newtonsoft.Json;
 
 namespace Bio
 {
-    public partial class ControllerFunc : Form
+    public partial class FunctionForm : Form
     {
         public static InputSimulator input = new InputSimulator();
         private Function func;
@@ -31,13 +32,13 @@ namespace Bio
                 func = value;
             }
         }
-        public ControllerFunc(Function func)
+        public FunctionForm(Function func)
         {
             InitializeComponent();
             Func = func;
             Init();
         }
-        public ControllerFunc(Function func, string name)
+        public FunctionForm(Function func, string name)
         {
             InitializeComponent();
             Func = func;
@@ -48,28 +49,18 @@ namespace Bio
         {
             int ind = 0;
             int sel = 0;
-            foreach (Microscope.Actions val in Enum.GetValues(typeof(Microscope.Actions)))
+
+            textBox.Text = func.Script;
+
+            funcsBox.Items.Clear();
+            foreach (Function f in Function.Functions.Values)
             {
-                if (func.Microscope == val.ToString())
-                    sel = ind;
-                microBox.Items.Add(val);
-                ind++;
+                funcsBox.Items.Add(f);
             }
-            microBox.SelectedIndex = sel;
-            if(func.FuncType == Function.FunctionType.Microscope)
-            {
-                for (int i = 0; i < microBox.Items.Count; i++)
-                {
-                    if (microBox.Items[i].ToString() == func.Name)
-                    {
-                        microBox.SelectedIndex = i;
-                        func.FuncType = Function.FunctionType.Microscope;
-                        break;
-                    }
-                }
-            }
+
             nameBox.Text = func.Name;
             //We add button states to buttonState box.
+            stateBox.Items.Clear();
             foreach (Function.ButtonState val in Enum.GetValues(typeof(Function.ButtonState)))
             {
                 stateBox.Items.Add(val);
@@ -78,6 +69,7 @@ namespace Bio
 
             //We add button states to buttonState box.
             ind = 0;
+            keysBox.Items.Clear();
             foreach (VirtualKeyCode val in Enum.GetValues(typeof(VirtualKeyCode)))
             {
                 keysBox.Items.Add(val);
@@ -86,6 +78,7 @@ namespace Bio
                 ind++;
             }
             //We add the modifiers to modifierBox
+            modifierBox.Items.Clear();
             modifierBox.Items.Add(VirtualKeyCode.NONAME);
             modifierBox.Items.Add(VirtualKeyCode.RCONTROL);
             modifierBox.Items.Add(VirtualKeyCode.LCONTROL);
@@ -96,11 +89,10 @@ namespace Bio
             modifierBox.Items.Add(VirtualKeyCode.LWIN);
             modifierBox.SelectedItem = func.Modifier;
 
-            //We add the objectives to objectivesBox;
-            objectivesBox.Items.AddRange(Microscope.Objectives.List.ToArray());
-            if (func.FuncType == Function.FunctionType.Objective)
-                objectivesBox.SelectedItem = func.Objective;
+
+
             ind = 0;
+            recBox.Items.Clear();
             foreach (Automation.Recording rec in Automation.Recordings.Values)
             {
                 recBox.Items.Add(rec);
@@ -112,6 +104,7 @@ namespace Bio
                 ind++;
             }
             ind = 0;
+            propBox.Items.Clear();
             foreach (Automation.Recording rec in Automation.Properties.Values)
             {
                 propBox.Items.Add(rec);
@@ -123,13 +116,7 @@ namespace Bio
                 ind++;
             }
             valBox.Value = (decimal)func.Value;
-        }
-        private void objectivesBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (objectivesBox.SelectedIndex == 0)
-                return;
-            Func.Objective = ((Objectives.Objective)objectivesBox.SelectedItem).Name;
-            Func.FuncType = Function.FunctionType.Objective;
+            menuPath.Text = func.MenuPath;
         }
         private void keysBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -158,7 +145,11 @@ namespace Bio
             {
                 Function.Functions[func.Name] = func;
             }
-            this.Close();
+            if (func.MenuPath.EndsWith("/"))
+                func.MenuPath = func.MenuPath.TrimEnd('/');
+            if(func.MenuPath != "")
+                App.AddMenu(func.MenuPath,func);
+            func.Save();
         }
         private void propBox_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -180,14 +171,61 @@ namespace Bio
             Func.File = propBox.Text;
             Func.FuncType = Function.FunctionType.Script;
         }
-        private void microBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Func.FuncType = Function.FunctionType.Microscope;
-            Func.Microscope = microBox.SelectedItem.ToString();
-        }
         private void valBox_ValueChanged(object sender, EventArgs e)
         {
             Func.Value = (double)valBox.Value;
+        }
+        private void performBut_Click(object sender, EventArgs e)
+        {
+            func.PerformFunction(imageJRadioBut.Checked);
+        }
+
+        private void cancelBut_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+        }
+        private void textBox_TextChanged(object sender, EventArgs e)
+        {
+            func.Script = textBox.Text;
+            if (bioRadioBut.Checked)
+                func.FuncType = Function.FunctionType.Script;
+            else
+                func.FuncType = Function.FunctionType.ImageJ;
+        }
+
+        private void bioRadioBut_CheckedChanged(object sender, EventArgs e)
+        {
+            if(bioRadioBut.Checked)
+            func.FuncType = Function.FunctionType.Script;
+        }
+
+        private void imageJRadioBut_CheckedChanged(object sender, EventArgs e)
+        {
+            if (imageJRadioBut.Checked)
+                func.FuncType = Function.FunctionType.ImageJ;
+        }
+
+        private void menuPath_TextChanged(object sender, EventArgs e)
+        {
+            func.MenuPath = menuPath.Text;
+        }
+
+        private void FunctionForm_Activated(object sender, EventArgs e)
+        {
+
+        }
+
+        private void funcsBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (funcsBox.SelectedIndex == -1)
+                return;
+            func = (Function)funcsBox.SelectedItem;
+            Init();
+        }
+
+        private void FunctionForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
         }
     }
 
@@ -197,16 +235,9 @@ namespace Bio
         public enum FunctionType
         {
             Key,
-            Objective,
-            StoreCoordinate,
-            NextCoordinate,
-            PreviousCoordinate,
-            NextSnapCoordinate,
-            PreviousSnapCoordinate,
             Recording,
             Property,
             ImageJ,
-            Microscope,
             Script,
             None
         }
@@ -257,20 +288,6 @@ namespace Bio
             }
         }
 
-        private string objective;
-        public string Objective
-        {
-            get
-            {
-                return objective;
-            }
-            set
-            {
-                FuncType = FunctionType.Objective;
-                objective = value;
-            }
-        }
-
         private FunctionType functionType;
         public FunctionType FuncType
         {
@@ -291,6 +308,16 @@ namespace Bio
             set { file = value; }
         }
 
+        private string script;
+        public string Script
+        {
+            get { return script; }
+            set 
+            { 
+                script = value;
+            }
+        }
+
         private string name;
         public string Name
         {
@@ -301,6 +328,18 @@ namespace Bio
             set
             {
                 name = value;
+            }
+        }
+        private string menuPath;
+        public string MenuPath
+        {
+            get
+            {
+                return menuPath;
+            }
+            set
+            {
+                menuPath = value;
             }
         }
 
@@ -316,39 +355,10 @@ namespace Bio
                 val = value;
             }
         }
-
-        private string micro;
-        public string Microscope
-        { 
-            get
-            {
-                return micro;
-            }
-            set
-            {
-                micro = value;
-            }
-        }
-        public Objectives.Objective GetObjective()
-        {
-            if (objective == null)
-                return null;
-            foreach (Objectives.Objective obj in Bio.Microscope.Objectives.List)
-            {
-                if (objective.Contains(obj.NumericAperture.ToString()) && objective.Contains(obj.Magnification.ToString()))
-                {
-                    return obj;
-                }
-            }
-            return null;
-        }
-
         public override string ToString()
         {
-            string s = JsonConvert.SerializeObject(this);
-            return s;
+            return name + ", " + MenuPath;
         }
-
         public static Function Parse(string s)
         {
             if (s == "")
@@ -356,6 +366,88 @@ namespace Bio
             return JsonConvert.DeserializeObject<Function>(s);
         }
 
+        public string Serialize()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
+
+        public static InputSimulator input = new InputSimulator();
+        public object PerformFunction(bool imagej)
+        {
+            if(FuncType == FunctionType.Key && Script!="")
+            if(imagej)
+            {
+                    FuncType = FunctionType.ImageJ;
+            }
+            else
+                    FuncType = FunctionType.Script;
+            if (FuncType == Function.FunctionType.Script)
+            {
+                Scripting.RunString(script);
+                //Scripting.RunScript(File);
+            }
+            if (FuncType == Function.FunctionType.ImageJ)
+            {
+                ImageJ.RunOnImage(script, ImageView.SelectedImage.ID, false);
+            }
+            if (FuncType == Function.FunctionType.Property)
+            {
+                if (Name.StartsWith("Get"))
+                {
+                    Automation.Recording r = (Automation.Recording)Automation.Properties[System.IO.Path.GetFileNameWithoutExtension(File)];
+                    return r.Get();
+                }
+                else if (Name.StartsWith("Set"))
+                {
+                    Automation.Recording r = (Automation.Recording)Automation.Properties[System.IO.Path.GetFileNameWithoutExtension(File)];
+                    r.Set(Value.ToString());
+                }
+
+            }
+            if (FuncType == Function.FunctionType.Key)
+            {
+                if (Modifier != VirtualKeyCode.NONAME)
+                {
+                    input.Keyboard.ModifiedKeyStroke(Modifier, Key);
+                }
+                else
+                {
+                    input.Keyboard.KeyPress(Key);
+                }
+                return null;
+            }
+            if (FuncType == Function.FunctionType.Recording)
+            {
+                Automation.Recording r = (Automation.Recording)Automation.Recordings[System.IO.Path.GetFileNameWithoutExtension(File)];
+                r.Run();
+            }
+            return null;
+        }
+        public static void Initialize()
+        {
+            string st = Application.StartupPath + "/Functions";
+            string[] sts = Directory.GetFiles(st);
+            for (int i = 0; i < sts.Length; i++)
+            {
+                string fs = System.IO.File.ReadAllText(sts[i]);
+                Function f = Function.Parse(fs);
+                Functions.Add(f.Name, f);
+                App.AddMenu(f.MenuPath, f);
+            }
+        }
+        public void Save()
+        {
+            string st = Application.StartupPath;
+            
+            if(!Directory.Exists(st + "/Functions"))
+            {
+                Directory.CreateDirectory(st + "/Functions");
+            }
+            foreach (Function f in Functions.Values)
+            {
+                System.IO.File.WriteAllText(st + "/Functions/" + f.Name + ".func",f.Serialize());
+            }
+        }
     }
 
 }

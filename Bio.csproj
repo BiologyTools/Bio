@@ -47,7 +47,8 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -269,11 +270,11 @@
     <Compile Include="Source\Filter.Designer.cs">
       <DependentUpon>Filter.cs</DependentUpon>
     </Compile>
-    <Compile Include="Source\Function.cs">
+    <Compile Include="Source\FunctionForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Source\Function.Designer.cs">
-      <DependentUpon>Function.cs</DependentUpon>
+    <Compile Include="Source\FunctionForm.Designer.cs">
+      <DependentUpon>FunctionForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\HistogramControl.cs">
       <SubType>UserControl</SubType>
@@ -442,8 +443,8 @@
     <EmbeddedResource Include="Source\Filter.resx">
       <DependentUpon>Filter.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Source\Function.resx">
-      <DependentUpon>Function.cs</DependentUpon>
+    <EmbeddedResource Include="Source\FunctionForm.resx">
+      <DependentUpon>FunctionForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Source\HistogramControl.resx">
       <DependentUpon>HistogramControl.cs</DependentUpon>
