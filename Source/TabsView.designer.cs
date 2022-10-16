@@ -97,6 +97,7 @@ namespace Bio
             this.switchRedBlueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.createFunctionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -140,11 +141,12 @@ namespace Bio
             // 
             this.tabContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.closeToolStripMenuItem,
+            this.reloadToolStripMenuItem,
             this.saveToolStripMenuItem1,
             this.saveOMEToolStripMenuItem1,
             this.toWindowToolStripMenuItem});
             this.tabContextMenuStrip.Name = "tabContextMenuStrip";
-            this.tabContextMenuStrip.Size = new System.Drawing.Size(165, 92);
+            this.tabContextMenuStrip.Size = new System.Drawing.Size(165, 114);
             // 
             // closeToolStripMenuItem
             // 
@@ -620,8 +622,15 @@ namespace Bio
             // 
             this.runToolStripMenuItem.Name = "runToolStripMenuItem";
             this.runToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.runToolStripMenuItem.Text = "Run Function";
+            this.runToolStripMenuItem.Text = "Run";
             this.runToolStripMenuItem.DropDownOpening += new System.EventHandler(this.runToolStripMenuItem_DropDownOpening);
+            // 
+            // reloadToolStripMenuItem
+            // 
+            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.reloadToolStripMenuItem.Text = "Reload";
+            this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
             // 
             // TabsView
             // 
@@ -719,5 +728,6 @@ namespace Bio
         private System.Windows.Forms.ToolStripMenuItem switchRedBlueToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem createFunctionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
     }
 }

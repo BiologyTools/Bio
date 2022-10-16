@@ -29,7 +29,12 @@ namespace Bio
             ImageJ.RunOnImage(textBox.Text, ImageView.SelectedImage.ID, headlessBox.Checked);
             consoleBox.Text += textBox.Text + Environment.NewLine;
             textBox.Text = "";
-            string file = System.IO.Path.GetDirectoryName(ImageView.SelectedImage.ID) + "/" + System.IO.Path.GetFileNameWithoutExtension(ImageView.SelectedImage.ID) + ".ome.tif";
+            string filename = System.IO.Path.GetFileNameWithoutExtension(ImageView.SelectedImage.ID);
+            if (ImageView.SelectedImage.ID.EndsWith(".ome.tif"))
+            {
+                filename = ImageView.SelectedImage.ID.Replace(".ome.tif", "");
+            }
+            string file = System.IO.Path.GetDirectoryName(ImageView.SelectedImage.ID) + "/" + filename + ".ome.tif";
             if (ImageView.SelectedImage.ID.EndsWith(".ome.tif"))
                 ImageView.SelectedImage.Update();
             else
@@ -45,6 +50,20 @@ namespace Bio
         {
             e.Cancel = true;
             this.Hide();
+        }
+        int line = 0;
+        private void BioConsole_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Up)
+            {
+                line++;
+                textBox.Text = consoleBox.Lines[consoleBox.Lines.Length - 1 - line];
+            }
+            if (e.KeyCode == Keys.Down)
+            {
+                line--;
+                textBox.Text = consoleBox.Lines[consoleBox.Lines.Length - 1 - line];
+            }
         }
     }
 }

@@ -800,6 +800,7 @@ namespace Bio
             {
                 bf.SwitchRedBlue();
             }
+            ImageView.UpdateImages();
         }
         private void createFunctionToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -818,6 +819,11 @@ namespace Bio
             {
                 runToolStripMenuItem.DropDownItems.Add(item.Value.Name,null, DropDownItemClicked);
             }
+        }
+
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ImageView.SelectedImage.Update();
         }
     }
 }

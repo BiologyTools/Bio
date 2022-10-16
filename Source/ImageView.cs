@@ -516,6 +516,7 @@ namespace Bio
                 Bitmaps.Add(bitmap);
             }
             update = false;
+            UpdateView();
         }
         Bitmap bitmap;
         public void UpdateImage()
@@ -558,6 +559,7 @@ namespace Bio
             else
                 Bitmaps.Add(bitmap);
             update = false;
+            UpdateView();
         }
         private void channelBoxR_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1163,6 +1165,8 @@ namespace Bio
             int i = 0;
             foreach (BioImage im in Images)
             {
+                if (Bitmaps[i] == null)
+                    UpdateImages();
                 RectangleF r = ToScreenRectF(im.Volume.Location.X, im.Volume.Location.Y, im.Volume.Width, im.Volume.Height);
                 g.DrawImage(Bitmaps[i], r.X, r.Y, r.Width, r.Height);
                 if (i == SelectedIndex)

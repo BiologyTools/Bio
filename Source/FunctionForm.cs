@@ -147,6 +147,8 @@ namespace Bio
             }
             if (func.MenuPath.EndsWith("/"))
                 func.MenuPath = func.MenuPath.TrimEnd('/');
+            if (func.MenuPath.EndsWith(func.Name))
+                func.MenuPath.Remove(func.MenuPath.IndexOf('/'), func.MenuPath.Length - func.MenuPath.IndexOf('/'));
             if(func.MenuPath != "")
                 App.AddMenu(func.MenuPath,func);
             func.Save();
@@ -384,7 +386,6 @@ namespace Bio
             if (FuncType == Function.FunctionType.Script)
             {
                 Scripting.RunString(script);
-                //Scripting.RunScript(File);
             }
             if (FuncType == Function.FunctionType.ImageJ)
             {
@@ -426,6 +427,8 @@ namespace Bio
         public static void Initialize()
         {
             string st = Application.StartupPath + "/Functions";
+            if (!Directory.Exists(st))
+                Directory.CreateDirectory(st);
             string[] sts = Directory.GetFiles(st);
             for (int i = 0; i < sts.Length; i++)
             {

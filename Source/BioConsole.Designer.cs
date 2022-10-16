@@ -150,6 +150,7 @@ namespace Bio
             this.Name = "BioConsole";
             this.Text = "Bio & ImageJ Console";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BioConsole_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.BioConsole_KeyDown);
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel1.PerformLayout();
             this.splitContainer.Panel2.ResumeLayout(false);

@@ -6149,7 +6149,7 @@ namespace Bio
                 i++;
             }
             b.sizeC = b.Channels.Count;
-            if (b.Channels[0].SamplesPerPixel > 1)
+            if (b.Channels[0].SamplesPerPixel > b.Channels.Count)
             {
                 for (int ci = 0; ci < b.Channels[0].SamplesPerPixel - 1; ci++)
                 {
@@ -6685,6 +6685,8 @@ namespace Bio
 
         public static void Update(BioImage b)
         {
+            //b = OpenFile(b.ID);
+            
             string file = b.ID;
             int pages = b.Buffers.Count;
             int stride = b.Buffers[0].Stride;
@@ -6745,6 +6747,7 @@ namespace Bio
             b.UpdateCoords(b.SizeZ, b.SizeC, b.SizeT);
             pr.Close();
             pr.Dispose();
+            
         }
         public void Update()
         {
