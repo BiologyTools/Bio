@@ -2,13 +2,13 @@
 
 # Bio
 
-A .NET application for editing & annotating various microscopy imaging formats. Supports all bioformats supported images. Integrates with ImageJ through ImageJ Macros.
+A .NET application for editing & annotating various microscopy imaging formats. Supports all bioformats supported images. Integrates with ImageJ, running ImageJ filters & macro functions.
 
 ## Features
 
 - C# scripting with sample tool-script and other sample scripts in "/Scripts/" folder. [See samples](https://github.com/BioMicroscopy/BioImage-Scripts)
 
-- Supports running ImageJ macros commands on images open in Bio. New Console to run ImageJ macro commands and Bio C# functions.
+- Supports running ImageJ macro commands on images open in Bio. New Console to run ImageJ macro commands and Bio C# functions.
 
 - Multiple view modes like Emission, and Filtered. ROI's shown for each channel can be configured in ROI Manager.
 
