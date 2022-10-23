@@ -441,12 +441,12 @@ namespace Bio
                 if (timeEnabled)
                 {
                     statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (tBar.Value + 1) + "/" + (tBar.Maximum + 1) + ", " + 
-                        mousePoint + mouseColor + ", " + SelectedImage.Buffers[0].PixelFormat.ToString() + ", (" + -Origin.X + ", " + -Origin.Y + "), (" + SelectedImage.Volume.Location.X + ", " + SelectedImage.Volume.Location.Y + ")";
+                        mousePoint + mouseColor + ", " + SelectedImage.Buffers[0].PixelFormat.ToString() + ", (" + -Origin.X + ", " + -Origin.Y + "), (" + SelectedImage.Volume.Location.X + ", " + SelectedImage.Volume.Location.Y + ") " + SelectedImage.littleEndian;
                 }
                 else
                 {
                     statusLabel.Text = (zBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " + SelectedImage.Buffers[0].PixelFormat.ToString()
-                        + ", (" + -Origin.X + ", " + -Origin.Y + "), (" + SelectedImage.Volume.Location.X + ", " + SelectedImage.Volume.Location.Y + ")";
+                        + ", (" + -Origin.X + ", " + -Origin.Y + "), (" + SelectedImage.Volume.Location.X + ", " + SelectedImage.Volume.Location.Y + ") " + SelectedImage.littleEndian;
                 }
 
             }
@@ -455,12 +455,12 @@ namespace Bio
                 if (timeEnabled)
                 {
                     statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + (tBar.Value + 1) + "/" + (tBar.Maximum + 1) + ", " +
-                        mousePoint + mouseColor + ", " + SelectedImage.Buffers[0].PixelFormat.ToString() + ", (" + -Origin.X + ", " + -Origin.Y + "), (" + SelectedImage.Volume.Location.X + ", " + SelectedImage.Volume.Location.Y + ")";
+                        mousePoint + mouseColor + ", " + SelectedImage.Buffers[0].PixelFormat.ToString() + ", (" + -Origin.X + ", " + -Origin.Y + "), (" + SelectedImage.Volume.Location.X + ", " + SelectedImage.Volume.Location.Y + ") " + SelectedImage.littleEndian;
                 }
                 else
                 {
                     statusLabel.Text = (zBar.Value + 1) + "/" + (zBar.Maximum + 1) + ", " + (cBar.Value + 1) + "/" + (cBar.Maximum + 1) + ", " + mousePoint + mouseColor + ", " +
-                        SelectedImage.Buffers[0].PixelFormat.ToString() + ", (" + -Origin.X + ", " + -Origin.Y + "), (" + SelectedImage.Volume.Location.X + ", " + SelectedImage.Volume.Location.Y + ")";
+                        SelectedImage.Buffers[0].PixelFormat.ToString() + ", (" + -Origin.X + ", " + -Origin.Y + "), (" + SelectedImage.Volume.Location.X + ", " + SelectedImage.Volume.Location.Y + ") " + SelectedImage.littleEndian;
                 }
             }
         }
@@ -472,8 +472,6 @@ namespace Bio
         }
         public void UpdateImages()
         {
-            if (!update)
-                return;
             for (int i = 0; i < Bitmaps.Count; i++)
             {
                 Bitmaps[i] = null;
@@ -492,19 +490,19 @@ namespace Bio
                 int index = b.Coords[zBar.Value, cBar.Value, tBar.Value];
                 if (Mode == ViewMode.Filtered)
                 {
-                    bitmap = b.GetFiltered(coords, b.RChannel.range, b.GChannel.range, b.BChannel.range);
+                    bitmap = b.GetFiltered(coords, b.RChannel.RangeR, b.GChannel.RangeG, b.BChannel.RangeB);
                 }
                 else if (Mode == ViewMode.RGBImage)
                 {
-                    bitmap = b.GetRGBBitmap(coords, b.RChannel.range, b.GChannel.range, b.BChannel.range);
+                    bitmap = b.GetRGBBitmap(coords, b.RChannel.RangeR, b.GChannel.RangeG, b.BChannel.RangeB);
                 }
                 else if(Mode == ViewMode.Raw)
                 {
-                    bitmap = (Bitmap)b.Buffers[index].Image;
+                    bitmap = (Bitmap)b.Buffers[index].ImageRGB;
                 }
                 else
                 {
-                    bitmap = b.GetEmission(coords, b.RChannel.range, b.GChannel.range, b.BChannel.range);
+                    bitmap = b.GetEmission(coords, b.RChannel.RangeR, b.GChannel.RangeG, b.BChannel.RangeB);
                 }
                 if (bitmap.PixelFormat == PixelFormat.Format16bppGrayScale || bitmap.PixelFormat == PixelFormat.Format48bppRgb)
                     bitmap = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)bitmap);
@@ -533,19 +531,19 @@ namespace Bio
             int index = SelectedImage.Coords[zBar.Value, cBar.Value, tBar.Value];
             if (Mode == ViewMode.Filtered)
             {
-                bitmap = SelectedImage.GetFiltered(coords, RChannel.range, GChannel.range, BChannel.range);
+                bitmap = SelectedImage.GetFiltered(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB);
             }
             else if (Mode == ViewMode.RGBImage)
             {
-                bitmap = SelectedImage.GetRGBBitmap(coords, RChannel.range, GChannel.range, BChannel.range);
+                bitmap = SelectedImage.GetRGBBitmap(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB);
             }
             else if (Mode == ViewMode.Raw)
             {
-                bitmap = (Bitmap)SelectedImage.Buffers[index].Image;
+                bitmap = (Bitmap)SelectedImage.Buffers[index].ImageRGB;
             }
             else
             {
-                bitmap = SelectedImage.GetEmission(coords, RChannel.range, GChannel.range, BChannel.range);
+                bitmap = SelectedImage.GetEmission(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB);
             }
             if (bitmap.PixelFormat == PixelFormat.Format16bppGrayScale || bitmap.PixelFormat == PixelFormat.Format48bppRgb)
                 bitmap = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)bitmap);
@@ -1146,7 +1144,7 @@ namespace Bio
         {
             if (update)
                 UpdateImage();
-            if (Bitmaps.Count == 0)
+            if (Bitmaps.Count == 0 || Bitmaps.Count != Images.Count)
                 UpdateImages();
             if (Bitmaps.Count == 0)
                 return;
@@ -1154,7 +1152,7 @@ namespace Bio
             if (scale.Width == 0 || float.IsInfinity(scale.Width))
                 scale = new SizeF(1,1);
             g.ScaleTransform(scale.Width, scale.Height);
-            g.FillRectangle(Brushes.LightGray, ToScreenRectF(PointD.MinX, PointD.MinY, PointD.MaxX - PointD.MinX, PointD.MaxY - PointD.MinY));
+            //g.FillRectangle(Brushes.LightGray, ToScreenRectF(PointD.MinX, PointD.MinY, PointD.MaxX - PointD.MinX, PointD.MaxY - PointD.MinY));
             RectangleF[] rf = new RectangleF[1];
             Pen blue = new Pen(Brushes.Blue, 1 / scale.Width);
             int i = 0;
@@ -1817,7 +1815,7 @@ namespace Bio
             foreach (BioImage im in Images)
             {
                 ToolStripMenuItem it = new ToolStripMenuItem();
-                it.Text = System.IO.Path.GetFileName(im.ID);
+                it.Text = im.filename;
                 item.DropDownItems.Add(it);
             }
         }
@@ -1827,7 +1825,7 @@ namespace Bio
             int i = 0;
             foreach (var item in Images)
             {
-                if(item.ID.Contains(e.ClickedItem.Text))
+                if(item.filename == e.ClickedItem.Text)
                 {
                     GoToImage(i);
                     return;

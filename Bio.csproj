@@ -412,6 +412,12 @@
     </Compile>
     <Compile Include="Source\Units.cs" />
     <Compile Include="Source\Win32.cs" />
+    <Compile Include="Source\XMLView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\XMLView.Designer.cs">
+      <DependentUpon>XMLView.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Source\BioConsole.resx">
@@ -510,6 +516,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Source\Tools.resx">
       <DependentUpon>Tools.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Source\XMLView.resx">
+      <DependentUpon>XMLView.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

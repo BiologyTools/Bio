@@ -16,7 +16,8 @@ namespace Bio
         {
             InitializeComponent();
         }
-
+        public static bool onTab = false;
+        public static bool useBioformats = false;
         private void runBut_Click(object sender, EventArgs e)
         {
             object o = Scripting.Script.RunString(textBox.Text);
@@ -26,7 +27,7 @@ namespace Bio
 
         private void imagejBut_Click(object sender, EventArgs e)
         {
-            ImageJ.RunOnImage(textBox.Text, ImageView.SelectedImage.ID, headlessBox.Checked);
+            ImageJ.RunOnImage(textBox.Text, headlessBox.Checked, tabRadioBut.Checked, biofBox.Checked);
             consoleBox.Text += textBox.Text + Environment.NewLine;
             textBox.Text = "";
             string filename = "";
@@ -67,6 +68,16 @@ namespace Bio
                 line--;
                 textBox.Text = consoleBox.Lines[consoleBox.Lines.Length - 1 - line];
             }
+        }
+
+        private void tabRadioBut_CheckedChanged(object sender, EventArgs e)
+        {
+            onTab = tabRadioBut.Checked;
+        }
+
+        private void biofBox_CheckedChanged(object sender, EventArgs e)
+        {
+            useBioformats = biofBox.Checked;
         }
     }
 }

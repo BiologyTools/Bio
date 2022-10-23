@@ -299,6 +299,7 @@ namespace Bio
                 an.Text = ti.textInput;
                 ImageView.SelectedImage.Annotations.Add(an);
             }
+            else
             if (buts == MouseButtons.Middle || currentTool.type == Tool.Type.pan)
             {
                 currentTool = GetTool(Tool.Type.pan);
@@ -306,7 +307,8 @@ namespace Bio
                 panPanel.BackColor = Color.LightGray;
                 Cursor.Current = Cursors.Hand;
             }
-            UpdateOverlay();
+            
+                UpdateOverlay();
         }        
         public void ToolUp(PointD e, MouseButtons buts)
         {
@@ -444,7 +446,17 @@ namespace Bio
                     ImageView.SelectedImage.Annotations.Add(an); 
                 }
             }
-            UpdateOverlay();
+            /*
+            if (Tools.currentTool.type == Tools.Tool.Type.bucket)
+            {
+                ZCT coord = App.viewer.GetCoordinate();
+                PointF d = ImageView.SelectedImage.ToImageSpace(e);
+                BufferInfo bf = BufferInfo.FloodFill(ImageView.SelectedImage.Buffers[ImageView.SelectedImage.Coords[coord.C, coord.Z, coord.T]],new System.Drawing.Point((int)d.X,(int)d.Y),new ColorS(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue));
+                ImageView.SelectedImage.Buffers[ImageView.SelectedImage.Coords[coord.C, coord.Z, coord.T]] = bf;
+                App.viewer.UpdateImages();
+            }
+            */
+                UpdateOverlay();
         }
         public void ToolMove(PointD e, MouseButtons buts)
         {
@@ -563,7 +575,16 @@ namespace Bio
                 App.viewer.Origin = new PointD(App.viewer.Origin.X + pf.X, App.viewer.Origin.Y + pf.Y);
                 UpdateView();
             }
-
+            else
+            if (currentTool.type == Tool.Type.pencil && buts == MouseButtons.Left)
+            {
+                PointF p = ImageView.SelectedImage.ToImageSpace(e);
+                ZCT coord = App.viewer.GetCoordinate();
+                int i = ImageView.SelectedImage.Coords[coord.Z, coord.C, coord.T];
+                ImageView.SelectedImage.Buffers[i].SetValue((int)p.X, (int)p.Y, ushort.MaxValue);
+                App.viewer.UpdateImages();
+                App.viewer.UpdateView();
+            }
         }
 
         private void movePanel_Click(object sender, EventArgs e)
@@ -661,7 +682,20 @@ namespace Bio
             magicPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
         }
-
+        private void bucketPanel_Click(object sender, EventArgs e)
+        {
+            currentTool = GetTool(Tool.Type.bucket);
+            UpdateSelected();
+            bucketPanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
+        }
+        private void pencilPanel_Click(object sender, EventArgs e)
+        {
+            currentTool = GetTool(Tool.Type.pencil);
+            UpdateSelected();
+            pencilPanel.BackColor = Color.LightGray;
+            Cursor.Current = Cursors.Arrow;
+        }
         MagicSelect magicSel = new MagicSelect(2);
         private void magicPanel_MouseDoubleClick(object sender, MouseEventArgs e)
         {
@@ -673,5 +707,7 @@ namespace Bio
             e.Cancel = true;
             this.Hide();
         }
+
+        
     }
 }

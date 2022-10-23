@@ -15,10 +15,6 @@ namespace Bio
         public HistogramControl(Channel c)
         {
             channel = c;
-            if (c.Max == 0)
-            {
-                c.Max = 1;
-            }
             this.Dock = DockStyle.Fill;
             InitializeComponent();
             if (c.BitsPerPixel == 8)
@@ -53,7 +49,7 @@ namespace Bio
             set 
             { 
                 if(channel!=null)
-                    channel.Min = (int)value;
+                    channel.range[App.channelsTool.SelectedSample].Min = (int)value;
                 min = (int)value;
             }
         }
@@ -64,7 +60,7 @@ namespace Bio
             set
             {
                 if (channel != null)
-                    channel.Max = (int)value;
+                    channel.range[App.channelsTool.SelectedSample].Max = (int)value;
                 max = (int)value;
             }
         }
@@ -180,103 +176,107 @@ namespace Bio
             for (int c = 0; c < ImageView.SelectedImage.Channels.Count; c++)
             {
                 Channel channel = ImageView.SelectedImage.Channels[c];
-                Statistics stat;
-                if(ImageView.SelectedImage.RGBChannelCount == 1)
-                    stat = channel.stats[0];      
-                else
-                    stat = channel.stats[c];
+                for (int i = 0; i < channel.range.Length; i++)
+                {
+                    Statistics stat;
+                    if (ImageView.SelectedImage.RGBChannelCount == 1)
+                        stat = channel.stats[0];
+                    else
+                        stat = channel.stats[i];
 
-                Pen black = new Pen(Color.FromArgb(35, 0, 0, 0), bin * fx);
-                Pen blackd = new Pen(Color.FromArgb(150, 0, 0, 0), bin * fx);
-                Pen pen = null;
-                Pen pend = null;
-                int dark = 200;
-                int light = 50;
-                if(channel.Emission != -1)
-                {
-                    pen = new Pen(SpectralColor(channel.Emission), bin * fx);
-                    pen.Color = Color.FromArgb(light, pen.Color);
-                    pend = new Pen(SpectralColor(channel.Emission), bin * fx);
-                    pend.Color = Color.FromArgb(dark, pen.Color);
-                }
-                else
-                {
-                    if (c == 0)
+                    Pen black = new Pen(Color.FromArgb(35, 0, 0, 0), bin * fx);
+                    Pen blackd = new Pen(Color.FromArgb(150, 0, 0, 0), bin * fx);
+                    Pen pen = null;
+                    Pen pend = null;
+                    int dark = 200;
+                    int light = 50;
+                    if (channel.Emission != 0)
                     {
-                        pen = new Pen(Color.FromArgb(light, 255, 0, 0), bin * fx);
-                        pend = new Pen(Color.FromArgb(dark, 255, 0, 0), bin * fx);
-                    }
-                    else if (c == 1)
-                    {
-                        pen = new Pen(Color.FromArgb(light, 0, 255, 0), bin * fx);
-                        pend = new Pen(Color.FromArgb(dark, 0, 255, 0), bin * fx);
+                        pen = new Pen(SpectralColor(channel.Emission), bin * fx);
+                        pen.Color = Color.FromArgb(light, pen.Color);
+                        pend = new Pen(SpectralColor(channel.Emission), bin * fx);
+                        pend.Color = Color.FromArgb(dark, pen.Color);
                     }
                     else
                     {
-                        pen = new Pen(Color.FromArgb(light, 0, 0, 255), bin * fx);
-                        pend = new Pen(Color.FromArgb(dark, 0, 0, 255), bin * fx);
-                    }
-                }
-                
-                g.DrawLine(Pens.Black, new PointF(mouseX, 0), new PointF(mouseX, this.Height));
-                int gmax = graphMax;
-                if (App.Image.bitsPerPixel <= 8)
-                    gmax = 255;
-
-
-                float sumbins = 0;
-                float sumbin = 0;
-                int binind = 0;
-                int bininds = 0;
-                PointF? prevs = null;
-                PointF? prev = null;
-                for (float x = 0; x < gmax; x++)
-                {
-                    if (StackHistogram && c == ImageView.SelectedImage.Channels.Count-1)
-                    {
-                        //Lets draw the stack histogram.
-                        float val = (float)ImageView.SelectedImage.Statistics.StackValues[(int)x];
-                        sumbin += val;
-                        if (binind == bin)
+                        if (i == 0)
                         {
-                            float v = sumbin / binind;
-                            float yy = this.Height - (fy * v);
-                            if (prevs != null)
+                            pen = new Pen(Color.FromArgb(light, 255, 0, 0), bin * fx);
+                            pend = new Pen(Color.FromArgb(dark, 255, 0, 0), bin * fx);
+                        }
+                        else if (i == 1)
+                        {
+                            pen = new Pen(Color.FromArgb(light, 0, 255, 0), bin * fx);
+                            pend = new Pen(Color.FromArgb(dark, 0, 255, 0), bin * fx);
+                        }
+                        else
+                        {
+                            pen = new Pen(Color.FromArgb(light, 0, 0, 255), bin * fx);
+                            pend = new Pen(Color.FromArgb(dark, 0, 0, 255), bin * fx);
+                        }
+                    }
+
+                    g.DrawLine(Pens.Black, new PointF(mouseX, 0), new PointF(mouseX, this.Height));
+                    int gmax = graphMax;
+                    if (App.Image.bitsPerPixel <= 8)
+                        gmax = 255;
+
+
+                    float sumbins = 0;
+                    float sumbin = 0;
+                    int binind = 0;
+                    int bininds = 0;
+                    PointF? prevs = null;
+                    PointF? prev = null;
+                    for (float x = 0; x < gmax; x++)
+                    {
+                        if (StackHistogram && c == ImageView.SelectedImage.Channels.Count - 1)
+                        {
+                            //Lets draw the stack histogram.
+                            float val = (float)ImageView.SelectedImage.Statistics.StackValues[(int)x];
+                            sumbin += val;
+                            if (binind == bin)
                             {
-                                g.DrawLine(blackd, prevs.Value, new PointF(fx * x, yy));
+                                float v = sumbin / binind;
+                                float yy = this.Height - (fy * v);
+                                if (prevs != null)
+                                {
+                                    g.DrawLine(blackd, prevs.Value, new PointF(fx * x, yy));
+                                }
+                                g.DrawLine(black, new PointF(fx * x, this.Height), new PointF(fx * x, yy));
+                                prevs = new PointF(fx * x, yy);
+                                binind = 0;
+                                sumbin = 0;
                             }
-                            g.DrawLine(black, new PointF(fx * x, this.Height), new PointF(fx * x, yy));
-                            prevs = new PointF(fx * x, yy);
-                            binind = 0;
-                            sumbin = 0;
                         }
-                    }
-                    //Lets draw the channel histogram on top of the stack histogram.
-                    float rv = stat.StackValues[(int)x];
-                    sumbins += rv;
-                    if (bininds == bin)
-                    {
-                        g.DrawLine(pen, new PointF(fx * x, this.Height), new PointF(fx * x, this.Height - (fy * (sumbins / bininds))));
-                        if (prev != null)
+                        //Lets draw the channel histogram on top of the stack histogram.
+                        float rv = stat.StackValues[(int)x];
+                        sumbins += rv;
+                        if (bininds == bin)
                         {
-                            g.DrawLine(pend, prev.Value, new PointF(fx * x, this.Height - (fy * (sumbins / bininds))));
+                            g.DrawLine(pen, new PointF(fx * x, this.Height), new PointF(fx * x, this.Height - (fy * (sumbins / bininds))));
+                            if (prev != null)
+                            {
+                                g.DrawLine(pend, prev.Value, new PointF(fx * x, this.Height - (fy * (sumbins / bininds))));
+                            }
+                            prev = new PointF(fx * x, this.Height - (fy * (sumbins / bininds)));
+                            bininds = 0;
+                            sumbins = 0;
                         }
-                        prev = new PointF(fx * x, this.Height - (fy * (sumbins / bininds)));
-                        bininds = 0;
-                        sumbins = 0;
+                        binind++;
+                        bininds++;
+
                     }
-                    binind++;
-                    bininds++;
-                
+                    
+                    g.DrawLine(pend, new PointF((fx * channel.range[i].Max), 0), new PointF((fx * channel.range[i].Max), this.Height));
+                    g.DrawLine(pend, new PointF(fx * channel.range[i].Min, 0), new PointF(fx * channel.range[i].Min, this.Height));
+
+                    black.Dispose();
+                    blackd.Dispose();
+                    pen.Dispose();
+                    pend.Dispose();
                 }
-
-                g.DrawLine(pend, new PointF((fx * channel.Max), 0), new PointF((fx * channel.Max), this.Height));
-                g.DrawLine(pend, new PointF(fx * channel.Min, 0), new PointF(fx * channel.Min, this.Height));
-
-                black.Dispose();
-                blackd.Dispose();
-                pen.Dispose();
-                pend.Dispose();
+                
             }
 
             float tick = 6;
@@ -314,17 +314,30 @@ namespace Bio
             }
 
             if (ImageView.SelectedImage.RGBChannelCount == 3)
-                st =
-                    "(" + (mouseX / fx).ToString() +
-                    ",R:" + ImageView.SelectedImage.Channels[2].stats[2].StackValues[(int)(mouseX / fx)].ToString() +
-                    ",G:" + ImageView.SelectedImage.Channels[1].stats[1].StackValues[(int)(mouseX / fx)].ToString() +
-                    ",B:" + ImageView.SelectedImage.Channels[0].stats[0].StackValues[(int)(mouseX / fx)].ToString() + ")";
+            {
+                if (ImageView.SelectedImage.Channels.Count > 2)
+                {
+                    st =
+                        "(" + (mouseX / fx).ToString() +
+                        ",R:" + ImageView.SelectedImage.Channels[2].stats[2].StackValues[(int)(mouseX / fx)].ToString() +
+                        ",G:" + ImageView.SelectedImage.Channels[1].stats[1].StackValues[(int)(mouseX / fx)].ToString() +
+                        ",B:" + ImageView.SelectedImage.Channels[0].stats[0].StackValues[(int)(mouseX / fx)].ToString() + ")";
+                }
+                else
+                {
+                    st =
+                        "(" + (mouseX / fx).ToString() +
+                        ",R:" + ImageView.SelectedImage.Channels[0].stats[2].StackValues[(int)(mouseX / fx)].ToString() +
+                        ",G:" + ImageView.SelectedImage.Channels[0].stats[1].StackValues[(int)(mouseX / fx)].ToString() +
+                        ",B:" + ImageView.SelectedImage.Channels[0].stats[0].StackValues[(int)(mouseX / fx)].ToString() + ")";
+                }
+            }
             else
             {
-                int x = (int)(mouseX / fx);   
-                if(ImageView.SelectedImage.bitsPerPixel < 8 && ImageView.SelectedImage.Channels[0].stats[0].StackValues.Length < 255)
+                int x = (int)(mouseX / fx);
+                if (ImageView.SelectedImage.bitsPerPixel < 8 && ImageView.SelectedImage.Channels[0].stats[0].StackValues.Length < 255)
                     st = "(" + (mouseX / fx).ToString() + "," + ImageView.SelectedImage.Channels[0].stats[0].StackValues[x].ToString() + ")";
-                
+
             }
             SizeF sf = g.MeasureString(st, SystemFonts.DefaultFont);
             g.DrawString(st, SystemFonts.DefaultFont, Brushes.Black, mouseX, mouseY + sf.Height);
@@ -366,14 +379,14 @@ namespace Bio
 
         private void setMaxToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            App.channelsTool.SelectedChannel.Max = (int)MouseValX;
+            App.channelsTool.SelectedChannel.range[App.channelsTool.SelectedSample].Max = (int)MouseValX;
             Invalidate();
             App.viewer.UpdateImage();
         }
 
         private void setMinToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            App.channelsTool.SelectedChannel.Min = (int)MouseValX;
+            App.channelsTool.SelectedChannel.range[App.channelsTool.SelectedSample].Min = (int)MouseValX;
             Invalidate();
             App.viewer.UpdateImage();
         }
@@ -382,7 +395,10 @@ namespace Bio
         {
             foreach (Channel c in ImageView.SelectedImage.Channels)
             {
-                c.Max = (int)MouseValX;
+                for (int i = 0; i < c.range.Length; i++)
+                {
+                    c.range[i].Max = (int)MouseValX;
+                }
             }
         }
 
@@ -390,7 +406,10 @@ namespace Bio
         {
             foreach (Channel c in ImageView.SelectedImage.Channels)
             {
-                c.Min = (int)MouseValX;
+                for (int i = 0; i < c.range.Length; i++)
+                {
+                    c.range[i].Min = (int)MouseValX;
+                }
             }
         }
         Color SpectralColor(double l) // RGB <0,1> <- lambda l <400,700> [nm]

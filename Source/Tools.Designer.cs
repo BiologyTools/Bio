@@ -50,6 +50,8 @@
             this.rectSelPanel = new System.Windows.Forms.Panel();
             this.panPanel = new System.Windows.Forms.Panel();
             this.magicPanel = new System.Windows.Forms.Panel();
+            this.bucketPanel = new System.Windows.Forms.Panel();
+            this.pencilPanel = new System.Windows.Forms.Panel();
             this.movePanel.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.polyPanel.SuspendLayout();
@@ -248,13 +250,37 @@
             this.magicPanel.Click += new System.EventHandler(this.magicPanel_Click);
             this.magicPanel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.magicPanel_MouseDoubleClick);
             // 
+            // bucketPanel
+            // 
+            this.bucketPanel.BackColor = System.Drawing.Color.White;
+            this.bucketPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("bucketPanel.BackgroundImage")));
+            this.bucketPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.bucketPanel.Location = new System.Drawing.Point(0, 180);
+            this.bucketPanel.Name = "bucketPanel";
+            this.bucketPanel.Size = new System.Drawing.Size(30, 30);
+            this.bucketPanel.TabIndex = 10;
+            this.bucketPanel.Click += new System.EventHandler(this.bucketPanel_Click);
+            // 
+            // pencilPanel
+            // 
+            this.pencilPanel.BackColor = System.Drawing.Color.White;
+            this.pencilPanel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pencilPanel.BackgroundImage")));
+            this.pencilPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.pencilPanel.Location = new System.Drawing.Point(30, 180);
+            this.pencilPanel.Name = "pencilPanel";
+            this.pencilPanel.Size = new System.Drawing.Size(30, 30);
+            this.pencilPanel.TabIndex = 9;
+            this.pencilPanel.Click += new System.EventHandler(this.pencilPanel_Click);
+            // 
             // Tools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(61, 181);
+            this.ClientSize = new System.Drawing.Size(61, 180);
             this.ContextMenuStrip = this.contextMenuStrip;
+            this.Controls.Add(this.bucketPanel);
+            this.Controls.Add(this.pencilPanel);
             this.Controls.Add(this.magicPanel);
             this.Controls.Add(this.panPanel);
             this.Controls.Add(this.rectPanel);
@@ -307,5 +333,7 @@
         private System.Windows.Forms.Panel rectSelPanel;
         private System.Windows.Forms.Panel panPanel;
         private System.Windows.Forms.Panel magicPanel;
+        private System.Windows.Forms.Panel bucketPanel;
+        private System.Windows.Forms.Panel pencilPanel;
     }
 }

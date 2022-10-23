@@ -28,7 +28,10 @@ namespace Bio
         }
         public void UpdateProgressF(float p)
         {
-            progressBar.Value = (int)(p * 100);
+            if (p > 1)
+                progressBar.Value = 100;
+            else
+                progressBar.Value = (int)(p * 100);
         }
 
         private void timer_Tick(object sender, EventArgs e)

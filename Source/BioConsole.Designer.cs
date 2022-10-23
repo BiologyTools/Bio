@@ -37,6 +37,9 @@ namespace Bio
             this.imagejBut = new System.Windows.Forms.Button();
             this.headlessBox = new System.Windows.Forms.CheckBox();
             this.topMostBox = new System.Windows.Forms.CheckBox();
+            this.selRadioBut = new System.Windows.Forms.RadioButton();
+            this.tabRadioBut = new System.Windows.Forms.RadioButton();
+            this.biofBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -51,7 +54,7 @@ namespace Bio
             this.textBox.Location = new System.Drawing.Point(0, 0);
             this.textBox.Multiline = true;
             this.textBox.Name = "textBox";
-            this.textBox.Size = new System.Drawing.Size(429, 67);
+            this.textBox.Size = new System.Drawing.Size(429, 69);
             this.textBox.TabIndex = 18;
             // 
             // runBut
@@ -59,7 +62,7 @@ namespace Bio
             this.runBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.runBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.runBut.ForeColor = System.Drawing.Color.White;
-            this.runBut.Location = new System.Drawing.Point(378, 237);
+            this.runBut.Location = new System.Drawing.Point(378, 258);
             this.runBut.Name = "runBut";
             this.runBut.Size = new System.Drawing.Size(56, 23);
             this.runBut.TabIndex = 21;
@@ -94,7 +97,7 @@ namespace Bio
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.textBox);
-            this.splitContainer.Size = new System.Drawing.Size(429, 230);
+            this.splitContainer.Size = new System.Drawing.Size(429, 232);
             this.splitContainer.SplitterDistance = 159;
             this.splitContainer.TabIndex = 23;
             // 
@@ -103,7 +106,7 @@ namespace Bio
             this.imagejBut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.imagejBut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.imagejBut.ForeColor = System.Drawing.Color.White;
-            this.imagejBut.Location = new System.Drawing.Point(299, 237);
+            this.imagejBut.Location = new System.Drawing.Point(299, 258);
             this.imagejBut.Name = "imagejBut";
             this.imagejBut.Size = new System.Drawing.Size(73, 23);
             this.imagejBut.TabIndex = 24;
@@ -115,7 +118,7 @@ namespace Bio
             // 
             this.headlessBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.headlessBox.AutoSize = true;
-            this.headlessBox.Location = new System.Drawing.Point(223, 241);
+            this.headlessBox.Location = new System.Drawing.Point(88, 262);
             this.headlessBox.Name = "headlessBox";
             this.headlessBox.Size = new System.Drawing.Size(70, 17);
             this.headlessBox.TabIndex = 25;
@@ -126,7 +129,7 @@ namespace Bio
             // 
             this.topMostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.topMostBox.AutoSize = true;
-            this.topMostBox.Location = new System.Drawing.Point(11, 241);
+            this.topMostBox.Location = new System.Drawing.Point(11, 261);
             this.topMostBox.Name = "topMostBox";
             this.topMostBox.Size = new System.Drawing.Size(71, 17);
             this.topMostBox.TabIndex = 26;
@@ -134,12 +137,50 @@ namespace Bio
             this.topMostBox.UseVisualStyleBackColor = true;
             this.topMostBox.CheckedChanged += new System.EventHandler(this.topMostBox_CheckedChanged);
             // 
+            // selRadioBut
+            // 
+            this.selRadioBut.AutoSize = true;
+            this.selRadioBut.Checked = true;
+            this.selRadioBut.Location = new System.Drawing.Point(164, 261);
+            this.selRadioBut.Name = "selRadioBut";
+            this.selRadioBut.Size = new System.Drawing.Size(67, 17);
+            this.selRadioBut.TabIndex = 27;
+            this.selRadioBut.TabStop = true;
+            this.selRadioBut.Text = "Selected";
+            this.selRadioBut.UseVisualStyleBackColor = true;
+            // 
+            // tabRadioBut
+            // 
+            this.tabRadioBut.AutoSize = true;
+            this.tabRadioBut.Location = new System.Drawing.Point(241, 261);
+            this.tabRadioBut.Name = "tabRadioBut";
+            this.tabRadioBut.Size = new System.Drawing.Size(44, 17);
+            this.tabRadioBut.TabIndex = 28;
+            this.tabRadioBut.Text = "Tab";
+            this.tabRadioBut.UseVisualStyleBackColor = true;
+            this.tabRadioBut.CheckedChanged += new System.EventHandler(this.tabRadioBut_CheckedChanged);
+            // 
+            // biofBox
+            // 
+            this.biofBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.biofBox.AutoSize = true;
+            this.biofBox.Location = new System.Drawing.Point(88, 241);
+            this.biofBox.Name = "biofBox";
+            this.biofBox.Size = new System.Drawing.Size(97, 17);
+            this.biofBox.TabIndex = 29;
+            this.biofBox.Text = "Use Bioformats";
+            this.biofBox.UseVisualStyleBackColor = true;
+            this.biofBox.CheckedChanged += new System.EventHandler(this.biofBox_CheckedChanged);
+            // 
             // BioConsole
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(439, 267);
+            this.ClientSize = new System.Drawing.Size(439, 283);
+            this.Controls.Add(this.biofBox);
+            this.Controls.Add(this.tabRadioBut);
+            this.Controls.Add(this.selRadioBut);
             this.Controls.Add(this.topMostBox);
             this.Controls.Add(this.headlessBox);
             this.Controls.Add(this.imagejBut);
@@ -171,5 +212,8 @@ namespace Bio
         private System.Windows.Forms.Button imagejBut;
         private System.Windows.Forms.CheckBox headlessBox;
         private System.Windows.Forms.CheckBox topMostBox;
+        private System.Windows.Forms.RadioButton selRadioBut;
+        private System.Windows.Forms.RadioButton tabRadioBut;
+        private System.Windows.Forms.CheckBox biofBox;
     }
 }

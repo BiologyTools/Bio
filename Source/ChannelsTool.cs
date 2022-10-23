@@ -26,7 +26,17 @@ namespace Bio
                     return Channels[0];
             }
         }
-
+        public int SelectedSample
+        {
+            get
+            {
+                return (int)sampleBox.Value;
+            }
+            set
+            {
+                sampleBox.Value = (decimal)value;
+            }
+        }
         public void UpdateItems()
         {
             channelsBox.Items.Clear();
@@ -62,8 +72,7 @@ namespace Bio
                 hist.Invalidate();
                 hist.Min = (int)minBox.Value;
             }
-            
-            App.Channels[channelsBox.SelectedIndex].Min = (int)minBox.Value;
+            App.Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Min = (int)minBox.Value;
             App.viewer.UpdateImage();
             App.viewer.UpdateView();
         }
@@ -77,8 +86,7 @@ namespace Bio
                 hist.Invalidate();
                 hist.Max = (int)maxBox.Value;
             }
-            
-            App.Channels[channelsBox.SelectedIndex].Max = (int)maxBox.Value;
+            App.Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Min = (int)minBox.Value;
             App.viewer.UpdateImage();
             App.viewer.UpdateView();
         }
@@ -86,15 +94,17 @@ namespace Bio
         {
             if (channelsBox.SelectedIndex == -1)
                 return;
-            if (minBox.Maximum < Channels[channelsBox.SelectedIndex].Min || maxBox.Maximum < Channels[channelsBox.SelectedIndex].Max)
+            sampleBox.Value = 0;
+            sampleBox.Maximum = ((Channel)channelsBox.SelectedItem).range[(int)sampleBox.Value].Max - 1;
+            if (minBox.Maximum < Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Min || maxBox.Maximum < Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Max)
             {
                 minBox.Value = 0;
                 maxBox.Value = ushort.MaxValue;
             }
             else
             {
-                minBox.Value = Channels[channelsBox.SelectedIndex].Min;
-                maxBox.Value = Channels[channelsBox.SelectedIndex].Max;
+                minBox.Value = Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Min;
+                maxBox.Value = Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Max;
             }
             if (hist != null)
             {
@@ -123,7 +133,10 @@ namespace Bio
         {
             foreach (Channel c in Channels)
             {
-                c.Max = (int)maxBox.Value;
+                for (int i = 0; i < c.range.Length; i++)
+                {
+                    c.range[i].Max = (int)maxBox.Value;
+                }
             }
             App.viewer.UpdateView();
         }
@@ -132,15 +145,22 @@ namespace Bio
         {
             foreach (Channel c in Channels)
             {
-                c.Min = (int)minBox.Value;
+                for (int i = 0; i < c.range.Length; i++)
+                {
+                    c.range[i].Min = (int)minBox.Value;
+                }
             }
             App.viewer.UpdateView();
         }
 
         private void ChannelsTool_Activated(object sender, EventArgs e)
         {
-            minBox.Value = SelectedChannel.Min;
-            maxBox.Value = SelectedChannel.Max;
+            for (int i = 0; i < SelectedChannel.range.Length; i++)
+            {
+                SelectedChannel.range[i].Min = (int)minBox.Value;
+            }
+            minBox.Value = SelectedChannel.range[(int)sampleBox.Value].Min;
+            maxBox.Value = SelectedChannel.range[(int)sampleBox.Value].Max;
             UpdateItems();
             hist.UpdateView();
 
@@ -268,7 +288,7 @@ namespace Bio
 
         private void applyBut_Click(object sender, EventArgs e)
         {
-            ImageView.SelectedImage.Bake(ImageView.SelectedImage.RChannel.range, ImageView.SelectedImage.GChannel.range, ImageView.SelectedImage.BChannel.range);
+            ImageView.SelectedImage.Bake(ImageView.SelectedImage.RChannel.RangeR, ImageView.SelectedImage.GChannel.RangeG, ImageView.SelectedImage.BChannel.RangeB);
         }
 
         private void minToolStripMenuItem_Click(object sender, EventArgs e)
@@ -330,6 +350,21 @@ namespace Bio
                 ImageView.SelectedImage.StackThreshold(false);
             }
             App.viewer.UpdateImage();
+        }
+
+        private void sampleBox_ValueChanged(object sender, EventArgs e)
+        {
+            if (channelsBox.SelectedIndex == -1)
+                channelsBox.SelectedIndex = 0;
+            minBox.Value = Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Min;
+            maxBox.Value = Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Max;
+            if (hist != null)
+            {
+                //hist.Statistics = Channels[channelsBox.SelectedIndex].statistics;
+                hist.UpdateChannel(SelectedChannel);
+                hist.Invalidate();
+            }
+            App.viewer.UpdateView();
         }
     }
 }

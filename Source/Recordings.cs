@@ -12,9 +12,10 @@ namespace Bio
         public Recordings()
         {
             InitializeComponent();
-            if (!Directory.Exists("Recordings"))
+            string st = Application.StartupPath;
+            if (!Directory.Exists(st + "/Recordings"))
                 Directory.CreateDirectory("Recordings");
-            foreach (string file in Directory.GetFiles("Recordings"))
+            foreach (string file in Directory.GetFiles(st + "/Recordings"))
             {
                 if (file.EndsWith("reco"))
                     OpenRecording(file);

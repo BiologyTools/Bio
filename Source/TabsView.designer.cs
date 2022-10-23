@@ -37,6 +37,7 @@ namespace Bio
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.saveOMEToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toWindowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,6 +76,7 @@ namespace Bio
             this.channelsToolToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoThresholdToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.channelsToolToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.switchRedBlueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stackToolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stackToolsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.duplicateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -88,16 +90,15 @@ namespace Bio
             this.to48BitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filtersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createFunctionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.consoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptRunnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.automationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileSystemWatcher = new System.IO.FileSystemWatcher();
-            this.consoleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.switchRedBlueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createFunctionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.runToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.xMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -154,6 +155,13 @@ namespace Bio
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click_1);
+            // 
+            // reloadToolStripMenuItem
+            // 
+            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
+            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
+            this.reloadToolStripMenuItem.Text = "Reload";
+            this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem1
             // 
@@ -329,7 +337,8 @@ namespace Bio
             this.rGBToolStripMenuItem,
             this.filteredToolStripMenuItem,
             this.rawToolStripMenuItem,
-            this.emissionToolStripMenuItem});
+            this.emissionToolStripMenuItem,
+            this.xMLToolStripMenuItem});
             this.sizeModeToolStripMenuItem.Name = "sizeModeToolStripMenuItem";
             this.sizeModeToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.sizeModeToolStripMenuItem.Text = "View";
@@ -379,7 +388,7 @@ namespace Bio
             // setToolToolStripMenuItem
             // 
             this.setToolToolStripMenuItem.Name = "setToolToolStripMenuItem";
-            this.setToolToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.setToolToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.setToolToolStripMenuItem.Text = "Set Tool";
             this.setToolToolStripMenuItem.Click += new System.EventHandler(this.setToolToolStripMenuItem_Click);
             // 
@@ -435,16 +444,23 @@ namespace Bio
             // autoThresholdToolStripMenuItem
             // 
             this.autoThresholdToolStripMenuItem.Name = "autoThresholdToolStripMenuItem";
-            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.autoThresholdToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
             this.autoThresholdToolStripMenuItem.Text = "Auto Threshold All";
             this.autoThresholdToolStripMenuItem.Click += new System.EventHandler(this.autoThresholdToolStripMenuItem_Click);
             // 
             // channelsToolToolStripMenuItem1
             // 
             this.channelsToolToolStripMenuItem1.Name = "channelsToolToolStripMenuItem1";
-            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.channelsToolToolStripMenuItem1.Size = new System.Drawing.Size(172, 22);
             this.channelsToolToolStripMenuItem1.Text = "Channels Tool";
             this.channelsToolToolStripMenuItem1.Click += new System.EventHandler(this.channelsToolToolStripMenuItem_Click);
+            // 
+            // switchRedBlueToolStripMenuItem
+            // 
+            this.switchRedBlueToolStripMenuItem.Name = "switchRedBlueToolStripMenuItem";
+            this.switchRedBlueToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.switchRedBlueToolStripMenuItem.Text = "Switch Red Blue";
+            this.switchRedBlueToolStripMenuItem.Click += new System.EventHandler(this.switchRedBlueToolStripMenuItem_Click);
             // 
             // stackToolsToolStripMenuItem
             // 
@@ -459,21 +475,21 @@ namespace Bio
             // stackToolsToolStripMenuItem1
             // 
             this.stackToolsToolStripMenuItem1.Name = "stackToolsToolStripMenuItem1";
-            this.stackToolsToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.stackToolsToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
             this.stackToolsToolStripMenuItem1.Text = "Stack Tool";
             this.stackToolsToolStripMenuItem1.Click += new System.EventHandler(this.stackToolsToolStripMenuItem_Click);
             // 
             // duplicateToolStripMenuItem
             // 
             this.duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
-            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.duplicateToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.duplicateToolStripMenuItem.Text = "Duplicate";
             this.duplicateToolStripMenuItem.Click += new System.EventHandler(this.duplicateToolStripMenuItem_Click);
             // 
             // rotateToolStripMenuItem
             // 
             this.rotateToolStripMenuItem.Name = "rotateToolStripMenuItem";
-            this.rotateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.rotateToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.rotateToolStripMenuItem.Text = "Rotate Flip";
             this.rotateToolStripMenuItem.DropDownOpening += new System.EventHandler(this.rotateToolStripMenuItem_DropDownOpening);
             this.rotateToolStripMenuItem.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.rotateToolStripMenuItem_DropDownItemClicked);
@@ -563,17 +579,38 @@ namespace Bio
             this.scriptToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.scriptToolStripMenuItem.Text = "Script";
             // 
+            // runToolStripMenuItem
+            // 
+            this.runToolStripMenuItem.Name = "runToolStripMenuItem";
+            this.runToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.runToolStripMenuItem.Text = "Run";
+            this.runToolStripMenuItem.DropDownOpening += new System.EventHandler(this.runToolStripMenuItem_DropDownOpening);
+            // 
+            // createFunctionToolStripMenuItem
+            // 
+            this.createFunctionToolStripMenuItem.Name = "createFunctionToolStripMenuItem";
+            this.createFunctionToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.createFunctionToolStripMenuItem.Text = "Functions Tool";
+            this.createFunctionToolStripMenuItem.Click += new System.EventHandler(this.createFunctionToolStripMenuItem_Click);
+            // 
+            // consoleToolStripMenuItem
+            // 
+            this.consoleToolStripMenuItem.Name = "consoleToolStripMenuItem";
+            this.consoleToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.consoleToolStripMenuItem.Text = "Console";
+            this.consoleToolStripMenuItem.Click += new System.EventHandler(this.consoleToolStripMenuItem_Click);
+            // 
             // scriptRunnerToolStripMenuItem
             // 
             this.scriptRunnerToolStripMenuItem.Name = "scriptRunnerToolStripMenuItem";
-            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.scriptRunnerToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.scriptRunnerToolStripMenuItem.Text = "Script Runner";
             this.scriptRunnerToolStripMenuItem.Click += new System.EventHandler(this.scriptRunnerToolStripMenuItem_Click_1);
             // 
             // scriptRecorderToolStripMenuItem
             // 
             this.scriptRecorderToolStripMenuItem.Name = "scriptRecorderToolStripMenuItem";
-            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.scriptRecorderToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.scriptRecorderToolStripMenuItem.Text = "Script Recorder";
             this.scriptRecorderToolStripMenuItem.Click += new System.EventHandler(this.scriptRecorderToolStripMenuItem_Click_1);
             // 
@@ -597,40 +634,12 @@ namespace Bio
             this.fileSystemWatcher.SynchronizingObject = this;
             this.fileSystemWatcher.Created += new System.IO.FileSystemEventHandler(this.fileSystemWatcher_Created);
             // 
-            // consoleToolStripMenuItem
+            // xMLToolStripMenuItem
             // 
-            this.consoleToolStripMenuItem.Name = "consoleToolStripMenuItem";
-            this.consoleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.consoleToolStripMenuItem.Text = "Console";
-            this.consoleToolStripMenuItem.Click += new System.EventHandler(this.consoleToolStripMenuItem_Click);
-            // 
-            // switchRedBlueToolStripMenuItem
-            // 
-            this.switchRedBlueToolStripMenuItem.Name = "switchRedBlueToolStripMenuItem";
-            this.switchRedBlueToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.switchRedBlueToolStripMenuItem.Text = "Switch Red Blue";
-            this.switchRedBlueToolStripMenuItem.Click += new System.EventHandler(this.switchRedBlueToolStripMenuItem_Click);
-            // 
-            // createFunctionToolStripMenuItem
-            // 
-            this.createFunctionToolStripMenuItem.Name = "createFunctionToolStripMenuItem";
-            this.createFunctionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.createFunctionToolStripMenuItem.Text = "Functions Tool";
-            this.createFunctionToolStripMenuItem.Click += new System.EventHandler(this.createFunctionToolStripMenuItem_Click);
-            // 
-            // runToolStripMenuItem
-            // 
-            this.runToolStripMenuItem.Name = "runToolStripMenuItem";
-            this.runToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.runToolStripMenuItem.Text = "Run";
-            this.runToolStripMenuItem.DropDownOpening += new System.EventHandler(this.runToolStripMenuItem_DropDownOpening);
-            // 
-            // reloadToolStripMenuItem
-            // 
-            this.reloadToolStripMenuItem.Name = "reloadToolStripMenuItem";
-            this.reloadToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
-            this.reloadToolStripMenuItem.Text = "Reload";
-            this.reloadToolStripMenuItem.Click += new System.EventHandler(this.reloadToolStripMenuItem_Click);
+            this.xMLToolStripMenuItem.Name = "xMLToolStripMenuItem";
+            this.xMLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.xMLToolStripMenuItem.Text = "XML";
+            this.xMLToolStripMenuItem.Click += new System.EventHandler(this.xMLToolStripMenuItem_Click);
             // 
             // TabsView
             // 
@@ -729,5 +738,6 @@ namespace Bio
         private System.Windows.Forms.ToolStripMenuItem createFunctionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem xMLToolStripMenuItem;
     }
 }

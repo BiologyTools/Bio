@@ -389,7 +389,7 @@ namespace Bio
             }
             if (FuncType == Function.FunctionType.ImageJ)
             {
-                ImageJ.RunOnImage(script, ImageView.SelectedImage.ID, false);
+                ImageJ.RunOnImage(script, false, BioConsole.onTab, BioConsole.useBioformats);
             }
             if (FuncType == Function.FunctionType.Property)
             {

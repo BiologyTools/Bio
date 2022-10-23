@@ -98,7 +98,9 @@ namespace Bio
         }
         public void AddTab(BioImage b)
         {
-            TabPage t = new TabPage(Path.GetFileName(b.ID));
+            if (b.filename.Contains("/") || b.filename.Contains("\\"))
+                b.filename = Path.GetFileName(b.filename);
+            TabPage t = new TabPage(b.filename);
             ImageView v = new ImageView(b);
             v.Dock = DockStyle.Fill;
             t.Controls.Add(v);
@@ -179,6 +181,8 @@ namespace Bio
             foreach (string item in openFilesDialog.FileNames)
             {
                 BioImage im = BioImage.OpenFile(item);
+                if (im == null)
+                    return;
                 AddTab(im);
                 if (!App.recent.Contains(im.ID))
                     App.recent.Add(im.ID);
@@ -531,7 +535,10 @@ namespace Bio
                 return;
             foreach (string sts in openFilesDialog.FileNames)
             {
-                AddTab(BioImage.OpenOME(sts));
+                BioImage im = BioImage.OpenOME(sts);
+                if (im == null)
+                    return;
+                AddTab(im);
             }
         }
 
@@ -687,6 +694,8 @@ namespace Bio
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
             BioImage[] bs = BioImage.OpenOMESeries(openFilesDialog.FileName);
+            if (bs == null)
+                return;
             AddTab(bs[0]);
             for (int i = 1; i < bs.Length; i++)
             {
@@ -697,6 +706,26 @@ namespace Bio
 
         private void saveTabToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if(ImageView.Images.Count > 0 && ImageView.SelectedImage.isRGB)
+            {
+                string mes;
+                if(ImageView.SelectedImage.bitsPerPixel > 8)
+                    mes = "Saving Series as OME only supports 8 bit & 16 bit images to. Convert 16 bit?";
+                else
+                    mes = "Saving Series as OME only supports 8 bit & 16 bit images. Convert 8 bit?";
+                if (MessageBox.Show(this, mes,"Convert to supported format?", MessageBoxButtons.OKCancel) == DialogResult.OK)
+                {
+                    foreach (BioImage b in ImageView.Images)
+                    {
+                        if (b.bitsPerPixel > 8)
+                            b.To16Bit();
+                        else
+                            b.To8Bit();
+                    }
+                }
+                else
+                    return;
+            }
             if (saveOMEFileDialog.ShowDialog() != DialogResult.OK)
                 return;
             string[] sts = new string[App.viewer.Images.Count];
@@ -704,7 +733,7 @@ namespace Bio
             {
                 sts[i] = App.viewer.Images[i].ID;
             }
-            BioImage.SaveOMESeries(sts, saveOMEFileDialog.FileName);
+            BioImage.SaveOMESeries(sts, saveOMEFileDialog.FileName, Properties.Settings.Default.Planes);
         }
 
         private void saveTabTiffToolStripMenuItem_Click(object sender, EventArgs e)
@@ -824,6 +853,12 @@ namespace Bio
         private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ImageView.SelectedImage.Update();
+        }
+
+        private void xMLToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            XMLView v = new XMLView(BioImage.OpenXML(ImageView.SelectedImage.file));
+            v.Show();
         }
     }
 }
