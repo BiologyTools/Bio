@@ -1001,15 +1001,24 @@ namespace Bio
             }
             public string ContrastMethod
             {
-                get { return contrastMethod.ToString(); }
+                get 
+                {
+                    if (contrastMethod == null)
+                        return ome.xml.model.enums.ContrastMethod.BRIGHTFIELD.ToString();
+                    return contrastMethod; 
+                }
                 set
                 {
-                    contrastMethod = value.ToString();
+                    contrastMethod = value;
                 }
             }
             public string IlluminationType
             {
-                get { return illuminationType.ToString(); }
+                get {
+                    if (illuminationType == null)
+                        return ome.xml.model.enums.IlluminationType.OTHER.ToString(); 
+                    return illuminationType; 
+                }
                 set
                 {
                     illuminationType = value;
@@ -1017,7 +1026,7 @@ namespace Bio
             }
             public string DiodeName
             {
-                get { return diodeName.ToString(); }
+                get { return diodeName; }
                 set
                 {
                     diodeName = value;
@@ -1026,10 +1035,21 @@ namespace Bio
             public string LightSourceAttenuation
             {
                 get { return lightSourceAttenuation; }
+                set
+                {
+                    lightSourceAttenuation = value;
+                }
             }
             public string AcquisitionMode
             {
-                get { return acquisitionMode; }
+                get {
+                    if (acquisitionMode == null)
+                        return ome.xml.model.enums.AcquisitionMode.WIDEFIELD.ToString(); 
+                    return acquisitionMode; }
+                set
+                {
+                    acquisitionMode = value;
+                }
             }
         }
         public static System.Drawing.Color SpectralColor(double l) // RGB <0,1> <- lambda l <400,700> [nm]
