@@ -55,19 +55,19 @@
             this.dropperPanel = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.eraserPanel = new System.Windows.Forms.Panel();
-            this.color1Box = new AForge.Controls.PictureBox();
-            this.color2Box = new AForge.Controls.PictureBox();
             this.widthBox = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
+            this.color1Box = new System.Windows.Forms.Panel();
+            this.color2Box = new System.Windows.Forms.Panel();
+            this.switchBox = new System.Windows.Forms.PictureBox();
             this.movePanel.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.polyPanel.SuspendLayout();
             this.pointPanel.SuspendLayout();
             this.deletePanel.SuspendLayout();
             this.dropperPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.color1Box)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.color2Box)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.widthBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.switchBox)).BeginInit();
             this.SuspendLayout();
             // 
             // colorDialog
@@ -84,6 +84,7 @@
             this.textPanel.Name = "textPanel";
             this.textPanel.Size = new System.Drawing.Size(30, 30);
             this.textPanel.TabIndex = 3;
+            this.textPanel.Tag = "tool";
             this.textPanel.Click += new System.EventHandler(this.textPanel_Click);
             // 
             // panel7
@@ -105,6 +106,7 @@
             this.movePanel.Name = "movePanel";
             this.movePanel.Size = new System.Drawing.Size(30, 30);
             this.movePanel.TabIndex = 6;
+            this.movePanel.Tag = "tool";
             this.movePanel.Click += new System.EventHandler(this.movePanel_Click);
             // 
             // freeformPanel
@@ -116,6 +118,7 @@
             this.freeformPanel.Name = "freeformPanel";
             this.freeformPanel.Size = new System.Drawing.Size(30, 30);
             this.freeformPanel.TabIndex = 7;
+            this.freeformPanel.Tag = "tool";
             this.freeformPanel.Click += new System.EventHandler(this.freeformPanel_Click);
             // 
             // contextMenuStrip
@@ -140,6 +143,7 @@
             this.rectPanel.Name = "rectPanel";
             this.rectPanel.Size = new System.Drawing.Size(30, 30);
             this.rectPanel.TabIndex = 2;
+            this.rectPanel.Tag = "tool";
             this.rectPanel.Click += new System.EventHandler(this.rectPanel_Click);
             // 
             // ellipsePanel
@@ -151,6 +155,7 @@
             this.ellipsePanel.Name = "ellipsePanel";
             this.ellipsePanel.Size = new System.Drawing.Size(30, 30);
             this.ellipsePanel.TabIndex = 8;
+            this.ellipsePanel.Tag = "tool";
             this.ellipsePanel.Click += new System.EventHandler(this.ellipsePanel_Click);
             // 
             // linePanel
@@ -162,6 +167,7 @@
             this.linePanel.Name = "linePanel";
             this.linePanel.Size = new System.Drawing.Size(30, 30);
             this.linePanel.TabIndex = 3;
+            this.linePanel.Tag = "tool";
             this.linePanel.Click += new System.EventHandler(this.linePanel_Click);
             // 
             // polyPanel
@@ -174,6 +180,7 @@
             this.polyPanel.Name = "polyPanel";
             this.polyPanel.Size = new System.Drawing.Size(30, 30);
             this.polyPanel.TabIndex = 4;
+            this.polyPanel.Tag = "tool";
             this.polyPanel.Click += new System.EventHandler(this.polyPanel_Click);
             // 
             // panel11
@@ -195,6 +202,7 @@
             this.pointPanel.Name = "pointPanel";
             this.pointPanel.Size = new System.Drawing.Size(30, 30);
             this.pointPanel.TabIndex = 5;
+            this.pointPanel.Tag = "tool";
             this.pointPanel.Click += new System.EventHandler(this.pointPanel_Click);
             // 
             // panel13
@@ -216,6 +224,7 @@
             this.deletePanel.Name = "deletePanel";
             this.deletePanel.Size = new System.Drawing.Size(30, 30);
             this.deletePanel.TabIndex = 5;
+            this.deletePanel.Tag = "tool";
             this.deletePanel.Click += new System.EventHandler(this.deletePanel_Click);
             // 
             // panel2
@@ -236,6 +245,7 @@
             this.rectSelPanel.Name = "rectSelPanel";
             this.rectSelPanel.Size = new System.Drawing.Size(30, 30);
             this.rectSelPanel.TabIndex = 9;
+            this.rectSelPanel.Tag = "tool";
             this.rectSelPanel.Click += new System.EventHandler(this.rectSelPanel_Click);
             // 
             // panPanel
@@ -247,6 +257,7 @@
             this.panPanel.Name = "panPanel";
             this.panPanel.Size = new System.Drawing.Size(30, 30);
             this.panPanel.TabIndex = 3;
+            this.panPanel.Tag = "tool";
             this.panPanel.Click += new System.EventHandler(this.panPanel_Click);
             // 
             // magicPanel
@@ -258,6 +269,7 @@
             this.magicPanel.Name = "magicPanel";
             this.magicPanel.Size = new System.Drawing.Size(30, 30);
             this.magicPanel.TabIndex = 8;
+            this.magicPanel.Tag = "tool";
             this.magicPanel.Click += new System.EventHandler(this.magicPanel_Click);
             this.magicPanel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.magicPanel_MouseDoubleClick);
             // 
@@ -270,6 +282,7 @@
             this.bucketPanel.Name = "bucketPanel";
             this.bucketPanel.Size = new System.Drawing.Size(30, 30);
             this.bucketPanel.TabIndex = 10;
+            this.bucketPanel.Tag = "tool";
             this.bucketPanel.Click += new System.EventHandler(this.bucketPanel_Click);
             this.bucketPanel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.bucketPanel_MouseDoubleClick);
             // 
@@ -282,6 +295,7 @@
             this.pencilPanel.Name = "pencilPanel";
             this.pencilPanel.Size = new System.Drawing.Size(30, 30);
             this.pencilPanel.TabIndex = 9;
+            this.pencilPanel.Tag = "tool";
             this.pencilPanel.Click += new System.EventHandler(this.pencilPanel_Click);
             this.pencilPanel.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pencilPanel_MouseDoubleClick);
             // 
@@ -295,6 +309,7 @@
             this.dropperPanel.Name = "dropperPanel";
             this.dropperPanel.Size = new System.Drawing.Size(30, 30);
             this.dropperPanel.TabIndex = 10;
+            this.dropperPanel.Tag = "tool";
             this.dropperPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.dropperPanel_MouseClick);
             // 
             // panel1
@@ -313,35 +328,14 @@
             this.eraserPanel.Name = "eraserPanel";
             this.eraserPanel.Size = new System.Drawing.Size(30, 30);
             this.eraserPanel.TabIndex = 11;
+            this.eraserPanel.Tag = "tool";
             this.eraserPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.eraserPanel_MouseClick);
-            // 
-            // color1Box
-            // 
-            this.color1Box.BackColor = System.Drawing.Color.White;
-            this.color1Box.Image = null;
-            this.color1Box.Location = new System.Drawing.Point(9, 244);
-            this.color1Box.Name = "color1Box";
-            this.color1Box.Size = new System.Drawing.Size(25, 25);
-            this.color1Box.TabIndex = 12;
-            this.color1Box.TabStop = false;
-            this.color1Box.MouseClick += new System.Windows.Forms.MouseEventHandler(this.color1Box_MouseClick);
-            // 
-            // color2Box
-            // 
-            this.color2Box.BackColor = System.Drawing.Color.Black;
-            this.color2Box.Image = null;
-            this.color2Box.Location = new System.Drawing.Point(27, 259);
-            this.color2Box.Name = "color2Box";
-            this.color2Box.Size = new System.Drawing.Size(25, 25);
-            this.color2Box.TabIndex = 13;
-            this.color2Box.TabStop = false;
-            this.color2Box.MouseClick += new System.Windows.Forms.MouseEventHandler(this.color2Box_MouseClick);
             // 
             // widthBox
             // 
             this.widthBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
             this.widthBox.ForeColor = System.Drawing.Color.White;
-            this.widthBox.Location = new System.Drawing.Point(20, 290);
+            this.widthBox.Location = new System.Drawing.Point(20, 296);
             this.widthBox.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -366,23 +360,53 @@
             // 
             this.label3.AutoSize = true;
             this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(-1, 293);
+            this.label3.Location = new System.Drawing.Point(-1, 299);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(21, 13);
             this.label3.TabIndex = 178;
             this.label3.Text = "W:";
+            // 
+            // color1Box
+            // 
+            this.color1Box.BackColor = System.Drawing.Color.White;
+            this.color1Box.Location = new System.Drawing.Point(5, 243);
+            this.color1Box.Name = "color1Box";
+            this.color1Box.Size = new System.Drawing.Size(25, 25);
+            this.color1Box.TabIndex = 179;
+            this.color1Box.MouseClick += new System.Windows.Forms.MouseEventHandler(this.color1Box_MouseClick);
+            // 
+            // color2Box
+            // 
+            this.color2Box.BackColor = System.Drawing.Color.Black;
+            this.color2Box.Location = new System.Drawing.Point(30, 268);
+            this.color2Box.Name = "color2Box";
+            this.color2Box.Size = new System.Drawing.Size(25, 25);
+            this.color2Box.TabIndex = 180;
+            this.color2Box.MouseClick += new System.Windows.Forms.MouseEventHandler(this.color2Box_MouseClick);
+            // 
+            // switchBox
+            // 
+            this.switchBox.Image = ((System.Drawing.Image)(resources.GetObject("switchBox.Image")));
+            this.switchBox.Location = new System.Drawing.Point(30, 243);
+            this.switchBox.Name = "switchBox";
+            this.switchBox.Size = new System.Drawing.Size(25, 25);
+            this.switchBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.switchBox.TabIndex = 181;
+            this.switchBox.TabStop = false;
+            this.switchBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.switchBox_MouseClick);
             // 
             // Tools
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(61, 315);
+            this.ClientSize = new System.Drawing.Size(61, 319);
             this.ContextMenuStrip = this.contextMenuStrip;
+            this.Controls.Add(this.switchBox);
+            this.Controls.Add(this.color2Box);
+            this.Controls.Add(this.color1Box);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.widthBox);
-            this.Controls.Add(this.color1Box);
-            this.Controls.Add(this.color2Box);
             this.Controls.Add(this.eraserPanel);
             this.Controls.Add(this.dropperPanel);
             this.Controls.Add(this.bucketPanel);
@@ -399,12 +423,11 @@
             this.Controls.Add(this.polyPanel);
             this.Controls.Add(this.ellipsePanel);
             this.Controls.Add(this.movePanel);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Tools";
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Tools";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Tools_FormClosing);
@@ -414,9 +437,8 @@
             this.pointPanel.ResumeLayout(false);
             this.deletePanel.ResumeLayout(false);
             this.dropperPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.color1Box)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.color2Box)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.widthBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.switchBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -449,9 +471,10 @@
         private System.Windows.Forms.Panel dropperPanel;
         private System.Windows.Forms.Panel eraserPanel;
         private System.Windows.Forms.Panel panel1;
-        private AForge.Controls.PictureBox color1Box;
-        private AForge.Controls.PictureBox color2Box;
         private System.Windows.Forms.NumericUpDown widthBox;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Panel color1Box;
+        private System.Windows.Forms.Panel color2Box;
+        private System.Windows.Forms.PictureBox switchBox;
     }
 }

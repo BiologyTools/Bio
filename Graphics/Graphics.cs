@@ -50,7 +50,7 @@ namespace Bio.Graphics
         {
             for (int x = r.X; x < r.Width + r.X; x++)
             {
-                for (int y = r.Y; y < r.Width + r.Y; y++)
+                for (int y = r.Y; y < r.Height + r.Y; y++)
                 {
                     buf.SetPixel(x,y, col);
                 }

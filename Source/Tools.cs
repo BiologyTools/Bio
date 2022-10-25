@@ -192,13 +192,13 @@ namespace Bio
         {
             foreach (Control item in this.Controls)
             {
-                if(item.GetType() == typeof(Panel))
+                if(item.Tag.ToString() == "tool")
                 item.BackColor = Color.White;
             }
         }
         private void UpdateGUI()
         {
-            color1Box.BackColor = ColorS.ToColor(drawColor);
+            color1Box.BackColor = ColorS.ToColor(DrawColor);
             color2Box.BackColor = ColorS.ToColor(eraseColor);
             widthBox.Value = width;
         }
@@ -343,11 +343,6 @@ namespace Bio
             else
             if (buts == MouseButtons.Left && currentTool.type == Tool.Type.eraser)
             {
-                currentTool = GetTool(Tool.Type.eraser);
-                UpdateSelected();
-                panPanel.BackColor = Color.LightGray;
-                Cursor.Current = Cursors.Hand;
-
                 Graphics.Graphics g = Graphics.Graphics.FromImage(ImageView.SelectedBuffer);
                 Graphics.Pen pen = new Graphics.Pen(Tools.EraseColor, (int)Tools.StrokeWidth);
                 g.FillEllipse(new Rectangle((int)p.X, (int)p.Y, (int)width, (int)Tools.StrokeWidth), pen.color);
@@ -815,6 +810,14 @@ namespace Bio
             UpdateSelected();
             eraserPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
+        }
+
+        private void switchBox_MouseClick(object sender, MouseEventArgs e)
+        {
+            ColorS s = DrawColor;
+            DrawColor = eraseColor;
+            EraseColor = s;
+            UpdateGUI();
         }
     }
 }
