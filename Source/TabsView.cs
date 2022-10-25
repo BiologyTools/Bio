@@ -12,7 +12,7 @@ namespace Bio
     {
         public static bool init = false;
         public Filter filters = null;
-        public static Graphics graphics = null;
+        public static System.Drawing.Graphics graphics = null;
         public ImageView Viewer
         {
             get

@@ -65,6 +65,14 @@ namespace Bio
                 return selectedImage;
             }
         }
+        public static BufferInfo SelectedBuffer
+        {
+            get
+            {
+                int ind = SelectedImage.Coords[SelectedImage.Coordinate.C, SelectedImage.Coordinate.Z, SelectedImage.Coordinate.T];
+                return selectedImage.Buffers[ind];
+            }
+        }
         public static PointD mouseDown;
         public static bool down;
         public static PointD mouseUp;
@@ -948,7 +956,7 @@ namespace Bio
                 return ans;
             }
         }
-        private void DrawOverlay(Graphics g)
+        private void DrawOverlay(System.Drawing.Graphics g)
         {
             if (SelectedImage == null)
                 return;
@@ -1120,7 +1128,7 @@ namespace Bio
         }
         private void overlayPictureBox_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            System.Drawing.Graphics g = e.Graphics;
             g.TranslateTransform(pictureBox.Width / 2, pictureBox.Height / 2);
             if (scale.Width == 0)
                 scale = new SizeF(0.00001f, 0.00001f);
@@ -1140,7 +1148,7 @@ namespace Bio
             else
                 Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(0, 0, 0, 0);
         }
-        private void DrawView(Graphics g)
+        private void DrawView(System.Drawing.Graphics g)
         {
             if (update)
                 UpdateImage();
@@ -1287,64 +1295,26 @@ namespace Bio
             }
 
             if (Tools.currentTool != null)
-                if (Tools.currentTool.type == Tools.Tool.Type.pencil && e.Button == MouseButtons.Left)
-                    if (Mode == ViewMode.RGBImage)
-                    {
-                        BioImage b = ImageView.SelectedImage;
-                        ZCT co = SelectedImage.Coordinate;
-                        if (b.RGBChannelCount > 1)
-                        {
-                            ZCTXY cor = new ZCTXY(co.Z, co.C, co.T, (int)ip.X, (int)ip.Y);
-                            Tools.Tool tool = Tools.currentTool;
-                            if (Tools.rEnabled)
-                                b.SetValueRGB(cor, 0, tool.Color.R);
-                            if (Tools.gEnabled)
-                                b.SetValueRGB(cor, 0, tool.Color.G);
-                            if (Tools.bEnabled)
-                                b.SetValueRGB(cor, 0, tool.Color.B);
-                        }
-                        else
-                        if (Mode == ViewMode.RGBImage)
-                        {
-                            if (Tools.rEnabled)
-                                SelectedImage.SetValue((int)ip.X, (int)ip.Y, RChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
-                            if (Tools.gEnabled)
-                                SelectedImage.SetValue((int)ip.X, (int)ip.Y, GChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.G);
-                            if (Tools.bEnabled)
-                                SelectedImage.SetValue((int)ip.X, (int)ip.Y, BChannel.Index, Tools.GetTool(Tools.Tool.Type.pencil).Color.B);
-                        }
-                        else
-                        {
-                            SelectedImage.SetValue((int)ip.X, (int)ip.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
-                        }
-                        UpdateView();
-                    }
-                    else
-                    if (Mode == ViewMode.Filtered)
-                    {
-                        if (SelectedImage.RGBChannelCount > 1)
-                        {
-                            SelectedImage.SetValue((int)ip.X, (int)ip.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
-                        }
-                        else
-                        {
-                            SelectedImage.SetValue((int)ip.X, (int)ip.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
-                        }
-                        UpdateView();
-                    }
-                    else
-                    if (Mode == ViewMode.Raw)
-                    {
-                        if (SelectedImage.RGBChannelCount > 1)
-                        {
-                            SelectedImage.SetValue((int)ip.X, (int)ip.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
-                        }
-                        else
-                        {
-                            SelectedImage.SetValue((int)ip.X, (int)ip.Y, GetCoordinate(), Tools.GetTool(Tools.Tool.Type.pencil).Color.R);
-                        }
-                        UpdateView();
-                    }
+            if (Tools.currentTool.type == Tools.Tool.Type.pencil && e.Button == MouseButtons.Left)
+            {
+                Tools.Tool tool = Tools.currentTool;
+                Graphics.Graphics g = Graphics.Graphics.FromImage(SelectedBuffer);
+                Graphics.Pen pen = new Graphics.Pen(Tools.DrawColor, (int)Tools.StrokeWidth);
+                g.FillEllipse(new Rectangle((int)ip.X, (int)ip.Y, (int)Tools.StrokeWidth, (int)Tools.StrokeWidth), pen.color);
+                /*
+                if (Tools.rEnabled)
+                    SelectedBuffer.SetValueRGB((int)ip.X, (int)ip.Y, 0, tool.Color.R);
+                if (SelectedImage.isRGB)
+                {
+                    if (Tools.gEnabled)
+                        SelectedBuffer.SetValueRGB((int)ip.X, (int)ip.Y, 1, tool.Color.G);
+                    if (Tools.bEnabled)
+                        SelectedBuffer.SetValueRGB((int)ip.X, (int)ip.Y, 2, tool.Color.B);
+                }
+                */
+                update = true;
+                UpdateImage();
+            }
 
             UpdateStatus();
             tools.ToolMove(p, mouseDownButtons);
@@ -1488,7 +1458,7 @@ namespace Bio
                 return;
             foreach (ROI item in AnnotationsRGB)
             {
-                if (item.selected && (item.selectedPoints.Count == 0 || item.selectedPoints.Count == item.GetPointCount()))
+                if (item.selected && (item.selectedPoints.Count == 0 || item.selectedPoints.Count == item.GetPointCount() || item.type == ROI.Type.Ellipse || item.type == ROI.Type.Rectangle))
                 {
                     SelectedImage.Annotations.Remove(item);
                 }
@@ -1526,7 +1496,7 @@ namespace Bio
         private void copyViewToClipboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Bitmap bmp = new Bitmap(pictureBox.Width, pictureBox.Height);
-            using (Graphics g = Graphics.FromImage(bmp))
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bmp))
             {
                 //g.CopyFromScreen(PointToScreen(new Point(pictureBox.Left, pictureBox.Top + 25)), Point.Empty, bm.Size);
                 g.DrawImage(Bitmaps[SelectedIndex], 0, 0);
@@ -1848,6 +1818,78 @@ namespace Bio
         private void goToToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             Microscope.Stage.SetPosition(mouseDown.X, mouseDown.Y);
+        }
+
+        private void drawToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bio.Graphics.Graphics g = Bio.Graphics.Graphics.FromImage(SelectedBuffer);
+            foreach (ROI item in AnnotationsRGB)
+            {
+                Bio.Graphics.Pen p = new Graphics.Pen(Tools.DrawColor,(int)Tools.StrokeWidth);
+                if (item.selected)
+                {
+                    if(item.type == ROI.Type.Line)
+                    {
+                        g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(0)), SelectedImage.ToImageSpace(item.GetPoint(1)),p);
+                    }
+                    else
+                    if(item.type == ROI.Type.Rectangle)
+                    {
+                        g.DrawRectangle(SelectedImage.ToImageSpace(item.Rect), p);
+                    }
+                    else
+                    if (item.type == ROI.Type.Ellipse)
+                    {
+                        g.DrawEllipse(SelectedImage.ToImageSpace(item.Rect), p);
+                    }
+                    else
+                    if (item.type == ROI.Type.Freeform || item.type == ROI.Type.Polygon || item.type == ROI.Type.Polyline)
+                    {
+                        for (int i = 0; i < item.GetPointCount()-1; i++)
+                        {
+                            g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(i)), SelectedImage.ToImageSpace(item.GetPoint(i+1)), p);
+                        }
+                    }
+                }
+            }
+            update = true;
+            UpdateImage();
+        }
+
+        private void fillToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Bio.Graphics.Graphics g = Bio.Graphics.Graphics.FromImage(SelectedBuffer);
+            foreach (ROI item in AnnotationsRGB)
+            {
+                Bio.Graphics.Pen p = new Graphics.Pen(Tools.DrawColor, (int)Tools.StrokeWidth);
+                if (item.selected)
+                {
+                    if (item.type == ROI.Type.Line)
+                    {
+                        g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(0)), SelectedImage.ToImageSpace(item.GetPoint(1)), p);
+                    }
+                    else
+                    if (item.type == ROI.Type.Rectangle)
+                    {
+                        g.FillRectangle(SelectedImage.ToImageSpace(item.Rect), p.color);
+                    }
+                    else
+                    if (item.type == ROI.Type.Ellipse)
+                    {
+                        g.FillEllipse(SelectedImage.ToImageSpace(item.Rect), p.color);
+                    }
+                    else
+                    if (item.type == ROI.Type.Freeform || item.type == ROI.Type.Polygon || item.type == ROI.Type.Polyline)
+                    {
+                        for (int i = 0; i < item.GetPointCount() - 1; i++)
+                        {
+                            g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(i)), SelectedImage.ToImageSpace(item.GetPoint(i + 1)), p);
+                        }
+                    }
+                }
+            }
+            update = true;
+            UpdateImage();
         }
     }
 }

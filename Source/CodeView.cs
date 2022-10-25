@@ -63,7 +63,7 @@ namespace Bio
             if (refresh)
             {
                 lineBox.Text = "";
-                Graphics g = textBox.CreateGraphics();
+                System.Drawing.Graphics g = textBox.CreateGraphics();
                 for (int i = 0; i < textBox.Lines.Length; i++)
                 {
                     if (WordWrap)

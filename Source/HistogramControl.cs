@@ -138,7 +138,7 @@ namespace Bio
         private float fx = 0;
         private float fy = 0;
         private Bitmap bm;
-        private Graphics g;
+        private System.Drawing.Graphics g;
 
         public void UpdateChannel(Channel c)
         {
@@ -369,7 +369,7 @@ namespace Bio
             bm = new Bitmap(Width, Height);
             if (g != null)
                 g.Dispose();
-            g = Graphics.FromImage(bm);
+            g = System.Drawing.Graphics.FromImage(bm);
         }
 
         private void copyViewToClipboardToolStripMenuItem_Click(object sender, EventArgs e)

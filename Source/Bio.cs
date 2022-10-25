@@ -165,49 +165,149 @@ namespace Bio
         B,
         Gray
     }
-    public struct ColorS
+    public struct ColorS : IDisposable
     {
-        public ushort R, G, B;
+        private byte[] bytes;
         public ColorS(ushort s)
         {
+            bytes = new byte[6];
             R = s;
             G = s;
             B = s;
         }
         public ColorS(ushort r, ushort g, ushort b)
         {
+            bytes = new byte[6];
             R = r;
             G = g;
             B = b;
         }
-        public ColorS(float r, float g, float b)
-        {
-            R = (ushort)r;
-            G = (ushort)g;
-            B = (ushort)b;
-        }
         public float Rf
         {
             get { return R / ushort.MaxValue; }
+            set
+            {
+                Byte[] bt = BitConverter.GetBytes(value * ushort.MaxValue);
+                bytes[0] = bt[1];
+                bytes[1] = bt[0];
+            }
         }
         public float Gf
         {
             get { return G / ushort.MaxValue; }
+            set
+            {
+                Byte[] bt = BitConverter.GetBytes(value * ushort.MaxValue);
+                bytes[2] = bt[1];
+                bytes[3] = bt[0];
+            }
         }
         public float Bf
         {
             get { return B / ushort.MaxValue; }
+            set
+            {
+                Byte[] bt = BitConverter.GetBytes(value * ushort.MaxValue);
+                bytes[4] = bt[1];
+                bytes[5] = bt[0];
+            }
+        }
+        public ushort R
+        {
+            get { return BitConverter.ToUInt16(bytes,0); }
+            set 
+            { 
+                byte[] bt = BitConverter.GetBytes(value);
+                bytes[0] = bt[0];
+                bytes[1] = bt[1];
+            }
+        }
+        public ushort G
+        {
+            get { return BitConverter.ToUInt16(bytes, 2); }
+            set
+            {
+                byte[] bt = BitConverter.GetBytes(value);
+                bytes[2] = bt[0];
+                bytes[3] = bt[1];
+            }
+        }
+        public ushort B
+        {
+            get { return BitConverter.ToUInt16(bytes, 4); }
+            set
+            {
+                byte[] bt = BitConverter.GetBytes(value);
+                bytes[4] = bt[0];
+                bytes[5] = bt[1];
+            }
         }
         public static ColorS FromColor(System.Drawing.Color col)
         {
             float r = (((float)col.R) / 255) * ushort.MaxValue;
             float g = (((float)col.G) / 255) * ushort.MaxValue;
             float b = (((float)col.B) / 255) * ushort.MaxValue;
-            ColorS color = new ColorS();
-            color.R = (ushort)r;
-            color.G = (ushort)g;
-            color.B = (ushort)b;
+            ColorS color = ColorS.FromVector(r,g,b);
             return color;
+        }
+        public static ColorS FromVector(float x, float y, float z)
+        {
+            ColorS color = new ColorS();
+            color.bytes = new byte[6];
+            color.Rf = x;
+            color.Gf = y;
+            color.Bf = z;
+            return color;
+        }
+        public byte[] GetBytes(PixelFormat px)
+        {
+            if (px == PixelFormat.Format8bppIndexed)
+            {
+                byte[] bt = new byte[1];
+                bt[0] = (byte)R;
+                return bt;
+            }
+            else
+            if (px == PixelFormat.Format16bppGrayScale)
+            {
+                return BitConverter.GetBytes(R);
+            }
+            else
+            if (px == PixelFormat.Format24bppRgb)
+            {
+                byte[] bt = new byte[3];
+                bt[0] = (byte)B;
+                bt[1] = (byte)G;
+                bt[2] = (byte)R;
+                return bt;
+            }
+            else
+            if (px == PixelFormat.Format32bppRgb || px == PixelFormat.Format32bppArgb)
+            {
+                byte[] bt = new byte[4];
+                bt[0] = 255;
+                bt[1] = (byte)R;
+                bt[2] = (byte)G;
+                bt[3] = (byte)B;
+                return bt;
+            }
+            else
+            if (px == PixelFormat.Format48bppRgb)
+            {
+                byte[] r = BitConverter.GetBytes(R);
+                byte[] g = BitConverter.GetBytes(G);
+                byte[] b = BitConverter.GetBytes(B);
+                byte[] bt = new byte[6];
+                bt[0] = r[1];
+                bt[1] = r[0];
+                bt[2] = g[1];
+                bt[3] = g[0];
+                bt[4] = b[1];
+                bt[5] = b[0];
+                return bt;
+            }
+            throw new InvalidDataException("Pixel format: " + px.ToString() + " is not supported");
+
         }
         public static System.Drawing.Color ToColor(ColorS col)
         {
@@ -231,35 +331,35 @@ namespace Bio
         }
         public static ColorS operator /(ColorS a, ColorS b)
         {
-            return new ColorS(a.Rf / b.Rf, a.Gf / b.Gf, a.Bf / b.Bf);
+            return new ColorS((ushort)(a.Rf / b.Rf), (ushort)(a.Gf / b.Gf), (ushort)(a.Bf / b.Bf));
         }
         public static ColorS operator *(ColorS a, ColorS b)
         {
-            return new ColorS(a.Rf * b.Rf, a.Gf * b.Gf, a.Bf * b.Bf);
+            return new ColorS((ushort)(a.Rf * b.Rf), (ushort)(a.Gf * b.Gf), (ushort)(a.Bf * b.Bf));
         }
         public static ColorS operator +(ColorS a, ColorS b)
         {
-            return new ColorS(a.Rf + b.Rf, a.Gf + b.Gf, a.Bf + b.Bf);
+            return new ColorS((ushort)(a.Rf + b.Rf), (ushort)(a.Gf + b.Gf), (ushort)(a.Bf + b.Bf));
         }
         public static ColorS operator -(ColorS a, ColorS b)
         {
-            return new ColorS(a.Rf - b.Rf, a.Gf - b.Gf, a.Bf - b.Bf);
+            return new ColorS((ushort)(a.Rf - b.Rf), (ushort)(a.Gf - b.Gf), (ushort)(a.Bf - b.Bf));
         }
         public static ColorS operator /(ColorS a, float b)
         {
-            return new ColorS(a.Rf / b, a.Gf / b, a.Bf / b);
+            return ColorS.FromVector(a.Rf / b, a.Gf / b, a.Bf / b);
         }
         public static ColorS operator *(ColorS a, float b)
         {
-            return new ColorS(a.Rf * b, a.Gf * b, a.Bf * b);
+            return ColorS.FromVector(a.Rf * b, a.Gf * b, a.Bf * b);
         }
         public static ColorS operator +(ColorS a, float b)
         {
-            return new ColorS(a.Rf + b, a.Gf + b, a.Bf + b);
+            return ColorS.FromVector(a.Rf + b, a.Gf + b, a.Bf + b);
         }
         public static ColorS operator -(ColorS a, float b)
         {
-            return new ColorS(a.Rf - b, a.Gf - b, a.Bf - b);
+            return ColorS.FromVector(a.Rf - b, a.Gf - b, a.Bf - b);
         }
         public static bool operator ==(ColorS a, ColorS b)
         {
@@ -274,6 +374,10 @@ namespace Bio
                 return false;
             else
                 return true;
+        }
+        public void Dispose()
+        {
+            bytes = null;
         }
     }
     public struct RectangleD
@@ -1179,67 +1283,32 @@ namespace Bio
     }
     public class BufferInfo : IDisposable
     {
-        public ushort GetValueRGB(int ix, int iy, int index)
+        public ushort GetValueRGB(int x, int y, int RGBChannel)
         {
-            int i = -1;
             int stridex = SizeX;
             if (BitsPerPixel > 8)
-                stridex = SizeX * 2;
-            //For 16bit (2*8bit) images we multiply buffer index by 2
-            int x = ix;
-            int y = iy;
-            if (BitsPerPixel > 8)
             {
-                int index2 = (y * stridex + x) * index;
-                i = BitConverter.ToUInt16(bytes, index2);
-                return (ushort)i;
+                int index2 = ((y * stridex + x) * 2 * RGBChannelsCount) + (RGBChannel * 2);
+                return BitConverter.ToUInt16(bytes, index2);
             }
             else
             {
                 int stride = SizeX;
-                int indexb = (y * stridex + x) * index;
-                i = bytes[indexb];
-                return (ushort)i;
+                int index = ((y * stridex + x) * 2 * RGBChannelsCount) + RGBChannel;
+                return bytes[index];
             }
         }
-        public ushort GetValue(int ix, int iy)
+        public ColorS GetPixel(int ix, int iy)
         {
-            int i = 0;
-            int stridex = SizeX;
-            //For 16bit (2*8bit) images we multiply buffer index by 2
-            int x = ix;
-            int y = iy;
-            if (ix < 0)
-                x = 0;
-            if (iy < 0)
-                y = 0;
-            if (ix >= SizeX)
-                x = SizeX - 1;
-            if (iy >= SizeY)
-                y = SizeY - 1;
-
-            if (BitsPerPixel > 8)
-            {
-                int index2 = (y * stridex + x) * 2 * RGBChannelsCount;
-                i = BitConverter.ToUInt16(bytes, index2);
-                return (ushort)i;
-            }
+            if (isRGB)
+                return new ColorS(GetValueRGB(ix, iy, 0), GetValueRGB(ix, iy, 1), GetValueRGB(ix, iy, 2));
             else
             {
-                int index = (y * stridex + x) * RGBChannelsCount;
-                i = bytes[index];
-                return (ushort)i;
+                ushort s = GetValueRGB(ix, iy, 0);
+                return new ColorS(s, s, s);
             }
-
         }
-        public ColorS GetColor(int ix, int iy)
-        {
-            if(isRGB)
-            return new ColorS(GetValueRGB(ix, iy, 0), GetValueRGB(ix, iy, 1), GetValueRGB(ix, iy, 2));
-            else
-                return new ColorS(GetValueRGB(ix, iy, 0), GetValueRGB(ix, iy, 0), GetValueRGB(ix, iy, 0));
-        }
-        public void SetColor(int ix, int iy, ColorS col)
+        public void SetPixel(int ix, int iy, ColorS col)
         {
             if (isRGB)
             {
@@ -1250,19 +1319,16 @@ namespace Bio
             else
                 SetValue(ix, iy, col.R);
         }
-        public void SetValue(int ix, int iy, ushort value)
+        public void SetValue(int x, int y, ushort value)
         {
             int stridex = SizeX;
-            //For 16bit (2*8bit) images we multiply buffer index by 2
-            int x = ix;
-            int y = iy;
             if (BitsPerPixel > 8)
             {
                 int index2 = ((y * stridex + x) * 2 * RGBChannelsCount);
                 byte upper = (byte)(value >> 8);
                 byte lower = (byte)(value & 0xff);
-                bytes[index2] = lower;
-                bytes[index2 + 1] = upper;
+                bytes[index2] = upper;
+                bytes[index2 + 1] = lower;
             }
             else
             {
@@ -1274,6 +1340,13 @@ namespace Bio
         {
             int x = ix;
             int y = iy;
+            //We invert the RGB channel parameter since pixels are in BGR order.
+            if (RGBChannel == 2)
+                RGBChannel = 0;
+            else
+            if (RGBChannel == 0)
+                RGBChannel = 2;
+            /*
             if (ix < 0)
                 x = 0;
             if (iy < 0)
@@ -1282,31 +1355,20 @@ namespace Bio
                 x = SizeX - 1;
             if (iy > SizeY)
                 y = SizeY - 1;
-            int stride = SizeX;
+            */
+            int stridex = SizeX;
             if (BitsPerPixel > 8)
             {
-                stride = SizeX * 2;
-                int index2 = ((y * (stride) + x) * RGBChannelsCount);
+                int index2 = ((y * stridex + x) * 2 * RGBChannelsCount) + (RGBChannel*2);
                 byte upper = (byte)(value >> 8);
                 byte lower = (byte)(value & 0xff);
-                bytes[index2] = lower;
-                bytes[index2 + 1] = upper;
+                bytes[index2] = upper;
+                bytes[index2 + 1] = lower;
             }
             else
             {
-                int index = ((y * stride + x) * RGBChannelsCount) + (RGBChannel);
+                int index = ((y * stridex + x) * RGBChannelsCount) + RGBChannel;
                 bytes[index] = (byte)value;
-            }
-        }
-        public long GetIndex(int x, int y)
-        {
-            if (BitsPerPixel > 8)
-            {
-                return (y * Stride + x) * 2 * RGBChannelsCount;
-            }
-            else
-            {
-                return (y * Stride + x) * RGBChannelsCount;
             }
         }
         public static string CreateID(string filepath, int index)
@@ -1500,6 +1562,23 @@ namespace Bio
         }
         #endif
 
+        public int PixelFormatSize
+        {
+            get
+            {
+                if (pixelFormat == PixelFormat.Format8bppIndexed)
+                    return 1;
+                else if (pixelFormat == PixelFormat.Format16bppGrayScale)
+                    return 2;
+                else if (pixelFormat == PixelFormat.Format24bppRgb)
+                    return 3;
+                else if (pixelFormat == PixelFormat.Format32bppRgb || pixelFormat == PixelFormat.Format32bppArgb)
+                    return 4;
+                else if (pixelFormat == PixelFormat.Format48bppRgb)
+                    return 6;
+                throw new InvalidDataException("Bio only supports 8, 16, 24, 32, and 48 bit images.");
+            }
+        }
         private PixelFormat pixelFormat;
         public Statistics[] Stats
         {
@@ -2890,7 +2969,7 @@ namespace Bio
         public static Bitmap To24Bit(Bitmap b)
         {
             Bitmap bm = new Bitmap(b.Width, b.Height, PixelFormat.Format24bppRgb);
-            Graphics g = Graphics.FromImage(bm);
+            System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bm);
             if (b.PixelFormat == PixelFormat.Format16bppGrayScale || b.PixelFormat == PixelFormat.Format48bppRgb)
             {
                 g.DrawImage(AForge.Imaging.Image.Convert16bppTo8bpp(b), 0, 0);
@@ -2909,14 +2988,14 @@ namespace Bio
             {
                 bm = AForge.Imaging.Image.Convert16bppTo8bpp(b);
             }
-            Graphics g = Graphics.FromImage(bm);
+            System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bm);
             g.DrawImage(b, 0, 0);
             return bm;
         }
         public void RGBTo32Bit()
         {
             Bitmap bm = new Bitmap(SizeX, SizeY, PixelFormat.Format32bppArgb);
-            Graphics g = Graphics.FromImage(bm);
+            System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bm);
             g.DrawImage((Bitmap)Image, 0, 0);
             Image = bm;
         }
@@ -3081,7 +3160,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) / b.GetColor(x, y));
+                    bf.SetPixel(x, y, a.GetPixel(x, y) / b.GetPixel(x, y));
                 }
             }
             return bf;
@@ -3093,7 +3172,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) * b.GetColor(x, y));
+                    bf.SetPixel(x, y, a.GetPixel(x, y) * b.GetPixel(x, y));
                 }
             }
             return bf;
@@ -3105,7 +3184,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) + b.GetColor(x, y));
+                    bf.SetPixel(x, y, a.GetPixel(x, y) + b.GetPixel(x, y));
                 }
             }
             return bf;
@@ -3117,7 +3196,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) - b.GetColor(x, y));
+                    bf.SetPixel(x, y, a.GetPixel(x, y) - b.GetPixel(x, y));
                 }
             }
             return bf;
@@ -3130,7 +3209,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) / b);
+                    bf.SetPixel(x, y, a.GetPixel(x, y) / b);
                 }
             }
             return bf;
@@ -3142,7 +3221,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) * b);
+                    bf.SetPixel(x, y, a.GetPixel(x, y) * b);
                 }
             }
             return bf;
@@ -3154,7 +3233,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) + b);
+                    bf.SetPixel(x, y, a.GetPixel(x, y) + b);
                 }
             }
             return bf;
@@ -3166,7 +3245,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) - b);
+                    bf.SetPixel(x, y, a.GetPixel(x, y) - b);
                 }
             }
             return bf;
@@ -3179,7 +3258,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) / b);
+                    bf.SetPixel(x, y, a.GetPixel(x, y) / b);
                 }
             }
             return bf;
@@ -3191,7 +3270,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) * b);
+                    bf.SetPixel(x, y, a.GetPixel(x, y) * b);
                 }
             }
             return bf;
@@ -3203,7 +3282,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) + b);
+                    bf.SetPixel(x, y, a.GetPixel(x, y) + b);
                 }
             }
             return bf;
@@ -3215,7 +3294,7 @@ namespace Bio
             {
                 for (int x = 0; x < a.SizeX; x++)
                 {
-                    bf.SetColor(x, y, a.GetColor(x, y) - b);
+                    bf.SetPixel(x, y, a.GetPixel(x, y) - b);
                 }
             }
             return bf;

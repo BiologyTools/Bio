@@ -220,6 +220,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Graphics\AbstractFloodFiller.cs" />
+    <Compile Include="Graphics\FloodTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Graphics\FloodTool.Designer.cs">
+      <DependentUpon>FloodTool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Graphics\PenTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Graphics\PenTool.Designer.cs">
+      <DependentUpon>PenTool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Graphics\FloodFillRangeQueue.cs" />
+    <Compile Include="Graphics\Graphics.cs" />
+    <Compile Include="Graphics\QueueLinearFloodFiller.cs" />
     <Compile Include="Source\BioConsole.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -420,6 +436,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Graphics\FloodTool.resx">
+      <DependentUpon>FloodTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Graphics\PenTool.resx">
+      <DependentUpon>PenTool.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Source\BioConsole.resx">
       <DependentUpon>BioConsole.cs</DependentUpon>
     </EmbeddedResource>

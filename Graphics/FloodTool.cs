@@ -2,33 +2,41 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Bio
+namespace Bio.Graphics
 {
-    public partial class ColorTool : Form
+    public partial class FloodTool : Form
     {
-        private ColorS color = new ColorS(65535, 65535, 65535);
-        public ColorS Color
+        private Pen pen = new Pen(new ColorS(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue), 1);
+        public Pen Pen
         {
             get
             {
-                return color;
+                return pen;
             }
             set
             {
-                color = value;
+                pen = value;
+            }
+        }
+
+        private ColorS tolerance;
+        public ColorS Tolerance
+        {
+            get
+            {
+                return tolerance;
             }
         }
 
         public void UpdateGUI()
         {
-            color = new ColorS((ushort)redBox.Value, (ushort)greenBox.Value, (ushort)blueBox.Value);
-            colorPanel.BackColor = ColorS.ToColor(color);
+            pen.color = new ColorS((ushort)redBox.Value, (ushort)greenBox.Value, (ushort)blueBox.Value);
+            colorPanel.BackColor = ColorS.ToColor(pen.color);
             if (rBar.Value != redBox.Value)
                 redBox.Value = rBar.Value;
             if (gBar.Value != greenBox.Value)
@@ -36,18 +44,27 @@ namespace Bio
             if (bBar.Value != blueBox.Value)
                 blueBox.Value = bBar.Value;
         }
-        public ColorTool()
+
+        public void SetColor()
+        {
+            rBar.Value = pen.color.R;
+            gBar.Value = pen.color.G;
+            bBar.Value = pen.color.B;
+        }
+        public FloodTool()
         {
             InitializeComponent();
             UpdateGUI();
         }
-        public ColorTool(ColorS col)
+        public FloodTool(Pen p, ColorS tolerance)
         {
             InitializeComponent();
-            color = col;
-            rBar.Value = color.R;
-            gBar.Value = color.G;
-            bBar.Value = color.B;
+            pen = p;
+            this.tolerance = tolerance;
+            tolRBox.Value = (decimal)tolerance.R;
+            tolGBox.Value = (decimal)tolerance.G;
+            tolBBox.Value = (decimal)tolerance.B;
+            SetColor();
             UpdateGUI();
         }
 
@@ -84,26 +101,30 @@ namespace Bio
         private void applyButton_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.OK;
-            Close();
+            this.Close();
+        }
+
+        private void tolRBox_ValueChanged(object sender, EventArgs e)
+        {
+            tolerance.R = (ushort)tolRBox.Value;
+        }
+
+        private void tolGBox_ValueChanged(object sender, EventArgs e)
+        {
+            tolerance.G = (ushort)tolGBox.Value;
+        }
+
+        private void tolBBox_ValueChanged(object sender, EventArgs e)
+        {
+            tolerance.B = (ushort)tolBBox.Value;
         }
 
         private void cancelBut_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
-            Close();
         }
 
-        private void rBar_Scroll(object sender, EventArgs e)
-        {
-            UpdateGUI();
-        }
-
-        private void gBar_Scroll(object sender, EventArgs e)
-        {
-            UpdateGUI();
-        }
-
-        private void bBar_Scroll(object sender, EventArgs e)
+        private void rBar_ValueChanged(object sender, EventArgs e)
         {
             UpdateGUI();
         }
