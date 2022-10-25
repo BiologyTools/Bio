@@ -246,7 +246,7 @@ namespace Bio
             this.channelsBox.FormattingEnabled = true;
             this.channelsBox.Location = new System.Drawing.Point(60, 4);
             this.channelsBox.Name = "channelsBox";
-            this.channelsBox.Size = new System.Drawing.Size(190, 21);
+            this.channelsBox.Size = new System.Drawing.Size(195, 21);
             this.channelsBox.TabIndex = 6;
             this.channelsBox.SelectedIndexChanged += new System.EventHandler(this.channelsBox_SelectedIndexChanged);
             // 
@@ -261,7 +261,7 @@ namespace Bio
             "4096",
             "16383",
             "65535"});
-            this.maxUintBox.Location = new System.Drawing.Point(178, 49);
+            this.maxUintBox.Location = new System.Drawing.Point(178, 51);
             this.maxUintBox.Name = "maxUintBox";
             this.maxUintBox.Size = new System.Drawing.Size(77, 21);
             this.maxUintBox.TabIndex = 7;
@@ -507,7 +507,7 @@ namespace Bio
             0,
             0});
             this.sampleBox.Name = "sampleBox";
-            this.sampleBox.Size = new System.Drawing.Size(190, 20);
+            this.sampleBox.Size = new System.Drawing.Size(195, 20);
             this.sampleBox.TabIndex = 23;
             this.sampleBox.ValueChanged += new System.EventHandler(this.sampleBox_ValueChanged);
             // 

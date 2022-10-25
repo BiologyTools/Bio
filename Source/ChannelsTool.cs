@@ -155,13 +155,13 @@ namespace Bio
 
         private void ChannelsTool_Activated(object sender, EventArgs e)
         {
+            sampleBox.Maximum = SelectedChannel.SamplesPerPixel - 1;
             for (int i = 0; i < SelectedChannel.range.Length; i++)
             {
                 SelectedChannel.range[i].Min = (int)minBox.Value;
             }
             minBox.Value = SelectedChannel.range[(int)sampleBox.Value].Min;
             maxBox.Value = SelectedChannel.range[(int)sampleBox.Value].Max;
-            sampleBox.Maximum = SelectedChannel.SamplesPerPixel-1;
             UpdateItems();
             hist.UpdateView();
 
