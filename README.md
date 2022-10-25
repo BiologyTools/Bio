@@ -105,7 +105,7 @@ public class Loader
 	}
 }
 
-
-
+## Developers
+Initialize application by calling "new NodeView(args)" with command line arguments in your main method. Do not update IKVM version otherwise Bioformats will fail to load.
 
 
