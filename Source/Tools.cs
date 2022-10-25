@@ -192,6 +192,7 @@ namespace Bio
         {
             foreach (Control item in this.Controls)
             {
+                if(item.Tag != null)
                 if(item.Tag.ToString() == "tool")
                 item.BackColor = Color.White;
             }
@@ -199,7 +200,7 @@ namespace Bio
         private void UpdateGUI()
         {
             color1Box.BackColor = ColorS.ToColor(DrawColor);
-            color2Box.BackColor = ColorS.ToColor(eraseColor);
+            color2Box.BackColor = ColorS.ToColor(EraseColor);
             widthBox.Value = width;
         }
 
@@ -340,13 +341,7 @@ namespace Bio
                 panPanel.BackColor = Color.LightGray;
                 Cursor.Current = Cursors.Hand;
             }
-            else
-            if (buts == MouseButtons.Left && currentTool.type == Tool.Type.eraser)
-            {
-                Graphics.Graphics g = Graphics.Graphics.FromImage(ImageView.SelectedBuffer);
-                Graphics.Pen pen = new Graphics.Pen(Tools.EraseColor, (int)Tools.StrokeWidth);
-                g.FillEllipse(new Rectangle((int)p.X, (int)p.Y, (int)width, (int)Tools.StrokeWidth), pen.color);
-            }
+            
             UpdateOverlay();
         }        
         public void ToolUp(PointD e, MouseButtons buts)
@@ -510,6 +505,7 @@ namespace Bio
             if (App.viewer == null)
                 return;
             Scripting.UpdateState(Scripting.State.GetMove(e, buts));
+            System.Drawing.PointF p = ImageView.SelectedImage.ToImageSpace(e);
             if (currentTool.type == Tool.Type.line && ImageView.down)
             {
                 anno.UpdatePoint(new PointD(e.X, e.Y), 1);
@@ -622,7 +618,15 @@ namespace Bio
                 App.viewer.Origin = new PointD(App.viewer.Origin.X + pf.X, App.viewer.Origin.Y + pf.Y);
                 UpdateView();
             }
-            
+            else
+            if (buts == MouseButtons.Left && currentTool.type == Tool.Type.eraser)
+            {
+                Graphics.Graphics g = Graphics.Graphics.FromImage(ImageView.SelectedBuffer);
+                Graphics.Pen pen = new Graphics.Pen(Tools.EraseColor, (int)Tools.StrokeWidth);
+                g.FillEllipse(new Rectangle((int)p.X, (int)p.Y, (int)width, (int)Tools.StrokeWidth), pen.color);
+                pen.Dispose();
+                App.viewer.UpdateImage();
+            }
         }
 
         private void movePanel_Click(object sender, EventArgs e)
@@ -817,6 +821,11 @@ namespace Bio
             ColorS s = DrawColor;
             DrawColor = eraseColor;
             EraseColor = s;
+            UpdateGUI();
+        }
+
+        private void Tools_Activated(object sender, EventArgs e)
+        {
             UpdateGUI();
         }
     }

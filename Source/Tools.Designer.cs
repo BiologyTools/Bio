@@ -430,6 +430,7 @@
             this.Name = "Tools";
             this.Text = "Tools";
             this.TopMost = true;
+            this.Activated += new System.EventHandler(this.Tools_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Tools_FormClosing);
             this.movePanel.ResumeLayout(false);
             this.contextMenuStrip.ResumeLayout(false);

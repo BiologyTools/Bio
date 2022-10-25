@@ -522,8 +522,6 @@ namespace Bio
         Bitmap bitmap;
         public void UpdateImage()
         {
-            if (!update)
-                return;
             if (Bitmaps.Count == 0)
                 return;
             ZCT coords = new ZCT(zBar.Value, cBar.Value, tBar.Value);
@@ -1301,17 +1299,6 @@ namespace Bio
                 Graphics.Graphics g = Graphics.Graphics.FromImage(SelectedBuffer);
                 Graphics.Pen pen = new Graphics.Pen(Tools.DrawColor, (int)Tools.StrokeWidth);
                 g.FillEllipse(new Rectangle((int)ip.X, (int)ip.Y, (int)Tools.StrokeWidth, (int)Tools.StrokeWidth), pen.color);
-                /*
-                if (Tools.rEnabled)
-                    SelectedBuffer.SetValueRGB((int)ip.X, (int)ip.Y, 0, tool.Color.R);
-                if (SelectedImage.isRGB)
-                {
-                    if (Tools.gEnabled)
-                        SelectedBuffer.SetValueRGB((int)ip.X, (int)ip.Y, 1, tool.Color.G);
-                    if (Tools.bEnabled)
-                        SelectedBuffer.SetValueRGB((int)ip.X, (int)ip.Y, 2, tool.Color.B);
-                }
-                */
                 update = true;
                 UpdateImage();
             }

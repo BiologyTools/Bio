@@ -311,9 +311,9 @@ namespace Bio
         }
         public static System.Drawing.Color ToColor(ColorS col)
         {
-            float r = ((float)(col.R) / 65535) * 255;
-            float g = ((float)(col.G) / 65535) * 255;
-            float b = ((float)(col.B) / 65535) * 255;
+            int r = (int)(((float)col.R / 65535) * 255);
+            int g = (int)(((float)col.G / 65535) * 255);
+            int b = (int)(((float)col.B / 65535) * 255);
             System.Drawing.Color c = System.Drawing.Color.FromArgb((byte)r, (byte)g, (byte)b);
             return c;
         }
@@ -1202,7 +1202,7 @@ namespace Bio
             get { return info.bitsPerPixel; }
             set { info.bitsPerPixel = value; }
         }
-        public Channel(int ind, int bitsPerPixel)
+        public Channel(int ind, int bitsPerPixel, int samples)
         {
             info = new ChannelInfo();
             if (bitsPerPixel == 16)
@@ -1215,8 +1215,7 @@ namespace Bio
                 info.Max = 1024;
             if (bitsPerPixel == 8)
                 info.Max = byte.MaxValue;
-            if (info.samplesPerPixel == 0)
-                info.samplesPerPixel = 1;
+            info.samplesPerPixel = samples;
             range = new IntRange[info.SamplesPerPixel];
             for (int i = 0; i < range.Length; i++)
             {
@@ -1236,7 +1235,7 @@ namespace Bio
         }
         public Channel Copy()
         {
-            Channel c = new Channel(info.index, info.bitsPerPixel);
+            Channel c = new Channel(info.index, info.bitsPerPixel, SamplesPerPixel);
             c.Name = Name;
             c.info.ID = info.ID;
             c.range = range;
@@ -1314,7 +1313,7 @@ namespace Bio
             else
             {
                 int stride = SizeX;
-                int index = ((y * stridex + x) * 2 * RGBChannelsCount) + RGBChannel;
+                int index = ((y * stridex + x) * RGBChannelsCount) + RGBChannel;
                 return bytes[index];
             }
         }
@@ -1366,16 +1365,6 @@ namespace Bio
             else
             if (RGBChannel == 0)
                 RGBChannel = 2;
-            /*
-            if (ix < 0)
-                x = 0;
-            if (iy < 0)
-                y = 0;
-            if (ix > SizeX)
-                x = SizeX - 1;
-            if (iy > SizeY)
-                y = SizeY - 1;
-            */
             int stridex = SizeX;
             if (BitsPerPixel > 8)
             {
@@ -5677,78 +5666,21 @@ namespace Bio
         }
         public ushort GetValueRGB(ZCTXY coord, int index)
         {
-            if (coord.X > SizeX || coord.Y > SizeY || coord.X < 0 || coord.Y < 0)
-                return 0;
-            int i = -1;
-            int ind;
-            byte[] bytes;
-            if (isRGB)
-            {
-                ind = Coords[coord.Z, 0, coord.T];
-                bytes = Buffers[Coords[coord.Z, 0, coord.T]].Bytes;
-            }
-            else
-            {
-                bytes = Buffers[Coords[coord.Z, coord.C, coord.T]].Bytes;
-                ind = Coords[coord.Z, coord.C, coord.T];
-            }
-            int stridex = SizeX;
-            //For 16bit (2*8bit) images we multiply buffer index by 2
-            int x = coord.X;
-            int y = coord.Y;
-            if (bitsPerPixel > 8)
-            {
-                int index2 = (y * stridex + x) * 2 * index;
-                i = BitConverter.ToUInt16(bytes, index2);
-                return (ushort)i;
-            }
-            else
-            {
-                int stride = SizeX;
-                System.Drawing.Color c = ((Bitmap)Buffers[ind].Image).GetPixel(x, y);
-                if (index == 0)
-                    return c.R;
-                else
-                if (index == 1)
-                    return c.G;
-                else
-                if (index == 2)
-                    return c.B;
-                else
-                    return c.A;
-            }
-        }
-        public ushort GetValue(ZCT coord, int ix, int iy)
-        {
-            if (ix > SizeX || iy > SizeY)
-                return 0;
             int ind = Coords[coord.Z, coord.C, coord.T];
-            byte[] bytes = Buffers[ind].Bytes;
-            int i = 0;
-            int stridex = SizeX;
-
-            int x = ix;
-            int y = iy;
-            if (ix < 0)
-                x = 0;
-            if (iy < 0)
-                y = 0;
-            if (ix >= SizeX)
-                x = SizeX - 1;
-            if (iy >= SizeY)
-                y = SizeY - 1;
-            if (bitsPerPixel > 8)
-            {
-                //For 16bit (2*8bit) images we multiply buffer index by 2
-                int index2 = (y * stridex + x) * 2 * RGBChannelCount;
-                i = BitConverter.ToUInt16(bytes, index2);
-                return (ushort)i;
-            }
+            ColorS c = Buffers[ind].GetPixel(coord.X, coord.Y);
+            if (index == 0)
+                return c.R;
             else
-            {
-                int index2 = (y * stridex + x) * RGBChannelCount;
-                return bytes[index2];
-            }
+            if (index == 1)
+                return c.G;
+            else
+            if (index == 2)
+                return c.B;
+            throw new IndexOutOfRangeException();
+        }
+        public ushort GetValue(ZCT coord, int x, int y)
+        {
+            return GetValueRGB(new ZCTXY(coord.Z, coord.C, coord.T, x, y),0);
         }
         public ushort GetValue(int z, int c, int t, int x, int y)
         {
@@ -5783,7 +5715,6 @@ namespace Bio
         }
         public void SetValueRGB(ZCTXY coord, int RGBindex, ushort value)
         {
-            int i = -1;
             int ind = Coords[coord.Z, coord.C, coord.T];
             Buffers[ind].SetValueRGB(coord.X, coord.Y, RGBindex, value);
         }
@@ -6149,6 +6080,7 @@ namespace Bio
             Application.DoEvents();
             BioImage b = new BioImage(file);
             b.series = 0;
+            b.file = file;
             string fn = Path.GetFileNameWithoutExtension(file);
             string dir = Path.GetDirectoryName(file);
             if (File.Exists(fn + ".csv"))
@@ -6278,8 +6210,9 @@ namespace Bio
                         if (serie == series && sts[i].Length > 7)
                         {
                             string cht = sts[i].Substring(sts[i].IndexOf('{'), sts[i].Length - sts[i].IndexOf('{'));
-                            Channel ch = new Channel(index, b.bitsPerPixel);
-                            ch.info = JsonConvert.DeserializeObject<Channel.ChannelInfo>(cht);
+                            Channel.ChannelInfo info = JsonConvert.DeserializeObject<Channel.ChannelInfo>(cht);
+                            Channel ch = new Channel(index, b.bitsPerPixel, info.samplesPerPixel);
+                            ch.info = info;
                             b.Channels.Add(ch);
                             index++;
                         }
@@ -6316,13 +6249,20 @@ namespace Bio
                     b.imageInfo = new ImageInfo();
                 }
                 b.Coords = new int[b.SizeZ, b.SizeC, b.SizeT];
-                //If this is a tiff file not made by Bio we init channels based on BitsPerPixel.
+
+                //If this is a tiff file not made by Bio we init channels based on RGBChannels.
                 if (b.Channels.Count == 0)
-                for (int i = 0; i < RGBChannelCount; i++)
+                    b.Channels.Add(new Channel(0, b.bitsPerPixel, RGBChannelCount));
+
+                //Lets check to see the channels are correctly defined in this file
+                for (int ch = 0; ch < b.Channels.Count; ch++)
                 {
-                    Channel ch = new Channel(i, b.bitsPerPixel);
-                    b.Channels.Add(ch);
+                    if(b.Channels[ch].SamplesPerPixel != RGBChannelCount)
+                    {
+                        b.Channels[ch].SamplesPerPixel = RGBChannelCount;
+                    }
                 }
+
                 int z = 0;
                 int c = 0;
                 int t = 0;
@@ -6401,7 +6341,7 @@ namespace Bio
                     return OpenOME(file);
                 }
                 b.Buffers.Add(inf);
-                Channel ch = new Channel(0, 8);
+                Channel ch = new Channel(0, 8, b.RGBChannelCount);
                 b.Channels.Add(ch);
                 b.Coords = new int[b.SizeZ, b.SizeC, b.sizeT];
             }
@@ -6438,325 +6378,6 @@ namespace Bio
             sts[0] = ID;
             SaveOMESeries(sts, file, Properties.Settings.Default.Planes);
         }
-        /*
-        public static void SaveOMESeries(string[] files, string f)
-        {
-            loci.formats.meta.IMetadata omexml = service.createOMEXMLMetadata();
-            for (int series = 0; series < files.Length; series++)
-            {
-                string file = files[(int)series];
-                
-                BioImage b = Images.GetImage(file);
-                // create OME-XML metadata store
-                omexml.setImageID("Image:" + series, series);
-
-                omexml.setPixelsID("Pixels:" + series, series);
-                omexml.setPixelsInterleaved(java.lang.Boolean.TRUE, series);
-                if (BitConverter.IsLittleEndian)
-                    omexml.setPixelsBigEndian(java.lang.Boolean.FALSE, series);
-                else
-                    omexml.setPixelsBigEndian(java.lang.Boolean.TRUE, series);
-                omexml.setPixelsDimensionOrder(ome.xml.model.enums.DimensionOrder.XYCZT, series);
-                if (b.bitsPerPixel > 8)
-                    omexml.setPixelsType(ome.xml.model.enums.PixelType.UINT16, series);
-                else
-                    omexml.setPixelsType(ome.xml.model.enums.PixelType.UINT8, series);
-                omexml.setPixelsSizeX(new PositiveInteger(java.lang.Integer.valueOf(b.SizeX)), series);
-                omexml.setPixelsSizeY(new PositiveInteger(java.lang.Integer.valueOf(b.SizeY)), series);
-                omexml.setPixelsSizeZ(new PositiveInteger(java.lang.Integer.valueOf(b.SizeZ)), series);
-                int samples = 1;
-                if (b.isRGB)
-                    samples = 3;
-                omexml.setPixelsSizeC(new PositiveInteger(java.lang.Integer.valueOf(b.SizeC)), series);
-                omexml.setPixelsSizeT(new PositiveInteger(java.lang.Integer.valueOf(b.SizeT)), series);
-                ome.units.quantity.Length px = new ome.units.quantity.Length(java.lang.Double.valueOf(b.physicalSizeX), ome.units.UNITS.MICROMETER);
-                omexml.setPixelsPhysicalSizeX(px, series);
-                ome.units.quantity.Length py = new ome.units.quantity.Length(java.lang.Double.valueOf(b.physicalSizeY), ome.units.UNITS.MICROMETER);
-                omexml.setPixelsPhysicalSizeY(py, series);
-                ome.units.quantity.Length pz = new ome.units.quantity.Length(java.lang.Double.valueOf(b.physicalSizeZ), ome.units.UNITS.MICROMETER);
-                omexml.setPixelsPhysicalSizeZ(pz, series);
-
-                ome.units.quantity.Length sx = new ome.units.quantity.Length(java.lang.Double.valueOf(b.stageSizeX), ome.units.UNITS.MICROMETER);
-                omexml.setStageLabelX(sx, series);
-                ome.units.quantity.Length sy = new ome.units.quantity.Length(java.lang.Double.valueOf(b.stageSizeY), ome.units.UNITS.MICROMETER);
-                omexml.setStageLabelY(sy, series);
-                ome.units.quantity.Length sz = new ome.units.quantity.Length(java.lang.Double.valueOf(b.stageSizeZ), ome.units.UNITS.MICROMETER);
-                omexml.setStageLabelZ(sz, series);
-                omexml.setStageLabelName("StageLabel:" + series, series);
-
-                omexml.setInstrumentID("Bio", series);
-
-                for (int channel = 0; channel < b.Channels.Count; channel++)
-                {
-                    Channel c = b.Channels[channel];
-                    omexml.setChannelID("Channel:" + channel + ":" + series, channel, series);
-                    omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(c.SamplesPerPixel)), channel, series);
-                    if (c.LightSourceWavelength != 0)
-                    {
-                        omexml.setChannelLightSourceSettingsID("LightSourceSettings:" + channel, channel, series);
-                        ome.units.quantity.Length lw = new ome.units.quantity.Length(java.lang.Double.valueOf(c.LightSourceWavelength), ome.units.UNITS.NANOMETER);
-                        omexml.setChannelLightSourceSettingsWavelength(lw, channel, series);
-                        omexml.setChannelLightSourceSettingsAttenuation(PercentFraction.valueOf(c.LightSourceAttenuation), channel, series);
-                    }
-                    omexml.setChannelName(c.Name, channel, series);
-                    if (c.Color != null)
-                    {
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(c.Color.Value.R, c.Color.Value.G, c.Color.Value.B, c.Color.Value.A);
-                        omexml.setChannelColor(col, channel, series);
-                    }
-                    if (c.Emission != 0)
-                    {
-                        ome.units.quantity.Length em = new ome.units.quantity.Length(java.lang.Double.valueOf(c.Emission), ome.units.UNITS.NANOMETER);
-                        omexml.setChannelEmissionWavelength(em, channel, series);
-                        ome.units.quantity.Length ex = new ome.units.quantity.Length(java.lang.Double.valueOf(c.Excitation), ome.units.UNITS.NANOMETER);
-                        omexml.setChannelExcitationWavelength(ex, channel, series);
-                    }
-                    omexml.setChannelContrastMethod(c.ContrastMethod, channel, series);
-                    omexml.setChannelFluor(c.Fluor, channel, series);
-                    omexml.setChannelIlluminationType(c.IlluminationType, channel, series);
-
-                    if (c.LightSourceIntensity != 0)
-                    {
-                        ome.units.quantity.Power pw = new ome.units.quantity.Power(java.lang.Double.valueOf(c.LightSourceIntensity), ome.units.UNITS.VOLT);
-                        omexml.setLightEmittingDiodePower(pw, channel, series);
-                        omexml.setLightEmittingDiodeID(c.DiodeName, channel, series);
-                    }
-                    if (c.AcquisitionMode != null)
-                        omexml.setChannelAcquisitionMode(c.AcquisitionMode, channel, series);
-                }
-
-                int i = 0;
-                foreach (ROI an in b.Annotations)
-                {
-                    if (an.roiID == "")
-                        omexml.setROIID("ROI:" + i.ToString() + ":" + series, i);
-                    else
-                        omexml.setROIID(an.roiID, i);
-                    omexml.setROIName(an.roiName, i);
-                    if (an.type == ROI.Type.Point)
-                    {
-                        if (an.id != "")
-                            omexml.setPointID(an.id, i, series);
-                        else
-                            omexml.setPointID("Shape:" + i + ":" + series, i, series);
-                        omexml.setPointX(java.lang.Double.valueOf(b.ToImageSpaceX(an.X)), i, series);
-                        omexml.setPointY(java.lang.Double.valueOf(b.ToImageSpaceY(an.Y)), i, series);
-                        omexml.setPointTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
-                        omexml.setPointTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
-                        omexml.setPointTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
-                        if (an.Text != "")
-                            omexml.setPointText(an.Text, i, series);
-                        else
-                            omexml.setPointText(i.ToString(), i, series);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setPointFontSize(fl, i, series);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setPointStrokeColor(col, i, series);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setPointStrokeWidth(sw, i, series);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setPointFillColor(colf, i, series);
-                    }
-                    else
-                    if (an.type == ROI.Type.Polygon || an.type == ROI.Type.Freeform)
-                    {
-                        if (an.id != "")
-                            omexml.setPolygonID(an.id, i, series);
-                        else
-                            omexml.setPolygonID("Shape:" + i + ":" + series, i, series);
-                        omexml.setPolygonPoints(an.PointsToString(b), i, series);
-                        omexml.setPolygonTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
-                        omexml.setPolygonTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
-                        omexml.setPolygonTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
-                        if (an.Text != "")
-                            omexml.setPolygonText(an.Text, i, series);
-                        else
-                            omexml.setPolygonText(i.ToString(), i, series);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setPolygonFontSize(fl, i, series);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setPolygonStrokeColor(col, i, series);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setPolygonStrokeWidth(sw, i, series);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setPolygonFillColor(colf, i, series);
-                    }
-                    else
-                    if (an.type == ROI.Type.Rectangle)
-                    {
-                        if (an.id != "")
-                            omexml.setRectangleID(an.id, i, series);
-                        else
-                            omexml.setRectangleID("Shape:" + i + ":" + series, i, series);
-                        omexml.setRectangleWidth(java.lang.Double.valueOf(b.ToImageSizeX(an.W)), i, series);
-                        omexml.setRectangleHeight(java.lang.Double.valueOf(b.ToImageSizeY(an.H)), i, series);
-                        omexml.setRectangleX(java.lang.Double.valueOf(b.ToImageSpaceX(an.Rect.X)), i, series);
-                        omexml.setRectangleY(java.lang.Double.valueOf(b.ToImageSpaceY(an.Rect.Y)), i, series);
-                        omexml.setRectangleTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
-                        omexml.setRectangleTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
-                        omexml.setRectangleTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
-                        omexml.setRectangleText(i.ToString(), i, series);
-                        if (an.Text != "")
-                            omexml.setRectangleText(an.Text, i, series);
-                        else
-                            omexml.setRectangleText(i.ToString(), i, series);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setRectangleFontSize(fl, i, series);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setRectangleStrokeColor(col, i, series);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setRectangleStrokeWidth(sw, i, series);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setRectangleFillColor(colf, i, series);
-                    }
-                    else
-                    if (an.type == ROI.Type.Line)
-                    {
-                        if (an.id != "")
-                            omexml.setLineID(an.id, i, series);
-                        else
-                            omexml.setLineID("Shape:" + i + ":" + series, i, series);
-                        omexml.setLineX1(java.lang.Double.valueOf(b.ToImageSpaceX(an.GetPoint(0).X)), i, series);
-                        omexml.setLineY1(java.lang.Double.valueOf(b.ToImageSpaceY(an.GetPoint(0).Y)), i, series);
-                        omexml.setLineX2(java.lang.Double.valueOf(b.ToImageSpaceX(an.GetPoint(1).X)), i, series);
-                        omexml.setLineY2(java.lang.Double.valueOf(b.ToImageSpaceY(an.GetPoint(1).Y)), i, series);
-                        omexml.setLineTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
-                        omexml.setLineTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
-                        omexml.setLineTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
-                        if (an.Text != "")
-                            omexml.setLineText(an.Text, i, series);
-                        else
-                            omexml.setLineText(i.ToString(), i, series);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setLineFontSize(fl, i, series);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setLineStrokeColor(col, i, series);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setLineStrokeWidth(sw, i, series);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setLineFillColor(colf, i, series);
-                    }
-                    else
-                    if (an.type == ROI.Type.Ellipse)
-                    {
-
-                        if (an.id != "")
-                            omexml.setEllipseID(an.id, i, series);
-                        else
-                            omexml.setEllipseID("Shape:" + i + ":" + series, i, series);
-                        //We need to change System.Drawing.Rectangle to ellipse radius;
-                        double w = (double)an.W / 2;
-                        double h = (double)an.H / 2;
-                        omexml.setEllipseRadiusX(java.lang.Double.valueOf(b.ToImageSizeX(w)), i, series);
-                        omexml.setEllipseRadiusY(java.lang.Double.valueOf(b.ToImageSizeY(h)), i, series);
-
-                        double x = an.Point.X + w;
-                        double y = an.Point.Y + h;
-                        omexml.setEllipseX(java.lang.Double.valueOf(b.ToImageSpaceX(x)), i, series);
-                        omexml.setEllipseY(java.lang.Double.valueOf(b.ToImageSpaceX(y)), i, series);
-                        omexml.setEllipseTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
-                        omexml.setEllipseTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
-                        omexml.setEllipseTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
-                        if (an.Text != "")
-                            omexml.setEllipseText(an.Text, i, series);
-                        else
-                            omexml.setEllipseText(i.ToString(), i, series);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setEllipseFontSize(fl, i, series);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setEllipseStrokeColor(col, i, series);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setEllipseStrokeWidth(sw, i, series);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setEllipseFillColor(colf, i, series);
-                    }
-                    else
-                    if (an.type == ROI.Type.Label)
-                    {
-                        if (an.id != "")
-                            omexml.setLabelID(an.id, i, series);
-                        else
-                            omexml.setLabelID("Shape:" + i + ":" + series, i, series);
-                        omexml.setLabelX(java.lang.Double.valueOf(b.ToImageSpaceX(an.Rect.X)), i, series);
-                        omexml.setLabelY(java.lang.Double.valueOf(b.ToImageSpaceY(an.Rect.Y)), i, series);
-                        omexml.setLabelTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, series);
-                        omexml.setLabelTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, series);
-                        omexml.setLabelTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, series);
-                        omexml.setLabelText(i.ToString(), i, series);
-                        if (an.Text != "")
-                            omexml.setLabelText(an.Text, i, series);
-                        else
-                            omexml.setLabelText(i.ToString(), i, series);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setLabelFontSize(fl, i, series);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setLabelStrokeColor(col, i, series);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setLabelStrokeWidth(sw, i, series);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setLabelFillColor(colf, i, series);
-                    }
-                    i++;
-                }
-
-                for (int bu = 0; bu < b.Buffers.Count; bu++)
-                {
-                    if (b.Buffers[bu].Plane.Delta != 0)
-                    {
-                        ome.units.quantity.Time t = new ome.units.quantity.Time(java.lang.Double.valueOf(b.Buffers[bu].Plane.Delta), ome.units.UNITS.MILLISECOND);
-                        omexml.setPlaneDeltaT(t, bu, series);
-                    }
-                    if (b.Buffers[bu].Plane.Exposure != 0)
-                    {
-                        ome.units.quantity.Time et = new ome.units.quantity.Time(java.lang.Double.valueOf(b.Buffers[bu].Plane.Exposure), ome.units.UNITS.MILLISECOND);
-                        omexml.setPlaneExposureTime(et, bu, series);
-                    }
-                    ome.units.quantity.Length lx = new ome.units.quantity.Length(java.lang.Double.valueOf(b.Buffers[bu].Plane.Location.X), ome.units.UNITS.MICROMETER);
-                    ome.units.quantity.Length ly = new ome.units.quantity.Length(java.lang.Double.valueOf(b.Buffers[bu].Plane.Location.Y), ome.units.UNITS.MICROMETER);
-                    ome.units.quantity.Length lz = new ome.units.quantity.Length(java.lang.Double.valueOf(b.Buffers[bu].Plane.Location.Z), ome.units.UNITS.MICROMETER);
-                    omexml.setPlanePositionX(lx, bu, series);
-                    omexml.setPlanePositionY(ly, bu, series);
-                    omexml.setPlanePositionZ(lz, bu, series);
-
-                    omexml.setPlaneTheC(new NonNegativeInteger(java.lang.Integer.valueOf(b.Buffers[bu].Plane.Coordinate.C)), bu, series);
-                    omexml.setPlaneTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(b.Buffers[bu].Plane.Coordinate.Z)), bu, series);
-                    omexml.setPlaneTheT(new NonNegativeInteger(java.lang.Integer.valueOf(b.Buffers[bu].Plane.Coordinate.T)), bu, series);
-                    //omexml.setTiffDataPlaneCount(new NonNegativeInteger(java.lang.Integer.valueOf(b.Buffers[bu].)), series, bu);
-                }
-            }
-
-            Progress pr = new Progress(f, "Saving");
-            pr.Show();
-            for (int series = 0; series < files.Length; series++)
-            {
-                BioImage b = Images.GetImage(files[series]);
-                if (series == 0)
-                {
-                    writer.setMetadataRetrieve(omexml);
-                    writer.setId(f);
-                }
-                writer.setSeries(series);
-
-                for (int bu = 0; bu < b.Buffers.Count; bu++)
-                {
-
-
-
-
-                    writer.saveBytes(bu, b.Buffers[bu].GetSaveBytes(BitConverter.IsLittleEndian));
-                    pr.UpdateProgressF((float)bu / b.Buffers.Count);
-                }
-
-                pr.Close();
-                pr.Dispose();
-                writer.close();
-                Recorder.AddLine("Bio.BioImage.SaveOME(" + '"' + f + '"' + ");");
-
-                
-            }
-            writer.close();
-        }
-        */
         public static void SaveOMESeries(string[] files, string f, bool planes)
         {
             if (File.Exists(f))
@@ -7073,302 +6694,6 @@ namespace Bio
             }
             writer.close();
         }
-        /*
-        public static void SaveOMESeries(string[] files, string f)
-        {
-            loci.formats.meta.IMetadata omexml = service.createOMEXMLMetadata();
-            for (int fi = 0; fi < files.Length; fi++)
-            {
-                int serie = fi;
-                string file = files[fi];
-                BioImage b = Images.GetImage(file);
-                int series = b.series;
-                omexml.setImageID("Image:" + serie, series);
-                ome.units.quantity.Length sx = new ome.units.quantity.Length(java.lang.Double.valueOf(b.stageSizeX), ome.units.UNITS.MICROMETER);
-                omexml.setStageLabelX(sx, series);
-                ome.units.quantity.Length sy = new ome.units.quantity.Length(java.lang.Double.valueOf(b.stageSizeY), ome.units.UNITS.MICROMETER);
-                omexml.setStageLabelY(sy, series);
-                ome.units.quantity.Length sz = new ome.units.quantity.Length(java.lang.Double.valueOf(b.stageSizeZ), ome.units.UNITS.MICROMETER);
-                omexml.setStageLabelZ(sz, series);
-                omexml.setStageLabelName("StageLabel:" + serie, series);
-
-                omexml.setInstrumentID("Bio", series);
-
-                for (int channel = 0; channel < b.Channels.Count; channel++)
-                {
-                    Channel c = b.Channels[channel];
-                    omexml.setChannelID("Channel:" + channel + ":" + series, series, channel);
-                    omexml.setChannelSamplesPerPixel(new PositiveInteger(java.lang.Integer.valueOf(1)), series, channel);
-                    if (c.LightSourceWavelength != 0)
-                    {
-                        omexml.setChannelLightSourceSettingsID("LightSourceSettings:" + channel, series, channel);
-                        ome.units.quantity.Length lw = new ome.units.quantity.Length(java.lang.Double.valueOf(c.LightSourceWavelength), ome.units.UNITS.NANOMETER);
-                        omexml.setChannelLightSourceSettingsWavelength(lw, series, channel);
-                        omexml.setChannelLightSourceSettingsAttenuation(PercentFraction.valueOf(c.LightSourceAttenuation), series, channel);
-                    }
-                    omexml.setChannelName(c.Name, series, channel);
-                    if (c.Color != null)
-                    {
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(c.Color.Value.R, c.Color.Value.G, c.Color.Value.B, c.Color.Value.A);
-                        omexml.setChannelColor(col, series, channel);
-                    }
-                    if (c.Emission != 0)
-                    {
-                        ome.units.quantity.Length em = new ome.units.quantity.Length(java.lang.Double.valueOf(c.Emission), ome.units.UNITS.NANOMETER);
-                        omexml.setChannelEmissionWavelength(em, serie, channel);
-                        ome.units.quantity.Length ex = new ome.units.quantity.Length(java.lang.Double.valueOf(c.Excitation), ome.units.UNITS.NANOMETER);
-                        omexml.setChannelExcitationWavelength(ex, serie, channel);
-                    }
-                    omexml.setChannelContrastMethod(c.ContrastMethod, series, channel);
-                    omexml.setChannelFluor(c.Fluor, series, channel);
-                    omexml.setChannelIlluminationType(c.IlluminationType, series, channel);
-
-                    if (c.LightSourceIntensity != 0)
-                    {
-                        ome.units.quantity.Power pw = new ome.units.quantity.Power(java.lang.Double.valueOf(c.LightSourceIntensity), ome.units.UNITS.VOLT);
-                        omexml.setLightEmittingDiodePower(pw, serie, channel);
-                        omexml.setLightEmittingDiodeID(c.DiodeName, serie, channel);
-                    }
-                    if (c.AcquisitionMode != null)
-                        omexml.setChannelAcquisitionMode(c.AcquisitionMode, series, channel);
-                }
-
-                int i = 0;
-                foreach (ROI an in b.Annotations)
-                {
-                    if (an.roiID == "")
-                        omexml.setROIID("ROI:" + i.ToString() + ":" + serie, i);
-                    else
-                        omexml.setROIID(an.roiID, i);
-                    omexml.setROIName(an.roiName, i);
-                    if (an.type == ROI.Type.Point)
-                    {
-                        if (an.id != "")
-                            omexml.setPointID(an.id, i, serie);
-                        else
-                            omexml.setPointID("Shape:" + i + ":" + serie, i, serie);
-                        omexml.setPointX(java.lang.Double.valueOf(b.ToImageSpaceX(an.X)), i, serie);
-                        omexml.setPointY(java.lang.Double.valueOf(b.ToImageSpaceY(an.Y)), i, serie);
-                        omexml.setPointTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, serie);
-                        omexml.setPointTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, serie);
-                        omexml.setPointTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, serie);
-                        if (an.Text != "")
-                            omexml.setPointText(an.Text, i, serie);
-                        else
-                            omexml.setPointText(i.ToString(), i, serie);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setPointFontSize(fl, i, serie);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setPointStrokeColor(col, i, serie);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setPointStrokeWidth(sw, i, serie);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setPointFillColor(colf, i, serie);
-                    }
-                    else
-                    if (an.type == ROI.Type.Polygon || an.type == ROI.Type.Freeform)
-                    {
-                        if (an.id != "")
-                            omexml.setPolygonID(an.id, i, serie);
-                        else
-                            omexml.setPolygonID("Shape:" + i + ":" + serie, i, serie);
-                        omexml.setPolygonPoints(an.PointsToString(b), i, serie);
-                        omexml.setPolygonTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, serie);
-                        omexml.setPolygonTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, serie);
-                        omexml.setPolygonTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, serie);
-                        if (an.Text != "")
-                            omexml.setPolygonText(an.Text, i, serie);
-                        else
-                            omexml.setPolygonText(i.ToString(), i, serie);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setPolygonFontSize(fl, i, serie);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setPolygonStrokeColor(col, i, serie);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setPolygonStrokeWidth(sw, i, serie);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setPolygonFillColor(colf, i, serie);
-                    }
-                    else
-                    if (an.type == ROI.Type.Rectangle)
-                    {
-                        if (an.id != "")
-                            omexml.setRectangleID(an.id, i, serie);
-                        else
-                            omexml.setRectangleID("Shape:" + i + ":" + serie, i, serie);
-                        omexml.setRectangleWidth(java.lang.Double.valueOf(b.ToImageSizeX(an.W)), i, serie);
-                        omexml.setRectangleHeight(java.lang.Double.valueOf(b.ToImageSizeY(an.H)), i, serie);
-                        omexml.setRectangleX(java.lang.Double.valueOf(b.ToImageSpaceX(an.Rect.X)), i, serie);
-                        omexml.setRectangleY(java.lang.Double.valueOf(b.ToImageSpaceY(an.Rect.Y)), i, serie);
-                        omexml.setRectangleTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, serie);
-                        omexml.setRectangleTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, serie);
-                        omexml.setRectangleTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, serie);
-                        omexml.setRectangleText(i.ToString(), i, serie);
-                        if (an.Text != "")
-                            omexml.setRectangleText(an.Text, i, serie);
-                        else
-                            omexml.setRectangleText(i.ToString(), i, serie);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setRectangleFontSize(fl, i, serie);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setRectangleStrokeColor(col, i, serie);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setRectangleStrokeWidth(sw, i, serie);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setRectangleFillColor(colf, i, serie);
-                    }
-                    else
-                    if (an.type == ROI.Type.Line)
-                    {
-                        if (an.id != "")
-                            omexml.setLineID(an.id, i, serie);
-                        else
-                            omexml.setLineID("Shape:" + i + ":" + serie, i, serie);
-                        omexml.setLineX1(java.lang.Double.valueOf(b.ToImageSpaceX(an.GetPoint(0).X)), i, serie);
-                        omexml.setLineY1(java.lang.Double.valueOf(b.ToImageSpaceY(an.GetPoint(0).Y)), i, serie);
-                        omexml.setLineX2(java.lang.Double.valueOf(b.ToImageSpaceX(an.GetPoint(1).X)), i, serie);
-                        omexml.setLineY2(java.lang.Double.valueOf(b.ToImageSpaceY(an.GetPoint(1).Y)), i, serie);
-                        omexml.setLineTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, serie);
-                        omexml.setLineTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, serie);
-                        omexml.setLineTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, serie);
-                        if (an.Text != "")
-                            omexml.setLineText(an.Text, i, serie);
-                        else
-                            omexml.setLineText(i.ToString(), i, serie);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setLineFontSize(fl, i, serie);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setLineStrokeColor(col, i, serie);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setLineStrokeWidth(sw, i, serie);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setLineFillColor(colf, i, serie);
-                    }
-                    else
-                    if (an.type == ROI.Type.Ellipse)
-                    {
-
-                        if (an.id != "")
-                            omexml.setEllipseID(an.id, i, serie);
-                        else
-                            omexml.setEllipseID("Shape:" + i + ":" + serie, i, serie);
-                        //We need to change System.Drawing.Rectangle to ellipse radius;
-                        double w = (double)an.W / 2;
-                        double h = (double)an.H / 2;
-                        omexml.setEllipseRadiusX(java.lang.Double.valueOf(b.ToImageSizeX(w)), i, serie);
-                        omexml.setEllipseRadiusY(java.lang.Double.valueOf(b.ToImageSizeY(h)), i, serie);
-
-                        double x = an.Point.X + w;
-                        double y = an.Point.Y + h;
-                        omexml.setEllipseX(java.lang.Double.valueOf(b.ToImageSpaceX(x)), i, serie);
-                        omexml.setEllipseY(java.lang.Double.valueOf(b.ToImageSpaceX(y)), i, serie);
-                        omexml.setEllipseTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, serie);
-                        omexml.setEllipseTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, serie);
-                        omexml.setEllipseTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, serie);
-                        if (an.Text != "")
-                            omexml.setEllipseText(an.Text, i, serie);
-                        else
-                            omexml.setEllipseText(i.ToString(), i, serie);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setEllipseFontSize(fl, i, serie);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setEllipseStrokeColor(col, i, serie);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setEllipseStrokeWidth(sw, i, serie);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setEllipseFillColor(colf, i, serie);
-                    }
-                    else
-                    if (an.type == ROI.Type.Label)
-                    {
-                        if (an.id != "")
-                            omexml.setLabelID(an.id, i, serie);
-                        else
-                            omexml.setLabelID("Shape:" + i + ":" + serie, i, serie);
-                        omexml.setLabelX(java.lang.Double.valueOf(b.ToImageSpaceX(an.Rect.X)), i, serie);
-                        omexml.setLabelY(java.lang.Double.valueOf(b.ToImageSpaceY(an.Rect.Y)), i, serie);
-                        omexml.setLabelTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.Z)), i, serie);
-                        omexml.setLabelTheC(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.C)), i, serie);
-                        omexml.setLabelTheT(new NonNegativeInteger(java.lang.Integer.valueOf(an.coord.T)), i, serie);
-                        omexml.setLabelText(i.ToString(), i, serie);
-                        if (an.Text != "")
-                            omexml.setLabelText(an.Text, i, serie);
-                        else
-                            omexml.setLabelText(i.ToString(), i, serie);
-                        ome.units.quantity.Length fl = new ome.units.quantity.Length(java.lang.Double.valueOf(an.font.Size), ome.units.UNITS.PIXEL);
-                        omexml.setLabelFontSize(fl, i, serie);
-                        ome.xml.model.primitives.Color col = new ome.xml.model.primitives.Color(an.strokeColor.R, an.strokeColor.G, an.strokeColor.B, an.strokeColor.A);
-                        omexml.setLabelStrokeColor(col, i, serie);
-                        ome.units.quantity.Length sw = new ome.units.quantity.Length(java.lang.Double.valueOf(an.strokeWidth), ome.units.UNITS.PIXEL);
-                        omexml.setLabelStrokeWidth(sw, i, serie);
-                        ome.xml.model.primitives.Color colf = new ome.xml.model.primitives.Color(an.fillColor.R, an.fillColor.G, an.fillColor.B, an.fillColor.A);
-                        omexml.setLabelFillColor(colf, i, serie);
-                    }
-                    i++;
-                }
-
-            }
-            writer.setMetadataRetrieve(omexml);
-            writer.setId(f);
-            for (int fi = 0; fi < files.Length; fi++)
-            {
-                Progress pr = new Progress(files[fi], "Saving");
-                pr.Show();
-                serie = fi;
-                writer.setSeries(serie);
-                BioImage b = Images.GetImage(files[fi]);
-                string fp = Path.GetDirectoryName(b.file) + "\\" + Path.GetFileNameWithoutExtension(b.file) + ".ome.tif";
-                for (int bu = 0; bu < b.Buffers.Count; bu++)
-                {
-                    omexml.setPixelsID("Pixels:" + serie, serie);
-                    omexml.setPixelsInterleaved(java.lang.Boolean.TRUE, serie);
-                    if (BitConverter.IsLittleEndian)
-                        omexml.setPixelsBigEndian(java.lang.Boolean.FALSE, serie);
-                    else
-                        omexml.setPixelsBigEndian(java.lang.Boolean.TRUE, serie);
-                    omexml.setPixelsDimensionOrder(ome.xml.model.enums.DimensionOrder.XYCZT, serie);
-                    if (b.bitsPerPixel > 8)
-                        omexml.setPixelsType(ome.xml.model.enums.PixelType.UINT16, serie);
-                    else
-                        omexml.setPixelsType(ome.xml.model.enums.PixelType.UINT8, serie);
-                    omexml.setPixelsSizeX(new PositiveInteger(java.lang.Integer.valueOf(b.SizeX)), serie);
-                    omexml.setPixelsSizeY(new PositiveInteger(java.lang.Integer.valueOf(b.SizeY)), serie);
-                    omexml.setPixelsSizeZ(new PositiveInteger(java.lang.Integer.valueOf(b.SizeZ)), serie);
-                    omexml.setPixelsSizeC(new PositiveInteger(java.lang.Integer.valueOf(b.SizeC)), serie);
-                    omexml.setPixelsSizeT(new PositiveInteger(java.lang.Integer.valueOf(b.SizeT)), serie);
-                    ome.units.quantity.Length px = new ome.units.quantity.Length(java.lang.Double.valueOf(b.physicalSizeX), ome.units.UNITS.MICROMETER);
-                    omexml.setPixelsPhysicalSizeX(px, serie);
-                    ome.units.quantity.Length py = new ome.units.quantity.Length(java.lang.Double.valueOf(b.physicalSizeY), ome.units.UNITS.MICROMETER);
-                    omexml.setPixelsPhysicalSizeY(py, serie);
-                    ome.units.quantity.Length pz = new ome.units.quantity.Length(java.lang.Double.valueOf(b.physicalSizeZ), ome.units.UNITS.MICROMETER);
-                    omexml.setPixelsPhysicalSizeZ(pz, serie);
-
-                    ome.units.quantity.Time t = new ome.units.quantity.Time(java.lang.Double.valueOf(b.Buffers[bu].Plane.Delta), ome.units.UNITS.MILLISECOND);
-                    omexml.setPlaneDeltaT(t, bu, serie);
-                    ome.units.quantity.Time et = new ome.units.quantity.Time(java.lang.Double.valueOf(b.Buffers[bu].Plane.Exposure), ome.units.UNITS.MILLISECOND);
-                    omexml.setPlaneExposureTime(et, bu, serie);
-                    ome.units.quantity.Length lx = new ome.units.quantity.Length(java.lang.Double.valueOf(b.Buffers[bu].Plane.Location.X), ome.units.UNITS.MICROMETER);
-                    ome.units.quantity.Length ly = new ome.units.quantity.Length(java.lang.Double.valueOf(b.Buffers[bu].Plane.Location.Y), ome.units.UNITS.MICROMETER);
-                    ome.units.quantity.Length lz = new ome.units.quantity.Length(java.lang.Double.valueOf(b.Buffers[bu].Plane.Location.Z), ome.units.UNITS.MICROMETER);
-                    omexml.setPlanePositionX(lx, bu, serie);
-                    omexml.setPlanePositionY(ly, bu, serie);
-                    omexml.setPlanePositionZ(lz, bu, serie);
-                    omexml.setPlaneTheC(new NonNegativeInteger(java.lang.Integer.valueOf(b.Buffers[bu].Plane.Coordinate.C)), bu, serie);
-                    omexml.setPlaneTheZ(new NonNegativeInteger(java.lang.Integer.valueOf(b.Buffers[bu].Plane.Coordinate.Z)), bu, serie);
-                    omexml.setPlaneTheT(new NonNegativeInteger(java.lang.Integer.valueOf(b.Buffers[bu].Plane.Coordinate.T)), bu, serie);
-                    
-                    writer.saveBytes(bu, b.Buffers[bu].GetSaveBytes(BitConverter.IsLittleEndian));
-                    pr.UpdateProgressF((float)bu / b.Buffers.Count);
-                }
-
-                pr.Close();
-                pr.Dispose();
-                
-            }
-
-            writer.close();
-        }
-        */
         public static BioImage OpenOME(string file)
         {
             return OpenOME(file, 0);
@@ -7459,7 +6784,7 @@ namespace Bio
             int i = 0;
             while(true)
             {
-                Channel ch = new Channel(i, b.bitsPerPixel);
+                Channel ch = new Channel(i, b.bitsPerPixel,1);
                 bool def = false;
                 try
                 {

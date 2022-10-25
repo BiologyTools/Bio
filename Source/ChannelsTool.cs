@@ -161,6 +161,7 @@ namespace Bio
             }
             minBox.Value = SelectedChannel.range[(int)sampleBox.Value].Min;
             maxBox.Value = SelectedChannel.range[(int)sampleBox.Value].Max;
+            sampleBox.Maximum = SelectedChannel.SamplesPerPixel-1;
             UpdateItems();
             hist.UpdateView();
 
