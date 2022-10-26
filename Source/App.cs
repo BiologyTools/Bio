@@ -43,21 +43,23 @@ namespace Bio
         {
             get { return Image.Annotations; }
         }
+        public static bool SetImageJPath()
+        {
+            MessageBox.Show("ImageJ path not set. Set the ImageJ executable location.");
+            OpenFileDialog file = new OpenFileDialog();
+            file.Title = "Set the ImageJ executable location.";
+            if (file.ShowDialog() != DialogResult.OK)
+                return false;
+            Properties.Settings.Default.ImageJPath = file.FileName;
+            Properties.Settings.Default.Save();
+            file.Dispose();
+            ImageJ.Initialize(file.FileName);
+            return true;
+        }
         public static void Initialize()
         {
             BioImage.Initialize();
             Microscope.Initialize();
-            if(Properties.Settings.Default.ImageJPath == "")
-            {
-                MessageBox.Show("ImageJ path not set. Set the ImageJ executable location.");
-                OpenFileDialog file = new OpenFileDialog();
-                file.Title = "Set the ImageJ executable location.";
-                if (file.ShowDialog() != DialogResult.OK)
-                    return;
-                Properties.Settings.Default.ImageJPath = file.FileName;
-                Properties.Settings.Default.Save();
-                file.Dispose();
-            }
             ImageJ.Initialize(Properties.Settings.Default.ImageJPath);
             tools = new Tools();
             stackTools = new StackTools();

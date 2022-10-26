@@ -95,7 +95,7 @@ namespace Bio
             if (channelsBox.SelectedIndex == -1)
                 return;
             sampleBox.Value = 0;
-            sampleBox.Maximum = ((Channel)channelsBox.SelectedItem).range[(int)sampleBox.Value].Max - 1;
+            sampleBox.Maximum = ((Channel)channelsBox.SelectedItem).range.Length - 1;
             if (minBox.Maximum < Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Min || maxBox.Maximum < Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Max)
             {
                 minBox.Value = 0;

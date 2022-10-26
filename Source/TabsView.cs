@@ -706,11 +706,20 @@ namespace Bio
 
         private void saveTabToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(ImageView.Images.Count > 0 && ImageView.SelectedImage.isRGB)
+            bool convert = false;
+            foreach (BioImage b in ImageView.Images)
+            {
+                if (b.isRGB)
+                {
+                    convert = true;
+                    break;
+                }
+            }
+            if (convert)
             {
                 string mes;
                 if(ImageView.SelectedImage.bitsPerPixel > 8)
-                    mes = "Saving Series as OME only supports 8 bit & 16 bit images to. Convert 16 bit?";
+                    mes = "Saving Series as OME only supports 8 bit & 16 bit images. Convert 16 bit?";
                 else
                     mes = "Saving Series as OME only supports 8 bit & 16 bit images. Convert 8 bit?";
                 if (MessageBox.Show(this, mes,"Convert to supported format?", MessageBoxButtons.OKCancel) == DialogResult.OK)

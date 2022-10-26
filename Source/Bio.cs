@@ -6644,6 +6644,7 @@ namespace Bio
                 {
                     writer.saveBytes(bu, b.Buffers[bu].GetSaveBytes(BitConverter.IsLittleEndian));
                     pr.UpdateProgressF((float)bu / b.Buffers.Count);
+                    Application.DoEvents();
                 }
                 pr.Close();
                 pr.Dispose();
@@ -6731,6 +6732,7 @@ namespace Bio
             }
             else
             {
+                b.sizeC = 1;
                 PixelFormat = PixelFormat.Format32bppRgb;
                 stride = SizeX * 4;
             }

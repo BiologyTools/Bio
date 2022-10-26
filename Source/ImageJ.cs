@@ -15,6 +15,11 @@ namespace Bio
         private static Random rng = new Random();
         public static void RunMacro(string file, string param)
         {
+            if(ImageJPath == "")
+            {
+                if (!App.SetImageJPath())
+                    return;
+            }
             file.Replace("/", "\\");
             Process pr = new Process();
             pr.StartInfo.FileName = ImageJPath;
@@ -25,6 +30,12 @@ namespace Bio
         }
         public static void RunString(string con, string param, bool headless)
         {
+
+            if (ImageJPath == "")
+            {
+                if (!App.SetImageJPath())
+                    return;
+            }
             Process pr = new Process();
             pr.StartInfo.FileName = ImageJPath;
             string te = rng.Next(0, 9999999).ToString();
@@ -61,6 +72,11 @@ namespace Bio
         }
         public static void RunOnImage(string con, bool headless, bool onTab, bool bioformats)
         {
+            if (ImageJPath == "")
+            {
+                if (!App.SetImageJPath())
+                    return;
+            }
             string filename = "";
             string dir = Path.GetDirectoryName(ImageView.SelectedImage.file);
 
