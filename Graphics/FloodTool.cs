@@ -11,7 +11,8 @@ namespace Bio.Graphics
 {
     public partial class FloodTool : Form
     {
-        private Pen pen = new Pen(new ColorS(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue), 1);
+        private Pen pen = new Pen(new ColorS(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue), 1,16);
+        private int bitsPerPixel = 16;
         public Pen Pen
         {
             get
@@ -36,7 +37,7 @@ namespace Bio.Graphics
         public void UpdateGUI()
         {
             pen.color = new ColorS((ushort)redBox.Value, (ushort)greenBox.Value, (ushort)blueBox.Value);
-            colorPanel.BackColor = ColorS.ToColor(pen.color);
+            colorPanel.BackColor = ColorS.ToColor(pen.color,pen.bitsPerPixel);
             if (rBar.Value != redBox.Value)
                 redBox.Value = rBar.Value;
             if (gBar.Value != greenBox.Value)
@@ -56,10 +57,20 @@ namespace Bio.Graphics
             InitializeComponent();
             UpdateGUI();
         }
-        public FloodTool(Pen p, ColorS tolerance)
+        public FloodTool(Pen p, ColorS tolerance, int bitPerPixel)
         {
             InitializeComponent();
             pen = p;
+            bitsPerPixel = bitPerPixel;
+            if (bitsPerPixel == 8)
+            {
+                rBar.Maximum = 255;
+                gBar.Maximum = 255;
+                bBar.Maximum = 255;
+                redBox.Maximum = 255;
+                greenBox.Maximum = 255;
+                blueBox.Maximum = 255;
+            }
             this.tolerance = tolerance;
             tolRBox.Value = (decimal)tolerance.R;
             tolGBox.Value = (decimal)tolerance.G;

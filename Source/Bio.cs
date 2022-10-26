@@ -188,8 +188,8 @@ namespace Bio
             set
             {
                 Byte[] bt = BitConverter.GetBytes(value * ushort.MaxValue);
-                bytes[0] = bt[1];
-                bytes[1] = bt[0];
+                bytes[4] = bt[1];
+                bytes[5] = bt[0];
             }
         }
         public float Gf
@@ -208,8 +208,8 @@ namespace Bio
             set
             {
                 Byte[] bt = BitConverter.GetBytes(value * ushort.MaxValue);
-                bytes[4] = bt[1];
-                bytes[5] = bt[0];
+                bytes[0] = bt[1];
+                bytes[1] = bt[0];
             }
         }
         public ushort R
@@ -294,28 +294,26 @@ namespace Bio
             else
             if (px == PixelFormat.Format48bppRgb)
             {
-                byte[] r = BitConverter.GetBytes(R);
-                byte[] g = BitConverter.GetBytes(G);
-                byte[] b = BitConverter.GetBytes(B);
-                byte[] bt = new byte[6];
-                bt[0] = r[1];
-                bt[1] = r[0];
-                bt[2] = g[1];
-                bt[3] = g[0];
-                bt[4] = b[1];
-                bt[5] = b[0];
-                return bt;
+                return bytes;
             }
             throw new InvalidDataException("Pixel format: " + px.ToString() + " is not supported");
 
         }
-        public static System.Drawing.Color ToColor(ColorS col)
+        public static System.Drawing.Color ToColor(ColorS col, int bitsPerPixel)
         {
-            int r = (int)(((float)col.R / 65535) * 255);
-            int g = (int)(((float)col.G / 65535) * 255);
-            int b = (int)(((float)col.B / 65535) * 255);
-            System.Drawing.Color c = System.Drawing.Color.FromArgb((byte)r, (byte)g, (byte)b);
-            return c;
+            if (bitsPerPixel == 8)
+            {
+                System.Drawing.Color c = System.Drawing.Color.FromArgb((byte)col.R, (byte)col.G, (byte)col.B);
+                return c;
+            }
+            else
+            {
+                int r = (int)(((float)col.R / 65535) * 255);
+                int g = (int)(((float)col.G / 65535) * 255);
+                int b = (int)(((float)col.B / 65535) * 255);
+                System.Drawing.Color c = System.Drawing.Color.FromArgb((byte)r, (byte)g, (byte)b);
+                return c;
+            }
         }
         public override string ToString()
         {
@@ -1386,19 +1384,19 @@ namespace Bio
             if (BitsPerPixel > 8)
             {
                 int index2 = ((y * stridex + x) * 6);
-                bytes[index2] = value.bytes[1];
-                bytes[index2 + 1] = value.bytes[0];
+                bytes[index2] = value.bytes[5];
+                bytes[index2 + 1] = value.bytes[4];
                 bytes[index2 + 2] = value.bytes[3];
                 bytes[index2 + 3] = value.bytes[2];
-                bytes[index2 + 4] = value.bytes[5];
-                bytes[index2 + 5] = value.bytes[4];
+                bytes[index2 + 4] = value.bytes[1];
+                bytes[index2 + 5] = value.bytes[0];
             }
             else
             {
                 int index2 = ((y * stridex + x) * RGBChannelsCount);
-                bytes[index2] = (byte)value.R;
+                bytes[index2 + 2] = (byte)value.R;
                 bytes[index2 + 1] = (byte)value.G;
-                bytes[index2 + 2] = (byte)value.B;
+                bytes[index2] = (byte)value.B;
             }
         }
         public static string CreateID(string filepath, int index)
@@ -2141,9 +2139,6 @@ namespace Bio
             bfs[0] = cr.Apply(info);
             bfs[1] = cg.Apply(info);
             bfs[2] = cb.Apply(info);
-            bfs[0].RotateFlip(RotateFlipType.Rotate180FlipNone);
-            bfs[1].RotateFlip(RotateFlipType.Rotate180FlipNone);
-            bfs[2].RotateFlip(RotateFlipType.Rotate180FlipNone);
             cr = null;
             cg = null;
             cb = null;
@@ -4119,6 +4114,7 @@ namespace Bio
         }
         public static void CalcStatistics(BufferInfo bf)
         {
+            bf.Stats = null;
             Thread th = new Thread(FromBytes);
             th.Name = bf.ID;
             list.Add(th.Name.ToString(), bf);
@@ -6289,7 +6285,12 @@ namespace Bio
                 //We use a try block incase this is an OME file
                 try
                 {
+                    Image im = Image.FromFile(file);
+                    b.physicalSizeX = 2.54 / im.HorizontalResolution;
+                    b.physicalSizeY = 2.54 / im.VerticalResolution;
+                    b.physicalSizeZ = 1;
                     inf = new BufferInfo(file, Image.FromFile(file), new ZCT(0, 0, 0), 0);
+                    Statistics.CalcStatistics(inf);
                 }
                 catch (Exception)
                 {
@@ -6300,6 +6301,8 @@ namespace Bio
                 Channel ch = new Channel(0, 8, b.RGBChannelCount);
                 b.Channels.Add(ch);
                 b.Coords = new int[b.SizeZ, b.SizeC, b.sizeT];
+                b.imageInfo.Series = 0;
+
             }
             if (b.stageSizeX == -1)
             {

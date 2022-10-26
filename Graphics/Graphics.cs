@@ -12,15 +12,18 @@ namespace Bio.Graphics
     {
         public ColorS color;
         public ushort width;
-        public Pen(ColorS col, ushort w)
+        public byte bitsPerPixel;
+        public Pen(ColorS col, ushort w, int bitsPerPixel)
         {
             color = col;
             width = w;
+            this.bitsPerPixel = (byte)bitsPerPixel;
         }
-        public Pen(ColorS col, int w)
+        public Pen(ColorS col, int w, int bitsPerPixel)
         {
             color = col;
             width = (ushort)w;
+            this.bitsPerPixel = (byte)bitsPerPixel;
         }
         public void Dispose()
         {
@@ -36,7 +39,7 @@ namespace Bio.Graphics
         {
             Graphics g = new Graphics();
             g.buf = b;
-            g.pen = new Pen(new ColorS(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue),1);
+            g.pen = new Pen(new ColorS(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue),1,b.BitsPerPixel);
             return g;
         }
         public void DrawLine(int x, int y, int x2, int y2)

@@ -983,13 +983,13 @@ namespace Bio
                     }
                     else if (zBar.Value != an.coord.Z || cBar.Value != an.coord.C || tBar.Value != an.coord.T)
                         continue;
-
-                    pen = new Pen(an.strokeColor, (float)an.strokeWidth / scale.Width);
-                    red = new Pen(Brushes.Red, (float)an.strokeWidth / scale.Width);
-                    mag = new Pen(Brushes.Magenta, (float)an.strokeWidth / scale.Width);
-                    green = new Pen(Brushes.Green, (float)an.strokeWidth / scale.Width);
-                    blue = new Pen(Brushes.Blue, (float)an.strokeWidth / scale.Width);
-                    Font fo = new Font(an.font.FontFamily, (float)(an.strokeWidth / scale.Width) * an.font.Size);
+                    float w = Math.Abs(scale.Width);
+                    pen = new Pen(an.strokeColor, (float)an.strokeWidth / w);
+                    red = new Pen(Brushes.Red, (float)an.strokeWidth / w);
+                    mag = new Pen(Brushes.Magenta, (float)an.strokeWidth / w);
+                    green = new Pen(Brushes.Green, (float)an.strokeWidth / w);
+                    blue = new Pen(Brushes.Blue, (float)an.strokeWidth / w);
+                    Font fo = new Font(an.font.FontFamily, (float)(an.strokeWidth / w) * an.font.Size);
                     if (an.selected)
                     {
                         b = new SolidBrush(Color.Magenta);
@@ -997,7 +997,7 @@ namespace Bio
                     else
                         b = new SolidBrush(an.strokeColor);
                     PointF pc = new PointF((float)(an.BoundingBox.X + (an.BoundingBox.W / 2)), (float)(an.BoundingBox.Y + (an.BoundingBox.H / 2)));
-                    float width = (float)ToViewSizeW(ROI.selectBoxSize / scale.Width);
+                    float width = (float)ToViewSizeW(ROI.selectBoxSize / w);
                     if (an.type == ROI.Type.Point)
                     {
                         g.DrawLine(pen, ToScreenSpace(an.Point.ToPointF()), ToScreenSpace(new PointF((float)an.Point.X + 1, (float)an.Point.Y + 1)));
@@ -1298,7 +1298,7 @@ namespace Bio
             {
                 Tools.Tool tool = Tools.currentTool;
                 Graphics.Graphics g = Graphics.Graphics.FromImage(SelectedBuffer);
-                Graphics.Pen pen = new Graphics.Pen(Tools.DrawColor, (int)Tools.StrokeWidth);
+                Graphics.Pen pen = new Graphics.Pen(Tools.DrawColor, (int)Tools.StrokeWidth, ImageView.SelectedImage.bitsPerPixel);
                 g.FillEllipse(new Rectangle((int)ip.X, (int)ip.Y, (int)Tools.StrokeWidth, (int)Tools.StrokeWidth), pen.color);
                 update = true;
                 UpdateImage();
@@ -1811,7 +1811,7 @@ namespace Bio
             Bio.Graphics.Graphics g = Bio.Graphics.Graphics.FromImage(SelectedBuffer);
             foreach (ROI item in AnnotationsRGB)
             {
-                Bio.Graphics.Pen p = new Graphics.Pen(Tools.DrawColor,(int)Tools.StrokeWidth);
+                Bio.Graphics.Pen p = new Graphics.Pen(Tools.DrawColor,(int)Tools.StrokeWidth, SelectedBuffer.BitsPerPixel);
                 g.pen = p;
                 if (item.selected)
                 {
@@ -1859,7 +1859,7 @@ namespace Bio
             Bio.Graphics.Graphics g = Bio.Graphics.Graphics.FromImage(SelectedBuffer);
             foreach (ROI item in AnnotationsRGB)
             {
-                Bio.Graphics.Pen p = new Graphics.Pen(Tools.DrawColor, (int)Tools.StrokeWidth);
+                Bio.Graphics.Pen p = new Graphics.Pen(Tools.DrawColor, (int)Tools.StrokeWidth, SelectedBuffer.BitsPerPixel);
                 if (item.selected)
                 {
                     if (item.type == ROI.Type.Line)

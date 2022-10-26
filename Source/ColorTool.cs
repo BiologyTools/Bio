@@ -13,6 +13,7 @@ namespace Bio
     public partial class ColorTool : Form
     {
         private ColorS color = new ColorS(65535, 65535, 65535);
+        private int bitsPerPixel = 16;
         public ColorS Color
         {
             get
@@ -28,7 +29,7 @@ namespace Bio
         public void UpdateGUI()
         {
             color = new ColorS((ushort)redBox.Value, (ushort)greenBox.Value, (ushort)blueBox.Value);
-            colorPanel.BackColor = ColorS.ToColor(color);
+            colorPanel.BackColor = ColorS.ToColor(color, bitsPerPixel);
             if (rBar.Value != redBox.Value)
                 redBox.Value = rBar.Value;
             if (gBar.Value != greenBox.Value)
@@ -41,13 +42,25 @@ namespace Bio
             InitializeComponent();
             UpdateGUI();
         }
-        public ColorTool(ColorS col)
+        public ColorTool(ColorS col, int bitPerPixel)
         {
             InitializeComponent();
-            color = col;
-            rBar.Value = color.R;
-            gBar.Value = color.G;
-            bBar.Value = color.B;
+            this.bitsPerPixel = bitPerPixel;
+            if(bitsPerPixel == 8)
+            {
+                rBar.Maximum = 255;
+                gBar.Maximum = 255;
+                bBar.Maximum = 255;
+                redBox.Maximum = 255;
+                greenBox.Maximum = 255;
+                blueBox.Maximum = 255;
+            }
+            if (rBar.Maximum <= col.R)
+                rBar.Value = rBar.Maximum;
+            if (gBar.Maximum <= col.G)
+                gBar.Value = gBar.Maximum;
+            if (bBar.Maximum <= col.B)
+                bBar.Value = bBar.Maximum;
             UpdateGUI();
         }
 

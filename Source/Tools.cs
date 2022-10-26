@@ -199,8 +199,8 @@ namespace Bio
         }
         private void UpdateGUI()
         {
-            color1Box.BackColor = ColorS.ToColor(DrawColor);
-            color2Box.BackColor = ColorS.ToColor(EraseColor);
+            color1Box.BackColor = ColorS.ToColor(DrawColor, ImageView.SelectedImage.Buffers[0].BitsPerPixel);
+            color2Box.BackColor = ColorS.ToColor(EraseColor, ImageView.SelectedImage.Buffers[0].BitsPerPixel);
             widthBox.Value = width;
         }
 
@@ -622,7 +622,7 @@ namespace Bio
             if (buts == MouseButtons.Left && currentTool.type == Tool.Type.eraser)
             {
                 Graphics.Graphics g = Graphics.Graphics.FromImage(ImageView.SelectedBuffer);
-                Graphics.Pen pen = new Graphics.Pen(Tools.EraseColor, (int)Tools.StrokeWidth);
+                Graphics.Pen pen = new Graphics.Pen(Tools.EraseColor, (int)Tools.StrokeWidth,ImageView.SelectedBuffer.BitsPerPixel);
                 g.FillEllipse(new Rectangle((int)p.X, (int)p.Y, (int)width, (int)Tools.StrokeWidth), pen.color);
                 pen.Dispose();
                 App.viewer.UpdateImage();
@@ -756,7 +756,7 @@ namespace Bio
             UpdateSelected();
             pencilPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
-            PenTool pt = new PenTool(new Graphics.Pen(DrawColor, (int)Tools.StrokeWidth));
+            PenTool pt = new PenTool(new Graphics.Pen(DrawColor, (int)Tools.StrokeWidth, ImageView.SelectedBuffer.BitsPerPixel));
             if (pt.ShowDialog() != DialogResult.OK)
                 return;
             Tools.StrokeWidth = pt.Pen.width;
@@ -769,7 +769,7 @@ namespace Bio
             UpdateSelected();
             bucketPanel.BackColor = Color.LightGray;
             Cursor.Current = Cursors.Arrow;
-            FloodTool pt = new FloodTool(new Graphics.Pen(DrawColor, (int)Tools.StrokeWidth),currentTool.tolerance);
+            FloodTool pt = new FloodTool(new Graphics.Pen(DrawColor, (int)Tools.StrokeWidth, ImageView.SelectedBuffer.BitsPerPixel),currentTool.tolerance, ImageView.SelectedBuffer.BitsPerPixel);
             if (pt.ShowDialog() != DialogResult.OK)
                 return;
             Tools.StrokeWidth = pt.Pen.width;
@@ -787,7 +787,7 @@ namespace Bio
 
         private void color1Box_MouseClick(object sender, MouseEventArgs e)
         {
-            ColorTool t = new ColorTool(DrawColor);
+            ColorTool t = new ColorTool(DrawColor, ImageView.SelectedBuffer.BitsPerPixel);
             if (t.ShowDialog() != DialogResult.OK)
                 return;
             DrawColor = t.Color;
@@ -796,7 +796,7 @@ namespace Bio
 
         private void color2Box_MouseClick(object sender, MouseEventArgs e)
         {
-            ColorTool t = new ColorTool(EraseColor);
+            ColorTool t = new ColorTool(EraseColor, ImageView.SelectedBuffer.BitsPerPixel);
             if (t.ShowDialog() != DialogResult.OK)
                 return;
             EraseColor = t.Color;
