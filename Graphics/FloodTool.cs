@@ -71,6 +71,12 @@ namespace Bio.Graphics
                 greenBox.Maximum = 255;
                 blueBox.Maximum = 255;
             }
+            if (rBar.Maximum <= p.color.R)
+                rBar.Value = rBar.Maximum;
+            if (gBar.Maximum <= p.color.G)
+                gBar.Value = gBar.Maximum;
+            if (bBar.Maximum <= p.color.B)
+                bBar.Value = bBar.Maximum;
             this.tolerance = tolerance;
             tolRBox.Value = (decimal)tolerance.R;
             tolGBox.Value = (decimal)tolerance.G;
