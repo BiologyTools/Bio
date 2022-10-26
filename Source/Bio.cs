@@ -167,7 +167,7 @@ namespace Bio
     }
     public struct ColorS : IDisposable
     {
-        private byte[] bytes;
+        public byte[] bytes;
         public ColorS(ushort s)
         {
             bytes = new byte[6];
@@ -1331,9 +1331,7 @@ namespace Bio
         {
             if (isRGB)
             {
-                SetValueRGB(ix, iy, 0, col.R);
-                SetValueRGB(ix, iy, 1, col.G);
-                SetValueRGB(ix, iy, 2, col.B);
+                SetColorRGB(ix, iy, col);
             }
             else
                 SetValue(ix, iy, col.R);
@@ -1378,6 +1376,29 @@ namespace Bio
             {
                 int index = ((y * stridex + x) * RGBChannelsCount) + RGBChannel;
                 bytes[index] = (byte)value;
+            }
+        }
+        public void SetColorRGB(int ix, int iy, ColorS value)
+        {
+            int x = ix;
+            int y = iy;
+            int stridex = SizeX;
+            if (BitsPerPixel > 8)
+            {
+                int index2 = ((y * stridex + x) * 6);
+                bytes[index2] = value.bytes[1];
+                bytes[index2 + 1] = value.bytes[0];
+                bytes[index2 + 2] = value.bytes[3];
+                bytes[index2 + 3] = value.bytes[2];
+                bytes[index2 + 4] = value.bytes[5];
+                bytes[index2 + 5] = value.bytes[4];
+            }
+            else
+            {
+                int index2 = ((y * stridex + x) * RGBChannelsCount);
+                bytes[index2] = (byte)value.R;
+                bytes[index2 + 1] = (byte)value.G;
+                bytes[index2 + 2] = (byte)value.B;
             }
         }
         public static string CreateID(string filepath, int index)
@@ -2949,8 +2970,8 @@ namespace Bio
             if (!littleEndian)
             {
                 bf.SwitchRedBlue();
+                bf.RotateFlip(RotateFlipType.Rotate180FlipNone);
             }
-            bf.RotateFlip(RotateFlipType.Rotate180FlipNone);
             Bitmap bitmap = (Bitmap)bf.Image;
             BitmapData data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, SizeX, SizeY), ImageLockMode.ReadWrite, PixelFormat);
             IntPtr ptr = data.Scan0;
@@ -5306,6 +5327,18 @@ namespace Bio
             for (int i = 0; i < p.Count; i++)
             {
                 PointD pp = new PointD();
+                pp.X = ((p[i].X - stageSizeX) / physicalSizeX);
+                pp.Y = ((p[i].Y - stageSizeY) / physicalSizeY);
+                ps[i] = pp;
+            }
+            return ps;
+        }
+        public PointF[] ToImageSpace(PointF[] p)
+        {
+            PointF[] ps = new PointF[p.Length];
+            for (int i = 0; i < p.Length; i++)
+            {
+                PointF pp = new PointF();
                 pp.X = (float)((p[i].X - stageSizeX) / physicalSizeX);
                 pp.Y = (float)((p[i].Y - stageSizeY) / physicalSizeY);
                 ps[i] = pp;
@@ -5819,7 +5852,6 @@ namespace Bio
             return annotations;
         }
 
-        private static ImageWriter wr;
         private static int serie;
         public bool Loading = false;
         public static void Initialize()
@@ -5839,92 +5871,9 @@ namespace Bio
         }
         public static void SaveFile(string file, string ID)
         {
-            Progress pr = new Progress(file, "Saving");
-            pr.Show();
-            BioImage b = Images.GetImage(ID);
-            string fn = Path.GetFileNameWithoutExtension(file);
-            string dir = Path.GetDirectoryName(file);
-            //Save ROIs to CSV file.
-            if (b.Annotations.Count > 0)
-            {
-                string f = dir + "//" + fn + ".csv";
-                ExportROIsCSV(f, b.Annotations);
-            }
-            ImageJDesc j = new ImageJDesc();
-            j.FromImage(b);
-            string desc = j.GetString();
-            //Embed ROI's to image description.
-            for (int i = 0; i < b.Annotations.Count; i++)
-            {
-                desc += "-ROI:" + b.series + ":" + ROIToString(b.Annotations[i]);
-            }
-            foreach (Channel c in b.Channels)
-            {
-                string cj = JsonConvert.SerializeObject(c.info, Formatting.None);
-                desc += "-Channel:" + b.series + ":" + cj + NewLine;
-            }
-            string json = JsonConvert.SerializeObject(b.imageInfo, Formatting.None);
-            desc += "-ImageInfo:" + b.series + ":" + json + NewLine;
-            
-            Tiff image = Tiff.Open(file, "w");
-            int stride = b.Buffers[0].Stride;
-            int im = 0;
-            int sizec = 1;
-            if (!b.isRGB)
-            {
-                sizec = b.SizeC;
-            }
-
-            byte[] buffer;
-            for (int c = 0; c < sizec; c++)
-            {
-                for (int z = 0; z < b.SizeZ; z++)
-                {
-                    for (int t = 0; t < b.SizeT; t++)
-                    {
-                        image.SetDirectory((short)im);
-                        image.SetField(TiffTag.IMAGEWIDTH, b.SizeX);
-                        image.SetField(TiffTag.IMAGEDESCRIPTION, desc);
-                        image.SetField(TiffTag.IMAGELENGTH, b.SizeY);
-                        image.SetField(TiffTag.BITSPERSAMPLE, b.bitsPerPixel);
-                        image.SetField(TiffTag.SAMPLESPERPIXEL, b.RGBChannelCount);
-                        image.SetField(TiffTag.ROWSPERSTRIP, b.SizeY);
-                        image.SetField(TiffTag.ORIENTATION, BitMiracle.LibTiff.Classic.Orientation.TOPLEFT);
-                        image.SetField(TiffTag.PLANARCONFIG, PlanarConfig.CONTIG);
-                        image.SetField(TiffTag.ROWSPERSTRIP, image.DefaultStripSize(0));
-                        image.SetField(TiffTag.PHOTOMETRIC, Photometric.MINISBLACK);
-                        if (b.physicalSizeX != -1 && b.physicalSizeY != -1)
-                        {
-                            image.SetField(TiffTag.XRESOLUTION, (b.physicalSizeX * b.SizeX) / ((b.physicalSizeX * b.SizeX) * b.physicalSizeX));
-                            image.SetField(TiffTag.YRESOLUTION, (b.physicalSizeY * b.SizeY) / ((b.physicalSizeY * b.SizeY) * b.physicalSizeY));
-                            image.SetField(TiffTag.RESOLUTIONUNIT, ResUnit.NONE);
-                        }
-                        else
-                        {
-                            image.SetField(TiffTag.XRESOLUTION, 100.0);
-                            image.SetField(TiffTag.YRESOLUTION, 100.0);
-                            image.SetField(TiffTag.RESOLUTIONUNIT, ResUnit.INCH);
-                        }
-                        // specify that it's a page within the multipage file
-                        image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
-                        // specify the page number
-                        buffer = b.Buffers[im].GetSaveBytes(false);
-                        image.SetField(TiffTag.PAGENUMBER, c, b.Buffers.Count);
-                        for (int i = 0, offset = 0; i < b.SizeY; i++)
-                        {
-                            image.WriteScanline(buffer, offset, i, 0);
-                            offset += stride;
-                        }
-                        image.WriteDirectory();
-                        pr.UpdateProgressF((float)im / (float)b.ImageCount);
-                        Application.DoEvents();
-                        im++;
-                    }
-                }
-            }
-            image.Dispose();
-            Recorder.AddLine("Bio.BioImage.Save(" + '"' + file + '"' + "," + '"' + ID + '"' + ");");
-            pr.Close();
+            string[] sts = new string[1];
+            sts[0] = file;
+            SaveSeries(sts, ID);
         }
         public static void SaveSeries(string[] files, string ID)
         {
@@ -6011,7 +5960,7 @@ namespace Bio
                             // specify that it's a page within the multipage file
                             image.SetField(TiffTag.SUBFILETYPE, FileType.PAGE);
                             // specify the page number
-                            buffer = b.Buffers[im].GetSaveBytes(false);
+                            buffer = b.Buffers[im].GetSaveBytes(true);
                             image.SetField(TiffTag.PAGENUMBER, im + (b.Buffers.Count * fi), b.Buffers.Count * files.Length);
                             for (int i = 0, offset = 0; i < b.SizeY; i++)
                             {
@@ -6103,7 +6052,6 @@ namespace Bio
                 b.sizeC = 1;
                 b.sizeT = 1;
                 b.sizeZ = 1;
-                int count = 0;
                 if (f != null)
                 {
                     desc = f[0].ToString();
@@ -6178,24 +6126,32 @@ namespace Bio
                 else
                 if (unit == "INCH")
                 {
-                    double x = image.GetField(TiffTag.XRESOLUTION)[0].ToDouble();
-                    double y = image.GetField(TiffTag.YRESOLUTION)[0].ToDouble();
-                    //inch to centimeter
                     if (image.GetField(TiffTag.XRESOLUTION) != null)
-                        b.physicalSizeX = (2.54 / x);
+                    {
+                        double x = image.GetField(TiffTag.XRESOLUTION)[0].ToDouble();
+                        b.physicalSizeX = (2.54 / x) / 2.54;
+                    }
                     if (image.GetField(TiffTag.YRESOLUTION) != null)
-                        b.physicalSizeY = (2.54 / y);
+                    {
+                        double y = image.GetField(TiffTag.YRESOLUTION)[0].ToDouble();
+                        b.physicalSizeY = (2.54 / y) / 2.54;
+                    }
                 }
                 else
                 if (unit == "NONE")
                 {
                     if (imDesc.unit == "micron")
                     {
-                        //size micron
                         if (image.GetField(TiffTag.XRESOLUTION) != null)
-                            b.physicalSizeX = (b.SizeX / image.GetField(TiffTag.XRESOLUTION)[0].ToDouble()) / b.SizeX;
+                        {
+                            double x = image.GetField(TiffTag.XRESOLUTION)[0].ToDouble();
+                            b.physicalSizeX = (2.54 / x) / 2.54;
+                        }
                         if (image.GetField(TiffTag.YRESOLUTION) != null)
-                            b.physicalSizeY = (b.SizeY / image.GetField(TiffTag.YRESOLUTION)[0].ToDouble()) / b.SizeY;
+                        {
+                            double y = image.GetField(TiffTag.YRESOLUTION)[0].ToDouble();
+                            b.physicalSizeY = (2.54 / y) / 2.54;
+                        }
                     }
                 }
                 string[] sts = desc.Split('\n');
@@ -6330,7 +6286,7 @@ namespace Bio
                 b.sizeC = 1;
                 b.sizeT = 1;
                 BufferInfo inf = null;
-                //We use a try block incase the user tried opening a OME file.
+                //We use a try block incase this is an OME file
                 try
                 {
                     inf = new BufferInfo(file, Image.FromFile(file), new ZCT(0, 0, 0), 0);

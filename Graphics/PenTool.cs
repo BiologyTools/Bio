@@ -93,7 +93,7 @@ namespace Bio.Graphics
 
         private void widthBox_ValueChanged(object sender, EventArgs e)
         {
-            pen.width = (int)widthBox.Value;
+            pen.width = (ushort)widthBox.Value;
         }
 
         private void cancelBut_Click(object sender, EventArgs e)

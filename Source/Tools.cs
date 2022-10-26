@@ -213,7 +213,7 @@ namespace Bio
                 return;
             Scripting.UpdateState(Scripting.State.GetDown(e, buts));
             System.Drawing.PointF p = ImageView.SelectedImage.ToImageSpace(e);
-            if (currentTool.type == Tool.Type.line)
+            if (currentTool.type == Tool.Type.line && buts == MouseButtons.Left)
             {
                 if (anno.GetPointCount() == 0)
                 {
@@ -226,7 +226,7 @@ namespace Bio
                 }
             }
             else
-            if (currentTool.type == Tool.Type.polygon)
+            if (currentTool.type == Tool.Type.polygon && buts == MouseButtons.Left)
             {
                 if (anno.GetPointCount() == 0)
                 {
@@ -252,7 +252,7 @@ namespace Bio
                 }
             }
             else
-            if (currentTool.type == Tool.Type.freeform)
+            if (currentTool.type == Tool.Type.freeform && buts == MouseButtons.Left)
             {
                 if (anno.GetPointCount() == 0)
                 {
@@ -269,7 +269,7 @@ namespace Bio
                 }
             }
             else
-            if (currentTool.type == Tool.Type.rect)
+            if (currentTool.type == Tool.Type.rect && buts == MouseButtons.Left)
             {
                 anno.type = ROI.Type.Rectangle;
                 anno.Rect = new RectangleD(e.X, e.Y, 1, 1);
@@ -277,7 +277,7 @@ namespace Bio
                 ImageView.SelectedImage.Annotations.Add(anno);
             }
             else
-            if (currentTool.type == Tool.Type.ellipse)
+            if (currentTool.type == Tool.Type.ellipse && buts == MouseButtons.Left)
             {
                 anno.type = ROI.Type.Ellipse;
                 anno.Rect = new RectangleD(e.X, e.Y, 1, 1);
@@ -285,7 +285,7 @@ namespace Bio
                 ImageView.SelectedImage.Annotations.Add(anno);
             }
             else
-            if(currentTool.type == Tool.Type.delete)
+            if(currentTool.type == Tool.Type.delete && buts == MouseButtons.Left)
             {
                 for (int i = 0; i < ImageView.SelectedImage.Annotations.Count; i++)
                 {
@@ -319,7 +319,7 @@ namespace Bio
                 UpdateOverlay();
             }
             else
-            if (currentTool.type == Tool.Type.text)
+            if (currentTool.type == Tool.Type.text && buts == MouseButtons.Left)
             {
                 ROI an = new ROI();
                 an.type = ROI.Type.Label;
@@ -354,7 +354,7 @@ namespace Bio
             if (anno == null)
                 return;
             Scripting.UpdateState(Scripting.State.GetUp(e, buts));
-            if (currentTool.type == Tool.Type.point)
+            if (currentTool.type == Tool.Type.point && buts == MouseButtons.Left)
             {
                 ROI an = new ROI();
                 an.AddPoint(new PointD(e.X, e.Y));
@@ -363,7 +363,7 @@ namespace Bio
                 ImageView.SelectedImage.Annotations.Add(an);
             }
             else
-            if (currentTool.type == Tool.Type.line && anno.type == ROI.Type.Line)
+            if (currentTool.type == Tool.Type.line && anno.type == ROI.Type.Line && buts == MouseButtons.Left)
             {
                 if (anno.GetPointCount() > 0)
                 {
@@ -372,7 +372,7 @@ namespace Bio
                 }
             }
             else
-            if (currentTool.type == Tool.Type.rect && anno.type == ROI.Type.Rectangle)
+            if (currentTool.type == Tool.Type.rect && anno.type == ROI.Type.Rectangle && buts == MouseButtons.Left)
             {
                 if (anno.GetPointCount() == 4)
                 {
@@ -380,7 +380,7 @@ namespace Bio
                 }
             }
             else
-            if (currentTool.type == Tool.Type.ellipse && anno.type == ROI.Type.Ellipse)
+            if (currentTool.type == Tool.Type.ellipse && anno.type == ROI.Type.Ellipse && buts == MouseButtons.Left)
             {
                 if (anno.GetPointCount() == 4)
                 {
@@ -388,7 +388,7 @@ namespace Bio
                 }
             }
             else
-            if (currentTool.type == Tool.Type.freeform && anno.type == ROI.Type.Freeform)
+            if (currentTool.type == Tool.Type.freeform && anno.type == ROI.Type.Freeform && buts == MouseButtons.Left)
             {
                 anno = new ROI();
             }
@@ -419,7 +419,7 @@ namespace Bio
                 Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(0, 0, 0, 0);
             }
             else
-            if (Tools.currentTool.type == Tools.Tool.Type.magic)
+            if (Tools.currentTool.type == Tools.Tool.Type.magic && buts == MouseButtons.Left)
             {
                 PointD pf = new PointD(ImageView.mouseUp.X - ImageView.mouseDown.X, ImageView.mouseUp.Y - ImageView.mouseDown.Y);
                 ZCT coord = App.viewer.GetCoordinate();
@@ -483,7 +483,7 @@ namespace Bio
                 }
             }
             else
-            if (Tools.currentTool.type == Tools.Tool.Type.bucket)
+            if (Tools.currentTool.type == Tools.Tool.Type.bucket && buts == MouseButtons.Left)
             {
                 ZCT coord = App.viewer.GetCoordinate();
                 floodFiller.FillColor = DrawColor;
@@ -493,7 +493,7 @@ namespace Bio
                 App.viewer.UpdateImages();
             }
             else
-            if (Tools.currentTool.type == Tools.Tool.Type.dropper)
+            if (Tools.currentTool.type == Tools.Tool.Type.dropper && buts == MouseButtons.Left)
             {
                 DrawColor = ImageView.SelectedBuffer.GetPixel((int)p.X,(int)p.Y);
                 UpdateGUI();

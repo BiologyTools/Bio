@@ -1026,6 +1026,7 @@ namespace Bio
                     else
                     if (an.type == ROI.Type.Polygon && an.closed)
                     {
+                        if(an.PointsD.Count>1)
                         g.DrawPolygon(pen, ToScreenSpace(an.GetPointsF()));
                         g.DrawRectangles(red, ToScreenSpace(an.GetSelectBoxes(width)));
                     }
@@ -1362,7 +1363,7 @@ namespace Bio
                 selectedAnnotations.Clear();
             }
 
-            if (Tools.currentTool.type == Tools.Tool.Type.move)
+            if (Tools.currentTool.type == Tools.Tool.Type.move && e.Button == MouseButtons.Left)
             {
                 float width = (float)ToViewSizeW(ROI.selectBoxSize / scale.Width);
                 foreach (BioImage bi in Images)
@@ -1373,10 +1374,8 @@ namespace Bio
                         {
                             selectedAnnotations.Add(an);
                             an.selected = true;
-
-                            RectangleF r = new RectangleF((float)p.X, (float)p.Y, 1, 1);
-                            
                             RectangleF[] sels = an.GetSelectBoxes(width);
+                            RectangleF r = new RectangleF((float)p.X, (float)p.Y, sels[0].Width, sels[0].Width);
                             for (int i = 0; i < sels.Length; i++)
                             {
                                 if (sels[i].IntersectsWith(r))
@@ -1813,28 +1812,40 @@ namespace Bio
             foreach (ROI item in AnnotationsRGB)
             {
                 Bio.Graphics.Pen p = new Graphics.Pen(Tools.DrawColor,(int)Tools.StrokeWidth);
+                g.pen = p;
                 if (item.selected)
                 {
                     if(item.type == ROI.Type.Line)
                     {
-                        g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(0)), SelectedImage.ToImageSpace(item.GetPoint(1)),p);
+                        g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(0)), SelectedImage.ToImageSpace(item.GetPoint(1)));
                     }
                     else
                     if(item.type == ROI.Type.Rectangle)
                     {
-                        g.DrawRectangle(SelectedImage.ToImageSpace(item.Rect), p);
+                        g.DrawRectangle(SelectedImage.ToImageSpace(item.Rect));
                     }
                     else
                     if (item.type == ROI.Type.Ellipse)
                     {
-                        g.DrawEllipse(SelectedImage.ToImageSpace(item.Rect), p);
+                        g.DrawEllipse(SelectedImage.ToImageSpace(item.Rect));
                     }
                     else
                     if (item.type == ROI.Type.Freeform || item.type == ROI.Type.Polygon || item.type == ROI.Type.Polyline)
                     {
-                        for (int i = 0; i < item.GetPointCount()-1; i++)
+                        if(item.closed)
                         {
-                            g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(i)), SelectedImage.ToImageSpace(item.GetPoint(i+1)), p);
+                            for (int i = 0; i < item.GetPointCount() - 1; i++)
+                            {
+                                g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(i)), SelectedImage.ToImageSpace(item.GetPoint(i + 1)));
+                            }
+                            g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(0)), SelectedImage.ToImageSpace(item.GetPoint(item.GetPointCount()-1)));
+                        }
+                        else
+                        {
+                            for (int i = 0; i < item.GetPointCount() - 1; i++)
+                            {
+                                g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(i)), SelectedImage.ToImageSpace(item.GetPoint(i + 1)));
+                            }
                         }
                     }
                 }
@@ -1853,7 +1864,7 @@ namespace Bio
                 {
                     if (item.type == ROI.Type.Line)
                     {
-                        g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(0)), SelectedImage.ToImageSpace(item.GetPoint(1)), p);
+                        g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(0)), SelectedImage.ToImageSpace(item.GetPoint(1)));
                     }
                     else
                     if (item.type == ROI.Type.Rectangle)
@@ -1868,10 +1879,7 @@ namespace Bio
                     else
                     if (item.type == ROI.Type.Freeform || item.type == ROI.Type.Polygon || item.type == ROI.Type.Polyline)
                     {
-                        for (int i = 0; i < item.GetPointCount() - 1; i++)
-                        {
-                            g.DrawLine(SelectedImage.ToImageSpace(item.GetPoint(i)), SelectedImage.ToImageSpace(item.GetPoint(i + 1)), p);
-                        }
+                        g.FillPolygon(SelectedImage.ToImageSpace(item.GetPointsF()), SelectedImage.ToImageSpace(item.Rect), p.color);
                     }
                 }
             }

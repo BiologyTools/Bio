@@ -81,7 +81,6 @@ namespace Bio.Graphics
         }
 
         public abstract void FloodFill(Point pt);
-
         protected void PrepareForFloodFill(Point pt)
         {
             startColor = bitmap.GetPixel(pt.X, pt.Y);
