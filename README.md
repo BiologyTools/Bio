@@ -2,7 +2,7 @@
 
 # Bio
 
-A .NET application for editing & annotating various microscopy imaging formats. Supports all bioformats supported images. Integrates with ImageJ, running ImageJ filters & macro functions.
+A .NET application & library for editing & annotating various microscopy image formats. Supports all bioformats supported images. Integrates with ImageJ, running ImageJ filters & macro functions. Check out the new wiki for [library usage](https://github.com/BiologyTools/Bio/wiki/Library-Usage)
 
 ## Features
 
@@ -105,7 +105,5 @@ public class Loader
 	}
 }
 
-## Developers
-Initialize application by calling "new NodeView(args)" with command line arguments in your main method. Do not update IKVM version otherwise Bioformats will fail to load.
 
 
