@@ -317,6 +317,8 @@ namespace Bio
 
         public static Point3D GetPosition()
         {
+            if (Stage == null)
+                return new Point3D(0,0,0);
             PointD p = Stage.GetPosition();
             double f = Focus.GetFocus();
             return new Point3D(p.X, p.Y, f);
