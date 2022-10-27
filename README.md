@@ -2,7 +2,7 @@
 
 # Bio
 
-A .NET application for editing & annotating various microscopy imaging formats. Supports all bioformats supported images. Integrates with ImageJ, running ImageJ filters & macro functions.
+A .NET application & library for editing & annotating various microscopy image formats. Supports all bioformats supported images. Integrates with ImageJ, running ImageJ filters & macro functions.
 
 ## Features
 
@@ -51,6 +51,22 @@ A .NET application for editing & annotating various microscopy imaging formats. 
 -  Scripts saved in Scripts folder will be loaded into script runner.
 -  Program installer include sample filter & tool script.
 -  Use Script recorder to record program function calls and script runner to turn recorder text into working scripts. (See sample [scripts](https://github.com/BioMicroscopy/BioImage-Scripts)
+
+## Usage
+Initialize application by calling "new NodeView(args)" with command line arguments in your main method.
+
+BioImage b = BioImage.OpenFile("file");
+ImageView v = new ImageView(b);
+ZCT cord = v.GetCoordinate();
+ROI r = ROI.CreatePoint(cord, 0, 0);
+//Usage of Graphics class for 16 & 48 bit images.
+Graphics g = Graphics.FromImage(b.Buffers[0]);
+g.pen = new Pen(new ColorS(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue),10,b.bitsPerPixel);
+g.DrawLine(0,0,100,100);
+g.Dispose();
+v.UpdateImage();
+v.UpdateView();
+
 
 ## Sample Tool Script
 
@@ -105,7 +121,5 @@ public class Loader
 	}
 }
 
-## Developers
-Initialize application by calling "new NodeView(args)" with command line arguments in your main method. Do not update IKVM version otherwise Bioformats will fail to load.
 
 
