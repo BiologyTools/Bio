@@ -1579,17 +1579,6 @@ namespace Bio
             set { plane = value; }
         }
 
-        #if DEBUG
-        public Image ClipBoardImage
-        {
-            get 
-            {
-                Clipboard.SetImage(ImageRGB);
-                return ImageRGB; 
-            }
-        }
-        #endif
-
         public int PixelFormatSize
         {
             get
@@ -1640,7 +1629,7 @@ namespace Bio
                     newstride = stride + 3;
             }
             if (newstride % 4 != 0)
-                throw new InvalidOperationException("Stride padding failed");
+                return stride + 5;
             return newstride;
         }
         private static byte[] GetPaddedBuffer(byte[] bts, int w, int h, int stride, PixelFormat px)
@@ -1649,7 +1638,7 @@ namespace Bio
             if (newstride == stride)
                 return bts;
             byte[] newbts = new byte[newstride * h];
-            if (px == PixelFormat.Format24bppRgb || px == PixelFormat.Format32bppArgb)
+            if (px == PixelFormat.Format24bppRgb || px == PixelFormat.Format32bppArgb || px == PixelFormat.Format32bppRgb || px == PixelFormat.Format8bppIndexed)
             {
                 for (int y = 0; y < h; ++y)
                 {
@@ -1792,60 +1781,15 @@ namespace Bio
             int w = bfs[0].SizeX;
             int h = bfs[0].SizeY;
             byte[] bts = new byte[h * stride];
-            
-            if (bfs[0].BitsPerPixel > 8)
-            {
-                for (int y = 0; y < h; y++)
-                {
-                    //getting the pixels of current row
-                    int rowRGB = y * (w * 2 * 3);
-                    int row16 = y * (w * 2);
-                    //iterating through all the pixels in x direction
-                    for (int x = 0; x < w; x++)
-                    {
-                        int indexRGB = x * 6;
-                        int index16 = x * 2;
-                        //R
-                        bts[rowRGB + indexRGB] = bfs[0].Bytes[row16 + index16];
-                        bts[rowRGB + indexRGB + 1] = bfs[0].Bytes[row16 + index16 + 1];
-                        //G
-                        bts[rowRGB + indexRGB + 2] = bfs[1].Bytes[row16 + index16];
-                        bts[rowRGB + indexRGB + 3] = bfs[1].Bytes[row16 + index16 + 1];
-                        //B
-                        bts[rowRGB + indexRGB + 4] = bfs[2].Bytes[row16 + index16];
-                        bts[rowRGB + indexRGB + 5] = bfs[2].Bytes[row16 + index16 + 1];
-                    }
-                }
-            }
-            else
-            {
-                for (int y = 0; y < bfs[0].SizeY; y++)
-                {
-                    //getting the pixels of current row
-                    int rowRGB = y * (bfs[0].SizeX * 3);
-                    int row8 = y * (bfs[0].SizeX);
-                    //iterating through all the pixels in x direction
-                    for (int x = 0; x < bfs[0].SizeX; x++)
-                    {
-                        int indexRGB = x * 3;
-                        int index8 = x;
-                        //R
-                        bts[rowRGB + indexRGB] = (byte)bfs[0].Bytes[row8 + index8];
-                        //G
-                        bts[rowRGB + indexRGB + 1] = (byte)bfs[1].Bytes[row8 + index8];
-                        //B
-                        bts[rowRGB + indexRGB + 2] = (byte)bfs[2].Bytes[row8 + index8];
-                    }
-                }
-            }
+
+            BufferInfo bf = BufferInfo.RGB8To24(bfs);
             byte[] bt = new byte[h * (w * 3)];
             if (bfs[0].BitsPerPixel == 8)
             {
                 //iterating through all the pixels in y direction
                 for (int y = 0; y < h; y++)
                 {
-                    int row = y * stride;
-                    int rowRGB = y * w * 3;
+                    int rowRGB = y * stride;
                     //iterating through all the pixels in x direction
                     for (int x = 0; x < w; x++)
                     {
@@ -1875,8 +1819,8 @@ namespace Bio
                 for (int y = 0; y < h; y++)
                 {
                     //getting the pixels of current row
-                    int rowRGB = y * w * 3 * 2;
-                    int row = y * w * 3;
+                    int rowRGB = y * w * 6;
+                    int row = y * stride;
                     //iterating through all the pixels in x direction
                     for (int x = 0; x < w; x++)
                     {
@@ -2393,7 +2337,7 @@ namespace Bio
                         {
                             int indexRGB = x * 2;
                             int indexRGBA = x * 4;
-                            int b = (int)((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB) / 255);
+                            ushort b = (ushort)((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB) / 255);
                             row[indexRGBA + 3] = 255;//byte A
                             row[indexRGBA + 2] = (byte)(b);//byte R
                             row[indexRGBA + 1] = (byte)(b);//byte G
@@ -2446,18 +2390,18 @@ namespace Bio
                             float ri = ((float)bts[rowRGB + indexRGB] - rr.Min);
                             if (ri < 0)
                                 ri = 0;
-                            ri = ri / rr.Max;
+                            ri = ri / (float)rr.Max;
                             float gi = ((float)bts[rowRGB + indexRGB + 1] - rg.Min);
                             if (gi < 0)
                                 gi = 0;
-                            gi = gi / rg.Max;
+                            gi = gi / (float)rg.Max;
                             float bi = ((float)bts[rowRGB + indexRGB + 2] - rb.Min);
                             if (bi < 0)
                                 bi = 0;
-                            bi = bi / rb.Max;
-                            int b = (int)(ri * 255);
-                            int g = (int)(gi * 255);
-                            int r = (int)(bi * 255);
+                            bi = bi / (float)rb.Max;
+                            int b = (int)(ri * 255f);
+                            int g = (int)(gi * 255f);
+                            int r = (int)(bi * 255f);
                             row[indexRGBA + 2] = (byte)(b);//byte R
                             row[indexRGBA + 1] = (byte)(g);//byte G
                             row[indexRGBA] = (byte)(r);//byte B
@@ -2494,18 +2438,18 @@ namespace Bio
                             float ri = ((float)bts[rowRGB + indexRGB] - rr.Min);
                             if (ri < 0)
                                 ri = 0;
-                            ri = ri / rr.Max;
+                            ri = ri / (float)rr.Max;
                             float gi = ((float)bts[rowRGB + indexRGB + 1] - rg.Min);
                             if (gi < 0)
                                 gi = 0;
-                            gi = gi / rg.Max;
+                            gi = gi / (float)rg.Max;
                             float bi = ((float)bts[rowRGB + indexRGB + 2] - rb.Min);
                             if (bi < 0)
                                 bi = 0;
-                            bi = bi / rb.Max;
-                            int b = (int)(ri * 255);
-                            int g = (int)(gi * 255);
-                            int r = (int)(bi * 255);
+                            bi = bi / (float)rb.Max;
+                            int b = (int)(ri * 255f);
+                            int g = (int)(gi * 255f);
+                            int r = (int)(bi * 255f);
                             row[indexRGBA + 2] = (byte)(b);//byte R
                             row[indexRGBA + 1] = (byte)(g);//byte G
                             row[indexRGBA] = (byte)(r);//byte B
@@ -2540,18 +2484,18 @@ namespace Bio
                             float ri = ((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB) - rr.Min);
                             if (ri < 0)
                                 ri = 0;
-                            ri = ri / rr.Max;
+                            ri = ri / (float)rr.Max;
                             float gi = ((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB + 2) - rg.Min);
                             if (gi < 0)
                                 gi = 0;
-                            gi = gi / rg.Max;
+                            gi = gi / (float)rg.Max;
                             float bi = ((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB + 4) - rb.Min);
                             if (bi < 0)
                                 bi = 0;
-                            bi = bi / rb.Max;
-                            int b = (int)(ri * 255);
-                            int g = (int)(gi * 255);
-                            int r = (int)(bi * 255);
+                            bi = bi / (float)rb.Max;
+                            int b = (int)(ri * 255f);
+                            int g = (int)(gi * 255f);
+                            int r = (int)(bi * 255f);
                             row[indexRGBA + 3] = 255;//byte A
                             row[indexRGBA + 2] = (byte)(b);//byte R
                             row[indexRGBA + 1] = (byte)(g);//byte G
@@ -2641,10 +2585,6 @@ namespace Bio
         public Bitmap GetFiltered(IntRange rr, IntRange rg, IntRange rb)
         {
             return BufferInfo.GetFiltered(SizeX, SizeY, Stride, PixelFormat, Bytes, rr, rg, rb);
-        }
-        public void Filter(IntRange rr, IntRange rg, IntRange rb)
-        {
-            Image = BufferInfo.GetFiltered(SizeX, SizeY, Stride, PixelFormat, Bytes, rr, rg, rb);
         }
         public void Crop(Rectangle r)
         {
@@ -4896,7 +4836,14 @@ namespace Bio
                     GC.Collect();
                     Statistics.CalcStatistics(Buffers[i]);
                 }
-                Channels.RemoveAt(0);
+                if(Channels.Count == 4)
+                {
+                    Channels.RemoveAt(0);
+                }
+                else
+                {
+                    Channels[0].SamplesPerPixel = 3;
+                }
             }
             else
             if (Buffers[0].PixelFormat == PixelFormat.Format48bppRgb)
@@ -4908,7 +4855,7 @@ namespace Bio
                     Buffers[i].Image = b;
                     Statistics.CalcStatistics(Buffers[i]);
                 }
-               if (Channels[0].SamplesPerPixel == 3)
+                if (Channels[0].SamplesPerPixel == 3)
                 {
                     Channel c = Channels[0].Copy();
                     c.SamplesPerPixel = 1;
@@ -5754,7 +5701,6 @@ namespace Bio
         public Bitmap GetFiltered(ZCT coord, IntRange r, IntRange g, IntRange b)
         {
             int index = Coords[coord.Z, coord.C, coord.T];
-            //return Buffers[index].GetFiltered(r, g, b);
             return GetFiltered(index, r, g, b);
         }
         public Bitmap GetFiltered(int ind, IntRange r, IntRange g, IntRange b)
@@ -5772,7 +5718,9 @@ namespace Bio
                 BioImage.filter8.InRed = r;
                 BioImage.filter8.InGreen = g;
                 BioImage.filter8.InBlue = b;
-                return BioImage.filter8.Apply((Bitmap)Buffers[ind].Image);
+                //We give the filter an RGB image (ImageRGB) instead of Image as with some padded 8-bit images
+                //AForge will return an invalid managed Bitmap which causes a crash due to faulty image properties.
+                return BioImage.filter8.Apply((Bitmap)Buffers[ind].ImageRGB);
             }
         }
         public Bitmap GetChannelImage(int ind, RGB rGB)
@@ -6115,9 +6063,15 @@ namespace Bio
                 if (unit == "CENTIMETER")
                 {
                     if (image.GetField(TiffTag.XRESOLUTION) != null)
-                        b.physicalSizeX = image.GetField(TiffTag.XRESOLUTION)[0].ToDouble() / 1000;
+                    {
+                        double x = image.GetField(TiffTag.XRESOLUTION)[0].ToDouble();
+                        b.physicalSizeX = (1000 / x);
+                    }
                     if (image.GetField(TiffTag.YRESOLUTION) != null)
-                        b.physicalSizeY = image.GetField(TiffTag.YRESOLUTION)[0].ToDouble() / 1000;
+                    {
+                        double y = image.GetField(TiffTag.YRESOLUTION)[0].ToDouble();
+                        b.physicalSizeY = (1000 / y);
+                    }
                 }
                 else
                 if (unit == "INCH")
