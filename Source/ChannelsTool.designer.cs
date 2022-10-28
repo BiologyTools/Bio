@@ -594,6 +594,7 @@ namespace Bio
             // fluorBox
             // 
             this.fluorBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
+            this.fluorBox.ForeColor = System.Drawing.Color.White;
             this.fluorBox.Location = new System.Drawing.Point(54, 129);
             this.fluorBox.Name = "fluorBox";
             this.fluorBox.Size = new System.Drawing.Size(201, 20);
