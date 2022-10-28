@@ -1775,17 +1775,15 @@ namespace Bio
         {
             int stride;
             if (bfs[0].BitsPerPixel > 8)
-                stride = bfs[0].SizeX * 3 * 2;
+                stride = bfs[0].SizeX * 6;
             else
                 stride = bfs[0].SizeX * 3;
             int w = bfs[0].SizeX;
             int h = bfs[0].SizeY;
-            byte[] bts = new byte[h * stride];
-
-            BufferInfo bf = BufferInfo.RGB8To24(bfs);
-            byte[] bt = new byte[h * (w * 3)];
+            byte[] bt = new byte[h * w * 3];
             if (bfs[0].BitsPerPixel == 8)
             {
+                BufferInfo bf = BufferInfo.RGB8To24(bfs);
                 //iterating through all the pixels in y direction
                 for (int y = 0; y < h; y++)
                 {
@@ -1795,15 +1793,15 @@ namespace Bio
                     {
                         int indexRGB = x * 3;
                         int indexRGBA = x * 3;
-                        float ri = ((float)bts[rowRGB + indexRGB] - rr.Min);
+                        float ri = ((float)bf.Bytes[rowRGB + indexRGB] - rr.Min);
                         if (ri < 0)
                             ri = 0;
                         ri = ri / rr.Max;
-                        float gi = ((float)bts[rowRGB + indexRGB + 1] - rg.Min);
+                        float gi = ((float)bf.Bytes[rowRGB + indexRGB + 1] - rg.Min);
                         if (gi < 0)
                             gi = 0;
                         gi = gi / rg.Max;
-                        float bi = ((float)bts[rowRGB + indexRGB + 2] - rb.Min);
+                        float bi = ((float)bf.Bytes[rowRGB + indexRGB + 2] - rb.Min);
                         if (bi < 0)
                             bi = 0;
                         bi = bi / rb.Max;
@@ -1812,29 +1810,31 @@ namespace Bio
                         bt[rowRGB + indexRGBA] = (byte)(bi * 255);//byte B
                     }
                 }
+                bf.Dispose();
             }
             else
             {
+                BufferInfo bf = BufferInfo.RGB16To48(bfs);
                 //iterating through all the pixels in y direction
                 for (int y = 0; y < h; y++)
                 {
                     //getting the pixels of current row
                     int rowRGB = y * w * 6;
-                    int row = y * stride;
+                    int row = y * w * 3;
                     //iterating through all the pixels in x direction
                     for (int x = 0; x < w; x++)
                     {
                         int indexRGB = x * 6;
                         int indexRGBA = x * 3;
-                        float ri = ((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB) - rr.Min);
+                        float ri = ((float)BitConverter.ToUInt16(bf.Bytes, rowRGB + indexRGB) - rr.Min);
                         if (ri < 0)
                             ri = 0;
                         ri = ri / rr.Max;
-                        float gi = ((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB + 2) - rg.Min);
+                        float gi = ((float)BitConverter.ToUInt16(bf.Bytes, rowRGB + indexRGB + 2) - rg.Min);
                         if (gi < 0)
                             gi = 0;
                         gi = gi / rg.Max;
-                        float bi = ((float)BitConverter.ToUInt16(bts, rowRGB + indexRGB + 4) - rb.Min);
+                        float bi = ((float)BitConverter.ToUInt16(bf.Bytes, rowRGB + indexRGB + 4) - rb.Min);
                         if (bi < 0)
                             bi = 0;
                         bi = bi / rb.Max;
@@ -1843,8 +1843,8 @@ namespace Bio
                         bt[row + indexRGBA] = (byte)(bi * 255);//byte B
                     }
                 }
+                bf.Dispose();
             }
-            bts = null;
             return GetBitmap(w, h, w * 3, PixelFormat.Format24bppRgb, bt);
         }
         public static Bitmap GetEmissionBitmap(BufferInfo bfs, IntRange rr, System.Drawing.Color col)
@@ -4426,7 +4426,7 @@ namespace Bio
                 if (Channels[0].range.Length == 1)
                     return Channels[rgbChannels[1]];
                 else
-                    return Channels[0];
+                    return Channels[1];
             }
         }
         public Channel BChannel
@@ -4436,7 +4436,7 @@ namespace Bio
                 if (Channels[0].range.Length == 1)
                     return Channels[rgbChannels[2]];
                 else
-                    return Channels[0];
+                    return Channels[1];
             }
         }
         public class ImageJDesc
@@ -5575,9 +5575,6 @@ namespace Bio
 
         public static LevelsLinear filter8 = new LevelsLinear();
         public static LevelsLinear16bpp filter16 = new LevelsLinear16bpp();
-        private ReplaceChannel replaceRFilter;
-        private ReplaceChannel replaceGFilter;
-        private ReplaceChannel replaceBFilter;
         private static ExtractChannel extractR = new ExtractChannel(AForge.Imaging.RGB.R);
         private static ExtractChannel extractG = new ExtractChannel(AForge.Imaging.RGB.G);
         private static ExtractChannel extractB = new ExtractChannel(AForge.Imaging.RGB.B);
@@ -5762,11 +5759,22 @@ namespace Bio
             int index = Coords[coord.Z, coord.C, coord.T];
             if (Buffers[0].RGBChannelsCount == 1)
             {
-                BufferInfo[] bs = new BufferInfo[3];
-                bs[0] = Buffers[index + RChannel.Index];
-                bs[1] = Buffers[index + GChannel.Index];
-                bs[2] = Buffers[index + BChannel.Index];
-                return BufferInfo.GetRGBBitmap(bs, rf, gf, bf);
+                if (Channels.Count >= 3)
+                {
+                    BufferInfo[] bs = new BufferInfo[3];
+                    bs[0] = Buffers[index + RChannel.Index];
+                    bs[1] = Buffers[index + GChannel.Index];
+                    bs[2] = Buffers[index + BChannel.Index];
+                    return BufferInfo.GetRGBBitmap(bs, rf, gf, bf);
+                }
+                else
+                {
+                    BufferInfo[] bs = new BufferInfo[3];
+                    bs[0] = Buffers[index + RChannel.Index];
+                    bs[1] = Buffers[index + RChannel.Index+1];
+                    bs[2] = Buffers[index + RChannel.Index+2];
+                    return BufferInfo.GetRGBBitmap(bs, rf, gf, bf);
+                }
             }
             else
                 return (Bitmap)Buffers[index].Image;
@@ -7176,31 +7184,28 @@ namespace Bio
             if (pls == b.Buffers.Count)
             for (int bi = 0; bi < b.Buffers.Count; bi++)
             {
-                    
                 Plane pl = new Plane();
                 pl.Coordinate = new ZCT();
-                double px = b.meta.getPlanePositionX(serie, bi).value().doubleValue();
-                double py = b.meta.getPlanePositionY(serie, bi).value().doubleValue();
-                double pz = 0;
-                try
-                {
-                    if(b.meta.getPlanePositionZ(serie, bi).value()!=null)
-                        pz = b.meta.getPlanePositionZ(serie, bi).value().doubleValue();
-                }
-                catch (Exception)
-                {
-
-                }
+                double px = 0; double py = 0; double pz = 0;
+                if (b.meta.getPlanePositionX(serie, bi) != null)
+                    px = b.meta.getPlanePositionX(serie, bi).value().doubleValue();
+                if (b.meta.getPlanePositionY(serie, bi) != null)
+                    py = b.meta.getPlanePositionY(serie, bi).value().doubleValue();
+                if (b.meta.getPlanePositionZ(serie, bi) !=null)
+                    pz = b.meta.getPlanePositionZ(serie, bi).value().doubleValue();
                 pl.Location = new Point3D(px, py, pz);
-                int cc = b.meta.getPlaneTheC(serie, bi).getNumberValue().intValue();
-                int zc = b.meta.getPlaneTheZ(serie, bi).getNumberValue().intValue();
-                int tc = b.meta.getPlaneTheT(serie, bi).getNumberValue().intValue();
+                int cc = 0; int zc = 0; int tc = 0;
+                if(b.meta.getPlaneTheC(serie, bi) != null)
+                    cc = b.meta.getPlaneTheC(serie, bi).getNumberValue().intValue();
+                if (b.meta.getPlaneTheC(serie, bi) != null)
+                    zc = b.meta.getPlaneTheZ(serie, bi).getNumberValue().intValue();
+                if (b.meta.getPlaneTheC(serie, bi) != null)
+                    tc = b.meta.getPlaneTheT(serie, bi).getNumberValue().intValue();
                 if (b.meta.getPlaneDeltaT(serie, bi) != null)
                     pl.Delta = b.meta.getPlaneDeltaT(serie, bi).value().doubleValue();
                 if (b.meta.getPlaneExposureTime(serie, bi) != null)
                     pl.Exposure = b.meta.getPlaneExposureTime(serie, bi).value().doubleValue();
                 b.Buffers[bi].Plane = pl;
-                    
             }
 
             b.UpdateCoords(b.SizeZ, b.SizeC, b.SizeT, order);
