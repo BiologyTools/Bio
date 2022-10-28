@@ -2,7 +2,7 @@
 
 # Bio
 
-A .NET application & library for editing & annotating various microscopy image formats. Supports all bioformats supported images. Integrates with ImageJ, running ImageJ filters & macro functions. Check out the new wiki for [library usage](https://github.com/BiologyTools/Bio/wiki/Library-Usage)
+A .NET application & library for editing & annotating various microscopy image formats. Supports all bioformats supported images. Integrates with ImageJ, running ImageJ filters & macro functions. Download the prebuilt [sample application](https://github.com/BiologyTools/BioSampleApp) Also check out the new wiki for [library usage.](https://github.com/BiologyTools/Bio/wiki/Library-Usage)
 
 ## Features
 
