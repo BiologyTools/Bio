@@ -5,6 +5,7 @@ using loci.common.services;
 using loci.formats;
 using loci.formats.services;
 using ome.xml.model.primitives;
+using loci.formats.meta;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
-using loci.formats.meta;
 using System.Runtime.Serialization;
 using System.Text;
 
@@ -37,8 +37,8 @@ namespace Bio
         }
         public static void AddImage(BioImage im)
         {
-            //im.ID = GetImageName(im.ID);
             images.Add(im);
+            im.Filename = GetImageName(im.ID);
             //App.tabsView.AddTab(im);
             //App.Image = im;
             //NodeView.viewer.AddTab(im);
@@ -156,6 +156,60 @@ namespace Bio
                 return false;
             else
                 return true;
+        }
+    }
+    public struct Resolution
+    {
+        int x;
+        int y;
+        PixelFormat format;
+        public int SizeX
+        {
+            get { return x; }
+            set { x = value; }
+        }
+        public int SizeY
+        {
+            get { return y; }
+            set { y = value; }
+        }
+        public PixelFormat PixelFormat
+        {
+            get { return format; }
+            set { format = value; }
+        }
+        public long SizeInBytes
+        {
+            get
+            {
+                if (format == PixelFormat.Format8bppIndexed)
+                    return (long)y * (long)x;
+                else if (format == PixelFormat.Format16bppGrayScale)
+                    return (long)y * (long)x * 2;
+                else if (format == PixelFormat.Format24bppRgb)
+                    return (long)y * (long)x * 3;
+                else if (format == PixelFormat.Format32bppRgb || format == PixelFormat.Format32bppArgb)
+                    return (long)y * (long)x * 4;
+                else if (format == PixelFormat.Format48bppRgb || format == PixelFormat.Format48bppRgb)
+                    return (long)y * (long)x * 6;
+                throw new NotSupportedException(format + " is not supported.");
+            }
+        }
+        public Resolution(int w, int h, int omePx, int bitsPerPixel)
+        {
+            x = w;
+            y = h;
+            format = BioImage.GetPixelFormat(omePx, bitsPerPixel);
+        }
+        public Resolution(int w, int h, PixelFormat f)
+        {
+            x = w;
+            y = h;
+            format = f;
+        }
+        public override string ToString()
+        {
+            return "(" + x + ", " + y + ") " + format.ToString() + " " + (SizeInBytes/1000) + " KB";
         }
     }
     public enum RGB
@@ -1302,6 +1356,10 @@ namespace Bio
     {
         public ushort GetValueRGB(int x, int y, int RGBChannel)
         {
+            if (x >= SizeX || x < 0)
+                x = 0;
+            if (y >= SizeY || y < 0)
+                y = 0;
             int stridex = SizeX;
             if (BitsPerPixel > 8)
             {
@@ -1468,7 +1526,7 @@ namespace Bio
                 littleEndian = value;
             }
         }
-        public int Length
+        public long Length
         {
             get
             {
@@ -2882,7 +2940,7 @@ namespace Bio
                 for (int y = 0; y < SizeY; y++)
                 {
                     //getting the pixels of current row
-                    int rowRGB = y * (SizeX * 2 * 3);
+                    int rowRGB = y * (Stride);
                     //iterating through all the pixels in x direction
                     for (int x = 0; x < SizeX; x++)
                     {
@@ -4235,6 +4293,7 @@ namespace Bio
 
         private string id;
         public List<Channel> Channels = new List<Channel>();
+        public List<Resolution> Resolutions = new List<Resolution>();
         public List<BufferInfo> Buffers = new List<BufferInfo>();
         public VolumeD Volume;
         public List<ROI> Annotations = new List<ROI>();
@@ -4244,7 +4303,7 @@ namespace Bio
         {
             get
             {
-                return Path.GetFileName(id);
+                return filename;
             }
             set
             {
@@ -4426,7 +4485,7 @@ namespace Bio
                 if (Channels[0].range.Length == 1)
                     return Channels[rgbChannels[1]];
                 else
-                    return Channels[1];
+                    return Channels[0];
             }
         }
         public Channel BChannel
@@ -4436,7 +4495,7 @@ namespace Bio
                 if (Channels[0].range.Length == 1)
                     return Channels[rgbChannels[2]];
                 else
-                    return Channels[1];
+                    return Channels[0];
             }
         }
         public class ImageJDesc
@@ -4608,6 +4667,16 @@ namespace Bio
                     return true;
                 else
                     return false;
+            }
+        }
+        public bool isPyramidal
+        {
+            get
+            {
+                if (Resolutions == null)
+                    return false;
+                else
+                    return true;
             }
         }
         public string file;
@@ -5804,7 +5873,6 @@ namespace Bio
             return annotations;
         }
 
-        private static int serie;
         public bool Loading = false;
         public static void Initialize()
         {
@@ -5980,7 +6048,7 @@ namespace Bio
             pr.Show();
             Application.DoEvents();
             BioImage b = new BioImage(file);
-            b.series = 0;
+            b.series = series;
             b.file = file;
             string fn = Path.GetFileNameWithoutExtension(file);
             string dir = Path.GetDirectoryName(file);
@@ -6188,7 +6256,7 @@ namespace Bio
                 //If calculated stride and image scanline size is not the same it means the image is written in planes
                 if (stride != str)
                     planes = true;
-                for (int p = serie * pages; p < (serie + 1) * pages; p++)
+                for (int p = series * pages; p < (series + 1) * pages; p++)
                 {
                     image.SetDirectory((short)p);
                     if (planes)
@@ -6230,7 +6298,7 @@ namespace Bio
                         b.Buffers.Add(inf);
                         Statistics.CalcStatistics(inf);
                     }
-                    pr.UpdateProgressF((float)((double)p / (double)(serie + 1) * pages));
+                    pr.UpdateProgressF((float)((double)p / (double)(series + 1) * pages));
                     Application.DoEvents();
                 }
                 image.Close();
@@ -6293,6 +6361,61 @@ namespace Bio
             st.Stop();
             return b;
         }
+        public static bool isTiffSeries(string file)
+        {
+            Tiff image = Tiff.Open(file, "r");
+            string desc = "";
+            FieldValue[] f = image.GetField(TiffTag.IMAGEDESCRIPTION);
+            image.Close();
+            string[] sts = desc.Split('\n');
+            int index = 0;
+            for (int i = 0; i < sts.Length; i++)
+            {
+                if (sts[i].StartsWith("-ImageInfo"))
+                {
+                    string val = sts[i].Substring(11);
+                    val = val.Substring(0, val.IndexOf(':'));
+                    int serie = int.Parse(val);
+                    if (sts[i].Length > 10)
+                    {
+                        string cht = sts[i].Substring(sts[i].IndexOf('{'), sts[i].Length - sts[i].IndexOf('{'));
+                        ImageInfo info = JsonConvert.DeserializeObject<ImageInfo>(cht);
+                        if (info.Series > 1)
+                            return true;
+                        else
+                            return false;
+                    }
+                }
+            }
+            return false;
+        }
+        public static bool isOME(string file)
+        {
+            if (file.EndsWith("ome.tif") || file.EndsWith("OME.TIF"))
+            {
+                return true;
+            }
+            if (!((file.EndsWith("tif") || file.EndsWith("tiff") || file.EndsWith("TIF") || file.EndsWith("TIFF") ||
+                file.EndsWith("png") || file.EndsWith("PNG") || file.EndsWith("jpg") || file.EndsWith("JPG") ||
+                file.EndsWith("jpeg") || file.EndsWith("JPEG") || file.EndsWith("bmp") || file.EndsWith("BMP"))))
+            {
+                return true;
+            }
+            else return false;
+        }
+        public static bool isOMESeries(string file)
+        {
+            ImageReader reader = new ImageReader();
+            var meta = (IMetadata)((OMEXMLService)new ServiceFactory().getInstance(typeof(OMEXMLService))).createOMEXMLMetadata();
+            reader.setMetadataStore((MetadataStore)meta);
+            reader.setId(file);
+            bool ser = false;
+            if (reader.getSeriesCount() > 1)
+                ser = true;
+            reader.close();
+            reader = null;
+            return ser;
+        }
         public static void SaveOME(string file, string ID)
         {
             string[] sts = new string[1];
@@ -6337,11 +6460,11 @@ namespace Bio
                 omexml.setPixelsPhysicalSizeY(p2, serie);
                 ome.units.quantity.Length p3 = new ome.units.quantity.Length(java.lang.Double.valueOf(b.physicalSizeZ), ome.units.UNITS.MICROMETER);
                 omexml.setPixelsPhysicalSizeZ(p3, serie);
-                ome.units.quantity.Length s1 = new ome.units.quantity.Length(java.lang.Double.valueOf(b.Volume.Location.X), ome.units.UNITS.MICROMETER);
+                ome.units.quantity.Length s1 = new ome.units.quantity.Length(java.lang.Double.valueOf(b.stageSizeX), ome.units.UNITS.MICROMETER);
                 omexml.setStageLabelX(s1, serie);
-                ome.units.quantity.Length s2 = new ome.units.quantity.Length(java.lang.Double.valueOf(b.Volume.Location.Y), ome.units.UNITS.MICROMETER);
+                ome.units.quantity.Length s2 = new ome.units.quantity.Length(java.lang.Double.valueOf(b.stageSizeY), ome.units.UNITS.MICROMETER);
                 omexml.setStageLabelY(s2, serie);
-                ome.units.quantity.Length s3 = new ome.units.quantity.Length(java.lang.Double.valueOf(b.Volume.Location.Z), ome.units.UNITS.MICROMETER);
+                ome.units.quantity.Length s3 = new ome.units.quantity.Length(java.lang.Double.valueOf(b.stageSizeZ), ome.units.UNITS.MICROMETER);
                 omexml.setStageLabelZ(s3, serie);
                 omexml.setStageLabelName("StageLabel:" + serie, serie);
 
@@ -6386,8 +6509,6 @@ namespace Bio
                             omexml.setChannelAcquisitionMode(c.AcquisitionMode, serie, channel + r);
                     }
                 }
-
-
 
                 int i = 0;
                 foreach (ROI an in b.Annotations)
@@ -6618,9 +6739,13 @@ namespace Bio
         }
         public static BioImage OpenOME(string file)
         {
-            return OpenOME(file, 0);
+            return OpenOMESeries(file)[0];
         }
         public static BioImage OpenOME(string file, int serie)
+        {
+            return OpenOME(file, serie, false, 0, 0, 0, 0);
+        }
+        public static BioImage OpenOME(string file, int serie, bool tile, int tilex, int tiley, int tileSizeX, int tileSizeY)
         {
             //We wait incase OME has not initialized yet.
             do
@@ -6651,8 +6776,20 @@ namespace Bio
             }
             b.id = file;
             b.file = file;
-            int SizeX = reader.getSizeX();
-            int SizeY = reader.getSizeY();
+            int SizeX, SizeY;
+            int imWidth = reader.getSizeX();
+            int imHeight = reader.getSizeY();
+
+            if (!tile)
+            {
+                SizeX = reader.getSizeX();
+                SizeY = reader.getSizeY();
+            }
+            else
+            {
+                SizeX = reader.getOptimalTileWidth();
+                SizeY = reader.getOptimalTileHeight();
+            }
             int SizeZ = reader.getSizeZ();
             b.sizeC = reader.getSizeC();
             b.sizeZ = reader.getSizeZ();
@@ -6662,43 +6799,27 @@ namespace Bio
             b.imagesPerSeries = reader.getImageCount();
             b.series = serie;
             string order = reader.getDimensionOrder();
-
-            PixelFormat PixelFormat;
-            bool bit48 = false;
+            PixelFormat PixelFormat = GetPixelFormat(RGBChannelCount, b.bitsPerPixel);
             int stride = 0;
             if (RGBChannelCount == 1)
             {
                 if (b.bitsPerPixel > 8)
-                {
-                    PixelFormat = PixelFormat.Format16bppGrayScale;
                     stride = SizeX * 2;
-                }
                 else
-                {
-                    PixelFormat = PixelFormat.Format8bppIndexed;
                     stride = SizeY;
-                }
             }
             else
             if (RGBChannelCount == 3)
             {
                 b.sizeC = 1;
                 if (b.bitsPerPixel > 8)
-                {
-                    PixelFormat = PixelFormat.Format48bppRgb;
                     stride = SizeX * 2 * 3;
-                    bit48 = true;
-                }
                 else
-                {
-                    PixelFormat = PixelFormat.Format24bppRgb;
                     stride = SizeX * 3;
-                }
             }
             else
             {
                 b.sizeC = 1;
-                PixelFormat = PixelFormat.Format32bppRgb;
                 stride = SizeX * 4;
             }
 
@@ -6771,20 +6892,7 @@ namespace Bio
                     b.Channels.Add(ch);
                 i++;
             }
-            //b.sizeC = b.Channels.Count;
-            /*
-            if (b.Channels[0].SamplesPerPixel > b.Channels.Count)
-            {
-                for (int ci = 0; ci < b.Channels[0].SamplesPerPixel - 1; ci++)
-                {
-                    Channel cha = b.Channels[0].Copy();
-                    cha.Index = ci + 1;
-                    cha.SamplesPerPixel = 1;
-                    b.Channels.Add(cha);
-                }
-                b.Channels[0].SamplesPerPixel = 1;
-            }
-            */
+
             try
             {
                 bool hasPhysical = false;
@@ -6814,6 +6922,13 @@ namespace Bio
                     b.stageSizeZ = b.meta.getStageLabelZ(b.series).value().doubleValue();
                 else
                     b.stageSizeZ = 1;
+                if(tile)
+                {
+                    double x = b.stageSizeX + ((b.physicalSizeX * SizeX) * tilex);
+                    double y = b.stageSizeY + ((b.physicalSizeY * SizeY) * tiley);
+                    b.stageSizeX = x;
+                    b.stageSizeY = y;
+                }
             }
             catch (Exception e)
             {
@@ -7172,9 +7287,21 @@ namespace Bio
             else
             for (int p = 0; p < pages; p++)
             {
-                byte[] bytes = reader.openBytes(p);
-                BufferInfo bf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(z, c, t), p, b.littleEndian);
-                b.Buffers.Add(bf);
+                BufferInfo bf;
+                if (tile)
+                {
+
+                    byte[] bytes = reader.openBytes(p, tilex, tiley, tileSizeX, tileSizeY);
+                    bf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(z, c, t), p, b.littleEndian);
+                    //Clipboard.SetImage(bf.ImageRGB);
+                    b.Buffers.Add(bf);
+                }
+                else
+                {
+                    byte[] bytes = reader.openBytes(p);
+                    bf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(z, c, t), p, b.littleEndian);
+                    b.Buffers.Add(bf);
+                }
                 //We add the buffers to thresholding image statistics calculation threads.
                 Statistics.CalcStatistics(bf);
                 pr.UpdateProgressF(((float)p / (float)pages));
@@ -7301,14 +7428,73 @@ namespace Bio
             else
                 return 65535;
         }
+        public static PixelFormat GetPixelFormat(int rgbChannelCount, int bitsPerPixel)
+        {
+            if(bitsPerPixel == 8)
+            {
+                if (rgbChannelCount == 1)
+                    return PixelFormat.Format8bppIndexed;
+                else if(rgbChannelCount == 3)
+                    return PixelFormat.Format24bppRgb;
+                else if (rgbChannelCount == 4)
+                    return PixelFormat.Format32bppArgb;
+            }
+            else
+            {
+                if (rgbChannelCount == 1)
+                    return PixelFormat.Format16bppGrayScale;
+                if (rgbChannelCount == 3)
+                    return PixelFormat.Format48bppRgb;
+            }
+            throw new NotSupportedException("Not supported pixel format.");
+        }
         public static BioImage[] OpenOMESeries(string file)
         {
             reader = new ImageReader();
             var meta = (IMetadata)((OMEXMLService)new ServiceFactory().getInstance(typeof(OMEXMLService))).createOMEXMLMetadata();
             reader.setMetadataStore((MetadataStore)meta);
             reader.setId(file);
+            bool tile = false;
+            if (reader.getOptimalTileWidth() != reader.getSizeX())
+                tile = true;
             int count = reader.getSeriesCount();
-            BioImage[] bs = new BioImage[count];
+            BioImage[] bs = null;
+            if (tile)
+            {
+                bs = new BioImage[1];
+                //For tiled images the series count is the count of pyramidal resolutions.
+                //This is why some programs fail to open these files.
+                int res = reader.getSeriesCount()-1;
+                List<Resolution> ress = new List<Resolution>();
+                for (int r = 0; r < res; r++)
+                {
+                    reader.setSeries(r);
+                    int i = reader.getRGBChannelCount();
+                    int w = reader.getSizeX();
+                    int h = reader.getSizeY();
+                    Resolution re = new Resolution(w,h,i,reader.getBitsPerPixel());
+                    ress.Add(re);
+                }
+                if (res > 0)
+                {
+                    Resolutions resos = new Resolutions(ress);
+                    resos.ShowDialog();
+                    res = resos.Resolution;
+
+                    //We check for the size incase it exceeds limit of 2GB for extracting data from OME.
+                    if (ress[res].SizeInBytes >= 2e9)
+                    {
+                        MessageBox.Show("Selected image resolution is too large to view in a single plane.");
+                        return null;
+                    }
+                }
+                bs = new BioImage[1];
+                bs[0] = OpenOME(file, res, false, 0,0,0,0);
+                bs[0].Resolutions = ress;
+                return bs;
+            }
+            else
+                bs = new BioImage[count];
             reader.close();
             for (int i = 0; i < count; i++)
             {
@@ -8110,7 +8296,7 @@ namespace Bio
         }
         public override string ToString()
         {
-            return Filename.ToString();
+            return Filename.ToString() + ", (" + stageSizeX + ", " + stageSizeY + ", " + stageSizeZ + ")";
         }
 
         public static BioImage operator /(BioImage a, float b)

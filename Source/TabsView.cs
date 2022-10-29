@@ -98,6 +98,8 @@ namespace Bio
         }
         public void AddTab(BioImage b)
         {
+            if (b == null)
+                return;
             if (b.filename.Contains("/") || b.filename.Contains("\\"))
                 b.filename = Path.GetFileName(b.filename);
             TabPage t = new TabPage(b.filename);
@@ -574,7 +576,47 @@ namespace Bio
         private void ItemClicked(object sender, EventArgs e)
         {
             ToolStripMenuItem ts = (ToolStripMenuItem)sender;
-            AddTab(BioImage.OpenFile(ts.Text));
+            if (!BioImage.isOME(ts.Text))
+            {
+                BioImage[] bs = BioImage.OpenSeries(ts.Text);
+                for (int i = 0; i < bs.Length; i++)
+                {
+                    if (i == 0)
+                        AddTab(bs[i]);
+                    else
+                        Viewer.AddImage(bs[i]);
+                }
+            }
+            else
+            {
+                BioImage[] bs = BioImage.OpenOMESeries(ts.Text);
+                if (bs.Length > 0)
+                {
+                    if (bs.Length == 1)
+                        AddTab(bs[0]);
+                    else
+                    {
+                        OpenInTab tb = new OpenInTab();
+                        if (tb.ShowDialog() == DialogResult.Yes)
+                        {
+                            for (int i = 0; i < bs.Length; i++)
+                            {
+                                if (i == 0)
+                                    AddTab(bs[i]);
+                                else
+                                    Viewer.AddImage(bs[i]);
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < bs.Length; i++)
+                            {
+                                AddTab(bs[i]);
+                            }
+                        }
+                    }
+                }
+            }
             App.viewer.GoToImage();
             SaveProperties();
         }
@@ -660,7 +702,6 @@ namespace Bio
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            
             for (int i = 0; i < openFilesDialog.FileNames.Length; i++)
             {
                 if(i == 0 && tabControl.TabPages.Count == 0)
@@ -668,7 +709,7 @@ namespace Bio
                     AddTab(BioImage.OpenFile(openFilesDialog.FileNames[0]));
                 }
                 else
-                App.viewer.AddImage(BioImage.OpenFile(openFilesDialog.FileNames[i]));
+                    App.viewer.AddImage(BioImage.OpenFile(openFilesDialog.FileNames[i]));
             }
             App.viewer.GoToImage();
         }

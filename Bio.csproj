@@ -331,11 +331,23 @@
       <DependentUpon>Library.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\Microscope.cs" />
+    <Compile Include="Source\OpenInTab.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\OpenInTab.Designer.cs">
+      <DependentUpon>OpenInTab.cs</DependentUpon>
+    </Compile>
     <Compile Include="Source\Recordings.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Source\Recordings.designer.cs">
       <DependentUpon>Recordings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Source\Resolutions.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Source\Resolutions.Designer.cs">
+      <DependentUpon>Resolutions.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\SelectRecording.cs">
       <SubType>Form</SubType>
@@ -497,8 +509,14 @@
     <EmbeddedResource Include="Source\Library.resx">
       <DependentUpon>Library.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Source\OpenInTab.resx">
+      <DependentUpon>OpenInTab.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Source\Recordings.resx">
       <DependentUpon>Recordings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Source\Resolutions.resx">
+      <DependentUpon>Resolutions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Source\SelectRecording.resx">
       <DependentUpon>SelectRecording.cs</DependentUpon>
