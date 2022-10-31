@@ -163,6 +163,8 @@ namespace Bio
         int x;
         int y;
         PixelFormat format;
+        double px;
+        double py; 
         public int SizeX
         {
             get { return x; }
@@ -195,17 +197,21 @@ namespace Bio
                 throw new NotSupportedException(format + " is not supported.");
             }
         }
-        public Resolution(int w, int h, int omePx, int bitsPerPixel)
+        public Resolution(int w, int h, int omePx, int bitsPerPixel, double physX, double physY)
         {
             x = w;
             y = h;
             format = BioImage.GetPixelFormat(omePx, bitsPerPixel);
+            px = physX;
+            py = physY;
         }
-        public Resolution(int w, int h, PixelFormat f)
+        public Resolution(int w, int h, PixelFormat f, double physX, double physY)
         {
             x = w;
             y = h;
             format = f;
+            px = physX;
+            py = physY;
         }
         public override string ToString()
         {
@@ -1356,6 +1362,8 @@ namespace Bio
     {
         public ushort GetValueRGB(int x, int y, int RGBChannel)
         {
+            if (bytes == null)
+                return 0;
             if (x >= SizeX || x < 0)
                 x = 0;
             if (y >= SizeY || y < 0)
@@ -1612,7 +1620,7 @@ namespace Bio
         {
             get
             {
-                return GetBitmapRGB(SizeX, SizeY, Stride, PixelFormat, Bytes);
+                return GetBitmapRGB(SizeX, SizeY, PixelFormat, Bytes);
             }
             set
             {
@@ -2278,7 +2286,7 @@ namespace Bio
             throw new InvalidDataException("Bio only supports 8, 16, 24, 32, and 48 bit images.");
         }
         */
-        public static unsafe Bitmap GetBitmapRGB(int w, int h, int stride, PixelFormat px, byte[] bts)
+        public static unsafe Bitmap GetBitmapRGB(int w, int h, PixelFormat px, byte[] bts)
         {
             if (px == PixelFormat.Format24bppRgb)
             {
@@ -2292,7 +2300,7 @@ namespace Bio
                 {
                     //getting the pixels of current row
                     byte* row = (byte*)bmd.Scan0 + (y * bmd.Stride);
-                    int rowRGB = y * stride;
+                    int rowRGB = y * w * 3;
                     //iterating through all the pixels in x direction
                     for (int x = 0; x < w; x++)
                     {
@@ -2323,7 +2331,7 @@ namespace Bio
                     {
                         //getting the pixels of current row
                         byte* row = (byte*)bmd.Scan0 + (y * bmd.Stride);
-                        int rowRGB = y * stride;
+                        int rowRGB = y * w * 6;
                         //iterating through all the pixels in x direction
                         for (int x = 0; x < w; x++)
                         {
@@ -2357,7 +2365,7 @@ namespace Bio
                     {
                         //getting the pixels of current row
                         byte* row = (byte*)bmd.Scan0 + (y * bmd.Stride);
-                        int rowRGB = y * stride;
+                        int rowRGB = y * w;
                         //iterating through all the pixels in x direction
                         for (int x = 0; x < w; x++)
                         {
@@ -2389,7 +2397,7 @@ namespace Bio
                     {
                         //getting the pixels of current row
                         byte* row = (byte*)bmd.Scan0 + (y * bmd.Stride);
-                        int rowRGB = y * stride;
+                        int rowRGB = y * w *2 ;
                         //iterating through all the pixels in x direction
                         for (int x = 0; x < w; x++)
                         {
@@ -2406,20 +2414,7 @@ namespace Bio
                 bmp.UnlockBits(bmd);
                 return bmp;
             }
-
-            fixed (byte* numPtr1 = bts)
-            {
-                if (stride % 4 == 0)
-                {
-                    return new Bitmap(w, h, stride, px, new IntPtr((void*)numPtr1));
-                }
-                int newstride = GetStridePadded(stride);
-                byte[] newbts = GetPaddedBuffer(bts, w, h, stride, px);
-                fixed (byte* numPtr2 = newbts)
-                {
-                    return new Bitmap(w, h, newstride, px, new IntPtr((void*)numPtr2));
-                }
-            }
+            throw new NotSupportedException("Pixelformat " + px + " is not supported.");
         }
         public static Bitmap GetFiltered(int w, int h, int stride, PixelFormat px, byte[] bts, IntRange rr, IntRange rg, IntRange rb)
         {
@@ -2942,9 +2937,9 @@ namespace Bio
                     //getting the pixels of current row
                     int rowRGB = y * (Stride);
                     //iterating through all the pixels in x direction
-                    for (int x = 0; x < SizeX; x++)
+                    for (int x = 0; x < Stride; x+=6)
                     {
-                        int indexRGB = x * 6;
+                        int indexRGB = x;
                         byte b1 = bytes[rowRGB + indexRGB];
                         byte b2 = bytes[rowRGB + indexRGB + 1];
                         //B
@@ -4370,6 +4365,9 @@ namespace Bio
             bi.isGroup = b.isGroup;
             bi.imageInfo = b.imageInfo;
             bi.bitsPerPixel = b.bitsPerPixel;
+            bi.file = b.file;
+            bi.filename = b.filename;
+            bi.Resolutions = b.Resolutions;
             return bi;
         }
         public static BioImage Copy(BioImage b)
@@ -4410,6 +4408,7 @@ namespace Bio
             bi.isGroup = b.isGroup;
             bi.imageInfo = b.imageInfo;
             bi.bitsPerPixel = b.bitsPerPixel;
+            bi.Resolutions = b.Resolutions;
             return bi;
         }
         public string ID
@@ -5650,7 +5649,7 @@ namespace Bio
 
         public Image GetImageByCoord(int z, int c, int t)
         {
-            return Buffers[Coords[z, c, t]].Image;
+            return Buffers[Coords[z, c, t]].ImageRGB;
         }
         public Bitmap GetBitmap(int z, int c, int t)
         {
@@ -6032,13 +6031,7 @@ namespace Bio
         }
         public static BioImage OpenFile(string file, int series)
         {
-            if (file.EndsWith("ome.tif") || file.EndsWith("OME.TIF"))
-            {
-                return OpenOME(file);
-            }
-            if (!((file.EndsWith("tif") || file.EndsWith("tiff") || file.EndsWith("TIF") || file.EndsWith("TIFF") ||
-                file.EndsWith("png") || file.EndsWith("PNG") || file.EndsWith("jpg") || file.EndsWith("JPG") ||
-                file.EndsWith("jpeg") || file.EndsWith("JPEG") || file.EndsWith("bmp") || file.EndsWith("BMP"))))
+            if(isOME(file))
             {
                 return OpenOME(file);
             }
@@ -6391,13 +6384,19 @@ namespace Bio
         }
         public static bool isOME(string file)
         {
-            if (file.EndsWith("ome.tif") || file.EndsWith("OME.TIF"))
+            if (file.EndsWith(".tif") || file.EndsWith(".TIF") || file.EndsWith("tiff") || file.EndsWith("TIFF"))
             {
-                return true;
+                Tiff image = Tiff.Open(file, "r");
+                string desc = "";
+                FieldValue[] f = image.GetField(TiffTag.IMAGEDESCRIPTION);
+                image.Close();
+                if (desc.Contains("<OME"))
+                    return true;
+                else
+                    return false;
             }
-            if (!((file.EndsWith("tif") || file.EndsWith("tiff") || file.EndsWith("TIF") || file.EndsWith("TIFF") ||
-                file.EndsWith("png") || file.EndsWith("PNG") || file.EndsWith("jpg") || file.EndsWith("JPG") ||
-                file.EndsWith("jpeg") || file.EndsWith("JPEG") || file.EndsWith("bmp") || file.EndsWith("BMP"))))
+            if (!(file.EndsWith("png") || file.EndsWith("PNG") || file.EndsWith("jpg") || file.EndsWith("JPG") ||
+                file.EndsWith("jpeg") || file.EndsWith("JPEG") || file.EndsWith("bmp") || file.EndsWith("BMP")))
             {
                 return true;
             }
@@ -6405,6 +6404,8 @@ namespace Bio
         }
         public static bool isOMESeries(string file)
         {
+            if (!isOME(file))
+                return false;
             ImageReader reader = new ImageReader();
             var meta = (IMetadata)((OMEXMLService)new ServiceFactory().getInstance(typeof(OMEXMLService))).createOMEXMLMetadata();
             reader.setMetadataStore((MetadataStore)meta);
@@ -6743,11 +6744,12 @@ namespace Bio
         }
         public static BioImage OpenOME(string file, int serie)
         {
-            return OpenOME(file, serie, false, 0, 0, 0, 0);
+            return OpenOME(file, serie, true, false, 0, 0, 0, 0);
         }
-        public static BioImage OpenOME(string file, int serie, bool tile, int tilex, int tiley, int tileSizeX, int tileSizeY)
+        public static BioImage OpenOME(string file, int serie, bool progress, bool tile, int tilex, int tiley, int tileSizeX, int tileSizeY)
         {
             //We wait incase OME has not initialized yet.
+            if(!initialized)
             do
             {
                 Thread.Sleep(100);
@@ -6755,8 +6757,12 @@ namespace Bio
             } while (!Initialized);
             if (file == null || file == "")
                 throw new InvalidDataException("File is empty or null");
-            Progress pr = new Progress(file, "Opening OME");
-            pr.Show();
+            Progress pr = null;
+            if (progress)
+            {
+                pr = new Progress(file, "Opening OME");
+                pr.Show();
+            }
             st.Start();
             BioImage b = new BioImage(file);
             b.Loading = true;
@@ -6779,17 +6785,8 @@ namespace Bio
             int SizeX, SizeY;
             int imWidth = reader.getSizeX();
             int imHeight = reader.getSizeY();
-
-            if (!tile)
-            {
-                SizeX = reader.getSizeX();
-                SizeY = reader.getSizeY();
-            }
-            else
-            {
-                SizeX = reader.getOptimalTileWidth();
-                SizeY = reader.getOptimalTileHeight();
-            }
+            SizeX = reader.getSizeX();
+            SizeY = reader.getSizeY();
             int SizeZ = reader.getSizeZ();
             b.sizeC = reader.getSizeC();
             b.sizeZ = reader.getSizeZ();
@@ -6806,7 +6803,7 @@ namespace Bio
                 if (b.bitsPerPixel > 8)
                     stride = SizeX * 2;
                 else
-                    stride = SizeY;
+                    stride = SizeX;
             }
             else
             if (RGBChannelCount == 3)
@@ -6922,13 +6919,6 @@ namespace Bio
                     b.stageSizeZ = b.meta.getStageLabelZ(b.series).value().doubleValue();
                 else
                     b.stageSizeZ = 1;
-                if(tile)
-                {
-                    double x = b.stageSizeX + ((b.physicalSizeX * SizeX) * tilex);
-                    double y = b.stageSizeY + ((b.physicalSizeY * SizeY) * tiley);
-                    b.stageSizeX = x;
-                    b.stageSizeY = y;
-                }
             }
             catch (Exception e)
             {
@@ -6939,6 +6929,7 @@ namespace Bio
             }
 
             b.Volume = new VolumeD(new Point3D(b.stageSizeX, b.stageSizeY, b.stageSizeZ), new Point3D(b.physicalSizeX * SizeX, b.physicalSizeY * SizeY, b.physicalSizeZ * SizeZ));
+
             int rc = b.meta.getROICount();
             for (int im = 0; im < rc; im++)
             {
@@ -7217,15 +7208,13 @@ namespace Bio
             List<string> serFiles = new List<string>();
             serFiles.AddRange(reader.getSeriesUsedFiles());
 
-            //List<BufferInfo> BufferInfos = new List<BufferInfo>(); 
-            //List<string> Files = new List<string>();
             b.Buffers = new List<BufferInfo>();
             // read the image data bytes
             int pages = reader.getImageCount();
             int z = 0;
             int c = 0;
             int t = 0;
-            if(file.EndsWith("ome.tif"))
+            if (file.EndsWith("ome.tif"))
             {
                 //We can read this file faster without Bioformats.
                 reader.close();
@@ -7241,7 +7230,7 @@ namespace Bio
                 {
                     image.SetDirectory((short)p);
                     if (planes)
-                    { 
+                    {
                         BufferInfo[] bfs = new BufferInfo[3];
                         for (int pl = 0; pl < 3; pl++)
                         {
@@ -7251,13 +7240,13 @@ namespace Bio
                                 image.ReadScanline(bytes, offset, im, (short)pl);
                                 offset += str;
                             }
-                            if(b.bitsPerPixel > 8)
+                            if (b.bitsPerPixel > 8)
                                 bfs[pl] = new BufferInfo(file, SizeX, SizeY, PixelFormat.Format16bppGrayScale, bytes, new ZCT(0, 0, 0), p, b.littleEndian);
                             else
                                 bfs[pl] = new BufferInfo(file, SizeX, SizeY, PixelFormat.Format8bppIndexed, bytes, new ZCT(0, 0, 0), p, b.littleEndian);
                         }
                         BufferInfo bf;
-                        if(b.bitsPerPixel > 8)
+                        if (b.bitsPerPixel > 8)
                             bf = BufferInfo.RGB16To48(bfs);
                         else
                             bf = BufferInfo.RGB8To24(bfs);
@@ -7285,27 +7274,39 @@ namespace Bio
                 image.Close();
             }
             else
-            for (int p = 0; p < pages; p++)
             {
-                BufferInfo bf;
-                if (tile)
+                for (int p = 0; p < pages; p++)
                 {
-
-                    byte[] bytes = reader.openBytes(p, tilex, tiley, tileSizeX, tileSizeY);
-                    bf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(z, c, t), p, b.littleEndian);
-                    //Clipboard.SetImage(bf.ImageRGB);
-                    b.Buffers.Add(bf);
+                    BufferInfo bf;
+                    if (tile)
+                    {
+                        if (tilex < 0)
+                            tilex = 0;
+                        if (tiley < 0)
+                            tiley = 0;
+                        int sx = tileSizeX;
+                        if (tilex + tileSizeX > SizeX)
+                            sx -= (tilex + tileSizeX) - SizeX;
+                        int sy = tileSizeY;
+                        if (tiley + tileSizeY > SizeY)
+                            sy -= (tiley + tileSizeY) - SizeY;
+                        byte[] bytes = reader.openBytes(p, tilex, tiley, sx, sy);
+                        bf = new BufferInfo(file, sx, sy, PixelFormat, bytes, new ZCT(z, c, t), p, b.littleEndian);
+                        //bf.SwitchRedBlue();
+                        b.Buffers.Add(bf);
+                    }
+                    else
+                    {
+                        byte[] bytes = reader.openBytes(p);
+                        bf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(z, c, t), p, b.littleEndian);
+                        b.Buffers.Add(bf);
+                    }
+                    //We add the buffers to thresholding image statistics calculation threads.
+                    Statistics.CalcStatistics(bf);
+                    if(progress)
+                    pr.UpdateProgressF(((float)p / (float)pages));
+                    Application.DoEvents();
                 }
-                else
-                {
-                    byte[] bytes = reader.openBytes(p);
-                    bf = new BufferInfo(file, SizeX, SizeY, PixelFormat, bytes, new ZCT(z, c, t), p, b.littleEndian);
-                    b.Buffers.Add(bf);
-                }
-                //We add the buffers to thresholding image statistics calculation threads.
-                Statistics.CalcStatistics(bf);
-                pr.UpdateProgressF(((float)p / (float)pages));
-                Application.DoEvents();
             }
             int pls = b.meta.getPlaneCount(serie);
             if (pls == b.Buffers.Count)
@@ -7349,13 +7350,110 @@ namespace Bio
                 b.StackThreshold(true);
             else
                 b.StackThreshold(false);
+            if(!tile)
             Images.AddImage(b);
 
             Recorder.AddLine("Bio.BioImage.OpenOME(\"" + file + "\"," + serie + ");");
             b.Loading = false;
-            pr.Close();
-            pr.Dispose();
+            if (progress)
+            {
+                pr.Close();
+                pr.Dispose();
+            }
             return b;
+        }
+
+        ImageReader imRead;
+        public static BufferInfo GetTile(BioImage b, ZCT coord, int serie, int tilex, int tiley, int tileSizeX, int tileSizeY)
+        {
+            string s = b.imRead.getCurrentFile();
+            if(s == null)
+            b.imRead.setId(b.file);
+            b.imRead.setSeries(serie);
+            int SizeX = b.imRead.getSizeX();
+            int SizeY = b.imRead.getSizeY();
+            int p = b.Coords[coord.Z, coord.C, coord.T];
+            bool littleEndian = b.imRead.isLittleEndian();
+            int RGBChannelCount = b.imRead.getRGBChannelCount();
+            PixelFormat PixelFormat = GetPixelFormat(RGBChannelCount, b.bitsPerPixel);
+            BufferInfo bf;
+            if (tilex < 0)
+                tilex = 0;
+            if (tiley < 0)
+                tiley = 0;
+            if (tilex >= SizeX)
+                tilex = SizeX - 1;
+            if (tiley >= SizeY)
+                tiley = SizeY - 1;
+            int sx = tileSizeX;
+            if (tilex + tileSizeX > SizeX)
+                sx -= (tilex + tileSizeX) - (SizeX-1);
+            int sy = tileSizeY;
+            if (tiley + tileSizeY > SizeY)
+                sy -= (tiley + tileSizeY) - (SizeY-1);
+
+            if (sx <= 0)
+                return null;
+            if (sy <= 0)
+                return null;
+
+            byte[] bytes = null;
+            if (b.file.EndsWith(".tif"))
+            {
+                int stride = 0;
+                if (RGBChannelCount == 1)
+                {
+                    if (b.bitsPerPixel > 8)
+                        stride = sx * 2;
+                    else
+                        stride = sx;
+                }
+                else
+                if (RGBChannelCount == 3)
+                {
+                    if (b.bitsPerPixel > 8)
+                        stride = sx * 2;
+                    else
+                        stride = sx;
+                }
+                else
+                {
+                    stride = sx * 4;
+                }
+                bytes = b.imRead.openBytes(b.Coords[coord.Z, coord.C, coord.Z], tilex, tiley, sx, sy);
+
+                byte[] rb = new byte[stride * sy];
+                byte[] gb = new byte[stride * sy];
+                byte[] bb = new byte[stride * sy];
+                BufferInfo[] bfs = new BufferInfo[3];
+                for (int i = 0; i < stride * sy; i++)
+                {
+                    rb[i] = bytes[i + ((stride))];
+                    gb[i] = bytes[i + ((stride)+2)];
+                    bb[i] = bytes[i + ((stride)+3)];
+                }
+                BufferInfo binf = null;
+                if (b.bitsPerPixel == 8)
+                {
+                    bfs[0] = new BufferInfo(b.file, sx, sy, PixelFormat.Format8bppIndexed, rb, new ZCT(0, 0, 0), p, littleEndian);
+                    bfs[1] = new BufferInfo(b.file, sx, sy, PixelFormat.Format8bppIndexed, gb, new ZCT(0, 0, 0), p, littleEndian);
+                    bfs[2] = new BufferInfo(b.file, sx, sy, PixelFormat.Format8bppIndexed, bb, new ZCT(0, 0, 0), p, littleEndian);
+                    binf = BufferInfo.RGB8To24(bfs);
+                }
+                else
+                {
+                    bfs[0] = new BufferInfo(b.file, sx, sy, PixelFormat.Format16bppGrayScale, rb, new ZCT(0, 0, 0), p, littleEndian);
+                    bfs[1] = new BufferInfo(b.file, sx, sy, PixelFormat.Format16bppGrayScale, gb, new ZCT(0, 0, 0), p, littleEndian);
+                    bfs[2] = new BufferInfo(b.file, sx, sy, PixelFormat.Format16bppGrayScale, bb, new ZCT(0, 0, 0), p, littleEndian);
+                    binf = BufferInfo.RGB16To48(bfs);
+                }
+                //Clipboard.SetImage(binf.ImageRGB);
+                return binf;
+            }
+            else
+                bytes = b.imRead.openBytes(b.Coords[coord.Z, coord.C, coord.Z], tilex, tiley, sx, sy);
+            bf = new BufferInfo(b.file, sx, sy, PixelFormat, bytes, coord, p, littleEndian);
+            return bf;
         }
         public void StackThreshold(bool bit16)
         {
@@ -7462,35 +7560,42 @@ namespace Bio
             if (tile)
             {
                 bs = new BioImage[1];
-                //For tiled images the series count is the count of pyramidal resolutions.
+                //For tiled images the series count is the count of pyramidal resolutions for CZI.
                 //This is why some programs fail to open these files.
-                int res = reader.getSeriesCount()-1;
+                int resCount = reader.getSeriesCount();
+                //OME TIFF resolution count is the actual resolution count.
+                if (resCount == 0)
+                    resCount = reader.getResolutionCount();
                 List<Resolution> ress = new List<Resolution>();
-                for (int r = 0; r < res; r++)
+                for (int r = 0; r < resCount; r++)
                 {
                     reader.setSeries(r);
                     int i = reader.getRGBChannelCount();
                     int w = reader.getSizeX();
                     int h = reader.getSizeY();
-                    Resolution re = new Resolution(w,h,i,reader.getBitsPerPixel());
+                    double px = meta.getPixelsPhysicalSizeX(r).value().doubleValue();
+                    double py = meta.getPixelsPhysicalSizeY(r).value().doubleValue();
+                    Resolution re = new Resolution(w,h,i,reader.getBitsPerPixel(),px,py);
                     ress.Add(re);
                 }
-                if (res > 0)
+                int res = resCount-1;
+                if (resCount > 1)
                 {
                     Resolutions resos = new Resolutions(ress);
                     resos.ShowDialog();
                     res = resos.Resolution;
-
-                    //We check for the size incase it exceeds limit of 2GB for extracting data from OME.
-                    if (ress[res].SizeInBytes >= 2e9)
-                    {
-                        MessageBox.Show("Selected image resolution is too large to view in a single plane.");
-                        return null;
-                    }
                 }
                 bs = new BioImage[1];
-                bs[0] = OpenOME(file, res, false, 0,0,0,0);
+
+                //We check for the size incase it exceeds limit of 2GB for extracting data from OME.
+                if (ress[res].SizeInBytes >= 2e9)
+                {
+                    bs[0] = OpenOME(file, res, true, true, 0, 0, Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+                }
+                else
+                bs[0] = OpenOME(file, res, true, false, 0,0,0,0);
                 bs[0].Resolutions = ress;
+                bs[0].imRead = reader;
                 return bs;
             }
             else
