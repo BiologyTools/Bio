@@ -10,6 +10,8 @@ A .NET application & library for editing & annotating various microscopy image f
 
 - Supports running ImageJ macro commands on images open in Bio. New Console to run ImageJ macro commands and Bio C# functions.
 
+- Supports Pyramidal images with multiple resolutions. Like whole slide images.
+
 - Multiple view modes like Emission, and Filtered. ROI's shown for each channel can be configured in ROI Manager.
 
 - Supports drawing shapes & colors onto 16 bit & 48 bit images, unlike System.Drawing.Graphics.
