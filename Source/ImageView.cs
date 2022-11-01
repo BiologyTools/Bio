@@ -45,7 +45,6 @@ namespace Bio
             // Change parent for overlay PictureBox.
             overlayPictureBox.Parent = pictureBox;
             overlayPictureBox.Location = new Point(0, 0);
-            resolution = im.series;
             resolutions = im.Resolutions;
             if(im.isPyramidal)
             {
@@ -54,12 +53,16 @@ namespace Bio
                 hScrollBar.Visible = true;
                 vScrollBar.Visible = true;
             }
-            maxres = im.series;
+            else
+            {
+                hScrollBar.Visible = false;
+                vScrollBar.Visible = false;
+            }
             update = true;
             UpdateImages();
             GoToImage();
+            Resolution = im.series;
             UpdateView();
-            scaleorig = scale.Width;
         }
         ~ImageView()
         {
@@ -329,8 +332,8 @@ namespace Bio
                 return SelectedImage.Channels[SelectedImage.rgbChannels[2]];
             }
         }
-        private PointD origin = new PointD(0, 0);
-        private Point pyramidalOrigin = new Point(0, 0);
+        PointD origin = new PointD(0, 0);
+        Point pyramidalOrigin = new Point(0, 0);
         public PointD Origin
         {
             get { return origin; }
@@ -344,13 +347,27 @@ namespace Bio
             get { return pyramidalOrigin; }
             set
             {
-                pyramidalOrigin = value;
+                if(hScrollBar.Maximum > value.X && value.X > 0)
+                    hScrollBar.Value = value.X;
+                if (vScrollBar.Maximum > value.Y && value.Y > 0)
+                    vScrollBar.Value = value.Y;
+                //PointF p = ToScreenSpace(pyramidalOrigin);
+                //origin = new PointD(p.X, p.Y);
             }
         }
         public int Resolution
         {
             get { return resolution; }
-            set { resolution = value;
+            set {
+                if (SelectedImage.Resolutions.Count <= value || value < 0)
+                    return;
+                double x = PyramidalOrigin.X * ((double)SelectedImage.Resolutions[value].SizeX / (double)SelectedImage.Resolutions[resolution].SizeX);
+                double y = PyramidalOrigin.X * ((double)SelectedImage.Resolutions[value].SizeY / (double)SelectedImage.Resolutions[resolution].SizeY);
+                hScrollBar.Maximum = SelectedImage.Resolutions[value].SizeX;
+                vScrollBar.Maximum = SelectedImage.Resolutions[value].SizeY;
+                PyramidalOrigin = new Point((int)x,(int)y);
+
+                resolution = value;
                 hScrollBar.Maximum = SelectedImage.Resolutions[resolution].SizeX;
                 vScrollBar.Maximum = SelectedImage.Resolutions[resolution].SizeY;
             }
@@ -528,19 +545,55 @@ namespace Bio
                 int index = b.Coords[zBar.Value, cBar.Value, tBar.Value];
                 if (Mode == ViewMode.Filtered)
                 {
-                    bitmap = b.GetFiltered(coords, b.RChannel.RangeR, b.GChannel.RangeG, b.BChannel.RangeB);
+                    if (SelectedImage.isPyramidal)
+                    {
+                        ZCT c = GetCoordinate();
+                        BufferInfo bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
+                        bitmap = (Bitmap)bf.ImageRGB;
+                        SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
+                        SelectedImage.Buffers[SelectedImage.Coords[c.Z,c.C,c.T]] = bf;
+                    }
+                    else
+                        bitmap = b.GetFiltered(coords, b.RChannel.RangeR, b.GChannel.RangeG, b.BChannel.RangeB);
                 }
                 else if (Mode == ViewMode.RGBImage)
                 {
-                    bitmap = b.GetRGBBitmap(coords, b.RChannel.RangeR, b.GChannel.RangeG, b.BChannel.RangeB);
+                    if (SelectedImage.isPyramidal)
+                    {
+                        ZCT c = GetCoordinate();
+                        BufferInfo bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
+                        bitmap = (Bitmap)bf.ImageRGB;
+                        SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
+                        SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]] = bf;
+                    }
+                    else
+                        bitmap = b.GetRGBBitmap(coords, b.RChannel.RangeR, b.GChannel.RangeG, b.BChannel.RangeB);
                 }
                 else if(Mode == ViewMode.Raw)
                 {
-                    bitmap = (Bitmap)b.Buffers[index].ImageRGB;
+                    if (SelectedImage.isPyramidal)
+                    {
+                        ZCT c = GetCoordinate();
+                        BufferInfo bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
+                        bitmap = (Bitmap)bf.ImageRGB;
+                        SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
+                        SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]] = bf;
+                    }
+                    else
+                        bitmap = (Bitmap)b.Buffers[index].ImageRGB;
                 }
                 else
                 {
-                    bitmap = b.GetEmission(coords, b.RChannel.RangeR, b.GChannel.RangeG, b.BChannel.RangeB);
+                    if (SelectedImage.isPyramidal)
+                    {
+                        ZCT c = GetCoordinate();
+                        BufferInfo bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
+                        bitmap = (Bitmap)bf.ImageRGB;
+                        SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
+                        SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]] = bf;
+                    }
+                    else
+                        bitmap = b.GetEmission(coords, b.RChannel.RangeR, b.GChannel.RangeG, b.BChannel.RangeB);
                 }
                 if (bitmap.PixelFormat == PixelFormat.Format16bppGrayScale || bitmap.PixelFormat == PixelFormat.Format48bppRgb)
                     bitmap = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)bitmap);
@@ -567,19 +620,55 @@ namespace Bio
             int index = SelectedImage.Coords[zBar.Value, cBar.Value, tBar.Value];
             if (Mode == ViewMode.Filtered)
             {
-                bitmap = SelectedImage.GetFiltered(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB);
+                if (SelectedImage.isPyramidal)
+                {
+                    ZCT c = GetCoordinate();
+                    BufferInfo bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
+                    bitmap = (Bitmap)bf.ImageRGB;
+                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
+                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]] = bf;
+                }
+                else
+                    bitmap = SelectedImage.GetFiltered(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB);
             }
             else if (Mode == ViewMode.RGBImage)
             {
-                bitmap = SelectedImage.GetRGBBitmap(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB);
+                if (SelectedImage.isPyramidal)
+                {
+                    ZCT c = GetCoordinate();
+                    BufferInfo bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
+                    bitmap = (Bitmap)bf.ImageRGB;
+                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
+                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]] = bf;
+                }
+                else
+                    bitmap = SelectedImage.GetRGBBitmap(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB);
             }
             else if (Mode == ViewMode.Raw)
             {
+                if (SelectedImage.isPyramidal)
+                {
+                    ZCT c = GetCoordinate();
+                    BufferInfo bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
+                    bitmap = (Bitmap)bf.ImageRGB;
+                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
+                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]] = bf;
+                }
+                else
                 bitmap = (Bitmap)SelectedImage.Buffers[index].ImageRGB;
             }
             else
             {
-                bitmap = SelectedImage.GetEmission(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB);
+                if (SelectedImage.isPyramidal)
+                {
+                    ZCT c = GetCoordinate();
+                    BufferInfo bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
+                    bitmap = (Bitmap)bf.ImageRGB;
+                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
+                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]] = bf;
+                }
+                else
+                    bitmap = SelectedImage.GetEmission(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB);
             }
             if (bitmap.PixelFormat == PixelFormat.Format16bppGrayScale || bitmap.PixelFormat == PixelFormat.Format48bppRgb)
                 bitmap = AForge.Imaging.Image.Convert16bppTo8bpp((Bitmap)bitmap);
@@ -587,6 +676,7 @@ namespace Bio
                 Bitmaps[SelectedIndex] = bitmap;
             else
                 Bitmaps.Add(bitmap);
+
             update = false;
             UpdateView();
         }
@@ -818,6 +908,7 @@ namespace Bio
                 if (zBar.Value - 1 >= zBar.Minimum)
                     zBar.Value -= 1;
             }
+            UpdateResolution();
         }
         private void ZTrackBar_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
@@ -1195,54 +1286,47 @@ namespace Bio
             RectangleF[] rf = new RectangleF[1];
             Pen blue = new Pen(Brushes.Blue, 1 / scale.Width);
             int i = 0;
-            
-            if (SelectedImage.isPyramidal)
+            foreach (BioImage im in Images)
             {
-                g.ResetTransform();
-                BufferInfo bf = GetTile();
-                if (bf == null)
-                    return;
-                g.DrawImage(bf.ImageRGB, 0, 0, bf.SizeX, bf.SizeY);
-                bf.Dispose();
-            }
-            else
-            {
-                foreach (BioImage im in Images)
+                if (Bitmaps[i] == null)
+                    UpdateImages();
+                RectangleF r = ToScreenRectF(im.Volume.Location.X, im.Volume.Location.Y, im.Volume.Width, im.Volume.Height);
+                if (SelectedImage.isPyramidal)
                 {
-                    if (Bitmaps[i] == null)
-                        UpdateImages();
-                    RectangleF r = ToScreenRectF(im.Volume.Location.X, im.Volume.Location.Y, im.Volume.Width, im.Volume.Height);
-                    g.DrawImage(Bitmaps[i], r.X, r.Y, r.Width, r.Height);
-                    if (i == SelectedIndex)
-                    {
-                        rf[0] = r;
-                        g.DrawRectangles(blue, rf);
-                    }
-                    i++;
+                    g.ResetTransform();
+                    g.DrawImage(Bitmaps[i], 0, 0, Bitmaps[i].Width, Bitmaps[i].Height);
                 }
+                else
+                    g.DrawImage(Bitmaps[i], r.X, r.Y, r.Width, r.Height);
+                if (i == SelectedIndex && !SelectedImage.isPyramidal)
+                {
+                    rf[0] = r;
+                    g.DrawRectangles(blue, rf);
+                }
+                i++;
             }
             blue.Dispose();
         }
         private int resolution;
-        private int maxres;
-        private double scaleorig;
-        private BufferInfo GetTile()
+        private double scaleorig = 0;
+        private void UpdateResolution()
         {
             //We need to find the proper resolution for the current zoom level.
-            if (scaleorig / scale.Width < 0.8)
-            { 
-                if(resolution-1 > 0)
-                Resolution--;
-                scaleorig = scale.Width;
-            }
-            if (scaleorig / scale.Width > 1.2)
+            if (scaleorig / scale.Width < 0.98)
             {
-                if(resolution+1 < SelectedImage.Resolutions.Count)
-                Resolution++;
+                if (resolution - 1 > 0)
+                    Resolution--;
                 scaleorig = scale.Width;
+                Images[selectedIndex] = BioImage.OpenOMETiled(SelectedImage.file, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
             }
-            return BioImage.GetTile(SelectedImage, GetCoordinate(), resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
-
+            if (scaleorig / scale.Width > 1.02)
+            {
+                if (resolution + 1 < SelectedImage.Resolutions.Count)
+                    Resolution++;
+                scaleorig = scale.Width;
+                Images[selectedIndex] = BioImage.OpenOMETiled(SelectedImage.file, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
+            }
+            UpdateImage();
         }
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
@@ -1252,6 +1336,8 @@ namespace Bio
         {
             return ToViewSizeW(ROI.selectBoxSize / scale.Width);
         }
+
+        Point mouseD = new Point(0, 0);
         private void rgbPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             if (SelectedImage == null)
@@ -1384,6 +1470,13 @@ namespace Bio
             {
                 PointD pd = new PointD(p.X - mouseDown.X, p.Y - mouseDown.Y);
                 origin = new PointD(origin.X + pd.X, origin.Y + pd.Y);
+                if (SelectedImage.isPyramidal)
+                {
+                    Point pf = new Point(e.X - mouseD.X, e.Y - mouseD.Y);
+                    PyramidalOrigin = new Point(PyramidalOrigin.X - pf.X, PyramidalOrigin.Y - pf.Y);
+                    UpdateImage();
+                    UpdateView();
+                }
             }
             mouseUpButtons = e.Button;
             mouseDownButtons = MouseButtons.None;
@@ -1405,6 +1498,7 @@ namespace Bio
             PointF ip = SelectedImage.ToImageSpace(p);
             pd = new PointD(p.X,p.Y);
             mouseDown = pd;
+            mouseD = e.Location;
             down = true;
             up = false;
             tools.BringToFront();
@@ -1955,9 +2049,17 @@ namespace Bio
 
         private void vScrollBar_ValueChanged(object sender, EventArgs e)
         {
-            pyramidalOrigin.X = hScrollBar.Value;
-            pyramidalOrigin.Y = vScrollBar.Value;
+            pyramidalOrigin = new Point(hScrollBar.Value, vScrollBar.Value);
+            UpdateImage();
             UpdateView();
+        }
+        private void overlayPictureBox_Resize(object sender, EventArgs e)
+        {
+            if (SelectedImage.isPyramidal)
+            {
+                UpdateImage();
+                UpdateView();
+            }
         }
     }
 }

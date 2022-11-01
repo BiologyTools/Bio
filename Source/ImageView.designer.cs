@@ -91,10 +91,10 @@ namespace Bio
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.overlayPictureBox = new System.Windows.Forms.PictureBox();
             this.panel = new System.Windows.Forms.Panel();
+            this.hScrollBar = new System.Windows.Forms.HScrollBar();
+            this.vScrollBar = new System.Windows.Forms.VScrollBar();
             this.saveCSVFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.moveStageToImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.vScrollBar = new System.Windows.Forms.VScrollBar();
-            this.hScrollBar = new System.Windows.Forms.HScrollBar();
             this.timePlayMenuStrip.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
             this.zPlayMenuStrip.SuspendLayout();
@@ -676,6 +676,7 @@ namespace Bio
             this.overlayPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseDown);
             this.overlayPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.rgbPictureBox_MouseMove);
             this.overlayPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox_MouseUp);
+            this.overlayPictureBox.Resize += new System.EventHandler(this.overlayPictureBox_Resize);
             // 
             // panel
             // 
@@ -691,6 +692,30 @@ namespace Bio
             this.panel.Size = new System.Drawing.Size(425, 269);
             this.panel.TabIndex = 21;
             // 
+            // hScrollBar
+            // 
+            this.hScrollBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.hScrollBar.Location = new System.Drawing.Point(0, 251);
+            this.hScrollBar.Name = "hScrollBar";
+            this.hScrollBar.Size = new System.Drawing.Size(425, 17);
+            this.hScrollBar.SmallChange = 10;
+            this.hScrollBar.TabIndex = 22;
+            this.hScrollBar.Visible = false;
+            this.hScrollBar.ValueChanged += new System.EventHandler(this.vScrollBar_ValueChanged);
+            // 
+            // vScrollBar
+            // 
+            this.vScrollBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.vScrollBar.Location = new System.Drawing.Point(409, 0);
+            this.vScrollBar.Name = "vScrollBar";
+            this.vScrollBar.Size = new System.Drawing.Size(17, 250);
+            this.vScrollBar.SmallChange = 10;
+            this.vScrollBar.TabIndex = 21;
+            this.vScrollBar.Visible = false;
+            this.vScrollBar.ValueChanged += new System.EventHandler(this.vScrollBar_ValueChanged);
+            // 
             // saveCSVFileDialog
             // 
             this.saveCSVFileDialog.DefaultExt = "csv";
@@ -703,26 +728,6 @@ namespace Bio
             this.moveStageToImageToolStripMenuItem.Size = new System.Drawing.Size(199, 22);
             this.moveStageToImageToolStripMenuItem.Text = "Move Stage To Image";
             this.moveStageToImageToolStripMenuItem.DropDownOpening += new System.EventHandler(this.goToImageToolStripMenuItem_DropDownOpening);
-            // 
-            // vScrollBar
-            // 
-            this.vScrollBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.vScrollBar.Location = new System.Drawing.Point(409, 0);
-            this.vScrollBar.Name = "vScrollBar";
-            this.vScrollBar.Size = new System.Drawing.Size(17, 250);
-            this.vScrollBar.TabIndex = 21;
-            this.vScrollBar.ValueChanged += new System.EventHandler(this.vScrollBar_ValueChanged);
-            // 
-            // hScrollBar
-            // 
-            this.hScrollBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.hScrollBar.Location = new System.Drawing.Point(0, 251);
-            this.hScrollBar.Name = "hScrollBar";
-            this.hScrollBar.Size = new System.Drawing.Size(425, 17);
-            this.hScrollBar.TabIndex = 22;
-            this.hScrollBar.ValueChanged += new System.EventHandler(this.vScrollBar_ValueChanged);
             // 
             // ImageView
             // 
