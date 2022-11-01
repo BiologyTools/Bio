@@ -30,6 +30,8 @@ A .NET application & library for editing & annotating various microscopy image f
 
 - Use AForge filters by opening filters tool window and right click to apply. Currently supports only some AForge filters as many of them do not support 16bit and 48bit images. Convert to 8bit image to make use of more filters. Applyed filters can be easily recorded and used in scripts. Bio impliments some filters like crop for 16 & 48 bit images.
 
+- `Star this project on Github to help spread the word about Bio!`
+
 ## Dependencies
 - [BioFormats.Net](https://github.com/GDanovski/BioFormats.Net)
 - [IKVM](http://www.ikvm.net/)
