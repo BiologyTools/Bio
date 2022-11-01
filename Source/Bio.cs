@@ -7361,6 +7361,7 @@ namespace Bio
             b.meta = (IMetadata)((OMEXMLService)new ServiceFactory().getInstance(typeof(OMEXMLService))).createOMEXMLMetadata();
             reader = new ImageReader();
             reader.setMetadataStore((MetadataStore)b.meta);
+            b.isPyramidal = true;
             string str = b.imRead.getCurrentFile();
             if (str == null || str!=file)
                 reader.setId(file);

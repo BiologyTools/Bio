@@ -128,7 +128,7 @@ namespace Bio
                 return;
             System.Drawing.Size s;
             if(SelectedImage.isPyramidal)
-                s = new System.Drawing.Size(ImageView.SelectedImage.Resolutions[ImageView.Resolution].SizeX + 20, ImageView.SelectedImage.Resolutions[ImageView.Resolution].SizeX + 180);
+                s = new System.Drawing.Size(ImageView.SelectedImage.Resolutions[ImageView.Resolution].SizeX + 42, ImageView.SelectedImage.Resolutions[ImageView.Resolution].SizeY + 206);
             else
                 s = new System.Drawing.Size(ImageView.SelectedImage.SizeX + 20, ImageView.SelectedImage.SizeY + 180);
             if (s.Width > Screen.PrimaryScreen.Bounds.Width || s.Height > Screen.PrimaryScreen.Bounds.Height)

@@ -617,9 +617,12 @@ namespace Bio
             }
             if (Tools.currentTool.type == Tools.Tool.Type.pan && (buts == MouseButtons.Middle || buts == MouseButtons.Left))
             {
-                PointD pf = new PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
-                App.viewer.Origin = new PointD(App.viewer.Origin.X + pf.X, App.viewer.Origin.Y + pf.Y);
-                UpdateView();
+                if (!ImageView.SelectedImage.isPyramidal)
+                {
+                    PointD pf = new PointD(e.X - ImageView.mouseDown.X, e.Y - ImageView.mouseDown.Y);
+                    App.viewer.Origin = new PointD(App.viewer.Origin.X + pf.X, App.viewer.Origin.Y + pf.Y);
+                    UpdateView();
+                }
             }
             else
             if (buts == MouseButtons.Left && currentTool.type == Tool.Type.eraser)

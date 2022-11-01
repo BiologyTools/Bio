@@ -347,10 +347,13 @@ namespace Bio
             get { return pyramidalOrigin; }
             set
             {
-                if(hScrollBar.Maximum > value.X && value.X > 0)
+                if(hScrollBar.Maximum > value.X && value.X > -1)
                     hScrollBar.Value = value.X;
-                if (vScrollBar.Maximum > value.Y && value.Y > 0)
+                if (vScrollBar.Maximum > value.Y && value.Y > -1)
                     vScrollBar.Value = value.Y;
+                pyramidalOrigin = value;
+                UpdateImage();
+                UpdateView();
                 //PointF p = ToScreenSpace(pyramidalOrigin);
                 //origin = new PointD(p.X, p.Y);
             }
@@ -361,15 +364,14 @@ namespace Bio
             set {
                 if (SelectedImage.Resolutions.Count <= value || value < 0)
                     return;
-                double x = PyramidalOrigin.X * ((double)SelectedImage.Resolutions[value].SizeX / (double)SelectedImage.Resolutions[resolution].SizeX);
-                double y = PyramidalOrigin.X * ((double)SelectedImage.Resolutions[value].SizeY / (double)SelectedImage.Resolutions[resolution].SizeY);
+                double x = PyramidalOrigin.X * ((double)SelectedImage.Resolutions[resolution].SizeX / (double)SelectedImage.Resolutions[value].SizeX);
+                double y = PyramidalOrigin.Y * ((double)SelectedImage.Resolutions[resolution].SizeY / (double)SelectedImage.Resolutions[value].SizeY);
                 hScrollBar.Maximum = SelectedImage.Resolutions[value].SizeX;
                 vScrollBar.Maximum = SelectedImage.Resolutions[value].SizeY;
                 PyramidalOrigin = new Point((int)x,(int)y);
-
                 resolution = value;
-                hScrollBar.Maximum = SelectedImage.Resolutions[resolution].SizeX;
-                vScrollBar.Maximum = SelectedImage.Resolutions[resolution].SizeY;
+                UpdateImage();
+                UpdateView();
             }
         }
 
@@ -908,7 +910,18 @@ namespace Bio
                 if (zBar.Value - 1 >= zBar.Minimum)
                     zBar.Value -= 1;
             }
-            UpdateResolution();
+
+            if(Ctrl)
+            if (e.Delta > 0)
+            {
+                if (resolution - 1 > 0)
+                    Resolution--;
+            }
+            else
+            {
+                if (resolution + 1 < SelectedImage.Resolutions.Count)
+                    Resolution++;
+            }
         }
         private void ZTrackBar_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
@@ -1309,25 +1322,6 @@ namespace Bio
         }
         private int resolution;
         private double scaleorig = 0;
-        private void UpdateResolution()
-        {
-            //We need to find the proper resolution for the current zoom level.
-            if (scaleorig / scale.Width < 0.98)
-            {
-                if (resolution - 1 > 0)
-                    Resolution--;
-                scaleorig = scale.Width;
-                Images[selectedIndex] = BioImage.OpenOMETiled(SelectedImage.file, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
-            }
-            if (scaleorig / scale.Width > 1.02)
-            {
-                if (resolution + 1 < SelectedImage.Resolutions.Count)
-                    Resolution++;
-                scaleorig = scale.Width;
-                Images[selectedIndex] = BioImage.OpenOMETiled(SelectedImage.file, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
-            }
-            UpdateImage();
-        }
         private void pictureBox_Paint(object sender, PaintEventArgs e)
         {
             DrawView(e.Graphics);
@@ -1473,7 +1467,7 @@ namespace Bio
                 if (SelectedImage.isPyramidal)
                 {
                     Point pf = new Point(e.X - mouseD.X, e.Y - mouseD.Y);
-                    PyramidalOrigin = new Point(PyramidalOrigin.X - pf.X, PyramidalOrigin.Y - pf.Y);
+                    PyramidalOrigin = new Point(PyramidalOrigin.X + pf.X, PyramidalOrigin.Y + pf.Y);
                     UpdateImage();
                     UpdateView();
                 }
@@ -1560,12 +1554,20 @@ namespace Bio
                     int zc = SelectedImage.Coordinate.Z;
                     int cc = SelectedImage.Coordinate.C;
                     int tc = SelectedImage.Coordinate.T;
-                    if (Mode == ViewMode.RGBImage)
+                    if (SelectedImage.isPyramidal)
                     {
-                        int r = SelectedImage.GetValueRGB(zc, RChannel.Index, tc, (int)ip.X, (int)ip.Y, 0);
-                        int g = SelectedImage.GetValueRGB(zc, GChannel.Index, tc, (int)ip.X, (int)ip.Y, 1);
-                        int b = SelectedImage.GetValueRGB(zc, BChannel.Index, tc, (int)ip.X, (int)ip.Y, 2);
-                        mouseColor = ", " + r + "," + g + "," + b;
+                        if (SelectedImage.isRGB)
+                        {
+                            int r = SelectedImage.GetValueRGB(zc, RChannel.Index, tc, e.X, e.Y, 0);
+                            int g = SelectedImage.GetValueRGB(zc, GChannel.Index, tc, e.X, e.Y, 1);
+                            int b = SelectedImage.GetValueRGB(zc, BChannel.Index, tc, e.X, e.Y, 2);
+                            mouseColor = ", " + r + "," + g + "," + b;
+                        }
+                        else
+                        {
+                            int r = SelectedImage.GetValueRGB(zc, 0, tc, e.X, e.Y, 0);
+                            mouseColor = ", " + r;
+                        }
                     }
                     else
                     {
@@ -2049,9 +2051,8 @@ namespace Bio
 
         private void vScrollBar_ValueChanged(object sender, EventArgs e)
         {
-            pyramidalOrigin = new Point(hScrollBar.Value, vScrollBar.Value);
-            UpdateImage();
-            UpdateView();
+            PyramidalOrigin = new Point(hScrollBar.Value, vScrollBar.Value);
+
         }
         private void overlayPictureBox_Resize(object sender, EventArgs e)
         {
