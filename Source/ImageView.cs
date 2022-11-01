@@ -1010,18 +1010,21 @@ namespace Bio
             SelectedImage.Coordinate = new ZCT(zBar.Value, SelectedImage.Coordinate.C, SelectedImage.Coordinate.T);
             update = true;
             UpdateView();
+            UpdateImage();
         }
         private void timeBar_ValueChanged(object sender, EventArgs e)
         {
             SelectedImage.Coordinate = new ZCT(SelectedImage.Coordinate.Z, SelectedImage.Coordinate.C, tBar.Value);
             update = true;
             UpdateView();
+            UpdateImage();
         }
         private void cBar_ValueChanged(object sender, EventArgs e)
         {
             SelectedImage.Coordinate = new ZCT(SelectedImage.Coordinate.Z, cBar.Value, SelectedImage.Coordinate.T);
             update = true;
             UpdateView();
+            UpdateImage();
         }
 
         private void loopTimeToolStripMenuItem_Click(object sender, EventArgs e)
