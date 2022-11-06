@@ -333,7 +333,6 @@ namespace Bio
             }
         }
         PointD origin = new PointD(0, 0);
-        Point pyramidalOrigin = new Point(0, 0);
         public PointD Origin
         {
             get { return origin; }
@@ -344,18 +343,15 @@ namespace Bio
         }
         public Point PyramidalOrigin
         {
-            get { return pyramidalOrigin; }
+            get { return new Point(hScrollBar.Value,vScrollBar.Value); }
             set
             {
                 if(hScrollBar.Maximum > value.X && value.X > -1)
                     hScrollBar.Value = value.X;
                 if (vScrollBar.Maximum > value.Y && value.Y > -1)
                     vScrollBar.Value = value.Y;
-                pyramidalOrigin = value;
                 UpdateImage();
                 UpdateView();
-                //PointF p = ToScreenSpace(pyramidalOrigin);
-                //origin = new PointD(p.X, p.Y);
             }
         }
         public int Resolution
@@ -1306,14 +1302,22 @@ namespace Bio
             {
                 if (Bitmaps[i] == null)
                     UpdateImages();
+
                 RectangleF r = ToScreenRectF(im.Volume.Location.X, im.Volume.Location.Y, im.Volume.Width, im.Volume.Height);
+                double w = ToViewW(pictureBox.Width);
+                double h = ToViewH(pictureBox.Height);
+                RectangleF rg = new RectangleF((float)((-Origin.X) - (w / 2)), (float)((-Origin.Y) - (h / 2)), (float)(w), (float)(h));
+                RectangleF rec = new RectangleF((float)im.Volume.Location.X, (float)im.Volume.Location.Y, (float)im.Volume.Width, (float)im.Volume.Height);
+                if (rg.IntersectsWith(rec))
                 if (SelectedImage.isPyramidal)
                 {
                     g.ResetTransform();
                     g.DrawImage(Bitmaps[i], 0, 0, Bitmaps[i].Width, Bitmaps[i].Height);
                 }
                 else
+                {
                     g.DrawImage(Bitmaps[i], r.X, r.Y, r.Width, r.Height);
+                }
                 if (i == SelectedIndex && !SelectedImage.isPyramidal)
                 {
                     rf[0] = r;
@@ -1470,7 +1474,13 @@ namespace Bio
                 if (SelectedImage.isPyramidal)
                 {
                     Point pf = new Point(e.X - mouseD.X, e.Y - mouseD.Y);
-                    PyramidalOrigin = new Point(PyramidalOrigin.X + pf.X, PyramidalOrigin.Y + pf.Y);
+                    Point po = new Point(PyramidalOrigin.X - pf.X, PyramidalOrigin.Y - pf.Y);
+                    
+                    if(po.X < hScrollBar.Maximum && po.X > 0)
+                        hScrollBar.Value = po.X;
+                    if (po.Y < vScrollBar.Maximum && po.Y > 0)
+                        vScrollBar.Value = po.Y;
+                    
                     UpdateImage();
                     UpdateView();
                 }
@@ -1762,6 +1772,17 @@ namespace Bio
             return y;
         }
 
+
+        public double ToViewW(double d)
+        {
+            double x = (double)(d / PxWmicron) / scale.Width;
+            return x;
+        }
+        public double ToViewH(double d)
+        {
+            double y = (double)(d / PxHmicron) / scale.Height;
+            return y;
+        }
         public PointD ToScreenSpace(double x, double y)
         {
             double fx = ToScreenScaleW(Origin.X + x);
@@ -1798,6 +1819,14 @@ namespace Bio
         public float ToScreenScaleH(double y)
         {
             return (float)(y * PxHmicron);
+        }
+        public float ToScreenW(double x)
+        {
+            return (float)(x * PxWmicron) / scale.Width;
+        }
+        public float ToScreenH(double y)
+        {
+            return (float)(y * PxHmicron) / scale.Height;
         }
         public PointF ToScreenScale(PointD p)
         {
