@@ -304,17 +304,8 @@ namespace Bio
             Objectives = new Objectives();
             TLShutter = new TLShutter();
             RLShutter = new RLShutter();
-
-            //We calibrate the stage and focus, so that images are taken always with same calibration
-            CalibrateXYZ("OnLowerLimit");
             initialized = true;
         }
-    
-        public static void CalibrateXYZ(string calibMode)
-        {
-
-        }
-
         public static Point3D GetPosition()
         {
             if (Stage == null)

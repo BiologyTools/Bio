@@ -99,6 +99,8 @@ namespace Bio
             this.automationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fileSystemWatcher = new System.IO.FileSystemWatcher();
+            this.hardwareAccelerationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imagesToStackToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -219,6 +221,7 @@ namespace Bio
             this.saveTabToolStripMenuItem,
             this.saveTabTiffToolStripMenuItem,
             this.saveSeriesToolStripMenuItem,
+            this.imagesToStackToolStripMenuItem,
             this.newTabViewToolStripMenuItem,
             this.nodeViewToolStripMenuItem,
             this.clearRecentToolStripMenuItem});
@@ -338,7 +341,8 @@ namespace Bio
             this.filteredToolStripMenuItem,
             this.rawToolStripMenuItem,
             this.emissionToolStripMenuItem,
-            this.xMLToolStripMenuItem});
+            this.xMLToolStripMenuItem,
+            this.hardwareAccelerationToolStripMenuItem});
             this.sizeModeToolStripMenuItem.Name = "sizeModeToolStripMenuItem";
             this.sizeModeToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.sizeModeToolStripMenuItem.Text = "View";
@@ -347,7 +351,7 @@ namespace Bio
             // 
             this.rGBToolStripMenuItem.CheckOnClick = true;
             this.rGBToolStripMenuItem.Name = "rGBToolStripMenuItem";
-            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.rGBToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.rGBToolStripMenuItem.Text = "RGB";
             this.rGBToolStripMenuItem.Click += new System.EventHandler(this.rGBToolStripMenuItem_Click);
             // 
@@ -357,7 +361,7 @@ namespace Bio
             this.filteredToolStripMenuItem.CheckOnClick = true;
             this.filteredToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.filteredToolStripMenuItem.Name = "filteredToolStripMenuItem";
-            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.filteredToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.filteredToolStripMenuItem.Text = "Filtered";
             this.filteredToolStripMenuItem.Click += new System.EventHandler(this.filteredToolStripMenuItem_Click);
             // 
@@ -365,21 +369,21 @@ namespace Bio
             // 
             this.rawToolStripMenuItem.CheckOnClick = true;
             this.rawToolStripMenuItem.Name = "rawToolStripMenuItem";
-            this.rawToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.rawToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.rawToolStripMenuItem.Text = "Raw";
             this.rawToolStripMenuItem.Click += new System.EventHandler(this.rawToolStripMenuItem_Click);
             // 
             // emissionToolStripMenuItem
             // 
             this.emissionToolStripMenuItem.Name = "emissionToolStripMenuItem";
-            this.emissionToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.emissionToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.emissionToolStripMenuItem.Text = "Emission";
             this.emissionToolStripMenuItem.Click += new System.EventHandler(this.emissionToolStripMenuItem_Click);
             // 
             // xMLToolStripMenuItem
             // 
             this.xMLToolStripMenuItem.Name = "xMLToolStripMenuItem";
-            this.xMLToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
+            this.xMLToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.xMLToolStripMenuItem.Text = "XML";
             this.xMLToolStripMenuItem.Click += new System.EventHandler(this.xMLToolStripMenuItem_Click);
             // 
@@ -641,6 +645,23 @@ namespace Bio
             this.fileSystemWatcher.SynchronizingObject = this;
             this.fileSystemWatcher.Created += new System.IO.FileSystemEventHandler(this.fileSystemWatcher_Created);
             // 
+            // hardwareAccelerationToolStripMenuItem
+            // 
+            this.hardwareAccelerationToolStripMenuItem.Checked = true;
+            this.hardwareAccelerationToolStripMenuItem.CheckOnClick = true;
+            this.hardwareAccelerationToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.hardwareAccelerationToolStripMenuItem.Name = "hardwareAccelerationToolStripMenuItem";
+            this.hardwareAccelerationToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.hardwareAccelerationToolStripMenuItem.Text = "Hardware Acceleration";
+            this.hardwareAccelerationToolStripMenuItem.Click += new System.EventHandler(this.hardwareAccelerationToolStripMenuItem_Click);
+            // 
+            // imagesToStackToolStripMenuItem
+            // 
+            this.imagesToStackToolStripMenuItem.Name = "imagesToStackToolStripMenuItem";
+            this.imagesToStackToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
+            this.imagesToStackToolStripMenuItem.Text = "Images To Stack";
+            this.imagesToStackToolStripMenuItem.Click += new System.EventHandler(this.imagesAsStackToolStripMenuItem_Click);
+            // 
             // TabsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -739,5 +760,7 @@ namespace Bio
         private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem reloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem xMLToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem hardwareAccelerationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem imagesToStackToolStripMenuItem;
     }
 }

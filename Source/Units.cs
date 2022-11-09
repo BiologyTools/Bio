@@ -15,7 +15,7 @@ namespace Bio
         private static double minY = -58000;
         private static double maxX = 80000;
         private static double maxY = 58000;
-        
+
         public static double MinX
         {
             get
@@ -142,6 +142,11 @@ namespace Bio
         {
             return new PointF((float)X, (float)Y);
         }
+
+        public SharpDX.Mathematics.Interop.RawVector2 ToRaw()
+        {
+            return new SharpDX.Mathematics.Interop.RawVector2((float)X, (float)Y);
+        }
         public System.Drawing.Point ToPointInt()
         {
             return new System.Drawing.Point((int)X, (int)Y);
@@ -154,22 +159,7 @@ namespace Bio
         {
             return (p1.X != p2.X && p1.Y != p2.Y);
         }
-        public static PointD operator +(PointD p1, PointD p2)
-        {
-            return new PointD(p1.X + p2.X, p1.Y + p2.Y);
-        }
-        public static PointD operator -(PointD p1, PointD p2)
-        {
-            return new PointD(p1.X - p2.X, p1.Y - p2.Y);
-        }
-        public static PointD operator *(PointD p1, PointD p2)
-        {
-            return new PointD(p1.X * p2.X, p1.Y * p2.Y);
-        }
-        public static PointD operator /(PointD p1, PointD p2)
-        {
-            return new PointD(p1.X / p2.X, p1.Y / p2.Y);
-        }
+
         public override string ToString()
         {
             return X.ToString() + "," + Y.ToString();
@@ -360,30 +350,6 @@ namespace Bio
             return distance;
         }
 
-        public static bool operator ==(Point3D p1, Point3D p2)
-        {
-            return (p1.X == p2.X && p1.Y == p2.Y && p1.Z == p2.Z);
-        }
-        public static bool operator !=(Point3D p1, Point3D p2)
-        {
-            return (p1.X != p2.X && p1.Y != p2.Y && p1.Z != p2.Z);
-        }
-        public static Point3D operator +(Point3D p1, Point3D p2)
-        {
-            return new Point3D(p1.X + p2.X, p1.Y + p2.Y, p1.Z + p2.Z);
-        }
-        public static Point3D operator -(Point3D p1, Point3D p2)
-        {
-            return new Point3D(p1.X - p2.X, p1.Y - p2.Y, p1.Z - p2.Z);
-        }
-        public static Point3D operator /(Point3D p1, Point3D p2)
-        {
-            return new Point3D(p1.X / p2.X, p1.Y / p2.Y, p1.Z / p2.Z);
-        }
-        public static Point3D operator *(Point3D p1, Point3D p2)
-        {
-            return new Point3D(p1.X * p2.X, p1.Y * p2.Y, p1.Z * p2.Z);
-        }
     }
     [Serializable]
     public struct VolumeD
@@ -488,5 +454,5 @@ namespace Bio
                 return false;
         }
     }
-    
+
 }

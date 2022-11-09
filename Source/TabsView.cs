@@ -628,7 +628,7 @@ namespace Bio
         {
             if (Viewer == null)
                 return;
-            double moveAmount = 1500 * (1 / App.viewer.scale.Width);
+            double moveAmount = 1500 * (1 / App.viewer.Scale.Width);
             if (e.KeyCode == Keys.C && e.Control)
             {
                 Viewer.CopySelection();
@@ -641,13 +641,11 @@ namespace Bio
             }
             if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.NumPad7)
             {
-                App.viewer.scale.Width -= 0.1f;
-                App.viewer.scale.Height -= 0.1f;
+                App.viewer.Scale = new SizeF(App.viewer.Scale.Width + 0.1f, App.viewer.Scale.Height + 0.1f);
             }
             if (e.KeyCode == Keys.Add || e.KeyCode == Keys.NumPad9)
             {
-                App.viewer.scale.Width += 0.1f;
-                App.viewer.scale.Height += 0.1f;
+                App.viewer.Scale = new SizeF(App.viewer.Scale.Width + 0.1f, App.viewer.Scale.Height + 0.1f);
             }
             if (e.KeyCode == Keys.W || e.KeyCode == Keys.NumPad8)
             {
@@ -918,7 +916,18 @@ namespace Bio
 
         private void imagesAsStackToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            OpenFileDialog fd = new OpenFileDialog();
+            fd.Title = "Images to Stack";
+            fd.Multiselect = true;
+            if (fd.ShowDialog() != DialogResult.OK)
+                return;
+            BioImage b = BioImage.ImagesToStack(fd.FileNames);
+            AddTab(b);
+        }
 
+        private void hardwareAccelerationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Viewer.HardwareAcceleration = hardwareAccelerationToolStripMenuItem.Checked;
         }
     }
 }
