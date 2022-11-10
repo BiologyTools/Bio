@@ -616,6 +616,7 @@ namespace Bio
             if (HardwareAcceleration)
             {
                 RenderFrame();
+                return;
             }
             updateOverlay = true;
             overlayPictureBox.Invalidate();
@@ -657,7 +658,8 @@ namespace Bio
             UpdateStatus();
             if(HardwareAcceleration)
             {
-                dxPanel.Invalidate();
+                RenderFrame();
+                return;
             }
             pictureBox.Invalidate();
             overlayPictureBox.Invalidate();
