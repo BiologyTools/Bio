@@ -159,6 +159,8 @@ namespace Bio
             valBox.Value = (decimal)func.Value;
             if (func.FuncType == Function.FunctionType.ImageJ)
                 imageJRadioBut.Checked = true;
+            else
+                imageJRadioBut.Checked = false;
             menuPath.Text = func.MenuPath;
             contextMenuPath.Text = func.ContextPath;
         }

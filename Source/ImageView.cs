@@ -349,9 +349,16 @@ namespace Bio
                     rgbBoxsPanel.BringToFront();
                     cBar.SendToBack();
                     cLabel.SendToBack();
-                    dxPanel.Visible = false;
-                    pictureBox.BringToFront();
-                    overlayPictureBox.BringToFront();
+                    if (HardwareAcceleration)
+                    {
+                        dxPanel.Visible = HardwareAcceleration;
+                        dxPanel.BringToFront();
+                    }
+                    else
+                    {
+                        pictureBox.BringToFront();
+                        overlayPictureBox.BringToFront();
+                    }
                 }
                 else
                 if (viewMode == ViewMode.Filtered)
@@ -359,9 +366,16 @@ namespace Bio
                     rgbBoxsPanel.SendToBack();
                     cBar.BringToFront();
                     cLabel.BringToFront();
-                    dxPanel.Visible = false;
-                    pictureBox.BringToFront();
-                    overlayPictureBox.BringToFront();
+                    if (HardwareAcceleration)
+                    {
+                        dxPanel.Visible = HardwareAcceleration;
+                        dxPanel.BringToFront();
+                    }
+                    else
+                    {
+                        pictureBox.BringToFront();
+                        overlayPictureBox.BringToFront();
+                    }
                 }
                 else
                 if (viewMode == ViewMode.Raw)
@@ -369,9 +383,16 @@ namespace Bio
                     rgbBoxsPanel.SendToBack();
                     cBar.BringToFront();
                     cLabel.BringToFront();
-                    dxPanel.Visible = false;
-                    pictureBox.BringToFront();
-                    overlayPictureBox.BringToFront();
+                    if (HardwareAcceleration)
+                    {
+                        dxPanel.Visible = HardwareAcceleration;
+                        dxPanel.BringToFront();
+                    }
+                    else
+                    {
+                        pictureBox.BringToFront();
+                        overlayPictureBox.BringToFront();
+                    }
                 }
                 else
                 {
@@ -379,10 +400,16 @@ namespace Bio
                     rgbBoxsPanel.BringToFront();
                     cBar.SendToBack();
                     cLabel.SendToBack();
-                    dxPanel.Visible = false;
-                    //dxPanel.Visible = false;
-                    pictureBox.BringToFront();
-                    overlayPictureBox.BringToFront();
+                    if (HardwareAcceleration)
+                    {
+                        dxPanel.Visible = HardwareAcceleration;
+                        dxPanel.BringToFront();
+                    }
+                    else
+                    {
+                        pictureBox.BringToFront();
+                        overlayPictureBox.BringToFront();
+                    }
                 }
             }
         }
@@ -2418,7 +2445,7 @@ namespace Bio
                 return;
             double dx = SelectedImage.Volume.Width / 2;
             double dy = SelectedImage.Volume.Height / 2;
-            Origin = new PointD(-(SelectedImage.Volume.Location.X + dx), -(SelectedImage.Volume.Location.Y + dy));
+            Origin = new PointD(-(Images[SelectedIndex].Volume.Location.X + dx), -(Images[SelectedIndex].Volume.Location.Y + dy));
             double wx, wy;
             if (HardwareAcceleration)
             {
