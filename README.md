@@ -1,4 +1,4 @@
-![alt text](https://github.com/RepoErik/BioImage/blob/master/banner.jpg?raw=true)
+![alt text](https://github.com/BiologyTools/Bio/blob/master/banner.jpg)
 
 # Bio
 
