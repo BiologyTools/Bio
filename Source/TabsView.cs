@@ -54,20 +54,6 @@ namespace Bio
             ResizeView();
             Init();
         }
-        public TabsView(string arg)
-        {
-            InitializeComponent();
-            LoadProperties();
-            if (arg.Length == 0)
-                return;
-            else
-            {
-                BioImage b = new BioImage(arg);
-                AddTab(b);
-            }
-            ResizeView();
-            Init();
-        }
         public TabsView(string[] arg)
         {
             InitializeComponent();
@@ -118,6 +104,7 @@ namespace Bio
         }
         private void Init()
         {
+
             filters = new Filter();
             init = true;
         }
@@ -502,7 +489,9 @@ namespace Bio
             ImageView v = (ImageView)tabControl.SelectedTab.Controls[0];
             tabControl.TabPages.RemoveAt(tabControl.SelectedIndex);
             v.Dispose();
-
+            Images.RemoveImage(SelectedImage);
+            SelectedImage.Dispose();
+            GC.Collect();
         }
 
         private void openOMEToolStripMenuItem_Click(object sender, EventArgs e)
@@ -641,19 +630,19 @@ namespace Bio
             }
             if (e.KeyCode == Keys.Subtract || e.KeyCode == Keys.NumPad7)
             {
-                App.viewer.Scale = new SizeF(App.viewer.Scale.Width + 0.1f, App.viewer.Scale.Height + 0.1f);
+                App.viewer.Scale = new SizeF(App.viewer.Scale.Width - 0.1f, App.viewer.Scale.Height - 0.1f);
             }
             if (e.KeyCode == Keys.Add || e.KeyCode == Keys.NumPad9)
             {
-                App.viewer.Scale = new SizeF(App.viewer.Scale.Width + 0.1f, App.viewer.Scale.Height + 0.1f);
+                App.viewer.Scale = new SizeF(App.viewer.Scale.Width - 0.1f, App.viewer.Scale.Height - 0.1f);
             }
             if (e.KeyCode == Keys.W || e.KeyCode == Keys.NumPad8)
             {
-                Viewer.Origin = new PointD(Viewer.Origin.X, Viewer.Origin.Y + moveAmount);
+                Viewer.Origin = new PointD(Viewer.Origin.X, Viewer.Origin.Y - moveAmount);
             }
             if (e.KeyCode == Keys.S || e.KeyCode == Keys.NumPad2)
             {
-                Viewer.Origin = new PointD(Viewer.Origin.X, Viewer.Origin.Y - moveAmount);
+                Viewer.Origin = new PointD(Viewer.Origin.X, Viewer.Origin.Y + moveAmount);
             }
             if (e.KeyCode == Keys.A || e.KeyCode == Keys.NumPad4)
             {
@@ -663,7 +652,6 @@ namespace Bio
             {
                 Viewer.Origin = new PointD(Viewer.Origin.X + moveAmount, Viewer.Origin.Y);
             }
-           
             Viewer.UpdateStatus();
             Viewer.UpdateView();
         }
@@ -682,6 +670,7 @@ namespace Bio
         private void TabsView_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveProperties();
+            App.nodeView.Close();
             Application.Exit();
         }
 
@@ -695,23 +684,32 @@ namespace Bio
 
         }
 
-        private void fileSystemWatcher_Created(object sender, FileSystemEventArgs e)
-        {
-            App.viewer.AddImage(BioImage.OpenFile(e.FullPath));
-        }
-
         private void addImagesToTabToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
             for (int i = 0; i < openFilesDialog.FileNames.Length; i++)
             {
-                if(i == 0 && tabControl.TabPages.Count == 0)
+                if (i == 0 && tabControl.TabPages.Count == 0)
                 {
+                    BioImage[] bts = BioImage.OpenOMESeries(openFilesDialog.FileNames[0]);
+                    for (int f = 0; f < bts.Length; f++)
+                    {
+                        if (f == 0 && i == 0)
+                            AddTab(bts[f]);
+                        else
+                            Viewer.AddImage(bts[f]);
+                    }
                     AddTab(BioImage.OpenFile(openFilesDialog.FileNames[0]));
                 }
                 else
-                    App.viewer.AddImage(BioImage.OpenFile(openFilesDialog.FileNames[i]));
+                {
+                    BioImage[] bts = BioImage.OpenOMESeries(openFilesDialog.FileNames[0]);
+                    for (int f = 0; f < bts.Length; f++)
+                    {
+                        Viewer.AddImage(bts[f]);
+                    }
+                }
             }
             App.viewer.GoToImage();
         }
@@ -826,6 +824,7 @@ namespace Bio
         {
             if(App.viewer != null)
             App.viewer.GoToImage();
+            
             Function.Initialize();
         }
 
@@ -913,8 +912,15 @@ namespace Bio
             XMLView v = new XMLView(BioImage.OpenXML(ImageView.SelectedImage.file));
             v.Show();
         }
+        private void dToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Viewer.HardwareAcceleration = dToolStripMenuItem.Checked;
+            Properties.Settings.Default.HardwareAcceleration = dToolStripMenuItem.Checked;
+            Properties.Settings.Default.Save();
+            Viewer.UpdateView();
+        }
 
-        private void imagesAsStackToolStripMenuItem_Click(object sender, EventArgs e)
+        private void imagesToStackToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog fd = new OpenFileDialog();
             fd.Title = "Images to Stack";
@@ -923,11 +929,6 @@ namespace Bio
                 return;
             BioImage b = BioImage.ImagesToStack(fd.FileNames);
             AddTab(b);
-        }
-
-        private void hardwareAccelerationToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Viewer.HardwareAcceleration = hardwareAccelerationToolStripMenuItem.Checked;
         }
     }
 }

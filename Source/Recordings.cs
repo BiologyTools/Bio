@@ -12,10 +12,9 @@ namespace Bio
         public Recordings()
         {
             InitializeComponent();
-            string st = Application.StartupPath;
-            if (!Directory.Exists(st + "/Recordings"))
+            if (!Directory.Exists("Recordings"))
                 Directory.CreateDirectory("Recordings");
-            foreach (string file in Directory.GetFiles(st + "/Recordings"))
+            foreach (string file in Directory.GetFiles("Recordings"))
             {
                 if (file.EndsWith("reco"))
                     OpenRecording(file);
@@ -175,8 +174,10 @@ namespace Bio
         }
         public static object GetProperty(Automation.Action.ValueType automation,string pro)
         {
-            Automation.Recording rec = (Automation.Recording)Automation.Recordings[pro];
-            if (rec == null)
+            Automation.Recording rec = null;
+            if (Automation.Properties.ContainsKey(pro))
+                rec = (Automation.Recording)Automation.Properties[pro];
+            else
                 return null;
             Recorder.AddLine("Recordings.Get(" + rec.Name + ");");
             return rec.Get();
@@ -189,6 +190,10 @@ namespace Bio
 
         private void startBut_Click(object sender, EventArgs e)
         {
+            TextInput ti = new TextInput("Property" + propBox.Items.Count);
+            ti.Text = "Set Property Name";
+            if (ti.ShowDialog() != DialogResult.OK)
+                return;
             recordStatusLabel.Text = "Recording: Started";
             if (Automation.IsRecording)
                 return;
@@ -269,6 +274,7 @@ namespace Bio
             }
             string s = Path.GetFileNameWithoutExtension(savePropDialog.FileName);
             n.Name = s;
+            
             string j = JsonConvert.SerializeObject(n.List, Formatting.None);
             File.WriteAllText(file, j);
             InitElements();
@@ -321,6 +327,7 @@ namespace Bio
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            openRecDialog.InitialDirectory = Application.StartupPath + "\\Recordings";
             if (openRecDialog.ShowDialog() != DialogResult.OK)
                 return;
             OpenRecording(openRecDialog.FileName);
@@ -349,6 +356,10 @@ namespace Bio
 
         private void startPropBut_Click(object sender, EventArgs e)
         {
+            TextInput ti = new TextInput("Property" + propBox.Items.Count);
+            ti.Text = "Set Property Name";
+            if (ti.ShowDialog() != DialogResult.OK)
+                return;
             propRecStatusLabel.Text = "Property Recording: Started";
             Automation.StartPropertyRecording();
         }
@@ -383,15 +394,18 @@ namespace Bio
         }
         private void setPropBut_Click(object sender, EventArgs e)
         {
+            TextInput ti = new TextInput("Property" + propBox.Items.Count);
+            ti.Text = "Set Text To Set";
             if (propView.SelectedNode == null)
                 return;
             Node n = (Node)propView.SelectedNode.Tag;
             if (n.type == Node.Type.action)
                 return;
-            Automation.SetProperty(n.recording.Name, "123");
+            Automation.SetProperty(n.recording.Name, ti.TextValue);
         }
         private void saveSelectedValueToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            savePropDialog.InitialDirectory = Application.StartupPath + "\\Recordings";
             if (savePropDialog.ShowDialog() != DialogResult.OK)
                 return;
             SaveProperty(savePropDialog.FileName);
@@ -399,6 +413,7 @@ namespace Bio
 
         private void openPropertyToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            openPropDialog.InitialDirectory = Application.StartupPath + "\\Recordings";
             if (openPropDialog.ShowDialog() != DialogResult.OK)
                 return;
             OpenProperty(openPropDialog.FileName);
@@ -415,6 +430,7 @@ namespace Bio
             if (n.type == Node.Type.recording)
             {
                 Automation.Properties.Remove(n.recording.Name);
+                if(n.recording.File!=null)
                 File.Delete(n.recording.File);
                 InitElements();
             }
@@ -505,6 +521,16 @@ namespace Bio
             // the actual index could have shifted due to the removal
             n.recording.List.Insert(newindex, n.action);
             UpdateElements();
+        }
+
+        private void renameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (propView.SelectedNode == null)
+                return;
+            Node n = (Node)propView.SelectedNode.Tag;
+            if (n.type == Node.Type.recording)
+                return;
+            n.action.Value = (Automation.Action.ValueType)propBox.SelectedItem;
         }
     }
 }

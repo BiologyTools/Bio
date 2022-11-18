@@ -182,7 +182,7 @@ namespace Bio
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TabsView iv = new TabsView("");
+            TabsView iv = new TabsView();
             iv.Show();
         }
 
@@ -232,7 +232,7 @@ namespace Bio
                 TextInput input = new TextInput(an.Text);
                 if (input.ShowDialog() != DialogResult.OK)
                     return;
-                an.Text = input.textInput;
+                an.Text = input.TextValue;
                 an.font = input.font;
                 an.strokeColor = input.color;
             }
@@ -251,7 +251,7 @@ namespace Bio
                 TextInput input = new TextInput(an.id);
                 if (input.ShowDialog() != DialogResult.OK)
                     return;
-                an.id = input.textInput;
+                an.id = input.TextValue;
             }
             UpdateNodes();
             UpdateOverlay();

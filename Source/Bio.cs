@@ -6935,8 +6935,6 @@ namespace Bio
             Recorder.AddLine("Bio.BioImage.OpenOME(\"" + file + "\"," + serie + ");");
             return OpenOME(file, serie, true, false, 0, 0, 0, 0);
         }
-
-
         public static BioImage FilesToStack(string[] files, int sizeZ, int sizeC, int sizeT)
         {
             BioImage b = new BioImage(files[0]);
@@ -7459,6 +7457,7 @@ namespace Bio
                 pages = image.NumberOfDirectories() / b.seriesCount;
                 //int stride = image.ScanlineSize();
                 int str = image.ScanlineSize();
+                
                 bool planes = false;
                 //If calculated stride and image scanline size is not the same it means the image is written in planes
                 if (stride != str)
@@ -7600,8 +7599,6 @@ namespace Bio
             }
             return b;
         }
-
-        bool tilePlaned = false;
         public static BioImage OpenOMETiled(string file, int serie, int tilex, int tiley, int tileSizeX, int tileSizeY)
         {
             bool tile = true;
@@ -8119,7 +8116,6 @@ namespace Bio
             return b;
         }
         ImageReader imRead = new ImageReader();
-        Tiff tiffRead;
         public static BufferInfo GetTile(BioImage b, ZCT coord, int serie, int tilex, int tiley, int tileSizeX, int tileSizeY)
         {
             if (b.imRead == null)
@@ -8165,7 +8161,9 @@ namespace Bio
             byte[] bytes = null;
             if (b.file.EndsWith(".tif"))
             {
-
+                byte[] bts;
+                Tiff tifRead = Tiff.Open(b.file, "r");
+                
                 int strplane = 0;
                 if (RGBChannelCount == 1)
                 {
@@ -8186,6 +8184,7 @@ namespace Bio
                 {
                     strplane = sx * 4;
                 }
+
                 bytes = b.imRead.openBytes(b.Coords[coord.Z, coord.C, coord.Z], tilex, tiley, sx, sy);
 
                 byte[] rb = new byte[strplane * sy];

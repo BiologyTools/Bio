@@ -21,7 +21,7 @@ namespace Bio.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="Configuration"/> class.
         /// </summary>
-        public Configuration() : this("BioImager")
+        public Configuration() : this("Bio")
         {
             WaitVerticalBlanking = true;
         }
@@ -127,7 +127,7 @@ namespace Bio.Graphics
                     {
                         //getting the pixels of current row
                         byte* row = (byte*)bmd.Scan0 + (y * bmd.Stride);
-                        byte* rowOrig = (byte*)d.Scan0 + (y * bmd.Stride);
+                        byte* rowOrig = (byte*)d.Scan0 + (y * d.Stride);
                         int rowRGB = y * w * 3;
                         //iterating through all the pixels in x direction
                         for (int x = 0; x < w; x++)

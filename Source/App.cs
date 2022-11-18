@@ -28,7 +28,8 @@ namespace Bio
 
         public static BioImage Image
         {
-            get {
+            get 
+            {
                 if (ImageView.SelectedImage == null)
                     return tabsView.Image;
                 return ImageView.SelectedImage;
@@ -43,6 +44,33 @@ namespace Bio
         {
             get { return Image.Annotations; }
         }
+        public static void Initialize()
+        {
+            BioImage.Initialize();
+            Microscope.Initialize();
+            viewer = new ImageView();
+            stackTools = new StackTools();
+            tools = new Tools();            
+            manager = new ROIManager();
+            runner = new Scripting();
+            recorder = new Recorder();
+            seriesTool = new Series();
+            recordings = new Recordings();
+            automation = new Automation();
+            lib = new Library();
+            console = new BioConsole();
+        }
+        public static void Hide()
+        {
+            tools.Hide();
+            stackTools.Hide();
+            manager.Hide();
+            runner.Hide();
+            recorder.Hide();
+            seriesTool.Hide();
+            recordings.Hide();
+            console.Hide();
+        }
         public static bool SetImageJPath()
         {
             MessageBox.Show("ImageJ path not set. Set the ImageJ executable location.");
@@ -56,43 +84,20 @@ namespace Bio
             ImageJ.Initialize(file.FileName);
             return true;
         }
-        public static void Initialize()
-        {
-            BioImage.Initialize();
-            Microscope.Initialize();
-            ImageJ.Initialize(Properties.Settings.Default.ImageJPath);
-            tools = new Tools();
-            stackTools = new StackTools();
-            manager = new ROIManager();
-            runner = new Scripting();
-            recorder = new Recorder();
-            seriesTool = new Series();
-            recordings = new Recordings();
-            automation = new Automation();
-            console = new BioConsole();
-        }
 
-        public static void Hide()
-        {
-            tools.Hide();
-            stackTools.Hide();
-            manager.Hide();
-            runner.Hide();
-            recorder.Hide();
-            seriesTool.Hide();
-            recordings.Hide();
-            console.Hide();
-        }
         private static IEnumerable<ToolStripMenuItem> GetItems(ToolStripMenuItem item)
         {
-            foreach (ToolStripMenuItem dropDownItem in item.DropDownItems)
+            foreach (var dropDownItem in item.DropDownItems)
             {
-                if (dropDownItem.HasDropDownItems)
+                if (dropDownItem.GetType() == typeof(ToolStripMenuItem))
                 {
-                    foreach (ToolStripMenuItem subItem in GetItems(dropDownItem))
-                        yield return subItem;
+                    if (((ToolStripMenuItem)dropDownItem).HasDropDownItems)
+                    {
+                        foreach (ToolStripMenuItem subItem in GetItems((ToolStripMenuItem)dropDownItem))
+                            yield return subItem;
+                    }
+                    yield return (ToolStripMenuItem)dropDownItem;
                 }
-                yield return dropDownItem;
             }
         }
         public static List<ToolStripMenuItem> GetMenuItems()
@@ -105,65 +110,117 @@ namespace Bio
             }
             return allItems;
         }
-        public static bool Contains(string s)
+        public static List<ToolStripMenuItem> GetContextItems()
         {
             List<ToolStripMenuItem> allItems = new List<ToolStripMenuItem>();
-            foreach (ToolStripMenuItem toolItem in tabsView.MainMenuStrip.Items)
+            foreach (ToolStripMenuItem toolItem in viewer.ViewContextMenu.Items)
             {
                 allItems.Add(toolItem);
                 allItems.AddRange(GetItems(toolItem));
             }
-            for (int i = 0; i < allItems.Count; i++)
-            {
-                if (allItems[i].Text == s)
-                    return true;
-            }
-            return false;
+            return allItems;
         }
         public static ToolStripItem GetMenuItemFromPath(string s, Function f)
         {
+            if (s == "" || s == null)
+                return null;
             string[] sts = s.Split('/');
+        start:
             List<ToolStripMenuItem> allItems = GetMenuItems();
+            //Find path or create it.
+            bool found = false;
+            ToolStripMenuItem item = null;
 
-
-            //Path not found lets create it.
-            ToolStripItem item = null;
             for (int t = 0; t < sts.Length; t++)
             {
+                found = false;
                 for (int i = 0; i < allItems.Count; i++)
                 {
                     if (allItems[i].Text == sts[t])
                     {
-                        if (!allItems[i].DropDownItems.ContainsKey(sts[t]))
-                        {
-                            if (t == sts.Length - 1)
-                            {
-                                if (!Contains(f.Name))
-                                {
-                                    allItems[i].DropDownItems.Add(f.Name, null, ItemClicked);
-                                    item = allItems[i].DropDownItems[allItems[i].DropDownItems.Count - 1];
-                                    item.Tag = f;
-                                    return item;
-                                }
-                            }
-                            else
-                            {
-                                if(!Contains(sts[t + 1]))
-                                allItems[i].DropDownItems.Add(sts[t + 1]);
-                            }
-                            allItems = GetMenuItems();
-                            break;
-                        }
+                        item = allItems[i];
+                        found = true;
+                        if (t == sts.Length - 1)
+                            return allItems[i];
                     }
-                
+                }
+                if (!found)
+                {
+                    if (t == 0)
+                    {
+                        tabsView.MainMenuStrip.Items.Add(sts[t]);
+                        goto start;
+                    }
+                    else if (t > 0 && t < sts.Length)
+                    {
+                        ToolStripMenuItem itm = new ToolStripMenuItem();
+                        itm.Tag = f;
+                        itm.Name = f.Name;
+                        item.DropDownItems.Add(f.Name, null, ItemClicked);
+                        return item;
+                    }
+                    else
+                    {
+                        item.DropDownItems.Add(sts[t]);
+                    }
                 }
             }
-            
+            return item;
+        }
+        public static ToolStripItem GetContextMenuItemFromPath(string s, Function f)
+        {
+            if (s == "" || s == null)
+                return null;
+            string[] sts = s.Split('/');
+        start:
+            List<ToolStripMenuItem> allItems = GetContextItems();
+            //Find path or create it.
+            bool found = false;
+            ToolStripMenuItem item = null;
+
+            for (int t = 0; t < sts.Length; t++)
+            {
+                found = false;
+                for (int i = 0; i < allItems.Count; i++)
+                {
+                    if (allItems[i].Text == sts[t])
+                    {
+                        item = allItems[i];
+                        found = true;
+                        if (t == sts.Length - 1)
+                            return allItems[i];
+                    }
+                }
+                if (!found)
+                {
+                    if (t == 0)
+                    {
+                        viewer.ViewContextMenu.Items.Add(sts[t]);
+                        goto start;
+                    }
+                    else if (t > 0 && t < sts.Length)
+                    {
+                        ToolStripMenuItem itm = new ToolStripMenuItem();
+                        itm.Tag = f;
+                        itm.Name = f.Name;
+                        item.DropDownItems.Add(f.Name, null, ItemClicked);
+                        return item;
+                    }
+                    else
+                    {
+                        item.DropDownItems.Add(sts[t]);
+                    }
+                }
+            }
             return item;
         }
         public static void AddMenu(string menu, Function f)
         {
-            GetMenuItemFromPath(menu,f);
+            GetMenuItemFromPath(menu, f);
+        }
+        public static void AddContextMenu(string menu, Function f)
+        {
+            GetContextMenuItemFromPath(menu, f);
         }
         private static void ItemClicked(object sender, EventArgs e)
         {

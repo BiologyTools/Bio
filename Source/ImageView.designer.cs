@@ -174,6 +174,7 @@ namespace Bio
             this.copyViewToClipboardToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
             this.contextMenuStrip.Size = new System.Drawing.Size(200, 158);
+            this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
             // 
             // rOIToolStripMenuItem
             // 
@@ -289,14 +290,14 @@ namespace Bio
             // hideControlsToolStripMenuItem1
             // 
             this.hideControlsToolStripMenuItem1.Name = "hideControlsToolStripMenuItem1";
-            this.hideControlsToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.hideControlsToolStripMenuItem1.Size = new System.Drawing.Size(147, 22);
             this.hideControlsToolStripMenuItem1.Text = "Hide Controls";
             this.hideControlsToolStripMenuItem1.Click += new System.EventHandler(this.hideControlsToolStripMenuItem_Click);
             // 
             // hideStatusToolStripMenuItem
             // 
             this.hideStatusToolStripMenuItem.Name = "hideStatusToolStripMenuItem";
-            this.hideStatusToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.hideStatusToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.hideStatusToolStripMenuItem.Text = "Hide Status";
             this.hideStatusToolStripMenuItem.Click += new System.EventHandler(this.HideStatusMenuItem_Click);
             // 

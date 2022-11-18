@@ -17,7 +17,7 @@ namespace Bio.Graphics
         public SolidColorBrush SceneColorBrush { get; private set; }
         HwndRenderTargetProperties properties = new HwndRenderTargetProperties();
         public void Initialize(Configuration configuration, IntPtr handle)
-        {
+        {           
             Factory2D = new SharpDX.Direct2D1.Factory();
             FactoryDWrite = new SharpDX.DirectWrite.Factory();
             properties.Hwnd = handle;
