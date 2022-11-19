@@ -1835,7 +1835,11 @@ namespace Bio
             {
                 return;
             }
-            PointF ip = SelectedImage.ToImageSpace(p);
+            PointF ip;
+            if (HardwareAcceleration)
+                ip = SelectedImage.ToImageSpace(new PointD(SelectedImage.Volume.Width - p.X, SelectedImage.Volume.Height - p.Y));
+            else
+                ip = SelectedImage.ToImageSpace(p);
             mousePoint = "(" + p.X + ", " + p.Y + ")";
 
             if (e.Button == MouseButtons.XButton1 && !x1State && !Ctrl && Mode != ViewMode.RGBImage)
@@ -1992,7 +1996,11 @@ namespace Bio
             up = false;
             if (SelectedImage == null)
                 return;
-            PointF ip = SelectedImage.ToImageSpace(p);
+            PointF ip;
+            if (HardwareAcceleration)
+                ip = SelectedImage.ToImageSpace(new PointD(SelectedImage.Volume.Width - p.X, SelectedImage.Volume.Height - p.Y));
+            else
+                ip = SelectedImage.ToImageSpace(p);
             tools.BringToFront();
             int ind = 0;
             foreach (BioImage b in Images)
