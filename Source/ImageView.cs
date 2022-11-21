@@ -51,8 +51,8 @@ namespace Bio
             resolutions = im.Resolutions;
             if (im.isPyramidal)
             {
-                hScrollBar.Maximum = im.Resolutions[resolution].SizeX;
-                vScrollBar.Maximum = im.Resolutions[resolution].SizeY;
+                hScrollBar.Maximum = im.Resolutions[resolution].SizeX-1;
+                vScrollBar.Maximum = im.Resolutions[resolution].SizeY-1;
                 hScrollBar.Visible = true;
                 vScrollBar.Visible = true;
             }
@@ -60,6 +60,10 @@ namespace Bio
             {
                 hScrollBar.Visible = false;
                 vScrollBar.Visible = false;
+                pictureBox.Width += 18;
+                pictureBox.Height += 18;
+                overlayPictureBox.Width += 18;
+                overlayPictureBox.Height += 18;
             }
             update = true;
             UpdateImages();
@@ -202,6 +206,18 @@ namespace Bio
         {
             Images.Add(im);
             SelectedIndex = Images.Count - 1;
+            if (im.isPyramidal)
+            {
+                hScrollBar.Maximum = im.Resolutions[resolution].SizeX-1;
+                vScrollBar.Maximum = im.Resolutions[resolution].SizeY-1;
+                hScrollBar.Visible = true;
+                vScrollBar.Visible = true;
+            }
+            else
+            {
+                hScrollBar.Visible = false;
+                vScrollBar.Visible = false;
+            }
             InitGUI();
             UpdateImages();
             GoToImage(Images.Count - 1);
@@ -503,6 +519,9 @@ namespace Bio
         {
             get
             {
+                if (Images.Count > 0)
+                    if (Images[0].isPyramidal)
+                        return false;
                 return hardwareAcceleration;
             }
             set
@@ -1052,9 +1071,6 @@ namespace Bio
         {
             if (SelectedImage == null)
                 return;
-            if (Bitmaps.Count == 0)
-                return;
-
             ZCT coords = new ZCT(zBar.Value, cBar.Value, tBar.Value);
             bitmap = null;
             GC.Collect();

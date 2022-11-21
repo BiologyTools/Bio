@@ -114,6 +114,7 @@ namespace Bio.Graphics
                 if (image.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
                 {
                     b = new Bitmap(renderTarget, size, new DataPointer(d.Scan0, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProperties);
+                    return b;
                 }
                 else if (image.PixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb)
                 {

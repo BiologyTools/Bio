@@ -38,8 +38,9 @@ namespace Bio
         }
         public static void AddImage(BioImage im)
         {
-            images.Add(im);
             im.Filename = GetImageName(im.ID);
+            im.ID = im.Filename;
+            images.Add(im);
             //App.tabsView.AddTab(im);
             //App.Image = im;
             //NodeView.viewer.AddTab(im);
@@ -4571,7 +4572,7 @@ namespace Bio
             bi.Resolutions = b.Resolutions;
             bi.Coordinate = b.Coordinate;
             bi.file = b.file;
-            bi.Filename = 
+            bi.Filename = b.Filename;
             bi.ID = Images.GetImageName(b.file);
             bi.statistics = b.statistics;
             return bi;
@@ -5607,7 +5608,7 @@ namespace Bio
         }
         public static BioImage Substack(BioImage orig, int ser, int zs, int ze, int cs, int ce, int ts, int te)
         {
-            BioImage b = CopyInfo(orig, false, true);
+            BioImage b = CopyInfo(orig, false, false);
             b.ID = Images.GetImageName(orig.ID);
             int i = 0;
             b.Coords = new int[ze - zs, ce - cs, te - ts];
@@ -5622,8 +5623,6 @@ namespace Bio
                     {
                         int ind = orig.Coords[zs + zi, cs + ci, ts + ti];
                         BufferInfo bf = new BufferInfo(Images.GetImageName(orig.id), orig.SizeX, orig.SizeY, orig.Buffers[0].PixelFormat, orig.Buffers[ind].Bytes, new ZCT(zi, ci, ti), i);
-                        if (b.littleEndian)
-                            bf.RotateFlip(RotateFlipType.Rotate180FlipNone);
                         Statistics.CalcStatistics(bf);
                         b.Buffers.Add(bf);
                         b.Coords[zi, ci, ti] = i;
@@ -5631,6 +5630,21 @@ namespace Bio
                     }
                 }
             }
+            for (int ci = cs; ci < ce; ci++)
+            {
+                b.Channels.Add(orig.Channels[ci]);
+            }
+            //We wait for threshold image statistics calculation
+            do
+            {
+                Thread.Sleep(100);
+            } while (b.Buffers[b.Buffers.Count - 1].Stats == null);
+            Statistics.ClearCalcBuffer();
+            AutoThreshold(b, false);
+            if (b.bitsPerPixel > 8)
+                b.StackThreshold(true);
+            else
+                b.StackThreshold(false);
             Images.AddImage(b);
             Recorder.AddLine("Bio.BioImage.Substack(" + '"' + orig.Filename + '"' + "," + ser + "," + zs + "," + ze + "," + cs + "," + ce + "," + ts + "," + te + ");");
             return b;
@@ -5707,6 +5721,16 @@ namespace Bio
                 }
             }
             Images.AddImage(res);
+            //We wait for threshold image statistics calculation
+            do
+            {
+                Thread.Sleep(100);
+            } while (res.Buffers[res.Buffers.Count - 1].Stats == null);
+            AutoThreshold(res, false);
+            if (res.bitsPerPixel > 8)
+                res.StackThreshold(true);
+            else
+                res.StackThreshold(false);
             Recorder.AddLine("Bio.BioImage.MergeChannels(" + '"' + b.ID + '"' + "," + '"' + b2.ID + '"' + ");");
             return res;
         }
@@ -5715,6 +5739,82 @@ namespace Bio
             BioImage b = Images.GetImage(bname);
             BioImage b2 = Images.GetImage(b2name);
             return MergeChannels(b, b2);
+        }
+        public static BioImage MergeZ(BioImage b)
+        {
+            BioImage bi = BioImage.CopyInfo(b, true, true);
+            int ind = 0;
+            for (int c = 0; c < b.SizeC; c++)
+            {
+                for (int t = 0; t < b.sizeT; t++)
+                {
+                    Merge m = new Merge((Bitmap)b.Buffers[b.Coords[0,c,t]].Image);
+                    Bitmap bm = new Bitmap(b.SizeX,b.SizeY, b.Buffers[0].PixelFormat);
+                    for (int i = 1; i < b.sizeZ; i++)
+                    {
+                        m.OverlayImage = bm;
+                        bm = m.Apply((Bitmap)b.Buffers[b.Coords[i, c, t]].Image);
+                    }
+                    BufferInfo bf = new BufferInfo(b.file, bm, new ZCT(0, c, t), ind);
+                    bi.Buffers.Add(bf);
+                    Statistics.CalcStatistics(bf);
+                    ind++;
+                }
+            }
+            Images.AddImage(bi);
+            bi.UpdateCoords(1, b.SizeC, b.SizeT);
+            bi.Coordinate = new ZCT(0, 0, 0);
+            //We wait for threshold image statistics calculation
+            do
+            {
+                Thread.Sleep(100);
+            } while (bi.Buffers[bi.Buffers.Count - 1].Stats == null);
+            Statistics.ClearCalcBuffer();
+            AutoThreshold(bi, false);
+            if (bi.bitsPerPixel > 8)
+                bi.StackThreshold(true);
+            else
+                bi.StackThreshold(false);
+            Recorder.AddLine("Bio.BioImage.MergeZ(" + '"' + b.ID + '"' + ");");
+            return bi;
+        }
+        public static BioImage MergeT(BioImage b)
+        {
+            BioImage bi = BioImage.CopyInfo(b, true, true);
+            int ind = 0;
+            for (int c = 0; c < b.SizeC; c++)
+            {
+                for (int z = 0; z < b.sizeZ; z++)
+                {
+                    Merge m = new Merge((Bitmap)b.Buffers[b.Coords[z, c, 0]].Image);
+                    Bitmap bm = new Bitmap(b.SizeX, b.SizeY, b.Buffers[0].PixelFormat);
+                    for (int i = 1; i < b.sizeT; i++)
+                    {
+                        m.OverlayImage = bm;
+                        bm = m.Apply((Bitmap)b.Buffers[b.Coords[z, c, i]].Image);
+                    }
+                    BufferInfo bf = new BufferInfo(b.file, bm, new ZCT(z, c, 0), ind);
+                    bi.Buffers.Add(bf);
+                    Statistics.CalcStatistics(bf);
+                    ind++;
+                }
+            }
+            Images.AddImage(bi);
+            bi.UpdateCoords(1, b.SizeC, b.SizeT);
+            bi.Coordinate = new ZCT(0, 0, 0);
+            //We wait for threshold image statistics calculation
+            do
+            {
+                Thread.Sleep(100);
+            } while (bi.Buffers[bi.Buffers.Count - 1].Stats == null);
+            Statistics.ClearCalcBuffer();
+            AutoThreshold(bi, false);
+            if (bi.bitsPerPixel > 8)
+                bi.StackThreshold(true);
+            else
+                bi.StackThreshold(false);
+            Recorder.AddLine("Bio.BioImage.MergeT(" + '"' + b.ID + '"' + ");");
+            return bi;
         }
         public BioImage[] SplitChannels()
         {
@@ -5781,6 +5881,12 @@ namespace Bio
 
                     }
                 }
+                //We wait for threshold image statistics calculation
+                do
+                {
+                    Thread.Sleep(100);
+                } while (bi.Buffers[bi.Buffers.Count - 1].Stats == null);
+
                 ri.Channels.Add(Channels[0].Copy());
                 gi.Channels.Add(Channels[0].Copy());
                 bi.Channels.Add(Channels[0].Copy());
@@ -5804,6 +5910,8 @@ namespace Bio
                     bms[c] = b;
                 }
             }
+            
+            Statistics.ClearCalcBuffer();
             Recorder.AddLine("Bio.BioImage.SplitChannels(" + '"' + Filename + '"' + ");");
             return bms;
         }

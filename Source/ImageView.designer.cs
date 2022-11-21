@@ -173,7 +173,7 @@ namespace Bio
             this.controlsToolStripMenuItem,
             this.copyViewToClipboardToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(200, 158);
+            this.contextMenuStrip.Size = new System.Drawing.Size(200, 136);
             this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
             // 
             // rOIToolStripMenuItem
@@ -668,7 +668,7 @@ namespace Bio
             this.pictureBox.Location = new System.Drawing.Point(0, 25);
             this.pictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(428, 269);
+            this.pictureBox.Size = new System.Drawing.Size(411, 251);
             this.pictureBox.TabIndex = 20;
             this.pictureBox.TabStop = false;
             this.pictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox_Paint);
@@ -686,7 +686,7 @@ namespace Bio
             this.overlayPictureBox.Location = new System.Drawing.Point(0, 25);
             this.overlayPictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.overlayPictureBox.Name = "overlayPictureBox";
-            this.overlayPictureBox.Size = new System.Drawing.Size(428, 269);
+            this.overlayPictureBox.Size = new System.Drawing.Size(411, 251);
             this.overlayPictureBox.TabIndex = 19;
             this.overlayPictureBox.TabStop = false;
             this.overlayPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.overlayPictureBox_Paint);
@@ -701,7 +701,7 @@ namespace Bio
             | System.Windows.Forms.AnchorStyles.Right)));
             this.hScrollBar.Location = new System.Drawing.Point(0, 276);
             this.hScrollBar.Name = "hScrollBar";
-            this.hScrollBar.Size = new System.Drawing.Size(429, 18);
+            this.hScrollBar.Size = new System.Drawing.Size(428, 18);
             this.hScrollBar.SmallChange = 10;
             this.hScrollBar.TabIndex = 24;
             this.hScrollBar.Visible = false;
@@ -711,7 +711,7 @@ namespace Bio
             // 
             this.vScrollBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.vScrollBar.Location = new System.Drawing.Point(412, 25);
+            this.vScrollBar.Location = new System.Drawing.Point(411, 25);
             this.vScrollBar.Name = "vScrollBar";
             this.vScrollBar.Size = new System.Drawing.Size(17, 251);
             this.vScrollBar.SmallChange = 10;
@@ -748,13 +748,13 @@ namespace Bio
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.Controls.Add(this.vScrollBar);
             this.Controls.Add(this.hScrollBar);
+            this.Controls.Add(this.vScrollBar);
             this.Controls.Add(this.trackBarPanel);
             this.Controls.Add(this.statusPanel);
-            this.Controls.Add(this.dxPanel);
             this.Controls.Add(this.overlayPictureBox);
             this.Controls.Add(this.pictureBox);
+            this.Controls.Add(this.dxPanel);
             this.Margin = new System.Windows.Forms.Padding(0);
             this.MinimumSize = new System.Drawing.Size(100, 100);
             this.Name = "ImageView";
