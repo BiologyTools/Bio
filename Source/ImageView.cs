@@ -1057,7 +1057,7 @@ namespace Bio
                         dBitmaps[bi].Dispose();
                         dBitmaps[bi] = null;
                     }
-                    dBitmaps[bi] = DBitmap.FromImage(dx.RenderTarget2D, bitmap);
+                    dBitmaps[bi] = DBitmap.FromImage(dx.RenderTarget2D, BufferInfo.To32Bit(bitmap));
                 }
                 else
                     Bitmaps.Add(bitmap);
@@ -1146,7 +1146,7 @@ namespace Bio
                     dBitmaps[SelectedIndex].Dispose();
                     dBitmaps[SelectedIndex] = null;
                 }
-                dBitmaps[SelectedIndex] = DBitmap.FromImage(dx.RenderTarget2D, bitmap);
+                dBitmaps[SelectedIndex] = DBitmap.FromImage(dx.RenderTarget2D, BufferInfo.To32Bit(bitmap));
             }
 
 
