@@ -104,6 +104,7 @@ namespace Bio
             this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.automationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._3dToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -368,6 +369,7 @@ namespace Bio
             this.filteredToolStripMenuItem,
             this.rawToolStripMenuItem,
             this.emissionToolStripMenuItem,
+            this._3dToolStripMenuItem,
             this.sepToolStripMenuItem,
             this.dToolStripMenuItem,
             this.xMLToolStripMenuItem});
@@ -682,6 +684,13 @@ namespace Bio
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // _3dToolStripMenuItem
+            // 
+            this._3dToolStripMenuItem.Name = "_3dToolStripMenuItem";
+            this._3dToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this._3dToolStripMenuItem.Text = "3D";
+            this._3dToolStripMenuItem.Click += new System.EventHandler(this._3dToolStripMenuItem_Click);
+            // 
             // TabsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -784,5 +793,6 @@ namespace Bio
         private System.Windows.Forms.ToolStripSeparator sepToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator sepToolStripMenuItem2;
         private System.Windows.Forms.ToolStripSeparator sepToolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem _3dToolStripMenuItem;
     }
 }

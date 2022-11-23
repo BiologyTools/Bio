@@ -246,7 +246,7 @@ namespace Bio
         }
         public float Rf
         {
-            get { return R / ushort.MaxValue; }
+            get { return (float)R / (float)ushort.MaxValue; }
             set
             {
                 Byte[] bt = BitConverter.GetBytes(value * ushort.MaxValue);
@@ -256,7 +256,7 @@ namespace Bio
         }
         public float Gf
         {
-            get { return G / ushort.MaxValue; }
+            get { return (float)G / (float)ushort.MaxValue; }
             set
             {
                 Byte[] bt = BitConverter.GetBytes(value * ushort.MaxValue);
@@ -266,7 +266,7 @@ namespace Bio
         }
         public float Bf
         {
-            get { return B / ushort.MaxValue; }
+            get { return (float)B / (float)ushort.MaxValue; }
             set
             {
                 Byte[] bt = BitConverter.GetBytes(value * ushort.MaxValue);
@@ -376,6 +376,10 @@ namespace Bio
                 System.Drawing.Color c = System.Drawing.Color.FromArgb((byte)r, (byte)g, (byte)b);
                 return c;
             }
+        }
+        public SharpDX.Vector4 ToVector()
+        {
+            return new SharpDX.Vector4(Rf, Gf, Bf, 1.0f);
         }
         public override string ToString()
         {
@@ -4803,7 +4807,27 @@ namespace Bio
         {
             get { return sizeT; }
         }
-
+        public IntRange RRange
+        {
+            get
+            {
+                return RChannel.RangeR;
+            }
+        }
+        public IntRange GRange
+        {
+            get
+            {
+                return GChannel.RangeG;
+            }
+        }
+        public IntRange BRange
+        {
+            get
+            {
+                return BChannel.RangeB;
+            }
+        }
         public BufferInfo SelectedBuffer
         {
             get
@@ -7653,6 +7677,7 @@ namespace Bio
                     Application.DoEvents();
                 }
             }
+
             int pls = b.meta.getPlaneCount(serie);
             if (pls == b.Buffers.Count)
             for (int bi = 0; bi < b.Buffers.Count; bi++)
