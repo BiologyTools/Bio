@@ -135,10 +135,10 @@ namespace Bio.Graphics
             VertexShader?.Dispose();
             VertexShader = null;
         }
-        public bool Render(DeviceContext deviceContext, int indexCount, Matrix worldMatrix, Matrix viewMatrix, Matrix projectionMatrix, IntRange r, IntRange g, IntRange b)
+        public bool Render(DeviceContext deviceContext, int indexCount, Matrix worldMatrix, Matrix viewMatrix, Matrix projectionMatrix, IntRange r, IntRange g, IntRange b, float interval, float alpha)
         {
             // Set the shader parameters that it will use for rendering.
-            if (!SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, r, g, b))
+            if (!SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix, r, g, b,interval, alpha))
                 return false;
 
             // Now render the prepared buffers with the shader.
@@ -146,7 +146,7 @@ namespace Bio.Graphics
 
             return true;
         }
-        private bool SetShaderParameters(DeviceContext deviceContext, Matrix worldMatrix, Matrix viewMatrix, Matrix projectionMatrix, IntRange r, IntRange g, IntRange b)
+        private bool SetShaderParameters(DeviceContext deviceContext, Matrix worldMatrix, Matrix viewMatrix, Matrix projectionMatrix, IntRange r, IntRange g, IntRange b, float interval, float alpha)
         {
             try
             {
@@ -164,14 +164,14 @@ namespace Bio.Graphics
                     f = ushort.MaxValue;
                 else
                     f = byte.MaxValue;
-
+                
                 // Copy the matrices into the constant buffer.
                 DMatrixBuffer matrixBuffer = new DMatrixBuffer()
                 {
                     world = worldMatrix,
                     view = viewMatrix,
                     projection = projectionMatrix,
-                    rMinMax = new Vector4((float)r.Min / f, (float)r.Max / f, 0, 0),
+                    rMinMax = new Vector4((float)r.Min / f, (float)r.Max / f, interval, alpha),
                     gMinMax = new Vector4((float)g.Min / f, (float)g.Max / f, 0, 0),
                     bMinMax = new Vector4((float)b.Min / f, (float)b.Max / f, 0, 0)
                 };

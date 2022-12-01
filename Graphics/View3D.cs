@@ -17,7 +17,8 @@ namespace Bio
     {
         DSystem sys = null;
         List<BufferInfo> Buffers = new List<BufferInfo>();
-        Vector3 Origin = new Vector3(0.1f, -0.1f, -1);
+        private static Vector3 origin = new Vector3(0f, -1f, -2f);
+        Vector3 Origin = origin;
         Vector3 r = new Vector3(0, (float)Math.PI, (float)Math.PI);
         SizeF Scale = new SizeF(1f, 1f);
         Matrix rot = Matrix.Identity;
@@ -64,11 +65,12 @@ namespace Bio
             sys.Configuration.Title = "3D View";
             sys.Configuration.Width = dxPanel.Width;
             sys.Configuration.Height = dxPanel.Height;
+         
             rot = Matrix.RotationX(r.X) * Matrix.RotationY(r.Y) * Matrix.RotationZ(r.Z);
             world = rot;// * Matrix.Scaling(Scale.Width, Scale.Height, 1);
             sys.Graphics.D3D.WorldMatrix = world;
             sys.Graphics.Initialize(sys.Configuration, dxPanel.Handle, ImageView.SelectedImage);
-            sys.Graphics.Frame(RRange,GRange,BRange);
+            sys.Graphics.Frame(RRange,GRange,BRange,(float)frameIntervalBox.Value,(float)transparencyBox.Value);
         }
         public void UpdateView()
         {
@@ -78,7 +80,7 @@ namespace Bio
             world = rot * Matrix.Scaling(Scale.Width, Scale.Height, 1);
             sys.Graphics.D3D.WorldMatrix = world;
             sys.Graphics.Camera.SetPosition(Origin.X, Origin.Y, Origin.Z);
-            sys.Graphics.Frame(RRange, GRange, BRange);
+            sys.Graphics.Frame(RRange, GRange, BRange,(float)frameIntervalBox.Value,(float)transparencyBox.Value);
         }
 
         private void View3D_Resize(object sender, EventArgs e)
@@ -195,6 +197,22 @@ namespace Bio
         private void View3D_FormClosing(object sender, FormClosingEventArgs e)
         {
             sys.ShutDown();
+        }
+
+        private void frameIntervalBox_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateView();
+        }
+
+        private void transparencyBox_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateView();
+        }
+
+        private void resetCameraToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Origin = origin;
+            UpdateView();
         }
     }
 }

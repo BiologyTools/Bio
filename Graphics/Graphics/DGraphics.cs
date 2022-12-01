@@ -79,12 +79,12 @@ namespace Bio.Graphics
             D3D?.ShutDown();
             D3D = null;
         }
-        public bool Frame(IntRange r, IntRange g, IntRange b)
+        public bool Frame(IntRange r, IntRange g, IntRange b, float interval, float alpha)
         {
             // Render the graphics scene.
-            return Render(r,g,b);
+            return Render(r,g,b,interval,alpha);
         }
-        private bool Render(IntRange r, IntRange g, IntRange b)
+        private bool Render(IntRange r, IntRange g, IntRange b, float interval, float alpha)
         {
             // Clear the buffer to begin the scene.
             D3D.BeginScene(0.0f, 0.0f, 0.0f, 1f);
@@ -101,7 +101,7 @@ namespace Bio.Graphics
             Model.Render(D3D.DeviceContext);
 
             // Render the model using the color shader.
-            if (!ColorShader.Render(D3D.DeviceContext, Model.IndexCount, worldMatrix, viewMatrix, projectionMatrix, r, g, b))
+            if (!ColorShader.Render(D3D.DeviceContext, Model.IndexCount, worldMatrix, viewMatrix, projectionMatrix, r, g, b, interval, alpha))
                 return false;
 
             // Present the rendered scene to the screen.

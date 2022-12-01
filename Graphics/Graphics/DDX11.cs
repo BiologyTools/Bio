@@ -188,14 +188,14 @@ namespace Bio.Graphics
                 // Setup the raster description which will determine how and what polygon will be drawn.
                 RasterizerStateDescription rasterDesc = new RasterizerStateDescription()
                 {
-                    IsAntialiasedLineEnabled = true,
+                    IsAntialiasedLineEnabled = false,
                     CullMode = CullMode.Back,
                     DepthBias = 0,
                     DepthBiasClamp = .0f,
-                    IsDepthClipEnabled = true,
+                    IsDepthClipEnabled = false,
                     FillMode = FillMode.Solid,
                     IsFrontCounterClockwise = false,
-                    IsMultisampleEnabled = true,
+                    IsMultisampleEnabled = false,
                     IsScissorEnabled = false,
                     SlopeScaledDepthBias = .0f
                 };

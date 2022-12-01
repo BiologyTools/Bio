@@ -51,8 +51,8 @@ namespace Bio
             resolutions = im.Resolutions;
             if (im.isPyramidal)
             {
-                hScrollBar.Maximum = im.Resolutions[resolution].SizeX-1;
-                vScrollBar.Maximum = im.Resolutions[resolution].SizeY-1;
+                hScrollBar.Maximum = im.Resolutions[resolution].SizeX;
+                vScrollBar.Maximum = im.Resolutions[resolution].SizeY;
                 hScrollBar.Visible = true;
                 vScrollBar.Visible = true;
             }
@@ -71,13 +71,16 @@ namespace Bio
             Mode = ViewMode.Filtered;
             Resolution = im.series;
             UpdateView();
-            dx = new Direct2D();
-            dx.Initialize(new Configuration("Bio", dxPanel.Width, dxPanel.Height), dxPanel.Handle);
+            if (HardwareAcceleration)
+            {
+                dx = new Direct2D();
+                dx.Initialize(new Configuration("BioImager", dxPanel.Width, dxPanel.Height), dxPanel.Handle);
+            }
         }
         public ImageView()
         {
             InitializeComponent();
-            tools = new Tools();
+            tools = App.tools;
             Dock = DockStyle.Fill;
             App.viewer = this;
             SetCoordinate(0, 0, 0);
@@ -102,8 +105,11 @@ namespace Bio
             UpdateImages();
             GoToImage();
             UpdateView();
-            dx = new Direct2D();
-            dx.Initialize(new Configuration("Bio", dxPanel.Width, dxPanel.Height), dxPanel.Handle);
+            if (HardwareAcceleration)
+            {
+                dx = new Direct2D();
+                dx.Initialize(new Configuration("BioImager", dxPanel.Width, dxPanel.Height), dxPanel.Handle);
+            }
         }
         ~ImageView()
         {
@@ -114,7 +120,6 @@ namespace Bio
         List<Resolution> resolutions = new List<Resolution>();
         public static List<ROI> selectedAnnotations = new List<ROI>();
         private static BioImage selectedImage = null;
-
         private static int selectedIndex = 0;
         public Direct2D dx = null;
         public static BioImage SelectedImage
@@ -208,8 +213,8 @@ namespace Bio
             SelectedIndex = Images.Count - 1;
             if (im.isPyramidal)
             {
-                hScrollBar.Maximum = im.Resolutions[resolution].SizeX-1;
-                vScrollBar.Maximum = im.Resolutions[resolution].SizeY-1;
+                hScrollBar.Maximum = im.Resolutions[resolution].SizeX;
+                vScrollBar.Maximum = im.Resolutions[resolution].SizeY;
                 hScrollBar.Visible = true;
                 vScrollBar.Visible = true;
             }
@@ -217,6 +222,10 @@ namespace Bio
             {
                 hScrollBar.Visible = false;
                 vScrollBar.Visible = false;
+                pictureBox.Width += 18;
+                pictureBox.Height += 18;
+                overlayPictureBox.Width += 18;
+                overlayPictureBox.Height += 18;
             }
             InitGUI();
             UpdateImages();
@@ -529,6 +538,7 @@ namespace Bio
                 hardwareAcceleration = value;
                 if (value)
                 {
+                    GoToImage(0);
                     cBar.Value = 0;
                     rgbBoxsPanel.SendToBack();
                     pictureBox.BringToFront();
@@ -539,6 +549,7 @@ namespace Bio
                 }
                 else
                 {
+                    GoToImage(0);
                     rgbBoxsPanel.SendToBack();
                     cBar.BringToFront();
                     cLabel.BringToFront();
@@ -724,7 +735,7 @@ namespace Bio
             if (HardwareAcceleration && dx != null)
             {
                 dx.BeginDraw();
-                dx.RenderTarget2D.Clear(new SharpDX.Mathematics.Interop.RawColor4(1.0f, 1.0f, 1.0f, 1.0f));
+                dx.RenderTarget2D.Clear(new RawColor4(1.0f, 1.0f, 1.0f, 1.0f));
                 RectangleF rg = ToScreenRectF(PointD.MinX, PointD.MinY, PointD.MaxX - PointD.MinX, PointD.MaxY - PointD.MinY);
                 //dx.RenderTarget2D.Transform = SharpDX.Matrix3x2.Rotation((float)Math.PI);
 
@@ -751,13 +762,12 @@ namespace Bio
                     RectangleF rge = new RectangleF((float)((-Origin.X) - (w / 2)), (float)((-Origin.Y) - (h / 2)), (float)(Math.Abs(w)), (float)(Math.Abs(h)));
                     RectangleF rec = new RectangleF((float)Images[x].Volume.Location.X, (float)Images[x].Volume.Location.Y, (float)Images[x].Volume.Width, (float)Images[x].Volume.Height);
                     //if (rge.IntersectsWith(rec))
-                        dx.RenderTarget2D.DrawBitmap(dBitmaps[x], ToRawRectF(r.X, r.Y, r.Width, r.Height), 1.0f, SharpDX.Direct2D1.BitmapInterpolationMode.Linear);
+                    dx.RenderTarget2D.DrawBitmap(dBitmaps[x], ToRawRectF(r.X, r.Y, r.Width, r.Height), 1.0f, SharpDX.Direct2D1.BitmapInterpolationMode.Linear);
                     if (Images[x].selected)
                     {
                         dx.RenderTarget2D.DrawRectangle(ToRawRectF(r.X, r.Y, r.Width, r.Height), blue);
                     }
                 }
-
                 SetCoordinate(zBar.Value, cBar.Value, tBar.Value);
 
                 bool bounds = showBounds;
@@ -888,13 +898,16 @@ namespace Bio
                         }
                         if (labels)
                         {
-                            //Lets draw the text of this ROI in the middle of the RO
-                            float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
-                            float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
-                            RawRectangleF r = ToRawRectF(fw, fh, an.TextSize.Width, an.TextSize.Height);
-                            SharpDX.DirectWrite.TextFormat tex = new SharpDX.DirectWrite.TextFormat(dx.FactoryDWrite, an.font.FontFamily.ToString(), an.font.Size);
-                            dx.RenderTarget2D.DrawText(an.Text, tex, r, b);
-                            tex.Dispose();
+                            if (an.Text != null)
+                            {
+                                //Lets draw the text of this ROI in the middle of the RO
+                                float fw = ((float)an.Rect.X + ((float)an.Rect.W / 2)) - ((float)an.TextSize.Width / 2);
+                                float fh = ((float)an.Rect.Y + ((float)an.Rect.H / 2)) - ((float)an.TextSize.Height / 2);
+                                RawRectangleF r = ToRawRectF(fw, fh, an.TextSize.Width, an.TextSize.Height);
+                                SharpDX.DirectWrite.TextFormat tex = new SharpDX.DirectWrite.TextFormat(dx.FactoryDWrite, an.font.FontFamily.ToString(), an.font.Size);
+                                dx.RenderTarget2D.DrawText(an.Text, tex, r, b);
+                                tex.Dispose();
+                            }
                         }
                         if (bounds)
                         {
@@ -1146,7 +1159,8 @@ namespace Bio
                     dBitmaps[SelectedIndex].Dispose();
                     dBitmaps[SelectedIndex] = null;
                 }
-                dBitmaps[SelectedIndex] = DBitmap.FromImage(dx.RenderTarget2D, BufferInfo.To32Bit(bitmap));
+                Clipboard.SetImage(bitmap);
+                dBitmaps[SelectedIndex] = DBitmap.FromImage(dx.RenderTarget2D, bitmap);
             }
 
 
@@ -1811,11 +1825,17 @@ namespace Bio
                 if (rg.IntersectsWith(rec))
                     if (SelectedImage.isPyramidal)
                     {
+                        //We check tto see if image is valid
+                        if (Bitmaps[i].PixelFormat == PixelFormat.DontCare)
+                            UpdateImages();
                         g.ResetTransform();
                         g.DrawImage(Bitmaps[i], 0, 0, Bitmaps[i].Width, Bitmaps[i].Height);
                     }
                     else
                     {
+                        //We check tto see if image is valid
+                        if (Bitmaps[i].PixelFormat == PixelFormat.DontCare)
+                            UpdateImages();
                         g.DrawImage(Bitmaps[i], r.X, r.Y, r.Width, r.Height);
                     }
                 if (i == SelectedIndex && !SelectedImage.isPyramidal)
@@ -1851,12 +1871,8 @@ namespace Bio
             {
                 return;
             }
-            PointF ip;
-            if (HardwareAcceleration)
-                ip = SelectedImage.ToImageSpace(new PointD(SelectedImage.Volume.Width - p.X, SelectedImage.Volume.Height - p.Y));
-            else
-                ip = SelectedImage.ToImageSpace(p);
-            mousePoint = "(" + p.X + ", " + p.Y + ")";
+            PointF ip = SelectedImage.ToImageSpace(p);
+            mousePoint = "(" + (p.X) + ", " + (p.Y) + ")";
 
             if (e.Button == MouseButtons.XButton1 && !x1State && !Ctrl && Mode != ViewMode.RGBImage)
             {
@@ -1964,7 +1980,6 @@ namespace Bio
                     Graphics.Graphics g = Graphics.Graphics.FromImage(SelectedBuffer);
                     Graphics.Pen pen = new Graphics.Pen(Tools.DrawColor, (int)Tools.StrokeWidth, ImageView.SelectedImage.bitsPerPixel);
                     g.FillEllipse(new Rectangle((int)ip.X, (int)ip.Y, (int)Tools.StrokeWidth, (int)Tools.StrokeWidth), pen.color);
-                    update = true;
                     UpdateImage();
                 }
 
@@ -2406,7 +2421,7 @@ namespace Bio
         {
             if (HardwareAcceleration)
             {
-                return (float)(-x * PxWmicron);
+                return (float)(x * PxWmicron);
             }
             return (float)(x * PxWmicron);
         }
@@ -2414,7 +2429,7 @@ namespace Bio
         {
             if (HardwareAcceleration)
             {
-                return (float)(-y * PxHmicron);
+                return (float)(y * PxHmicron);
             }
             return (float)(y * PxHmicron);
         }
@@ -2469,7 +2484,7 @@ namespace Bio
                 return;
             double dx = SelectedImage.Volume.Width / 2;
             double dy = SelectedImage.Volume.Height / 2;
-            Origin = new PointD(-(Images[SelectedIndex].Volume.Location.X + dx), -(Images[SelectedIndex].Volume.Location.Y + dy));
+            Origin = new PointD(-(SelectedImage.Volume.Location.X + dx), -(SelectedImage.Volume.Location.Y + dy));
             double wx, wy;
             if (HardwareAcceleration)
             {
@@ -2486,6 +2501,8 @@ namespace Bio
         }
         public void GoToImage(int i)
         {
+            if (Images.Count <= i)
+                return;
             double dx = Images[i].Volume.Width / 2;
             double dy = Images[i].Volume.Height / 2;
             Origin = new PointD(-(Images[i].Volume.Location.X + dx), -(Images[i].Volume.Location.Y + dy));
@@ -2649,12 +2666,14 @@ namespace Bio
         Configuration conf = new Configuration();
         private void dxPanel_SizeChanged(object sender, EventArgs e)
         {
-            conf.Width = dxPanel.Width;
-            conf.Height = dxPanel.Height;
-            dx.Update(conf, dxPanel.Handle);
-            UpdateView();
+            if (HardwareAcceleration)
+            {
+                conf.Width = dxPanel.Width;
+                conf.Height = dxPanel.Height;
+                dx.Update(conf, dxPanel.Handle);
+                UpdateView();
+            }
         }
-
         private void contextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
             Function.Initialize();

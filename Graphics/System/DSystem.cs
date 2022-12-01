@@ -34,13 +34,13 @@ namespace Bio.Graphics
             }
             return result;
         }
-        public bool Frame(IntRange r, IntRange g, IntRange b)
+        public bool Frame(IntRange r, IntRange g, IntRange b, float interval, float alpha)
         {
             // Check if the user pressed escape and wants to exit the application.
             if (Input.IsKeyDown(Keys.Escape))
                 return false;
             // Do the frame processing for the graphics object.
-            return Graphics.Frame(r,g,b);
+            return Graphics.Frame(r,g,b,interval,alpha);
         }
         public void ShutDown()
         {

@@ -41,7 +41,7 @@ namespace Bio.Graphics
             // Create the vertex array and load it with data.
             var vertices = new DColorShader.DVertex[VertexCount];
             ColorS col;
-            for (int z = im.SizeZ - 1; z >= 0; z--)
+            for (int z = 0; z < im.SizeZ; z++)
             {
                 for (int y = im.SizeY-1; y >= 0; y--)
                 {
@@ -54,7 +54,7 @@ namespace Bio.Graphics
                         vec.W = 0.5f;
                         vertices[ind] = new DColorShader.DVertex()
                         {
-                            position = new Vector3((float)x / (float)im.SizeX, (float)y / (float)im.SizeY, ((float)z / im.SizeZ) * 0.1f),
+                            position = new Vector3((float)x / (float)im.SizeX, (float)y / (float)im.SizeY, (z / (float)im.SizeZ)*(float)im.physicalSizeZ),
                             color = vec
                         };
                     }
