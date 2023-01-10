@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Drawing;
 using System.Diagnostics;
+using AForge;
 
 namespace Bio.Graphics
 {
@@ -13,9 +13,9 @@ namespace Bio.Graphics
     public abstract class AbstractFloodFiller
     {
 
-        protected BufferInfo bitmap;
+        protected Bitmap bitmap;
         protected ColorS tolerance = new ColorS(25, 25, 25);
-        protected ColorS fillColor = ColorS.FromColor(Color.Black);
+        protected ColorS fillColor = ColorS.FromColor(System.Drawing.Color.Black);
         protected bool fillDiagonally = false;
         protected bool slow = false;
 
@@ -71,7 +71,7 @@ namespace Bio.Graphics
             set { tolerance = value; }
         }
 
-        public BufferInfo Bitmap
+        public Bitmap Bitmap
         {
             get { return bitmap; }
             set 
@@ -80,10 +80,10 @@ namespace Bio.Graphics
             }
         }
 
-        public abstract void FloodFill(Point pt);
-        protected void PrepareForFloodFill(Point pt)
+        public abstract void FloodFill(System.Drawing.Point pt);
+        protected void PrepareForFloodFill(System.Drawing.Point pt)
         {
-            startColor = bitmap.GetPixel(pt.X, pt.Y);
+            startColor = bitmap.GetPixel((int)pt.X, (int)pt.Y);
             byteFillColor = new ColorS(fillColor.B, fillColor.G, fillColor.R);
             bitmapStride=bitmap.Stride;
             bitmapPixelFormatSize=bitmap.PixelFormatSize;

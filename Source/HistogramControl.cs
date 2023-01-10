@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AForge;
 
 namespace Bio
 {
@@ -137,7 +138,7 @@ namespace Bio
 
         private float fx = 0;
         private float fy = 0;
-        private Bitmap bm;
+        private System.Drawing.Bitmap bm;
         private System.Drawing.Graphics g;
 
         public void UpdateChannel(Channel c)
@@ -365,7 +366,7 @@ namespace Bio
         {
             if (Width == 0 || Height == 0)
                 return;
-            bm = new Bitmap(Width, Height);
+            bm = new System.Drawing.Bitmap(Width, Height);
             if (g != null)
                 g.Dispose();
             g = System.Drawing.Graphics.FromImage(bm);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace Bio.Graphics
@@ -22,7 +23,7 @@ namespace Bio.Graphics
         /// Fills the specified point on the bitmap with the currently selected fill color.
         /// </summary>
         /// <param name="pt">The starting point for the fill.</param>
-        public override void FloodFill(System.Drawing.Point pt)
+        public override void FloodFill(Point pt)
         {
             watch.Reset();
             watch.Start();

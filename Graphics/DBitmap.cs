@@ -82,7 +82,7 @@ namespace Bio.Graphics
     }
     class DBitmap
     {
-        private Bitmap _bitmap;
+        private SharpDX.Direct2D1.Bitmap _bitmap;
 
         /// <summary>
         /// Loads a Direct2D Bitmap from a file using System.Drawing.Image.FromFile(...)
@@ -90,26 +90,31 @@ namespace Bio.Graphics
         /// <param name="renderTarget">The render target.</param>
         /// <param name="file">The file.</param>
         /// <returns>A D2D1 Bitmap</returns>
-        public static Bitmap FromImage(RenderTarget renderTarget, BufferInfo image)
+         
+        
+        public static SharpDX.Direct2D1.Bitmap FromImage(RenderTarget renderTarget, AForge.Bitmap image)
         {
             // Loads from file using System.Drawing.Image
             using (var bitmap = (System.Drawing.Bitmap)image.ImageRGB)
             {
                 var bitmapProperties = new BitmapProperties(new PixelFormat(Format.R8G8B8A8_UNorm, AlphaMode.Ignore));
                 var size = new Size2(bitmap.Width, bitmap.Height);
-                return new Bitmap(renderTarget, size, new DataPointer(image.RGBData,bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProperties);
+                return new SharpDX.Direct2D1.Bitmap(renderTarget, size, new DataPointer(image.RGBData, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProperties);
             }
         }
-        public unsafe static Bitmap FromImage(RenderTarget renderTarget, System.Drawing.Bitmap image)
+        /*
+        public unsafe static SharpDX.Direct2D1.Bitmap FromImage(RenderTarget renderTarget, AForge.Bitmap image)
         {
             int w = image.Width;
             int h = image.Height;
-            Bitmap b = null;
+            SharpDX.Direct2D1.Bitmap b = null;
+
             //For RGB images we switch to BGR
-            if(image.PixelFormat != System.Drawing.Imaging.PixelFormat.Format8bppIndexed && image.PixelFormat != System.Drawing.Imaging.PixelFormat.Format16bppGrayScale)
-            image = BufferInfo.SwitchRedBlue(image);
-            BitmapData d = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly, image.PixelFormat);
-            using (var bitmap = (System.Drawing.Bitmap)image)
+            if (image.PixelFormat != System.Drawing.Imaging.PixelFormat.Format8bppIndexed && image.PixelFormat != System.Drawing.Imaging.PixelFormat.Format16bppGrayScale)
+                image.SwitchRedBlue();
+
+            AForge.BitmapData d = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height), AForge.ImageLockMode.ReadOnly, image.PixelFormat);
+            using (var bitmap = image.ImageRGB)
             {
                 
                 var bitmapProperties = new BitmapProperties(new PixelFormat(Format.R8G8B8A8_UNorm, AlphaMode.Ignore));
@@ -117,7 +122,7 @@ namespace Bio.Graphics
                 if (image.PixelFormat == System.Drawing.Imaging.PixelFormat.Format32bppArgb)
                 {
                     
-                    b = new Bitmap(renderTarget, size, new DataPointer(d.Scan0, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProperties);
+                    b = new SharpDX.Direct2D1.Bitmap(renderTarget, size, new DataPointer(image.RGBData, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProperties);
                     return b;
                 }
                 else if (image.PixelFormat == System.Drawing.Imaging.PixelFormat.Format24bppRgb)
@@ -126,7 +131,7 @@ namespace Bio.Graphics
                     System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                     //creating the bitmapdata and lock bits
                     System.Drawing.Rectangle rec = new System.Drawing.Rectangle(0, 0, w, h);
-                    BitmapData bmd = bmp.LockBits(rec, ImageLockMode.ReadWrite, bmp.PixelFormat);
+                    System.Drawing.Imaging.BitmapData bmd = bmp.LockBits(rec, ImageLockMode.ReadWrite, bmp.PixelFormat);
                     //iterating through all the pixels in y direction
                     for (int y = 0; y < h; y++)
                     {
@@ -148,7 +153,7 @@ namespace Bio.Graphics
                     //unlocking bits and disposing image
                     bmp.UnlockBits(bmd);
                     var bitmapProp = new BitmapProperties(new PixelFormat(Format.R8G8B8A8_UNorm, AlphaMode.Ignore));
-                    return new Bitmap(renderTarget, size, new DataPointer(bmd.Scan0, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProp);
+                    return new SharpDX.Direct2D1.Bitmap(renderTarget, size, new DataPointer(bmd.Scan0, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProp);
                 }
                 else
                 if (image.PixelFormat == System.Drawing.Imaging.PixelFormat.Format48bppRgb)
@@ -157,7 +162,7 @@ namespace Bio.Graphics
                     System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                     //creating the bitmapdata and lock bits
                     System.Drawing.Rectangle rec = new System.Drawing.Rectangle(0, 0, w, h);
-                    BitmapData bmd = bmp.LockBits(rec, ImageLockMode.ReadWrite, bmp.PixelFormat);
+                    System.Drawing.Imaging.BitmapData bmd = bmp.LockBits(rec, ImageLockMode.ReadWrite, bmp.PixelFormat);
                     byte[] bts = new byte[6];
                     unsafe
                     {
@@ -191,7 +196,7 @@ namespace Bio.Graphics
                     }
                     bmp.UnlockBits(bmd);
                     var bitmapProp = new BitmapProperties(new PixelFormat(Format.R8G8B8A8_UNorm, AlphaMode.Ignore));
-                    return new Bitmap(renderTarget, size, new DataPointer(bmd.Scan0, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProp);
+                    return new SharpDX.Direct2D1.Bitmap(renderTarget, size, new DataPointer(bmd.Scan0, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProp);
                 }
                 else
                 if (image.PixelFormat == System.Drawing.Imaging.PixelFormat.Format8bppIndexed)
@@ -200,7 +205,7 @@ namespace Bio.Graphics
                     System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                     //creating the bitmapdata and lock bits
                     System.Drawing.Rectangle rec = new System.Drawing.Rectangle(0, 0, w, h);
-                    BitmapData bmd = bmp.LockBits(rec, ImageLockMode.ReadWrite, bmp.PixelFormat);
+                    System.Drawing.Imaging.BitmapData bmd = bmp.LockBits(rec, ImageLockMode.ReadWrite, bmp.PixelFormat);
                     unsafe
                     {
                         //iterating through all the pixels in y direction
@@ -225,7 +230,7 @@ namespace Bio.Graphics
                     }
                     bmp.UnlockBits(bmd);
                     var bitmapProp = new BitmapProperties(new PixelFormat(Format.R8G8B8A8_UNorm, AlphaMode.Ignore));
-                    return new Bitmap(renderTarget, size, new DataPointer(bmd.Scan0, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProp);
+                    return new SharpDX.Direct2D1.Bitmap(renderTarget, size, new DataPointer(bmd.Scan0, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProp);
                 }
                 else
                 if (image.PixelFormat == System.Drawing.Imaging.PixelFormat.Format16bppGrayScale)
@@ -234,7 +239,7 @@ namespace Bio.Graphics
                     System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(w, h, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
                     //creating the bitmapdata and lock bits
                     System.Drawing.Rectangle rec = new System.Drawing.Rectangle(0, 0, w, h);
-                    BitmapData bmd = bmp.LockBits(rec, ImageLockMode.ReadWrite, bmp.PixelFormat);
+                    System.Drawing.Imaging.BitmapData bmd = bmp.LockBits(rec, ImageLockMode.ReadWrite, bmp.PixelFormat);
                     byte[] bts = new byte[2];
                     unsafe
                     {
@@ -262,15 +267,15 @@ namespace Bio.Graphics
                     }
                     bmp.UnlockBits(bmd);
                     var bitmapProp = new BitmapProperties(new PixelFormat(Format.R8G8B8A8_UNorm, AlphaMode.Ignore));
-                    return new Bitmap(renderTarget, size, new DataPointer(bmd.Scan0, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProp);
+                    return new SharpDX.Direct2D1.Bitmap(renderTarget, size, new DataPointer(bmd.Scan0, bitmap.Width * 4 * bitmap.Height), bitmap.Width * 4, bitmapProp);
                 }
 
             }
             image.UnlockBits(d);
             return b;
         }
-
-        public void Initialize(Configuration configuration, RenderTarget renderTarget2, BufferInfo bf)
+        */
+        public void Initialize(Configuration configuration, RenderTarget renderTarget2, AForge.Bitmap bf)
         {
             _bitmap = FromImage(renderTarget2, bf);
         }

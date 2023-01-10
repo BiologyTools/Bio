@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SharpDX.XInput;
 using WindowsInput;
 using WindowsInput.Native;
 using System.IO;
@@ -99,31 +98,7 @@ namespace Bio
             microBox.Items.Add(Function.FunctionType.StoreCoordinate);
             microBox.SelectedItem = func.Microscope;
 
-            ind = 0;
-            recBox.Items.Clear();
-            foreach (Automation.Recording rec in Automation.Recordings.Values)
-            {
-                recBox.Items.Add(rec);
-                string s = System.IO.Path.GetFileNameWithoutExtension(rec.File);
-                if(s == func.File)
-                {
-                    recBox.SelectedIndex = ind;
-                }
-                ind++;
-            }
-            
-            ind = 0;
-            propBox.Items.Clear();
-            foreach (Automation.Recording rec in Automation.Properties.Values)
-            {
-                propBox.Items.Add(rec);
-                string s = System.IO.Path.GetFileNameWithoutExtension(rec.File);
-                if (s == func.File)
-                {
-                    propBox.SelectedIndex = ind;
-                }
-                ind++;
-            }
+
             valBox.Value = (decimal)func.Value;
             menuPath.Text = func.MenuPath;
             contextMenuPath.Text = func.ContextPath;
@@ -137,25 +112,7 @@ namespace Bio
             keysBox.SelectedItem = func.Key;
             modifierBox.SelectedItem = func.Modifier;
             microBox.SelectedItem = func.Microscope;
-            foreach (Automation.Recording rec in Automation.Recordings.Values)
-            {
-                string s = System.IO.Path.GetFileNameWithoutExtension(rec.File);
-                if (s == func.File)
-                {
-                    recBox.SelectedIndex = ind;
-                }
-                ind++;
-            }
-            ind = 0;
-            foreach (Automation.Recording rec in Automation.Properties.Values)
-            {
-                string s = System.IO.Path.GetFileNameWithoutExtension(rec.File);
-                if (s == func.File)
-                {
-                    propBox.SelectedIndex = ind;
-                }
-                ind++;
-            }
+
             valBox.Value = (decimal)func.Value;
             if (func.FuncType == Function.FunctionType.ImageJ)
                 imageJRadioBut.Checked = true;
@@ -489,20 +446,7 @@ namespace Bio
             {
                 ImageJ.RunOnImage(script, false, BioConsole.onTab, BioConsole.useBioformats);
             }
-            if (FuncType == Function.FunctionType.Property)
-            {
-                if (Name.StartsWith("Get"))
-                {
-                    Automation.Recording r = (Automation.Recording)Automation.Properties[System.IO.Path.GetFileNameWithoutExtension(File)];
-                    return r.Get();
-                }
-                else if (Name.StartsWith("Set"))
-                {
-                    Automation.Recording r = (Automation.Recording)Automation.Properties[System.IO.Path.GetFileNameWithoutExtension(File)];
-                    r.Set(Value.ToString());
-                }
 
-            }
             if (FuncType == Function.FunctionType.Key)
             {
                 if (Modifier != VirtualKeyCode.NONAME)
@@ -514,11 +458,6 @@ namespace Bio
                     input.Keyboard.KeyPress(Key);
                 }
                 return null;
-            }
-            if (FuncType == Function.FunctionType.Recording)
-            {
-                Automation.Recording r = (Automation.Recording)Automation.Recordings[System.IO.Path.GetFileNameWithoutExtension(File)];
-                r.Run();
             }
             return null;
         }

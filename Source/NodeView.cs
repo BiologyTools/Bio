@@ -8,7 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-
+using System.Drawing;
+using loci.common.services;
+using loci.formats;
+using loci.formats.services;
+using ome.xml.model.primitives;
+using loci.formats.meta;
+using AForge;
+using Bitmap = AForge.Bitmap;
 
 namespace Bio
 {
@@ -43,7 +50,7 @@ namespace Bio
                 node = new TreeNode();
                 node.Tag = this;
                 node.Text = obj.ToString();
-                node.ForeColor = Color.White;
+                node.ForeColor = System.Drawing.Color.White;
             }
             public string Text
             {
@@ -85,7 +92,7 @@ namespace Bio
             treeView.Nodes.Clear();
             TreeNode images = new TreeNode();
             images.Text = "BioImages";
-            images.ForeColor = Color.White;
+            images.ForeColor = System.Drawing.Color.White;
             foreach (BioImage item in Images.images)
             {
                 //TreeNode node = new TreeNode();
@@ -94,7 +101,7 @@ namespace Bio
                 Node implanes = new Node(item, Node.DataType.text);
                 implanes.Text = "Planes";
 
-                foreach (BufferInfo buf in item.Buffers)
+                foreach (Bitmap buf in item.Buffers)
                 {
                     Node plane = new Node(buf, Node.DataType.buf);
                     plane.Text = buf.ID + ", " + buf.Coordinate.ToString();
@@ -277,7 +284,7 @@ namespace Bio
                 {
                     setIDToolStripMenuItem.Visible = false;
                     setTextToolStripMenuItem.Visible = false;
-                    BufferInfo buf = (BufferInfo)node.Object;
+                    Bitmap buf = (Bitmap)node.Object;
                     App.viewer.SetCoordinate(buf.Coordinate.Z, buf.Coordinate.C, buf.Coordinate.T);
                     App.viewer.GoToImage();
                 }

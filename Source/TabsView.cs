@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
 using System.Threading;
+using AForge;
+using Bitmap = AForge.Bitmap;
 
 namespace Bio
 {
@@ -43,21 +45,21 @@ namespace Bio
         public TabsView(BioImage arg)
         {
             InitializeComponent();
-            LoadProperties();
+            //LoadProperties();
             ResizeView();
             Init();
         }
         public TabsView()
         {
             InitializeComponent();
-            LoadProperties();
+            //LoadProperties();
             ResizeView();
             Init();
         }
         public TabsView(string[] arg)
         {
             InitializeComponent();
-            LoadProperties();
+            //LoadProperties();
             Init();
             if (arg.Length == 0)
                 return;
@@ -104,7 +106,6 @@ namespace Bio
         }
         private void Init()
         {
-
             filters = new Filter();
             init = true;
         }
@@ -170,7 +171,6 @@ namespace Bio
         {
             if (openFilesDialog.ShowDialog() != DialogResult.OK)
                 return;
-            int img = Images.images.Count;
             foreach (string item in openFilesDialog.FileNames)
             {
                 BioImage im = BioImage.OpenFile(item);
@@ -185,7 +185,7 @@ namespace Bio
                 openRecentToolStripMenuItem.DropDownItems.Add(item, null, ItemClicked);
             }
         }
-
+        /*
         private void SaveProperties()
         {
             string s = "";
@@ -196,7 +196,8 @@ namespace Bio
             Properties.Settings.Default["Recent"] = s;
             Properties.Settings.Default.Save();
         }
-
+        */
+        /*
         private void LoadProperties()
         {
             App.recent.Clear();
@@ -208,7 +209,7 @@ namespace Bio
                     App.recent.Add(item);
             }
         }
-
+        */
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (this.Viewer != null)
@@ -614,7 +615,7 @@ namespace Bio
                 }
             }
             App.viewer.GoToImage();
-            SaveProperties();
+            //SaveProperties();
         }
         private void TabsView_KeyDown(object sender, KeyEventArgs e)
         {
@@ -672,14 +673,15 @@ namespace Bio
 
         private void TabsView_FormClosing(object sender, FormClosingEventArgs e)
         {
-            SaveProperties();
-            App.nodeView.Close();
-            Application.Exit();
+            e.Cancel = true;
+            //SaveProperties();
+            //App.nodeView.Close();
+            //Application.Exit();
         }
 
         private void automationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            App.recordings.Show();
+
         }
 
         private void stageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -880,7 +882,7 @@ namespace Bio
 
         private void switchRedBlueToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (BufferInfo bf in ImageView.SelectedImage.Buffers)
+            foreach (Bitmap bf in ImageView.SelectedImage.Buffers)
             {
                 bf.SwitchRedBlue();
             }
@@ -936,10 +938,7 @@ namespace Bio
 
         private void _3dToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SelectedImage == null)
-                return;
-            View3D d = new View3D(ImageView.SelectedImage);
-            d.Show();
+
         }
     }
 }

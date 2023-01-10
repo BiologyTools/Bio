@@ -15,6 +15,7 @@ using AForge.Imaging;
 using AForge.Math.Geometry;
 using AForge;
 using Bio.Graphics;
+using Bitmap = AForge.Bitmap;
 
 namespace Bio
 {
@@ -432,10 +433,10 @@ namespace Bio
                 Rectangle r = new Rectangle((int)ImageView.mouseDown.X, (int)ImageView.mouseDown.Y, (int)(ImageView.mouseUp.X - ImageView.mouseDown.X), (int)(ImageView.mouseUp.Y - ImageView.mouseDown.Y));
                 if (r.Width <= 2 || r.Height <= 2)
                     return;
-                BufferInfo bf = ImageView.SelectedImage.Buffers[ImageView.SelectedImage.Coords[coord.Z, coord.C, coord.T]].GetCropBuffer(r);
+                Bitmap bf = ImageView.SelectedImage.Buffers[ImageView.SelectedImage.Coords[coord.Z, coord.C, coord.T]].GetCropBuffer(r);
                 Statistics[] sts = Statistics.FromBytes(bf);
                 Statistics st = sts[0];
-                Bitmap crop = (Bitmap)bf.Image;
+                Bitmap crop = bf;
                 Threshold th;
                 if (magicSel.Numeric)
                 {

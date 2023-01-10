@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Automation;
 using System.Windows.Forms;
+using AForge;
 
 namespace Bio
 {
@@ -20,8 +20,6 @@ namespace Bio
         public static StackTools stackTools = null;
         public static ImageView viewer = null;
         public static Series seriesTool = null;
-        public static Recordings recordings = null;
-        public static Automation automation = null;
         public static BioConsole console = null;
         public static Library lib = null;
         public static List<string> recent = new List<string>();
@@ -48,16 +46,14 @@ namespace Bio
         {
             BioImage.Initialize();
             Microscope.Initialize();
-            viewer = new ImageView();
+            //viewer = new ImageView();
             stackTools = new StackTools();
             tools = new Tools();            
             manager = new ROIManager();
             runner = new Scripting();
             recorder = new Recorder();
             seriesTool = new Series();
-            recordings = new Recordings();
-            automation = new Automation();
-            lib = new Library();
+            //lib = new Library();
             console = new BioConsole();
         }
         public static void Hide()
@@ -68,7 +64,6 @@ namespace Bio
             runner.Hide();
             recorder.Hide();
             seriesTool.Hide();
-            recordings.Hide();
             console.Hide();
         }
         public static bool SetImageJPath()

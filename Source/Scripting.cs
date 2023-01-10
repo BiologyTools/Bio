@@ -19,8 +19,8 @@ namespace Bio
     public partial class Scripting : Form
     {
         public static string log;
-        public CodeView view = null;
-        public static string ImageJPath = Properties.Settings.Default.ImageJPath;
+        public RichTextBox view = null;
+        public static string ImageJPath = "";
 
         public static void LogLine(string s)
         {
@@ -299,8 +299,8 @@ namespace Bio
                 logBox.ScrollToCaret();
             }
         }
-        private CodeView codeview;
-        private RichTextBox textBox;
+        private RichTextBox codeview = new RichTextBox();
+        private RichTextBox textBox = new RichTextBox();
 
         public Scripting()
         {
@@ -312,11 +312,9 @@ namespace Bio
             scriptView.MultiSelect = false;
             RefreshItems();
             timer.Start();
-            codeview = new CodeView();
-            codeview.Dock = DockStyle.Fill;
             scriptLabel.Text = "NewScript.cs";
             //splitContainer.Dock = DockStyle.Fill;
-            textBox = codeview.TextBox;
+            textBox = codeview;
             splitContainer.Panel1.Controls.Add(codeview);
         }
         public void RunScriptFile(string file)

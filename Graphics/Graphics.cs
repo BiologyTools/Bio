@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
 using System.Drawing.Imaging;
+using System.Drawing;
+using AForge;
+using Bitmap = AForge.Bitmap; 
 
 namespace Bio.Graphics
 {
@@ -32,10 +34,10 @@ namespace Bio.Graphics
     }
     public class Graphics : IDisposable
     {
-        public BufferInfo buf;
+        public Bitmap buf;
         public Pen pen;
         private AbstractFloodFiller filler;
-        public static Graphics FromImage(BufferInfo b)
+        public static Graphics FromImage(Bitmap b)
         {
             Graphics g = new Graphics();
             g.buf = b;
@@ -78,7 +80,7 @@ namespace Bio.Graphics
                 }
             }
         }
-        private void DrawLine(int x, int y, int x2, int y2, BufferInfo bf, ColorS c)
+        private void DrawLine(int x, int y, int x2, int y2, Bitmap bf, ColorS c)
         {
             //Bresenham's algorithm for line drawing.
             int w = x2 - x;
@@ -210,7 +212,7 @@ namespace Bio.Graphics
         {
             //We will use the flood fill algorithm to fill the polygon.
             //First we need to create a new Buffer incase the current Buffer contains filled pixels that could prevent flood fill from filling the whole area.
-            BufferInfo bf = buf.CopyInfo();
+            Bitmap bf = buf.CopyInfo();
             bf.Bytes = new byte[buf.Bytes.Length];
 
             DrawPolygon(pfs, bf, pen.color);
@@ -221,14 +223,14 @@ namespace Bio.Graphics
             filler.Bitmap = bf;
             //Next we need to find a point inside the polygon from where to start the flood fill.
             //We use the center points x-line till we find a point inside.
-            Point p = new Point(r.X + (r.Width / 2), r.Y + (r.Height / 2));
-            Point? pp = null;
+            System.Drawing.Point p = new System.Drawing.Point(r.X + (r.Width / 2), r.Y + (r.Height / 2));
+            System.Drawing.Point? pp = null;
             polygon = pfs;
             for (int x = r.X; x < r.Width + r.X; x++)
             {
                 if (PointInPolygon(x, p.Y))
                 {
-                    pp = new Point(x, p.Y);
+                    pp = new System.Drawing.Point(x, p.Y);
                     break;
                 }
             }
@@ -269,7 +271,7 @@ namespace Bio.Graphics
             pen.color = c;
             FillPolygon(pfs, r);
         }
-        private void DrawPolygon(PointF[] pfs, BufferInfo bf, ColorS s)
+        private void DrawPolygon(PointF[] pfs, Bitmap bf, ColorS s)
         {
             for (int i = 0; i < pfs.Length - 1; i++)
             {
