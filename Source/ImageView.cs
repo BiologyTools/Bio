@@ -31,14 +31,14 @@ namespace Bio
 
             if (Environment.OSVersion.Platform.ToString().Contains("Unix"))
             {
-                HardwareAcceleration = false;
+                graphicsBackend = GraphicsBackend.Skia;
             }
             else if (Environment.OSVersion.Platform.ToString().Contains("Mac"))
             {
-                HardwareAcceleration = false;
+                graphicsBackend = GraphicsBackend.Skia;
             }
             else
-                HardwareAcceleration = true;
+                graphicsBackend = GraphicsBackend.Skia;
 
             serie = im.series;
             selectedImage = im;
@@ -55,10 +55,6 @@ namespace Bio
             zBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(ZTrackBar_MouseWheel);
             cBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(CTrackBar_MouseWheel);
             tBar.MouseWheel += new System.Windows.Forms.MouseEventHandler(TimeTrackBar_MouseWheel);
-            //We set the trackbar event to handled so that it only scrolls one tick not the default multiple.
-            zBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
-            tBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
-            cBar.MouseWheel += (sender, e) => ((HandledMouseEventArgs)e).Handled = true;
             TimeFps = 60;
             ZFps = 60;
             CFps = 1;
@@ -83,7 +79,7 @@ namespace Bio
                 overlayPictureBox.Height += 18;
             }
             
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 dx = new Direct2D();
                 dx.Initialize(new Configuration("BioImager", dxPanel.Width, dxPanel.Height), dxPanel.Handle);
@@ -102,14 +98,14 @@ namespace Bio
             InitializeComponent();
             if (Environment.OSVersion.Platform.ToString().Contains("Unix"))
             {
-                HardwareAcceleration = false;
+                graphicsBackend = GraphicsBackend.Skia;
             }
             else if (Environment.OSVersion.Platform.ToString().Contains("Mac"))
             {
-                HardwareAcceleration = false;
+                graphicsBackend = GraphicsBackend.Skia;
             }
             else
-                HardwareAcceleration = false;
+                graphicsBackend = GraphicsBackend.Skia;
             tools = App.tools;
             Dock = DockStyle.Fill;
             App.viewer = this;
@@ -130,7 +126,7 @@ namespace Bio
             // Change parent for overlay PictureBox.
             overlayPictureBox.Parent = pictureBox;
             overlayPictureBox.Location = new Point(0, 0);
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 dx = new Direct2D();
                 dx.Initialize(new Configuration("BioImager", dxPanel.Width, dxPanel.Height), dxPanel.Handle);
@@ -145,7 +141,32 @@ namespace Bio
         {
 
         }
-
+        public enum GraphicsBackend
+        {
+            Skia,
+            DirectX,
+        }
+        public static GraphicsBackend graphicsBackend = ImageView.GraphicsBackend.Skia;
+        public static bool isDX
+        {
+            get 
+            {
+                if (graphicsBackend == GraphicsBackend.DirectX)
+                    return true;
+                else
+                    return false;
+            }
+        }
+        public static bool isSkia
+        {
+            get
+            {
+                if (graphicsBackend == GraphicsBackend.Skia)
+                    return true;
+                else
+                    return false;
+            }
+        }
         List<Bitmap> Bitmaps = new List<Bitmap>();
         List<Resolution> resolutions = new List<Resolution>();
         public static List<ROI> selectedAnnotations = new List<ROI>();
@@ -175,7 +196,7 @@ namespace Bio
         {
             get
             {
-                return Win32.GetKeyState(Keys.LControlKey);
+                return App.Ctrl;
             }
         }
         private bool x1State = false;
@@ -404,9 +425,9 @@ namespace Bio
                     rgbBoxsPanel.BringToFront();
                     cBar.SendToBack();
                     cLabel.SendToBack();
-                    if (HardwareAcceleration)
+                    if (Acceleration)
                     {
-                        dxPanel.Visible = HardwareAcceleration;
+                        dxPanel.Visible = true;
                         dxPanel.BringToFront();
                     }
                     else
@@ -421,9 +442,9 @@ namespace Bio
                     rgbBoxsPanel.SendToBack();
                     cBar.BringToFront();
                     cLabel.BringToFront();
-                    if (HardwareAcceleration)
+                    if (Acceleration)
                     {
-                        dxPanel.Visible = HardwareAcceleration;
+                        dxPanel.Visible = true;
                         dxPanel.BringToFront();
                     }
                     else
@@ -438,9 +459,9 @@ namespace Bio
                     rgbBoxsPanel.SendToBack();
                     cBar.BringToFront();
                     cLabel.BringToFront();
-                    if (HardwareAcceleration)
+                    if (Acceleration)
                     {
-                        dxPanel.Visible = HardwareAcceleration;
+                        dxPanel.Visible = true;
                         dxPanel.BringToFront();
                     }
                     else
@@ -455,9 +476,9 @@ namespace Bio
                     rgbBoxsPanel.BringToFront();
                     cBar.SendToBack();
                     cLabel.SendToBack();
-                    if (HardwareAcceleration)
+                    if (Acceleration)
                     {
-                        dxPanel.Visible = HardwareAcceleration;
+                        dxPanel.Visible = true;
                         dxPanel.BringToFront();
                     }
                     else
@@ -518,7 +539,7 @@ namespace Bio
                 if (vScrollBar.Maximum > value.Y && value.Y > -1)
                     vScrollBar.Value = value.Y;
                 pyramidalOrigin = value;
-                UpdateImage();
+                UpdateImages();
                 UpdateView();
                 //PointF p = ToScreenSpace(pyramidalOrigin);
                 //origin = new PointD(p.X, p.Y);
@@ -537,7 +558,7 @@ namespace Bio
                 vScrollBar.Maximum = SelectedImage.Resolutions[value].SizeY;
                 PyramidalOrigin = new Point((int)x, (int)y);
                 resolution = value;
-                UpdateImage();
+                UpdateImages();
                 UpdateView();
             }
         }
@@ -554,7 +575,7 @@ namespace Bio
                 UpdateView();
             }
         }
-        public bool HardwareAcceleration
+        public bool Acceleration
         {
             get
             {
@@ -709,9 +730,15 @@ namespace Bio
         }
         public void UpdateOverlay()
         {
-            if (HardwareAcceleration)
+            if(Acceleration)
+            if (isDX)
             {
                 RenderFrame();
+                return;
+            }
+            else
+            {
+                SkiaRender();
                 return;
             }
             updateOverlay = true;
@@ -752,9 +779,15 @@ namespace Bio
         public void UpdateView()
         {
             UpdateStatus();
-            if (HardwareAcceleration)
+            if(Acceleration)
+            if (isDX)
             {
                 RenderFrame();
+                return;
+            }
+            else
+            {
+                SkiaRender();
                 return;
             }
             update = true;
@@ -763,7 +796,7 @@ namespace Bio
         }
         public void RenderFrame()
         {
-            if (HardwareAcceleration && dx != null)
+            if (Acceleration && dx != null)
             {
                 dx.BeginDraw();
                 dx.RenderTarget2D.Clear(new RawColor4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -987,21 +1020,87 @@ namespace Bio
                 return;
             }
         }
+        public void SkiaRender()
+        {
+
+            SKImageInfo imageInfo = new SKImageInfo(pictureBox.Width, pictureBox.Height);
+            using (SKSurface surface = SKSurface.Create(imageInfo))
+            {
+                SKCanvas g = surface.Canvas;
+                if (Bitmaps.Count == 0 || Bitmaps.Count != Images.Count)
+                    UpdateImages();
+                g.Translate(pictureBox.Width / 2, pictureBox.Height / 2);
+                if (Scale.Width == 0 || float.IsInfinity(Scale.Width))
+                    Scale = new SizeF(1, 1);
+                g.Scale(1, 1);
+                RectangleF rr = ToScreenRectF(PointD.MinX, PointD.MinY, PointD.MaxX - PointD.MinX, PointD.MaxY - PointD.MinY);
+                SKPaint sKPaint = new SKPaint();
+                sKPaint.BlendMode = SKBlendMode.Color;
+                sKPaint.Color = SKColors.LightGray;
+                g.DrawRect(rr.X, rr.Y, rr.Width, rr.Height, sKPaint);
+
+
+                Pen red = new Pen(Brushes.Red, 1 / Scale.Width);
+                if (Bitmaps.Count == 0)
+                    return;
+                RectangleF rf = new RectangleF();
+                Pen blue = new Pen(Brushes.Blue, 1 / Scale.Width);
+                int i = 0;
+                foreach (BioImage im in Images)
+                {
+                    if (Bitmaps[i] == null)
+                        UpdateImages();
+                    RectangleF r = ToScreenRectF(im.Volume.Location.X, im.Volume.Location.Y, im.Volume.Width, im.Volume.Height);
+                    double w = ToViewW(pictureBox.Width);
+                    double h = ToViewH(pictureBox.Height);
+                    RectangleF rg = new RectangleF((float)((-Origin.X) - (w / 2)), (float)((-Origin.Y) - (h / 2)), (float)(w), (float)(h));
+                    RectangleF rec = new RectangleF((float)im.Volume.Location.X, (float)im.Volume.Location.Y, (float)im.Volume.Width, (float)im.Volume.Height);
+                    if (SelectedImage.isPyramidal)
+                    {
+                        //We check tto see if image is valid
+                        if (Bitmaps[i].PixelFormat == PixelFormat.DontCare)
+                            UpdateImages();
+                        g.ResetMatrix();
+                        SKImage ima = SKImage.FromPixels(new SKPixmap(new SKImageInfo(Images[i].SizeX, Images[i].SizeY, SKColorType.Rgba8888), im.SelectedBuffer.RGBData));
+                        g.DrawImage(ima, 0, 0, null);
+                    }
+                    else
+                    {
+                        //We check tto see if image is valid
+                        if (Bitmaps[i].PixelFormat == PixelFormat.DontCare)
+                            UpdateImages();
+                        SKImage ima = SKImage.FromPixels(new SKPixmap(new SKImageInfo(Bitmaps[i].Width, Bitmaps[i].Height, SKColorType.Bgra8888), Bitmaps[i].RGBData));
+                        g.DrawImage(ima, r.X, r.Y, null);
+                    }
+                    if (i == SelectedIndex && !SelectedImage.isPyramidal)
+                    {
+                        rf = r;
+                        sKPaint.Color = SKColors.LightGray;
+                        g.DrawRect(rf.X, rf.Y, rf.Width, rf.Height, sKPaint);
+                    }
+                    i++;
+                }
+                blue.Dispose();
+                red.Dispose();
+                update = false;
+
+                using (SKImage image = surface.Snapshot())
+                using (SKData data = image.Encode(SKEncodedImageFormat.Png, 100))
+                using (MemoryStream mStream = new MemoryStream(data.ToArray()))
+                {
+                    System.Drawing.Bitmap bm = new System.Drawing.Bitmap(mStream, false);
+                    pictureBox.Image = bm;
+                }
+            }
+            
+        }
         public void UpdateView(bool refresh)
         {
             UpdateStatus();
             update = refresh;
-            if (HardwareAcceleration)
-            {
-                //dxPanel.Invalidate();
-            }
-            else
-            if (update)
-            {
-                pictureBox.Invalidate();
-                overlayPictureBox.Invalidate();
-                update = false;
-            }
+            pictureBox.Invalidate();
+            overlayPictureBox.Invalidate();
+            update = false;
         }
         public void UpdateImages()
         {
@@ -1017,7 +1116,7 @@ namespace Bio
             {
                 InitGUI();
             }
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 for (int i = 0; i < Images.Count; i++)
                 {
@@ -1106,97 +1205,6 @@ namespace Bio
             update = true;
         }
         Bitmap bitmap;
-        public void UpdateImage()
-        {
-            if (SelectedImage == null)
-                return;
-            ZCT coords = new ZCT(zBar.Value, cBar.Value, tBar.Value);
-            bitmap = null;
-            GC.Collect();
-            if (zBar.Maximum != SelectedImage.SizeZ - 1 || tBar.Maximum != SelectedImage.SizeT - 1)
-            {
-                zBar.Value = 0;
-                cBar.Value = 0;
-                tBar.Value = 0;
-                InitGUI();
-            }
-            int index = SelectedImage.Coords[zBar.Value, cBar.Value, tBar.Value];
-            if (Mode == ViewMode.Filtered)
-            {
-                if (SelectedImage.isPyramidal)
-                {
-                    ZCT c = GetCoordinate();
-                    Bitmap bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
-                    bitmap = bf;
-                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
-                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]] = bf;
-                }
-                else
-                    bitmap = new Bitmap(SelectedImage.GetFiltered(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB));
-            }
-            else if (Mode == ViewMode.RGBImage)
-            {
-                if (SelectedImage.isPyramidal)
-                {
-                    ZCT c = GetCoordinate();
-                    Bitmap bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
-                    bitmap = bf;
-                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
-                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]] = bf;
-                }
-                else
-                    bitmap = new Bitmap(SelectedImage.GetRGBBitmap(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB));
-            }
-            else if (Mode == ViewMode.Raw)
-            {
-                if (SelectedImage.isPyramidal)
-                {
-                    ZCT c = GetCoordinate();
-                    Bitmap bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
-                    bitmap = bf;
-                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
-                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]] = bf;
-                }
-                else
-                    bitmap = SelectedImage.Buffers[index];
-            }
-            else if (Mode == ViewMode.Emission)
-            {
-                if (SelectedImage.isPyramidal)
-                {
-                    ZCT c = GetCoordinate();
-                    Bitmap bf = BioImage.GetTile(SelectedImage, c, resolution, PyramidalOrigin.X, PyramidalOrigin.Y, pictureBox.Width, pictureBox.Height);
-                    bitmap = bf;
-                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]].Dispose();
-                    SelectedImage.Buffers[SelectedImage.Coords[c.Z, c.C, c.T]] = bf;
-                }
-                else
-                    bitmap = new Bitmap(SelectedImage.GetEmission(coords, RChannel.RangeR, GChannel.RangeG, BChannel.RangeB));
-            }
-
-            if (bitmap != null)
-                if (bitmap.PixelFormat == PixelFormat.Format16bppGrayScale || bitmap.PixelFormat == PixelFormat.Format48bppRgb)
-                    bitmap = AForge.Imaging.Image.Convert16bppTo8bpp(bitmap);
-
-            if (HardwareAcceleration)
-            {
-                if (dBitmaps[SelectedIndex] != null)
-                {
-                    dBitmaps[SelectedIndex].Dispose();
-                    dBitmaps[SelectedIndex] = null;
-                }
-                dBitmaps[SelectedIndex] = DBitmap.FromImage(dx.RenderTarget2D, bitmap);
-            }
-
-
-            if (SelectedIndex < Bitmaps.Count)
-                Bitmaps[SelectedIndex] = bitmap;
-            else
-                Bitmaps.Add(bitmap);
-
-            update = false;
-            UpdateView();
-        }
         private void channelBoxR_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (channelBoxR.SelectedIndex == -1)
@@ -1622,7 +1630,7 @@ namespace Bio
                 return;
             if (!updateOverlay)
                 return;
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 RenderFrame();
                 return;
@@ -1820,13 +1828,15 @@ namespace Bio
         SizeF dSize = new SizeF(1, 1);
         private void DrawView(System.Drawing.Graphics g)
         {
-            if (HardwareAcceleration)
+            if(Acceleration)
+            if (isDX)
             {
                 RenderFrame();
                 return;
             }
-            if(Environment.OSVersion.Platform == PlatformID.Win32NT) 
+            else if (isSkia)
             {
+                SkiaRender();
                 return;
             }
             if (Bitmaps.Count == 0 || Bitmaps.Count != Images.Count)
@@ -2009,7 +2019,7 @@ namespace Bio
                 Graphics.Graphics g = Graphics.Graphics.FromImage(SelectedBuffer);
                 Graphics.Pen pen = new Graphics.Pen(Tools.DrawColor, (int)Tools.StrokeWidth, ImageView.SelectedImage.bitsPerPixel);
                 g.FillEllipse(new Rectangle((int)ip.X, (int)ip.Y, Tools.StrokeWidth, (int)Tools.StrokeWidth), pen.color);
-                UpdateImage();
+                UpdateImages();
             }
 
             UpdateStatus();
@@ -2030,7 +2040,7 @@ namespace Bio
                         Point pf = new Point(e.X - mouseD.X, e.Y - mouseD.Y);
                         PyramidalOrigin = new Point(PyramidalOrigin.X - pf.X, PyramidalOrigin.Y - pf.Y);
                     }
-                UpdateImage();
+                UpdateImages();
                 UpdateView();
             }
             mouseUpButtons = e.Button;
@@ -2057,7 +2067,7 @@ namespace Bio
             if (SelectedImage == null)
                 return;
             PointF ip;
-            if (HardwareAcceleration)
+            if (isDX)
                 ip = SelectedImage.ToImageSpace(new PointD(SelectedImage.Volume.Width - p.X, SelectedImage.Volume.Height - p.Y));
             else
                 ip = SelectedImage.ToImageSpace(p);
@@ -2166,6 +2176,7 @@ namespace Bio
             if (e.Button != MouseButtons.XButton1 && e.Button != MouseButtons.XButton2)
                 Origin = new PointD(-p.X, -p.Y);
         }
+
         private void deleteROIToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SelectedImage == null)
@@ -2335,7 +2346,7 @@ namespace Bio
         }
         public PointD ToScreenSpace(double x, double y)
         {
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 RectangleF f = ToScreenRectF(x, y, 1, 1);
                 RawRectangleF rf = ToRawRectF(f.X, f.Y, f.Width, f.Height);
@@ -2371,7 +2382,7 @@ namespace Bio
         }
         public float ToScreenScaleW(double x)
         {
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 return (float)(-x * PxWmicron * Scale.Width);
             }
@@ -2379,7 +2390,7 @@ namespace Bio
         }
         public float ToScreenScaleH(double y)
         {
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 return (float)(-y * PxHmicron * Scale.Height);
             }
@@ -2394,7 +2405,7 @@ namespace Bio
         public RectangleF ToScreenRectF(double x, double y, double w, double h)
         {
             PointD pf;
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 double dx = (pxWmicron * (-Origin.X)) * Scale.Width;
                 double dy = (pxHmicron * (-Origin.Y)) * Scale.Height;
@@ -2448,7 +2459,7 @@ namespace Bio
         }
         public float ToScreenW(double x)
         {
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 return (float)(x * PxWmicron);
             }
@@ -2456,7 +2467,7 @@ namespace Bio
         }
         public float ToScreenH(double y)
         {
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 return (float)(y * PxHmicron);
             }
@@ -2465,6 +2476,8 @@ namespace Bio
         private void ImageView_KeyDown(object sender, KeyEventArgs e)
         {
             double moveAmount = 5 * Scale.Width;
+            if (e.KeyCode == Keys.Control)
+                App.ctrl = true;
             if (e.KeyCode == Keys.C && e.Control)
             {
                 CopySelection();
@@ -2515,7 +2528,7 @@ namespace Bio
             double dy = SelectedImage.Volume.Height / 2;
             Origin = new PointD(-(SelectedImage.Volume.Location.X + dx), -(SelectedImage.Volume.Location.Y + dy));
             double wx, wy;
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 wx = pictureBox.Width / ToScreenW(SelectedImage.Volume.Width);
                 wy = pictureBox.Height / ToScreenH(SelectedImage.Volume.Height);
@@ -2536,7 +2549,7 @@ namespace Bio
             double dy = Images[i].Volume.Height / 2;
             Origin = new PointD(-(Images[i].Volume.Location.X + dx), -(Images[i].Volume.Location.Y + dy));
             double wx, wy;
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 wx = pictureBox.Width / ToScreenW(SelectedImage.Volume.Width);
                 wy = pictureBox.Height / ToScreenH(SelectedImage.Volume.Height);
@@ -2643,7 +2656,7 @@ namespace Bio
                 }
             }
             update = true;
-            UpdateImage();
+            UpdateImages();
         }
 
         private void fillToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2676,7 +2689,7 @@ namespace Bio
                 }
             }
             update = true;
-            UpdateImage();
+            UpdateImages();
         }
 
         private void vScrollBar_ValueChanged(object sender, EventArgs e)
@@ -2687,7 +2700,7 @@ namespace Bio
         {
             if (SelectedImage.isPyramidal)
             {
-                UpdateImage();
+                UpdateImages();
                 UpdateView();
             }
         }
@@ -2695,7 +2708,7 @@ namespace Bio
         Configuration conf = new Configuration();
         private void dxPanel_SizeChanged(object sender, EventArgs e)
         {
-            if (HardwareAcceleration)
+            if (isDX)
             {
                 conf.Width = dxPanel.Width;
                 conf.Height = dxPanel.Height;
@@ -2707,5 +2720,41 @@ namespace Bio
         {
             Function.Initialize();
         }
+
+        private void ImageView_KeyUp(object sender, KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.ControlKey)
+            {
+                App.ctrl = false;
+            }
+
+        }
+        const int WM_KEYDOWN = 0x100;
+        const int WM_KEYUP = 0x101;
+        const int WM_SYSKEYDOWN = 0x104;
+        const int WM_SYSKEYUP = 0x105;
+        public static KeyEventArgs keyDown = new KeyEventArgs(Keys.None);
+        public static KeyEventArgs keyUp = new KeyEventArgs(Keys.None);
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if ((msg.Msg == WM_KEYDOWN) || (msg.Msg == WM_SYSKEYDOWN))
+            {
+                if (keyData == Keys.ControlKey)
+                {
+                    App.ctrl = true;
+                }
+                keyDown = new KeyEventArgs(keyData);
+            }
+            if ((msg.Msg == WM_KEYUP) || (msg.Msg == WM_SYSKEYUP))
+            {
+                if (keyData == Keys.ControlKey)
+                {
+                    App.ctrl = false;
+                }
+                keyUp = new KeyEventArgs(keyData);
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
     }
 }

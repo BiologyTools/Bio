@@ -55,6 +55,7 @@ namespace Bio
             seriesTool = new Series();
             //lib = new Library();
             console = new BioConsole();
+            
         }
         public static void Hide()
         {
@@ -65,6 +66,10 @@ namespace Bio
             recorder.Hide();
             seriesTool.Hide();
             console.Hide();
+        }
+        public static void Show() 
+        {
+            tools.Show();
         }
         public static bool SetImageJPath()
         {
@@ -79,7 +84,6 @@ namespace Bio
             ImageJ.Initialize(file.FileName);
             return true;
         }
-
         private static IEnumerable<ToolStripMenuItem> GetItems(ToolStripMenuItem item)
         {
             foreach (var dropDownItem in item.DropDownItems)
@@ -208,6 +212,11 @@ namespace Bio
                 }
             }
             return item;
+        }
+        public static bool ctrl = false;
+        public static bool Ctrl
+        {
+            get { return ctrl; }
         }
         public static void AddMenu(string menu, Function f)
         {

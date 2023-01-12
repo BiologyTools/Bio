@@ -55,8 +55,6 @@
             this.dropperPanel = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.eraserPanel = new System.Windows.Forms.Panel();
-            this.widthBox = new System.Windows.Forms.NumericUpDown();
-            this.label3 = new System.Windows.Forms.Label();
             this.color1Box = new System.Windows.Forms.Panel();
             this.color2Box = new System.Windows.Forms.Panel();
             this.switchBox = new System.Windows.Forms.PictureBox();
@@ -66,7 +64,6 @@
             this.pointPanel.SuspendLayout();
             this.deletePanel.SuspendLayout();
             this.dropperPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.widthBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.switchBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -331,41 +328,6 @@
             this.eraserPanel.Tag = "tool";
             this.eraserPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.eraserPanel_MouseClick);
             // 
-            // widthBox
-            // 
-            this.widthBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(49)))), ((int)(((byte)(91)))), ((int)(((byte)(138)))));
-            this.widthBox.ForeColor = System.Drawing.Color.White;
-            this.widthBox.Location = new System.Drawing.Point(20, 296);
-            this.widthBox.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.widthBox.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.widthBox.Name = "widthBox";
-            this.widthBox.Size = new System.Drawing.Size(40, 20);
-            this.widthBox.TabIndex = 177;
-            this.widthBox.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.widthBox.ValueChanged += new System.EventHandler(this.widthBox_ValueChanged);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.ForeColor = System.Drawing.Color.White;
-            this.label3.Location = new System.Drawing.Point(-1, 299);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(21, 13);
-            this.label3.TabIndex = 178;
-            this.label3.Text = "W:";
-            // 
             // color1Box
             // 
             this.color1Box.BackColor = System.Drawing.Color.White;
@@ -400,13 +362,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(95)))), ((int)(((byte)(122)))), ((int)(((byte)(156)))));
-            this.ClientSize = new System.Drawing.Size(61, 319);
+            this.ClientSize = new System.Drawing.Size(61, 299);
             this.ContextMenuStrip = this.contextMenuStrip;
             this.Controls.Add(this.switchBox);
             this.Controls.Add(this.color2Box);
             this.Controls.Add(this.color1Box);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.widthBox);
             this.Controls.Add(this.eraserPanel);
             this.Controls.Add(this.dropperPanel);
             this.Controls.Add(this.bucketPanel);
@@ -423,25 +383,26 @@
             this.Controls.Add(this.polyPanel);
             this.Controls.Add(this.ellipsePanel);
             this.Controls.Add(this.movePanel);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Tools";
+            this.ShowIcon = false;
             this.Text = "Tools";
             this.TopMost = true;
             this.Activated += new System.EventHandler(this.Tools_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Tools_FormClosing);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Tools_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Tools_KeyUp);
             this.movePanel.ResumeLayout(false);
             this.contextMenuStrip.ResumeLayout(false);
             this.polyPanel.ResumeLayout(false);
             this.pointPanel.ResumeLayout(false);
             this.deletePanel.ResumeLayout(false);
             this.dropperPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.widthBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.switchBox)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -472,8 +433,6 @@
         private System.Windows.Forms.Panel dropperPanel;
         private System.Windows.Forms.Panel eraserPanel;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.NumericUpDown widthBox;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel color1Box;
         private System.Windows.Forms.Panel color2Box;
         private System.Windows.Forms.PictureBox switchBox;

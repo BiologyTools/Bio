@@ -381,14 +381,14 @@ namespace Bio
         {
             App.channelsTool.SelectedChannel.range[App.channelsTool.SelectedSample].Max = (int)MouseValX;
             Invalidate();
-            App.viewer.UpdateImage();
+            App.viewer.UpdateImages();
         }
 
         private void setMinToolStripMenuItem_Click(object sender, EventArgs e)
         {
             App.channelsTool.SelectedChannel.range[App.channelsTool.SelectedSample].Min = (int)MouseValX;
             Invalidate();
-            App.viewer.UpdateImage();
+            App.viewer.UpdateImages();
         }
 
         private void setMaxAllToolStripMenuItem_Click(object sender, EventArgs e)

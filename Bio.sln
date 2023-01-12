@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bio", "Bio.csproj", "{F920D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BioApp", "..\BioApp\BioApp.csproj", "{45C2B682-162E-4815-A299-82C5C90DAC1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AForgeBio", "..\AForgeNET\AForgeNET\AForgeBio.csproj", "{CB32276C-4D3D-4DB7-80F8-E4002D7298F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AForgeBio", "..\AForgeBio\AForgeBio\AForgeBio.csproj", "{CB32276C-4D3D-4DB7-80F8-E4002D7298F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -9,8 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WindowsInput;
-using WindowsInput.Native;
 using System.IO;
 using Newtonsoft.Json;
 
@@ -18,7 +16,6 @@ namespace Bio
 {
     public partial class FunctionForm : Form
     {
-        public static InputSimulator input = new InputSimulator();
         private Function func;
         public Function Func
         {
@@ -69,7 +66,7 @@ namespace Bio
             //We add button states to buttonState box.
             ind = 0;
             keysBox.Items.Clear();
-            foreach (VirtualKeyCode val in Enum.GetValues(typeof(VirtualKeyCode)))
+            foreach (Keys val in Enum.GetValues(typeof(Keys)))
             {
                 keysBox.Items.Add(val);
                 if (val == func.Key)
@@ -78,14 +75,13 @@ namespace Bio
             }
             //We add the modifiers to modifierBox
             modifierBox.Items.Clear();
-            modifierBox.Items.Add(VirtualKeyCode.NONAME);
-            modifierBox.Items.Add(VirtualKeyCode.RCONTROL);
-            modifierBox.Items.Add(VirtualKeyCode.LCONTROL);
-            modifierBox.Items.Add(VirtualKeyCode.RSHIFT);
-            modifierBox.Items.Add(VirtualKeyCode.LSHIFT);
-            modifierBox.Items.Add(VirtualKeyCode.MENU);
-            modifierBox.Items.Add(VirtualKeyCode.RWIN);
-            modifierBox.Items.Add(VirtualKeyCode.LWIN);
+            modifierBox.Items.Add(Keys.None);
+            modifierBox.Items.Add(Keys.Control);
+            modifierBox.Items.Add(Keys.RShiftKey);
+            modifierBox.Items.Add(Keys.LShiftKey);
+            modifierBox.Items.Add(Keys.LWin);
+            modifierBox.Items.Add(Keys.RWin);
+            modifierBox.Items.Add(Keys.Alt);
             modifierBox.SelectedItem = func.Modifier;
 
             microBox.Items.Clear();
@@ -123,12 +119,12 @@ namespace Bio
         }
         private void keysBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Func.Key = (VirtualKeyCode)keysBox.SelectedItem;
+            Func.Key = (Keys)keysBox.SelectedItem;
             Func.FuncType = Function.FunctionType.Key;
         }
         private void modifierBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Func.Modifier = (VirtualKeyCode)modifierBox.SelectedItem;
+            Func.Modifier = (Keys)modifierBox.SelectedItem;
             Func.FuncType = Function.FunctionType.Key;
         }
         private void stateBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -293,8 +289,8 @@ namespace Bio
             }
         }
 
-        private VirtualKeyCode key;
-        public VirtualKeyCode Key
+        private Keys key;
+        public Keys Key
         {
             get
             {
@@ -307,8 +303,8 @@ namespace Bio
             }
         }
 
-        private VirtualKeyCode modifier = VirtualKeyCode.NONAME;
-        public VirtualKeyCode Modifier
+        private Keys modifier = Keys.None;
+        public Keys Modifier
         {
             get
             {
@@ -427,8 +423,6 @@ namespace Bio
         {
             return JsonConvert.SerializeObject(this);
         }
-
-        public static InputSimulator input = new InputSimulator();
         public object PerformFunction(bool imagej)
         {
             if(FuncType == FunctionType.Key && Script!="")
@@ -445,19 +439,6 @@ namespace Bio
             if (FuncType == Function.FunctionType.ImageJ)
             {
                 ImageJ.RunOnImage(script, false, BioConsole.onTab, BioConsole.useBioformats);
-            }
-
-            if (FuncType == Function.FunctionType.Key)
-            {
-                if (Modifier != VirtualKeyCode.NONAME)
-                {
-                    input.Keyboard.ModifiedKeyStroke(Modifier, Key);
-                }
-                else
-                {
-                    input.Keyboard.KeyPress(Key);
-                }
-                return null;
             }
             return null;
         }

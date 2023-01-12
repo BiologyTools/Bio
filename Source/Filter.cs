@@ -62,21 +62,20 @@ namespace Bio
                 return;
             if (n.filt.type == Filt.Type.Base)
             {
-                Filters.Base(ImageView.SelectedImage.ID, n.filt.name, false);
-                
+                App.viewer.Images[App.viewer.SelectedIndex] = Filters.Base(ImageView.SelectedImage.ID, n.filt.name, false);
             }
             if (n.filt.type == Filt.Type.Base2)
             {
                 ApplyFilter two = new ApplyFilter(true);
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.Base2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
+                App.viewer.Images[App.viewer.SelectedIndex] = Filters.Base2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
                 
             }
             else
             if (n.filt.type == Filt.Type.InPlace)
             {
-                Filters.InPlace(ImageView.SelectedImage.ID, n.filt.name, false);
+                App.viewer.Images[App.viewer.SelectedIndex] = Filters.InPlace(ImageView.SelectedImage.ID, n.filt.name, false);
             }
             else
             if (n.filt.type == Filt.Type.InPlace2)
@@ -84,13 +83,13 @@ namespace Bio
                 ApplyFilter two = new ApplyFilter(true);
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.InPlace2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
+                App.viewer.Images[App.viewer.SelectedIndex] = Filters.InPlace2(two.ImageA.ID, two.ImageB.ID, n.filt.name, false);
                 
             }
             else
             if (n.filt.type == Filt.Type.InPlacePartial)
             {
-                Filters.InPlacePartial(ImageView.SelectedImage.ID, n.filt.name, false);
+                App.viewer.Images[App.viewer.SelectedIndex] = Filters.InPlacePartial(ImageView.SelectedImage.ID, n.filt.name, false);
                 
             }
             else
@@ -99,7 +98,7 @@ namespace Bio
                 ApplyFilter two = new ApplyFilter(false);
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.Resize(ImageView.SelectedImage.ID, n.filt.name, false, two.W,two.H);
+                App.viewer.Images[App.viewer.SelectedIndex] = Filters.Resize(ImageView.SelectedImage.ID, n.filt.name, false, two.W,two.H);
             }
             else
             if (n.filt.type == Filt.Type.Rotate)
@@ -107,7 +106,7 @@ namespace Bio
                 ApplyFilter two = new ApplyFilter(false);
                 if (two.ShowDialog() != DialogResult.OK)
                     return;
-                Filters.Rotate(ImageView.SelectedImage.ID, n.filt.name, false, two.Angle, two.Color.A, two.Color.R, two.Color.G, two.Color.B);
+                App.viewer.Images[App.viewer.SelectedIndex] = Filters.Rotate(ImageView.SelectedImage.ID, n.filt.name, false, two.Angle, two.Color.A, two.Color.R, two.Color.G, two.Color.B);
             }
             else
             if (n.filt.type == Filt.Type.Transformation)
@@ -117,11 +116,11 @@ namespace Bio
                     return;
                 if (n.filt.name == "Crop")
                 {
-                    Filters.Crop(two.ImageA.ID, two.Rectangle);
+                    App.viewer.Images[App.viewer.SelectedIndex] = Filters.Crop(two.ImageA.ID, two.Rectangle);
                 }
                 else
                 {
-                    Filters.Transformation(ImageView.SelectedImage.ID, n.filt.name, false, two.Angle);
+                    App.viewer.Images[App.viewer.SelectedIndex] = Filters.Transformation(ImageView.SelectedImage.ID, n.filt.name, false, two.Angle);
                 }
             }
             else

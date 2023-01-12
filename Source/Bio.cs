@@ -680,7 +680,8 @@ namespace Bio
                 BaseFilter fi = (BaseFilter)f.filt;
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
-                    img.Buffers[i].SetImage(fi.Apply(img.Buffers[i]), false); ;
+                    Bitmap bm = fi.Apply(img.Buffers[i]);
+                    img.Buffers[i] = bm;
                 }
                 if (!inPlace)
                 {
@@ -710,7 +711,7 @@ namespace Bio
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
                     fi.OverlayImage = c2.Buffers[i];
-                    img.Buffers[i].SetImage(fi.Apply(img.Buffers[i]), false);
+                    img.Buffers[i] = fi.Apply(img.Buffers[i]);
                 }
                 if (!inPlace)
                 {
@@ -739,7 +740,7 @@ namespace Bio
                 BaseInPlaceFilter fi = (BaseInPlaceFilter)f.filt;
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
-                    img.Buffers[i].SetImage(fi.Apply((Bitmap)img.Buffers[i]), false);
+                    img.Buffers[i] = fi.Apply((Bitmap)img.Buffers[i]);
                 }
                 if (!inPlace)
                 {
@@ -770,7 +771,7 @@ namespace Bio
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
                     fi.OverlayImage = c2.Buffers[i];
-                    img.Buffers[i].SetImage(fi.Apply(img.Buffers[i]), false);
+                    img.Buffers[i] = fi.Apply(img.Buffers[i]);
                 }
                 if (!inPlace)
                 {
@@ -799,7 +800,7 @@ namespace Bio
                 BaseInPlacePartialFilter fi = (BaseInPlacePartialFilter)f.filt;
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
-                    img.Buffers[i].SetImage(fi.Apply(img.Buffers[i]), false);
+                    img.Buffers[i] = fi.Apply(img.Buffers[i]);
                 }
                 if (!inPlace)
                 {
@@ -830,7 +831,7 @@ namespace Bio
                 fi.NewWidth = w;
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
-                    img.Buffers[i].SetImage(fi.Apply(img.Buffers[i]), false);
+                    img.Buffers[i]= fi.Apply(img.Buffers[i]);
                 }
                 if (!inPlace)
                 {
@@ -860,7 +861,7 @@ namespace Bio
                 fi.FillColor = System.Drawing.Color.FromArgb(a, r, g, b);
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
-                    img.Buffers[i].SetImage(fi.Apply(img.Buffers[i]), false);
+                    img.Buffers[i] = fi.Apply(img.Buffers[i]);
                 }
                 if (!inPlace)
                 {
@@ -890,7 +891,7 @@ namespace Bio
                 BaseTransformationFilter fi = (BaseTransformationFilter)f.filt;
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
-                    img.Buffers[i].SetImage(fi.Apply(img.Buffers[i]), false);
+                    img.Buffers[i] = fi.Apply(img.Buffers[i]);
                 }
                 if (!inPlace)
                 {
@@ -918,7 +919,7 @@ namespace Bio
                 BaseUsingCopyPartialFilter fi = (BaseUsingCopyPartialFilter)f.filt;
                 for (int i = 0; i < img.Buffers.Count; i++)
                 {
-                    img.Buffers[i].Image = fi.Apply((Bitmap)img.Buffers[i]);
+                    img.Buffers[i] = fi.Apply((Bitmap)img.Buffers[i]);
                 }
                 if (!inPlace)
                 {
@@ -2832,7 +2833,12 @@ namespace Bio
         }
         public ushort GetValueRGB(ZCTXY coord, int index)
         {
-            int ind = Coords[coord.Z, coord.C, coord.T];
+            int ind = 0;
+            if(coord.C >= SizeC)
+            {
+                coord.C = 0;
+            }
+            ind = Coords[coord.Z, coord.C, coord.T];
             ColorS c = Buffers[ind].GetPixel(coord.X, coord.Y);
             if (index == 0)
                 return c.R;

@@ -205,7 +205,6 @@ namespace Bio
                 color1Box.BackColor = ColorS.ToColor(DrawColor, ImageView.SelectedImage.Buffers[0].BitsPerPixel);
                 color2Box.BackColor = ColorS.ToColor(EraseColor, ImageView.SelectedImage.Buffers[0].BitsPerPixel);
             }
-            widthBox.Value = width;
         }
 
         ROI anno = new ROI();
@@ -215,7 +214,7 @@ namespace Bio
                 return;
             Scripting.UpdateState(Scripting.State.GetDown(e, buts));
             PointF p;
-            if (App.viewer.HardwareAcceleration)
+            if (ImageView.isDX)
                 p = ImageView.SelectedImage.ToImageSpace(new PointD(ImageView.SelectedImage.Volume.Width - e.X, ImageView.SelectedImage.Volume.Height - e.Y));
             else
                 p = ImageView.SelectedImage.ToImageSpace(e);
@@ -353,7 +352,7 @@ namespace Bio
         public void ToolUp(PointD e, MouseButtons buts)
         {
             PointF p;
-            if (App.viewer.HardwareAcceleration)
+            if (ImageView.isDX)
                 p = ImageView.SelectedImage.ToImageSpace(new PointD(ImageView.SelectedImage.Volume.Width - e.X, ImageView.SelectedImage.Volume.Height - e.Y));
             else
                 p = ImageView.SelectedImage.ToImageSpace(e);
@@ -520,10 +519,11 @@ namespace Bio
             if (ImageView.SelectedImage == null)
                 return;
             PointF p;
-            if (App.viewer.HardwareAcceleration)
+            if (ImageView.isDX)
                 p = ImageView.SelectedImage.ToImageSpace(new PointD(ImageView.SelectedImage.Volume.Width - e.X, ImageView.SelectedImage.Volume.Height - e.Y));
             else
                 p = ImageView.SelectedImage.ToImageSpace(e);
+
             if (currentTool.type == Tool.Type.line && ImageView.down)
             {
                 anno.UpdatePoint(new PointD(e.X, e.Y), 1);
@@ -545,8 +545,8 @@ namespace Bio
                     anno.AddPoint(new PointD(e.X, e.Y));
                 }
                 UpdateOverlay();
-            }else
-            
+            }
+            else
             if (currentTool.type == Tool.Type.rect && anno.type == ROI.Type.Rectangle)
             {
                 if (anno.GetPointCount() == 4)
@@ -597,7 +597,7 @@ namespace Bio
                 Tools.GetTool(Tools.Tool.Type.rectSel).Rectangle = new RectangleD(0, 0, 0, 0);
             }
             else
-            if (Win32.GetKeyState(Keys.Delete))
+            if (ImageView.keyDown.KeyCode == Keys.Delete)
             {
                 foreach (ROI an in ImageView.selectedAnnotations)
                 {
@@ -637,7 +637,7 @@ namespace Bio
                 Graphics.Pen pen = new Graphics.Pen(Tools.EraseColor, (int)Tools.StrokeWidth,ImageView.SelectedBuffer.BitsPerPixel);
                 g.FillEllipse(new Rectangle((int)p.X, (int)p.Y, (int)width, (int)Tools.StrokeWidth), pen.color);
                 pen.Dispose();
-                App.viewer.UpdateImage();
+                App.viewer.UpdateImages();
             }
         }
 
@@ -815,11 +815,6 @@ namespace Bio
             UpdateGUI();
         }
 
-        private void widthBox_ValueChanged(object sender, EventArgs e)
-        {
-            width = (int)widthBox.Value;
-        }
-
         private void eraserPanel_MouseClick(object sender, MouseEventArgs e)
         {
             currentTool = GetTool(Tool.Type.eraser);
@@ -839,6 +834,20 @@ namespace Bio
         private void Tools_Activated(object sender, EventArgs e)
         {
             UpdateGUI();
+        }
+
+        private void Tools_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.ControlKey)
+                App.ctrl = true;
+            else
+                App.ctrl = false;
+        }
+
+        private void Tools_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.ControlKey)
+                App.ctrl = false;
         }
     }
 }

@@ -848,7 +848,7 @@ namespace Bio
             string st = e.ClickedItem.Text;
             RotateFlipType rot = (RotateFlipType)Enum.Parse(typeof(RotateFlipType), st);
             ImageView.SelectedImage.RotateFlip(rot);
-            ImageView.UpdateImage();
+            ImageView.UpdateImages();
             ImageView.UpdateView();
         }
 
@@ -919,7 +919,7 @@ namespace Bio
         }
         private void dToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Viewer.HardwareAcceleration = dToolStripMenuItem.Checked;
+            Viewer.Acceleration = dToolStripMenuItem.Checked;
             Properties.Settings.Default.HardwareAcceleration = dToolStripMenuItem.Checked;
             Properties.Settings.Default.Save();
             Viewer.UpdateView();
@@ -939,6 +939,70 @@ namespace Bio
         private void _3dToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void TabsView_KeyUp(object sender, KeyEventArgs e)
+        {
+            ImageView.keyUp = e;
+            if (e.KeyCode == Keys.ControlKey)
+                App.ctrl = false;
+        }
+
+        private void tabControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.ControlKey)
+                App.ctrl = true;
+            else
+                App.ctrl = false;
+            ImageView.keyDown = e;
+        }
+
+        private void tabControl_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.ControlKey)
+                App.ctrl = false;
+            ImageView.keyUp = e;
+        }
+        const int WM_KEYDOWN = 0x100;
+        const int WM_KEYUP = 0x101;
+        const int WM_SYSKEYDOWN = 0x104;
+        const int WM_SYSKEYUP = 0x105;
+        public static KeyEventArgs keyDown = new KeyEventArgs(Keys.None);
+        public static KeyEventArgs keyUp = new KeyEventArgs(Keys.None);
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_KEYDOWN)
+            {
+                if ((int)m.WParam == (int)Keys.ControlKey)
+                    App.ctrl = true;
+
+            }
+            if (m.Msg == WM_KEYUP)
+            {
+                if ((int)m.WParam == (int)Keys.ControlKey)
+                    App.ctrl = false;
+            }
+            base.WndProc(ref m);
+        }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if ((msg.Msg == WM_KEYDOWN) || (msg.Msg == WM_SYSKEYDOWN))
+            {
+                if (keyData == Keys.ControlKey)
+                {
+                    App.ctrl = true;
+                }
+                keyDown = new KeyEventArgs(keyData);
+            }
+            if ((msg.Msg == WM_KEYUP) || (msg.Msg == WM_SYSKEYUP))
+            {
+                if (keyData == Keys.ControlKey)
+                {
+                    App.ctrl = false;
+                }
+                keyUp = new KeyEventArgs(keyData);
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

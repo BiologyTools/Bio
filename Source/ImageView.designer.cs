@@ -609,9 +609,9 @@ namespace Bio
             this.trackBarPanel.Controls.Add(this.zLabel);
             this.trackBarPanel.Controls.Add(this.cLabel);
             this.trackBarPanel.Controls.Add(this.rgbBoxsPanel);
-            this.trackBarPanel.Location = new System.Drawing.Point(0, 293);
+            this.trackBarPanel.Location = new System.Drawing.Point(0, 287);
             this.trackBarPanel.Name = "trackBarPanel";
-            this.trackBarPanel.Size = new System.Drawing.Size(428, 75);
+            this.trackBarPanel.Size = new System.Drawing.Size(428, 81);
             this.trackBarPanel.TabIndex = 17;
             // 
             // statusPanel
@@ -683,7 +683,7 @@ namespace Bio
             | System.Windows.Forms.AnchorStyles.Right)));
             this.overlayPictureBox.BackColor = System.Drawing.Color.Transparent;
             this.overlayPictureBox.ContextMenuStrip = this.contextMenuStrip;
-            this.overlayPictureBox.Location = new System.Drawing.Point(0, 25);
+            this.overlayPictureBox.Location = new System.Drawing.Point(0, 18);
             this.overlayPictureBox.Margin = new System.Windows.Forms.Padding(0);
             this.overlayPictureBox.Name = "overlayPictureBox";
             this.overlayPictureBox.Size = new System.Drawing.Size(411, 251);
@@ -699,7 +699,7 @@ namespace Bio
             // 
             this.hScrollBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.hScrollBar.Location = new System.Drawing.Point(0, 276);
+            this.hScrollBar.Location = new System.Drawing.Point(0, 270);
             this.hScrollBar.Name = "hScrollBar";
             this.hScrollBar.Size = new System.Drawing.Size(428, 18);
             this.hScrollBar.SmallChange = 10;
@@ -713,7 +713,7 @@ namespace Bio
             | System.Windows.Forms.AnchorStyles.Right)));
             this.vScrollBar.Location = new System.Drawing.Point(411, 25);
             this.vScrollBar.Name = "vScrollBar";
-            this.vScrollBar.Size = new System.Drawing.Size(17, 251);
+            this.vScrollBar.Size = new System.Drawing.Size(17, 241);
             this.vScrollBar.SmallChange = 10;
             this.vScrollBar.TabIndex = 23;
             this.vScrollBar.Visible = false;
@@ -760,6 +760,7 @@ namespace Bio
             this.Name = "ImageView";
             this.Size = new System.Drawing.Size(428, 368);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ImageView_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ImageView_KeyUp);
             this.timePlayMenuStrip.ResumeLayout(false);
             this.contextMenuStrip.ResumeLayout(false);
             this.zPlayMenuStrip.ResumeLayout(false);

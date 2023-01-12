@@ -74,7 +74,7 @@ namespace Bio
                 hist.Min = (int)minBox.Value;
             }
             App.Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Min = (int)minBox.Value;
-            App.viewer.UpdateImage();
+            App.viewer.UpdateImages();
             App.viewer.UpdateView();
         }
         private void maxBox_ValueChanged(object sender, EventArgs e)
@@ -88,7 +88,7 @@ namespace Bio
                 hist.Max = (int)maxBox.Value;
             }
             App.Channels[channelsBox.SelectedIndex].range[(int)sampleBox.Value].Min = (int)minBox.Value;
-            App.viewer.UpdateImage();
+            App.viewer.UpdateImages();
             App.viewer.UpdateView();
         }
         private void channelsBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -354,7 +354,7 @@ namespace Bio
             {
                 ImageView.SelectedImage.StackThreshold(false);
             }
-            App.viewer.UpdateImage();
+            App.viewer.UpdateImages();
         }
 
         private void sampleBox_ValueChanged(object sender, EventArgs e)

@@ -70,6 +70,7 @@ namespace Bio
             this.filteredToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.emissionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this._3dToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sepToolStripMenuItem = new System.Windows.Forms.ToolStripSeparator();
             this.dToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.xMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,7 +105,6 @@ namespace Bio
             this.scriptRecorderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.automationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._3dToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel.SuspendLayout();
             this.tabContextMenuStrip.SuspendLayout();
             this.menuStrip.SuspendLayout();
@@ -142,6 +142,8 @@ namespace Bio
             this.tabControl.Size = new System.Drawing.Size(584, 1);
             this.tabControl.TabIndex = 0;
             this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
+            this.tabControl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tabControl_KeyDown);
+            this.tabControl.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tabControl_KeyUp);
             // 
             // tabContextMenuStrip
             // 
@@ -409,6 +411,13 @@ namespace Bio
             this.emissionToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.emissionToolStripMenuItem.Text = "Emission";
             this.emissionToolStripMenuItem.Click += new System.EventHandler(this.emissionToolStripMenuItem_Click);
+            // 
+            // _3dToolStripMenuItem
+            // 
+            this._3dToolStripMenuItem.Name = "_3dToolStripMenuItem";
+            this._3dToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this._3dToolStripMenuItem.Text = "3D";
+            this._3dToolStripMenuItem.Click += new System.EventHandler(this._3dToolStripMenuItem_Click);
             // 
             // sepToolStripMenuItem
             // 
@@ -684,13 +693,6 @@ namespace Bio
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
-            // _3dToolStripMenuItem
-            // 
-            this._3dToolStripMenuItem.Name = "_3dToolStripMenuItem";
-            this._3dToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
-            this._3dToolStripMenuItem.Text = "3D";
-            this._3dToolStripMenuItem.Click += new System.EventHandler(this._3dToolStripMenuItem_Click);
-            // 
             // TabsView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -709,6 +711,7 @@ namespace Bio
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.TabsView_FormClosing);
             this.Load += new System.EventHandler(this.TabsView_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TabsView_KeyDown);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TabsView_KeyUp);
             this.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.ImageViewer_PreviewKeyDown);
             this.panel.ResumeLayout(false);
             this.tabContextMenuStrip.ResumeLayout(false);

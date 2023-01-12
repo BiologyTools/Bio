@@ -111,7 +111,7 @@ namespace Bio
             File.Copy(file, ffile);
             File.Delete(file);
             App.tabsView.AddTab(BioImage.OpenFile(ffile));
-            App.viewer.UpdateImage();
+            App.viewer.UpdateImages();
             App.viewer.UpdateView();
             
             Recorder.AddLine("RunOnImage(\"" + con + "\"," + headless + "," + onTab + ");");

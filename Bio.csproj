@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\Ultz.Native.SDL.2.0.14.1\build\net461\Ultz.Native.SDL.props" Condition="Exists('packages\Ultz.Native.SDL.2.0.14.1\build\net461\Ultz.Native.SDL.props')" />
+  <Import Project="packages\Ultz.Native.GLFW.3.3.3.1\build\net461\Ultz.Native.GLFW.props" Condition="Exists('packages\Ultz.Native.GLFW.3.3.3.1\build\net461\Ultz.Native.GLFW.props')" />
   <Import Project="packages\Microsoft.CodeAnalysis.Analyzers.3.3.3\build\Microsoft.CodeAnalysis.Analyzers.props" Condition="Exists('packages\Microsoft.CodeAnalysis.Analyzers.3.3.3\build\Microsoft.CodeAnalysis.Analyzers.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -10,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Bio</RootNamespace>
     <AssemblyName>Bio</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -106,9 +108,6 @@
     <Reference Include="CSScriptLib, Version=4.4.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\CS-Script.4.4.6\lib\netstandard2.0\CSScriptLib.dll</HintPath>
     </Reference>
-    <Reference Include="Gma.System.MouseKeyHook, Version=5.6.130.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>C:\Users\Erikr\source\repos\Imager\Imager\packages\MouseKeyHook.5.6.0\lib\net40\Gma.System.MouseKeyHook.dll</HintPath>
-    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=1.4.1.12, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>packages\SharpZipLib.1.4.1\lib\netstandard2.0\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
@@ -131,6 +130,9 @@
     <Reference Include="Microsoft.Extensions.DependencyModel, Version=7.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Extensions.DependencyModel.7.0.0\lib\net462\Microsoft.Extensions.DependencyModel.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="OpenTK.Input, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\OpenTK.Input.4.7.5\lib\netstandard2.0\OpenTK.Input.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
@@ -159,7 +161,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Drawing.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -174,6 +175,9 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive, Version=5.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>packages\System.Reactive.5.0.0\lib\net472\System.Reactive.dll</HintPath>
     </Reference>
     <Reference Include="System.Reflection.Metadata, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Reflection.Metadata.7.0.0\lib\net462\System.Reflection.Metadata.dll</HintPath>
@@ -217,9 +221,6 @@
     </Reference>
     <Reference Include="System.Xml.Serialization" />
     <Reference Include="WindowsBase" />
-    <Reference Include="WindowsInput, Version=1.0.4.0, Culture=neutral, PublicKeyToken=9b287f7dc5073cad, processorArchitecture=MSIL">
-      <HintPath>C:\Users\Erikr\source\repos\Imager\Imager\packages\InputSimulator.1.0.4.0\lib\net20\WindowsInput.dll</HintPath>
-    </Reference>
     <Reference Include="IKVM.Runtime">
       <HintPath>packages\IKVM.8.4.4-prerelease0001\lib\net461\IKVM.Runtime.dll</HintPath>
     </Reference>
@@ -228,12 +229,6 @@
     </Reference>
     <Reference Include="IKVM.AWT.WinForms">
       <HintPath>packages\IKVM.8.1.5717.0\lib\IKVM.AWT.WinForms.dll</HintPath>
-    </Reference>
-    <Reference Include="WindowsInput">
-      <HintPath>packages\InputSimulator.1.0.4.0\lib\net20\WindowsInput.dll</HintPath>
-    </Reference>
-    <Reference Include="freelib-utils">
-      <HintPath>freelib-utils.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Java">
       <HintPath>packages\IKVM.8.4.4-prerelease0001\lib\net461\IKVM.Java.dll</HintPath>
@@ -252,6 +247,19 @@
     </Reference>
     <Reference Include="bioformats_package">
       <HintPath>bioformats_package.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <HintPath>packages\System.Core.3.5.21022.801\lib\net20\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.HashCode">
+      <HintPath>packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="Microsoft.DotNet.PlatformAbstractions">
+      <HintPath>packages\Microsoft.DotNet.PlatformAbstractions.3.1.6\lib\net45\Microsoft.DotNet.PlatformAbstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Ultz.Bcl.Half">
+      <HintPath>packages\Ultz.Bcl.Half.Fallback.1.0.0\lib\netstandard2.0\Ultz.Bcl.Half.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -463,7 +471,6 @@
       <DependentUpon>Tools.cs</DependentUpon>
     </Compile>
     <Compile Include="Source\Units.cs" />
-    <Compile Include="Source\Win32.cs" />
     <Compile Include="Source\XMLView.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -581,10 +588,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Bio.ico" />
-    <Content Include="freelib-utils.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInPackage>true</IncludeInPackage>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include=".editorconfig" />
@@ -613,8 +616,8 @@
     <Analyzer Include="packages\Microsoft.CodeAnalysis.Analyzers.3.3.3\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AForgeNET\AForgeNET\AForgeBio.csproj">
-      <Project>{CB32276C-4D3D-4DB7-80F8-E4002D7298F8}</Project>
+    <ProjectReference Include="..\AForgeBio\AForgeBio\AForgeBio.csproj">
+      <Project>{cb32276c-4d3d-4db7-80f8-e4002d7298f8}</Project>
       <Name>AForgeBio</Name>
     </ProjectReference>
   </ItemGroup>
@@ -627,6 +630,8 @@
     <Error Condition="!Exists('packages\Microsoft.CodeAnalysis.Analyzers.3.3.3\build\Microsoft.CodeAnalysis.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeAnalysis.Analyzers.3.3.3\build\Microsoft.CodeAnalysis.Analyzers.targets'))" />
     <Error Condition="!Exists('packages\SkiaSharp.NativeAssets.macOS.2.88.3\build\net462\SkiaSharp.NativeAssets.macOS.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\SkiaSharp.NativeAssets.macOS.2.88.3\build\net462\SkiaSharp.NativeAssets.macOS.targets'))" />
     <Error Condition="!Exists('packages\SkiaSharp.NativeAssets.Win32.2.88.3\build\net462\SkiaSharp.NativeAssets.Win32.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\SkiaSharp.NativeAssets.Win32.2.88.3\build\net462\SkiaSharp.NativeAssets.Win32.targets'))" />
+    <Error Condition="!Exists('packages\Ultz.Native.GLFW.3.3.3.1\build\net461\Ultz.Native.GLFW.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Ultz.Native.GLFW.3.3.3.1\build\net461\Ultz.Native.GLFW.props'))" />
+    <Error Condition="!Exists('packages\Ultz.Native.SDL.2.0.14.1\build\net461\Ultz.Native.SDL.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Ultz.Native.SDL.2.0.14.1\build\net461\Ultz.Native.SDL.props'))" />
   </Target>
   <Import Project="packages\Microsoft.CodeAnalysis.Analyzers.3.3.3\build\Microsoft.CodeAnalysis.Analyzers.targets" Condition="Exists('packages\Microsoft.CodeAnalysis.Analyzers.3.3.3\build\Microsoft.CodeAnalysis.Analyzers.targets')" />
   <Import Project="packages\SkiaSharp.NativeAssets.macOS.2.88.3\build\net462\SkiaSharp.NativeAssets.macOS.targets" Condition="Exists('packages\SkiaSharp.NativeAssets.macOS.2.88.3\build\net462\SkiaSharp.NativeAssets.macOS.targets')" />
